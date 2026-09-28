@@ -9,9 +9,9 @@
   <p align="center">
     A registration-planning prototype that connects course choices, university rules and grounded advice.
     <br />
-    <a href="https://bumemxenge.github.io/SAGE/prototypes/SAGE%20Onboarding.html"><strong>View onboarding prototype</strong></a>
+    <a href="https://bumemxenge.github.io/SAGE-Student-Advisor-for-Guided-Enrolment/prototypes/SAGE%20Onboarding.html"><strong>View onboarding prototype</strong></a>
     &middot;
-    <a href="https://bumemxenge.github.io/SAGE/prototypes/SAGE%20Registration%20Planner.html"><strong>View planning prototype</strong></a>
+    <a href="https://bumemxenge.github.io/SAGE-Student-Advisor-for-Guided-Enrolment/prototypes/SAGE%20Registration%20Planner.html"><strong>View planning prototype</strong></a>
   </p>
 </div>
 
