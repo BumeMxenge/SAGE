@@ -1,0 +1,7 @@
+# Keeps local environments, caches, tests and secrets out of the Docker image
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+tests/
+.env
