@@ -1,32 +1,118 @@
-<!-- How to run SAGE locally from a fresh clone -->
-# Local setup
+<!-- How to install everything and run SAGE locally, from a fresh laptop -->
+# Running SAGE locally
 
-## Prerequisites
+This guide takes you from a fresh laptop to a running backend. Commands are for macOS. Notes for Windows and Linux are given where they differ.
 
-- [uv](https://docs.astral.sh/uv/) (installs Python 3.12 for you)
-- Docker, only for building the backend image
-- Node.js and the Supabase CLI, once the frontend and database work starts
+What runs today: the **backend** (FastAPI). The frontend, local database and Azure deployment are listed under [Not set up yet](#not-set-up-yet) and will be added here as they land.
 
-## Backend
+## 1. Install the tools (once per laptop)
+
+| Tool | Why you need it | How to install |
+| --- | --- | --- |
+| Xcode Command Line Tools | Gives you `git` and `make` | `xcode-select --install` (skip if you already have Xcode) |
+| uv | Installs Python 3.12 and every Python package | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| Docker Desktop (optional) | Builds and runs the backend image exactly as Azure will | Download from [docker.com](https://www.docker.com/products/docker-desktop/), choosing the Intel or Apple chip version to match your Mac |
+
+You do **not** need to install Python yourself. uv downloads a ready-made Python 3.12 the first time it runs.
+
+**Why not Homebrew?** Since September 2026, Homebrew no longer provides ready-made packages for Intel Macs. On an Intel Mac, `brew install uv` compiles uv and 18 dependencies from source, including LLVM and Rust, which can take hours. Each tool's official installer downloads a ready-made build in seconds and works the same on Intel and Apple chip Macs.
+
+Close and reopen your terminal after installing, then check:
+
+```bash
+git --version
+uv --version
+```
+
+**Linux:** use the same uv command as above. **Windows:** install uv in PowerShell with `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`. `make` isn't available on Windows by default, so use the plain commands shown next to each `make` command below.
+
+## 2. Get the code
+
+```bash
+git clone https://github.com/BumeMxenge/SAGE-Student-Advisor-for-Guided-Enrolment.git SAGE
+cd SAGE
+```
+
+The `SAGE` at the end names the folder. Keep the folder name free of colons. uv refuses to run inside a path that contains `:`.
+
+## 3. Set up and run the backend
+
+Run these from the `backend` folder:
 
 ```bash
 cd backend
-cp .env.example .env      # then fill in the values
-uv sync                   # installs Python 3.12 and all dependencies
-uv run pytest             # tests should pass
+cp .env.example .env        # your private settings file; fill in values when needed
+uv sync                     # installs Python 3.12 and all packages into backend/.venv
+uv run pytest               # all tests should pass
 uv run uvicorn sage.main:app --reload
 ```
 
-Open http://localhost:8000/health for the health check and http://localhost:8000/docs for the API docs.
+Then open in your browser:
 
-From the repo root, `make install`, `make dev`, `make test` and `make lint` do the same.
+- http://localhost:8000/health should show `{"status":"ok"}`
+- http://localhost:8000/docs shows every API route, and lets you try them
 
-## Adding a dependency
+`--reload` restarts the server whenever you save a file. Press `Ctrl + C` in the terminal to stop it.
+
+Nothing in `.env` is needed yet. The backend runs with the values blank. When Supabase is wired in, copy the project URL and the **secret** key from your Supabase project's API settings into `.env`. Never commit `.env`.
+
+## 4. Everyday commands
+
+From the **repo root** you can use the Makefile shortcuts. The right-hand column does the same thing from inside `backend/`.
+
+| From the repo root | Same thing, from `backend/` | What it does |
+| --- | --- | --- |
+| `make install` | `uv sync` | Install or update packages to match `uv.lock` |
+| `make dev` | `uv run uvicorn sage.main:app --reload` | Run the backend on port 8000 |
+| `make test` | `uv run pytest -m "not integration"` | Run the tests CI runs |
+| `make lint` | `uv run ruff check` | Check the code for mistakes |
+| `make ingest YEAR=2026` | `uv run sage ingest --year 2026` | Load a year's handbook (not built yet) |
+
+Run `make install` (or `uv sync`) after every `git pull`, in case someone added a package.
+
+## 5. Adding a package
+
+From `backend/`:
+
+```bash
+uv add <package>          # needed by the running app
+uv add --dev <package>    # only needed for tests and tooling
+```
+
+This updates both `pyproject.toml` and `uv.lock`. Commit both files together.
+
+## 6. Run the production image (optional)
+
+This builds the same Docker image Azure will run. Docker Desktop must be open.
 
 ```bash
 cd backend
-uv add <package>          # runtime
-uv add --dev <package>    # tests and tooling only
+docker build -t sage-backend .
+docker run --rm -p 8000:8000 --env-file .env sage-backend
 ```
 
-Commit both `pyproject.toml` and `uv.lock`.
+Then check http://localhost:8000/health as before. `Ctrl + C` stops it.
+
+## 7. VS Code
+
+Open the `SAGE` folder in VS Code. Then press `Cmd + Shift + P`, run **Python: Select Interpreter**, and choose the one inside `backend/.venv`. This stops VS Code underlining every import as missing.
+
+## Troubleshooting
+
+| Problem | Fix |
+| --- | --- |
+| `path segment contains separator ':'` | Your folder name contains a colon. Rename it, e.g. to `SAGE`. |
+| A `brew install` runs for ages, compiling LLVM or Rust | Press `Ctrl + C`. On Intel Macs, use the tool's official installer instead (see step 1). |
+| `uv: command not found` | Close and reopen the terminal. The installer adds uv to your path, but only new terminals see it. |
+| `make: command not found` | Run `xcode-select --install`, or use the plain commands in the table above. |
+| `address already in use` on port 8000 | Another server is still running. Find it with `lsof -i :8000` and stop it, or run on another port with `--port 8001`. |
+| `ModuleNotFoundError: No module named 'sage'` | Run commands from `backend/`, and run `uv sync` first. |
+| Tests pass locally but fail in CI | Run `uv sync` and commit `uv.lock`. CI installs exactly what the lockfile says. |
+
+## Not set up yet
+
+These sections will be filled in as each part is built. Each will use the tool's official installer, not Homebrew.
+
+- **Frontend:** React app in `frontend/`, running on http://localhost:3000. Will need Node.js, from the installer at [nodejs.org](https://nodejs.org).
+- **Local database:** Supabase CLI and migrations in `supabase/`. Will need Docker Desktop. The CLI can run through Node.js with `npx supabase`, so it needs no separate install.
+- **Azure:** setup script in `infra/azure/`. Will need the Azure CLI, or Azure Cloud Shell in the browser, which has it pre-installed. The exact route will be added here when this part is built.

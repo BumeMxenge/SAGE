@@ -18,6 +18,7 @@
     <li><a href="#about-the-project">About the Project</a></li>
     <li><a href="#planned-capabilities">Planned Capabilities</a></li>
     <li><a href="#technical-direction">Technical Direction</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#project-status">Project Status</a></li>
     <li><a href="#contributor">Contributor</a></li>
   </ol>
