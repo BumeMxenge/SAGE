@@ -65,7 +65,8 @@ From the **repo root** you can use the Makefile shortcuts. The right-hand column
 | `make install` | `uv sync` | Install or update packages to match `uv.lock` |
 | `make dev` | `uv run uvicorn sage.main:app --reload` | Run the backend on port 8000 |
 | `make test` | `uv run pytest -m "not integration"` | Run the tests CI runs |
-| `make lint` | `uv run ruff check` | Check the code for mistakes |
+| `make lint` | `uv run ruff check && uv run ruff format --check` | Check the code for mistakes and formatting |
+| `make format` | `uv run ruff check --fix && uv run ruff format` | Fix what can be fixed and tidy the formatting |
 | `make ingest YEAR=2026` | `uv run sage ingest --year 2026` | Load a year's handbook (not built yet) |
 
 Run `make install` (or `uv sync`) after every `git pull`, in case someone added a package.
@@ -97,6 +98,8 @@ Then check http://localhost:8000/health as before. `Ctrl + C` stops it.
 
 Open the `SAGE` folder in VS Code. Then press `Cmd + Shift + P`, run **Python: Select Interpreter**, and choose the one inside `backend/.venv`. This stops VS Code underlining every import as missing.
 
+Install the **EditorConfig for VS Code** extension too. It makes VS Code follow `.editorconfig` (spaces, line endings, a newline at the end of every file).
+
 ## Troubleshooting
 
 | Problem | Fix |
@@ -108,6 +111,7 @@ Open the `SAGE` folder in VS Code. Then press `Cmd + Shift + P`, run **Python: S
 | `address already in use` on port 8000 | Another server is still running. Find it with `lsof -i :8000` and stop it, or run on another port with `--port 8001`. |
 | `ModuleNotFoundError: No module named 'sage'` | Run commands from `backend/`, and run `uv sync` first. |
 | Tests pass locally but fail in CI | Run `uv sync` and commit `uv.lock`. CI installs exactly what the lockfile says. |
+| CI fails at **Check formatting** or **Lint** | Run `make format`, then `make lint`, then commit and push. |
 
 ## Not set up yet
 

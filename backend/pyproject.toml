@@ -34,3 +34,6 @@ packages = ["src/sage"]
 testpaths = ["tests"]
 addopts = ["--import-mode=importlib"]
 markers = ["integration: needs live Supabase or a model API"]
+
+[tool.ruff.lint]
+extend-select = ["I", "B", "UP"] # import order, likely bugs, outdated syntax

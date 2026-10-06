@@ -1,5 +1,5 @@
-# Shortcuts for common tasks, run from the repo root: make install / dev / test / lint / ingest YEAR=2026
-.PHONY: install dev test lint ingest
+# Shortcuts for common tasks, run from the repo root: make install / dev / test / lint / format / ingest YEAR=2026
+.PHONY: install dev test lint format ingest
 
 install:
 	@cd backend && uv sync
@@ -11,7 +11,10 @@ test:
 	@cd backend && uv run pytest -m "not integration"
 
 lint:
-	@cd backend && uv run ruff check
+	@cd backend && uv run ruff check && uv run ruff format --check
+
+format:
+	@cd backend && uv run ruff check --fix && uv run ruff format
 
 ingest:
 	@cd backend && uv run sage ingest --year $(YEAR)

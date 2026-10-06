@@ -6,7 +6,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="sage")
     commands = parser.add_subparsers(dest="command", required=True)
 
-    ingest = commands.add_parser("ingest", help="Load one year's sources into the rule model")
+    ingest = commands.add_parser(
+        "ingest", help="Load one year's sources into the rule model"
+    )
     ingest.add_argument("--year", type=int, required=True)
 
     args = parser.parse_args()

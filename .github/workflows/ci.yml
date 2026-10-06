@@ -1,0 +1,80 @@
+# Checks every push to main and every pull request: one job per part of the stack
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: # adds a "Run workflow" button in the Actions tab
+
+permissions:
+  contents: read # the run can read the code and change nothing
+
+concurrency: # a newer push cancels the older run on the same branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (Python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      RUFF_OUTPUT_FORMAT: github # lint errors appear on the exact line in GitHub
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.23" # same uv as the Dockerfile and your laptop
+      - name: Install from uv.lock
+        run: uv sync --locked
+      - name: Lint
+        run: uv run ruff check
+      - name: Check formatting
+        run: uv run ruff format --check
+      - name: Unit tests
+        run: uv run pytest -m "not integration"
+
+  frontend:
+    name: Frontend (TypeScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Skipped until the React app is committed with its lockfile
+      - if: hashFiles('frontend/package-lock.json') != ''
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install, lint, test and build
+        if: hashFiles('frontend/package-lock.json') != ''
+        run: |
+          npm ci
+          npm run lint
+          npm test --if-present
+          npm run build
+
+  database:
+    name: Database (SQL migrations)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Skipped until `supabase init` has created supabase/config.toml
+      - if: hashFiles('supabase/config.toml') != ''
+        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
+        with:
+          version: 2.120.0
+      - name: Apply migrations to an empty database, then lint them
+        if: hashFiles('supabase/config.toml') != ''
+        run: |
+          supabase db start
+          supabase db lint --local --fail-on error
