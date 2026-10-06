@@ -22,7 +22,7 @@ Imports only point inward: `api → services → ingestion / engine / advisor �
 
 - `adapters/` implements interfaces defined in `domain/`.
 - `advisor` may call `engine` (its tools). `engine` never calls `advisor`.
-- Only `adapters/` imports vendor SDKs (Supabase, model providers).
+- Only `adapters/` imports SDKs for outside services (Supabase, model providers). Only `engine/` imports clingo.
 - Year and department are data, not code. Nothing in the code tree is named after a programme.
 
 ## System diagram

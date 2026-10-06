@@ -1,8 +1,11 @@
+# Files git never tracks: secrets, local environments, caches and macOS clutter
 .env
 .env.*
 !.env.example
 .venv/
 __pycache__/
 .pytest_cache/
+.ruff_cache/
 node_modules/
 private_data/
+.DS_Store

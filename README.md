@@ -31,7 +31,7 @@ SAGE stands for **Student Advisor for Guided Enrolment**. It is being designed t
 
 The initial scope is the three degrees administered by UCT's Department of Electrical Engineering, including mainstream and ASPECT routes. A student's academic record, curriculum rules, course offerings, timetable and preferences all affect which plans are possible. SAGE is intended to show valid options and explain when a proposed course cannot fit.
 
-The design has one firm boundary: a deterministic engine decides validity. The conversational advisor uses engine results and handbook passages to explain decisions, and refers questions without evidence to a human advisor. Chat can propose a change to the student's plan; the student confirms it. A shared plan service is intended to keep the visual plan and chat in sync.
+The design has one firm boundary: a deterministic engine decides validity. The conversational advisor uses engine results and handbook passages to explain decisions, and refers questions without evidence to a human advisor. SAGE generates every valid plan up front, each with its reasons. The student browses and compares those plans, and the advisor explains them. Students never edit a plan. When they ask about a change, the advisor points to an existing plan that has it.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -41,8 +41,8 @@ The design has one firm boundary: a deterministic engine decides validity. The c
 - **Rule and timetable checks:** Check entry requirements, credit rules, course offerings and clashes.
 - **Plan exploration:** Generate valid annual plans and filter them by student preferences, with any search limit made clear.
 - **Explanations:** Give structured reasons for exclusions or conditional choices, with source citations where appropriate.
-- **Grounded advisor:** Answer in the context of the current plan and present changes for student confirmation.
-- **Shared plan:** Keep timetable edits and advisor context on one saved, versioned plan.
+- **Grounded advisor:** Answer in the context of the current plan and point to an existing plan when the student asks about a change.
+- **Plan workspace:** View each plan as a timetable or course list per term, and compare two plans side by side.
 - **Annual updates:** Review handbook-year rule changes before an administrator activates them.
 - **Human hand-off:** Save, recheck and export a plan for review with a faculty advisor.
 
@@ -69,9 +69,16 @@ These are the selected technologies and development tools for the planned implem
 
 [![VS Code][VSCode]][VSCode-url] [![GitHub Actions][GitHubActions]][GitHubActions-url] [![Docker][Docker]][Docker-url]
 
-Python will support ingestion, deterministic rule evaluation, the plan service and advisor tools. Supabase Postgres is the selected store for versioned rules, plans and handbook passages. The API and built React interface are intended to run in one container on a managed host.
+Python will support ingestion, deterministic rule evaluation, the plan service and advisor tools. Supabase Postgres is the selected store for versioned rules, plans and handbook passages. The FastAPI backend runs as a container on Azure Container Apps, the React interface is deployed separately as static files, and Supabase (EU) holds the data and handles sign-in.
 
 The PDF library, plan solver, embedding and search configuration, language model, and synchronisation protocol will be selected through design experiments.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+To run SAGE on your own machine, follow [docs/setup.md](docs/setup.md).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
