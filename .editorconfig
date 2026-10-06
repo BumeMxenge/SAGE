@@ -1,4 +1,4 @@
-# Shared editor settings, so every file keeps one style whoever edits it
+# Shared editor settings, so every file keeps one style
 root = true
 
 [*]
