@@ -49,7 +49,7 @@ uv run uvicorn sage.main:app --reload
 
 Then open in your browser:
 
-- http://localhost:8000/health should show `{"status":"ok"}`
+- http://localhost:8000/health should show `{"status":"ok","commit":"dev"}`. On Azure, `commit` shows which commit is running.
 - http://localhost:8000/docs shows every API route, and lets you try them
 
 `--reload` restarts the server whenever you save a file. Press `Ctrl + C` in the terminal to stop it.
@@ -117,9 +117,7 @@ To delete everything SAGE has on Azure and stop all charges, run `az group delet
 
 ## 9. Deploying the backend
 
-`.github/workflows/deploy-backend.yml` deploys on its own. After every push to `main` that passes CI, it builds the backend image, pushes it to GitHub's registry as `ghcr.io/bumemxenge/sage-backend:<commit>`, runs it on Azure as the container app `ca-sage-api`, then checks `/health` on the live URL. The run's summary page shows that URL.
-
-The first deploy needs one click from you. New images on GitHub's registry start private, and Azure pulls without a password, so that run stops at **Check the image is public**. Open the link in its error, choose **Change visibility → Public**, then press **Re-run all jobs**. Later images stay public.
+`.github/workflows/deploy-backend.yml` deploys on its own. After every push to `main` that passes CI, it builds the backend image, pushes it to GitHub's registry as `ghcr.io/bumemxenge/sage-backend:<commit>`, runs it on Azure as the container app `ca-sage-api`, then waits until `/health` on the live URL reports the new commit. The run's summary page shows that URL.
 
 - **Redeploy without a new commit:** Actions → Deploy backend → Run workflow, on `main`.
 - **Resize:** edit `CPU`, `MEMORY`, `MIN_REPLICAS` or `MAX_REPLICAS` at the top of the workflow and push. With `MIN_REPLICAS: "0"` the app costs nothing while idle, but the first request after a quiet spell waits a few seconds for it to start.
@@ -140,9 +138,9 @@ The first deploy needs one click from you. New images on GitHub's registry start
 | The Azure script stops with `PrincipalNotFound` | Azure hadn't finished creating the deploy identity. Wait a minute and run the script again. |
 | CI fails at **Check formatting** or **Lint** | Run `make format`, then `make lint`, then commit and push. |
 | CI passed but nothing deployed | Deploys follow pushes to `main` only, not pull requests. The deploy workflow must also be on `main` itself. |
-| The deploy stops at **Check the image is public** | Make the package public once (section 9), then re-run the workflow. |
+| The deploy stops at **Check the image is public** | Azure pulls without a password, so the package must be public. Open the link in the error, choose **Change visibility → Public**, then re-run the workflow. |
 | **Sign in to Azure** fails with `AADSTS70021: No matching federated identity record` | Azure only trusts runs on `main`. Run the workflow from `main`, and don't add `environment:` to the job. The error shows the subject GitHub sent, to compare with `GITHUB_SUBJECT` in `infra/azure/setup.sh`. |
-| The deploy stops at **Wait for the new revision to take over** | The new image didn't start, so Azure kept the old one running. Read the system logs (section 9), fix the cause and push again. |
+| The deploy stops at **Check the new commit is live** | The new image didn't start, so Azure kept the old one running (its commit shows in the step's output). Read the system logs (section 9), fix the cause and push again. |
 
 ## Not set up yet
 

@@ -16,6 +16,10 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY src/ src/
 RUN uv sync --frozen --no-dev
 
-ENV PATH="/app/.venv/bin:$PATH"
+# The commit this image was built from, which /health reports. Set last so a new commit
+# doesn't invalidate the cached dependency layers above.
+ARG GIT_SHA=dev
+ENV GIT_SHA=$GIT_SHA \
+    PATH="/app/.venv/bin:$PATH"
 EXPOSE 8000
 CMD ["uvicorn", "sage.main:app", "--host", "0.0.0.0", "--port", "8000"]

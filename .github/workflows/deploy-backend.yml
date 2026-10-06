@@ -1,4 +1,4 @@
-# Ships the backend after CI passes on main: build the image, push it to ghcr.io, run it on Azure, check /health
+# Ships the backend after CI passes on main: build the image, push it to ghcr.io, run it on Azure, confirm it's live
 name: Deploy backend
 
 on:
@@ -65,6 +65,7 @@ jobs:
           context: backend
           push: true
           tags: ${{ env.IMAGE }}:${{ env.SHA }}
+          build-args: GIT_SHA=${{ env.SHA }} # /health reports this, so the last step can tell new from old
           labels: | # links the package to this repo on GitHub, and records the commit inside the image
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ env.SHA }}
@@ -111,30 +112,21 @@ jobs:
               --ingress external --target-port 8000 "${size[@]}" --output none
           fi
 
-      - name: Wait for the new revision to take over
-        # If a new version fails to start, Azure quietly keeps the old one serving, so /health alone could pass
-        run: |
-          show() { az containerapp show --resource-group "$RESOURCE_GROUP" --name "$APP" --query "$1" --output tsv; }
-          latest=$(show properties.latestRevisionName)
-          for _ in {1..30}; do # up to 5 minutes
-            if [[ $(show properties.latestReadyRevisionName) == "$latest" ]]; then
-              echo "Revision $latest is serving"
-              exit 0
-            fi
-            state=$(az containerapp revision show --resource-group "$RESOURCE_GROUP" --name "$APP" \
-              --revision "$latest" --query properties.provisioningState --output tsv || true)
-            [[ $state == Failed ]] && break
-            sleep 10
-          done
-          echo "::error::Revision $latest didn't start. See why: az containerapp logs show -g $RESOURCE_GROUP -n $APP --type system"
-          exit 1
-
-      - name: Check /health on the live URL
+      - name: Check the new commit is live
+        # Polls /health until it reports this commit. That proves the new image is the one answering:
+        # if it fails to start, Azure quietly keeps the old version serving, and the old commit shows here.
         run: |
           url="https://$(az containerapp show --resource-group "$RESOURCE_GROUP" --name "$APP" \
             --query properties.configuration.ingress.fqdn --output tsv)"
-          # The retries ride out a cold start if the app has scaled to zero
-          curl --fail --silent --show-error --max-time 30 \
-            --retry 12 --retry-delay 10 --retry-all-errors "$url/health"
-          echo
-          echo "Backend live at $url (commit $SHA)" >> "$GITHUB_STEP_SUMMARY"
+          for _ in {1..30}; do # up to about 5 minutes, enough for a cold start
+            body=$(curl --silent --show-error --max-time 30 "$url/health" || true)
+            if [[ $(jq -r '.commit // empty' <<<"$body" 2>/dev/null) == "$SHA" ]]; then
+              echo "$url/health answers with commit $SHA"
+              echo "Backend live at $url (commit $SHA)" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Not live yet: ${body:0:200}"
+            sleep 10
+          done
+          echo "::error::$url/health never reported commit $SHA. See why: az containerapp logs show -g $RESOURCE_GROUP -n $APP --type system"
+          exit 1
