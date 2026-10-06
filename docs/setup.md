@@ -3,7 +3,7 @@
 
 This guide takes you from a fresh laptop to a running backend. Commands are for macOS. Notes for Windows and Linux are given where they differ.
 
-What runs today: the **backend** (FastAPI). The frontend, local database and Azure deployment are listed under [Not set up yet](#not-set-up-yet) and will be added here as they land.
+What runs today: the **backend** (FastAPI), on your laptop and on Azure. The frontend and local database are listed under [Not set up yet](#not-set-up-yet) and will be added here as they land.
 
 ## 1. Install the tools (once per laptop)
 
@@ -29,7 +29,7 @@ uv --version
 ## 2. Get the code
 
 ```bash
-git clone https://github.com/BumeMxenge/SAGE-Student-Advisor-for-Guided-Enrolment.git SAGE
+git clone https://github.com/BumeMxenge/SAGE.git SAGE
 cd SAGE
 ```
 
@@ -115,6 +115,16 @@ The backend runs on Azure Container Apps in South Africa North. `infra/azure/set
 
 To delete everything SAGE has on Azure and stop all charges, run `az group delete --name rg-sage`.
 
+## 9. Deploying the backend
+
+`.github/workflows/deploy-backend.yml` deploys on its own. After every push to `main` that passes CI, it builds the backend image, pushes it to GitHub's registry as `ghcr.io/bumemxenge/sage-backend:<commit>`, runs it on Azure as the container app `ca-sage-api`, then checks `/health` on the live URL. The run's summary page shows that URL.
+
+The first deploy needs one click from you. New images on GitHub's registry start private, and Azure pulls without a password, so that run stops at **Check the image is public**. Open the link in its error, choose **Change visibility → Public**, then press **Re-run all jobs**. Later images stay public.
+
+- **Redeploy without a new commit:** Actions → Deploy backend → Run workflow, on `main`.
+- **Resize:** edit `CPU`, `MEMORY`, `MIN_REPLICAS` or `MAX_REPLICAS` at the top of the workflow and push. With `MIN_REPLICAS: "0"` the app costs nothing while idle, but the first request after a quiet spell waits a few seconds for it to start.
+- **Read the logs:** `az containerapp logs show --resource-group rg-sage --name ca-sage-api --follow`. Add `--type system` to see Azure's own messages, such as why a container won't start.
+
 ## Troubleshooting
 
 | Problem | Fix |
@@ -129,6 +139,10 @@ To delete everything SAGE has on Azure and stop all charges, run `az group delet
 | The Azure script says it can't use `southafricanorth` | Azure for Students limits each subscription to a few regions. Choose one from the list it prints and change `LOCATION` at the top of the script. |
 | The Azure script stops with `PrincipalNotFound` | Azure hadn't finished creating the deploy identity. Wait a minute and run the script again. |
 | CI fails at **Check formatting** or **Lint** | Run `make format`, then `make lint`, then commit and push. |
+| CI passed but nothing deployed | Deploys follow pushes to `main` only, not pull requests. The deploy workflow must also be on `main` itself. |
+| The deploy stops at **Check the image is public** | Make the package public once (section 9), then re-run the workflow. |
+| **Sign in to Azure** fails with `AADSTS70021: No matching federated identity record` | Azure only trusts runs on `main`. Run the workflow from `main`, and don't add `environment:` to the job. The error shows the subject GitHub sent, to compare with `GITHUB_SUBJECT` in `infra/azure/setup.sh`. |
+| The deploy stops at **Wait for the new revision to take over** | The new image didn't start, so Azure kept the old one running. Read the system logs (section 9), fix the cause and push again. |
 
 ## Not set up yet
 
@@ -136,4 +150,3 @@ These sections will be filled in as each part is built. Each will use the tool's
 
 - **Frontend:** React app in `frontend/`, running on http://localhost:3000. Will need Node.js, from the installer at [nodejs.org](https://nodejs.org).
 - **Local database:** Supabase CLI and migrations in `supabase/`. Will need Docker Desktop. The CLI can run through Node.js with `npx supabase`, so it needs no separate install.
-- **Deploying the backend:** a GitHub workflow that builds the image and runs it on the Azure environment from section 8.
