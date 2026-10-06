@@ -100,6 +100,21 @@ Open the `SAGE` folder in VS Code. Then press `Cmd + Shift + P`, run **Python: S
 
 Install the **EditorConfig for VS Code** extension too. It makes VS Code follow `.editorconfig` (spaces, line endings, a newline at the end of every file).
 
+## 8. Azure (one-off setup)
+
+The backend runs on Azure Container Apps in South Africa North. `infra/azure/setup.sh` creates everything it needs there. You run it once. Running it again is safe, because it skips or updates whatever already exists.
+
+1. Install the Azure CLI. Microsoft only supports Homebrew for this on macOS, so use uv, which installs it like any other Python tool:
+   ```bash
+   uv tool install azure-cli --python 3.12
+   az login
+   ```
+   `az login` opens your browser. Sign in with the account that holds your Azure subscription.
+2. From the repo root, run `bash infra/azure/setup.sh`. It shows which subscription it will use and asks before creating anything. The first run takes about five minutes.
+3. It ends by printing three values. On GitHub, add each one as a repository secret: Settings → Secrets and variables → Actions → New repository secret.
+
+To delete everything SAGE has on Azure and stop all charges, run `az group delete --name rg-sage`.
+
 ## Troubleshooting
 
 | Problem | Fix |
@@ -111,6 +126,8 @@ Install the **EditorConfig for VS Code** extension too. It makes VS Code follow 
 | `address already in use` on port 8000 | Another server is still running. Find it with `lsof -i :8000` and stop it, or run on another port with `--port 8001`. |
 | `ModuleNotFoundError: No module named 'sage'` | Run commands from `backend/`, and run `uv sync` first. |
 | Tests pass locally but fail in CI | Run `uv sync` and commit `uv.lock`. CI installs exactly what the lockfile says. |
+| The Azure script says it can't use `southafricanorth` | Azure for Students limits each subscription to a few regions. Choose one from the list it prints and change `LOCATION` at the top of the script. |
+| The Azure script stops with `PrincipalNotFound` | Azure hadn't finished creating the deploy identity. Wait a minute and run the script again. |
 | CI fails at **Check formatting** or **Lint** | Run `make format`, then `make lint`, then commit and push. |
 
 ## Not set up yet
@@ -119,4 +136,4 @@ These sections will be filled in as each part is built. Each will use the tool's
 
 - **Frontend:** React app in `frontend/`, running on http://localhost:3000. Will need Node.js, from the installer at [nodejs.org](https://nodejs.org).
 - **Local database:** Supabase CLI and migrations in `supabase/`. Will need Docker Desktop. The CLI can run through Node.js with `npx supabase`, so it needs no separate install.
-- **Azure:** setup script in `infra/azure/`. Will need the Azure CLI, or Azure Cloud Shell in the browser, which has it pre-installed. The exact route will be added here when this part is built.
+- **Deploying the backend:** a GitHub workflow that builds the image and runs it on the Azure environment from section 8.
