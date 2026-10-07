@@ -1,0 +1,55 @@
+# Reads one row from Supabase every six hours, because Supabase pauses a free project after a week without database activity
+name: Keep Supabase awake
+
+on:
+  schedule: # runs from main only; times are UTC and can start late when GitHub is busy
+    - cron: "23 */6 * * *" # 00:23, 06:23, 12:23 and 18:23, off the hour, when GitHub is busiest
+  workflow_dispatch: # adds a "Run workflow" button, to check it by hand
+
+permissions: {} # needs no access to the repo: it only calls Supabase
+
+concurrency: # one run at a time; a late run waits rather than overlapping
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash # stops at the first failed command
+
+jobs:
+  ping:
+    name: Read the heartbeat row
+    runs-on: ubuntu-24.04 # pinned, like CI: ubuntu-latest moves to Ubuntu 26 on 19 October
+    timeout-minutes: 5
+    steps:
+      - name: Read the heartbeat row
+        # The same values the frontend ships to every visitor, so they are GitHub variables, not secrets
+        env:
+          SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [[ -z $SUPABASE_URL || -z $SUPABASE_PUBLISHABLE_KEY ]]; then
+            echo "::error::VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY isn't set. Add both on GitHub as variables, not secrets (docs/setup.md section 11)."
+            exit 1
+          fi
+
+          # The publishable key goes in the apikey header only. It isn't a JWT, so it can't be a Bearer token.
+          # Retries cover brief outages (no connection, timeouts, 5xx), not a wrong key or a missing grant.
+          answer=$(mktemp) # a fresh, empty file, so an old answer can never be mistaken for a new one
+          if ! curl --fail-with-body --silent --show-error --max-time 30 \
+            --retry 3 --retry-connrefused --retry-delay 10 \
+            --header "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+            --output "$answer" \
+            "${SUPABASE_URL%/}/rest/v1/heartbeat?select=id"; then
+            details=$(cat "$answer")
+            echo "::error::Couldn't read the heartbeat row (${details:-no answer}). A paused project needs restoring from the Supabase dashboard (docs/setup.md section 12)."
+            exit 1
+          fi
+          body=$(cat "$answer")
+
+          # An empty list would still count as activity, but it means a policy or grant is wrong, so fail loudly
+          if [[ $body != '[{"id":1}]' ]]; then
+            echo "::error::Expected [{\"id\":1}] but got $body. Check the heartbeat table's policy and grant."
+            exit 1
+          fi
+          echo "Supabase answered $body"

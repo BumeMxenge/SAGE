@@ -73,8 +73,9 @@ jobs:
         uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
         with:
           version: 2.120.0
-      - name: Apply migrations to an empty database, then lint them
+      - name: Apply migrations to an empty database, then lint and check them
         if: hashFiles('supabase/config.toml') != ''
         run: |
           supabase db start
           supabase db lint --local --fail-on error
+          supabase db advisors --local --type security --fail-on error # fails if a table the API can reach has no row level security

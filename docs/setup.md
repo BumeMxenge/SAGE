@@ -3,7 +3,7 @@
 
 This guide takes you from a fresh laptop to a running backend and frontend. Commands are for macOS. Notes for Windows and Linux are given where they differ.
 
-What runs today: the **backend** (FastAPI) and the **frontend** (React), on your laptop and on Azure. The local database is listed under [Not set up yet](#not-set-up-yet) and will be added here when it lands.
+What runs today: the **backend** (FastAPI) and the **frontend** (React), on your laptop and on Azure, and the **database** on Supabase (section 12).
 
 ## 1. Install the tools (once per laptop)
 
@@ -12,7 +12,7 @@ What runs today: the **backend** (FastAPI) and the **frontend** (React), on your
 | Xcode Command Line Tools | Gives you `git` and `make` | `xcode-select --install` (skip if you already have Xcode) |
 | uv | Installs Python 3.12 and every Python package | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 | Node.js 24 (LTS) | Runs the frontend's tools, and npm, which installs its packages | Download the LTS macOS installer (`.pkg`) from [nodejs.org](https://nodejs.org) and open it |
-| Docker Desktop (optional) | Builds and runs the backend image exactly as Azure will | Download from [docker.com](https://www.docker.com/products/docker-desktop/), choosing the Intel or Apple chip version to match your Mac |
+| Docker Desktop (optional) | Builds and runs the backend image exactly as Azure will, and runs a local database (section 12) | Download from [docker.com](https://www.docker.com/products/docker-desktop/), choosing the Intel or Apple chip version to match your Mac |
 
 You do **not** need to install Python yourself. uv downloads a ready-made Python 3.12 the first time it runs.
 
@@ -175,6 +175,42 @@ Before the first deploy (once):
 - **Redeploy without a new commit:** Actions → Deploy frontend → Run workflow, on `main`.
 - **Seeing a new version:** files in `assets/` get new names with every build, so browsers keep them for a year. `index.html` is re-checked on every visit, so a new deploy shows on the next reload.
 
+## 12. Database (Supabase)
+
+The database lives on Supabase. Its tables are built by **migrations**: timestamped SQL files in `supabase/migrations/`, applied in order. `supabase/config.toml` holds the CLI's settings. Run the Supabase CLI through Node.js, at the version CI uses, from the repo root: `npx supabase@2.120.0 <command>`. It needs no separate install.
+
+Link your laptop to the project (once per laptop):
+
+```bash
+npx supabase@2.120.0 login
+npx supabase@2.120.0 link --project-ref qkqsiesntzriurhgttgy
+```
+
+`login` opens your browser. If `link` asks for the database password, type it into the terminal (nothing shows as you type). Never put it in a file. If you've lost it, reset it in the Supabase dashboard's database settings.
+
+Add a migration:
+
+1. Run `npx supabase@2.120.0 migration new what_it_does`. It creates an empty, timestamped file in `supabase/migrations/`.
+2. Write the SQL. Every table in `public` needs row level security switched on, a policy for each kind of access, and a `grant` for each role that may reach it. Without the grant the Data API can't see the table at all. The heartbeat migration is a short example of all three.
+3. Commit and push. CI's **Database** job applies every migration to an empty database, lints them, and fails if a table the API can reach has no row level security.
+
+Once CI is green, apply new migrations to the hosted project:
+
+```bash
+npx supabase@2.120.0 db push --dry-run
+npx supabase@2.120.0 db push
+```
+
+The first lists what would run. The second runs it, after asking. `npx supabase@2.120.0 migration list` shows which migrations each side has. Never edit a migration after pushing it; make the change in a new one.
+
+**Local database (optional):** with Docker Desktop open, `npx supabase@2.120.0 db start` starts one with every migration applied, and `npx supabase@2.120.0 db reset` rebuilds it from scratch.
+
+**Keep-alive:** Supabase pauses a free project after a week without database activity. `.github/workflows/keep-alive.yml` reads the one row in `public.heartbeat` every six hours, with the same two GitHub variables the frontend deploy uses (section 11).
+
+- **Check it by hand:** Actions → Keep Supabase awake → Run workflow, on `main`.
+- **If a run fails:** GitHub emails you. A paused project comes back with **Resume project** on its Supabase dashboard page.
+- **After 60 days without a commit:** GitHub switches off scheduled workflows in public repos. Actions → Keep Supabase awake → Enable workflow turns it back on.
+
 ## Troubleshooting
 
 | Problem | Fix |
@@ -202,9 +238,9 @@ Before the first deploy (once):
 | Deploy backend stops with `Storage account sageuct not found` | Run `infra/azure/setup.sh` (section 9), then re-run the workflow. |
 | Deploy frontend stops at **Build**, saying a `VITE_` variable isn't set | Add it on GitHub as a variable, not a secret (section 11). |
 | Deploy frontend stops at **Upload to Azure Storage** with `AuthorizationPermissionMismatch` | The upload role from the Azure script can take a few minutes to start working. Wait five minutes and re-run the workflow. If it keeps failing, run the script again. |
-
-## Not set up yet
-
-These sections will be filled in as each part is built. Each will use the tool's official installer, not Homebrew.
-
-- **Local database:** Supabase CLI and migrations in `supabase/`. Will need Docker Desktop. The CLI can run through Node.js with `npx supabase`, so it needs no separate install.
+| `link` or `db push` fails with `failed SASL auth` | Give the CLI the database password for this terminal: run `read -rs SUPABASE_DB_PASSWORD`, type the password and press Enter, run `export SUPABASE_DB_PASSWORD`, then try again. Run `unset SUPABASE_DB_PASSWORD` when done. |
+| `link` or `db push` can't reach the database | The CLI uses Supabase's IPv4 pooler unless you add `--skip-pooler`, so leave that flag off. Check the project isn't paused (section 12). |
+| `link` warns that the database version differs | Set `major_version` in `supabase/config.toml` to the version it shows, then commit. |
+| The Data API says `permission denied for table` | The table has no `grant` for that role. Add one in a new migration (section 12). |
+| The Data API returns `[]` for a table that has rows | Row level security is hiding them: no policy lets that role read. Add one in a new migration. |
+| Keep Supabase awake fails | Its error says why. A paused project needs **Resume project** on the Supabase dashboard. `Could not find the table` means the heartbeat migration hasn't been pushed yet (section 12). |
