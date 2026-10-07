@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# One-off Azure setup for SAGE: resource group, logs, Container Apps environment, GitHub's deploy identity.
+# One-off Azure setup for SAGE: resource group, logs, Container Apps environment, GitHub's deploy identity,
+# and the storage account that hosts the frontend.
 # Run from the repo root after `az login`: bash infra/azure/setup.sh. Safe to run again.
 set -euo pipefail # stop at the first error, unset variable or failed pipe
 
@@ -9,6 +10,9 @@ RESOURCE_GROUP="rg-sage"         # the folder that holds everything below
 LOG_WORKSPACE="log-sage"         # where the backend's logs go
 ENVIRONMENT="cae-sage"           # Container Apps environment: the space the backend runs in
 DEPLOY_IDENTITY="id-sage-github" # the robot account GitHub Actions deploys as
+# Holds the frontend's files and serves them as a website. Storage names are unique across all of
+# Azure, so this one carries the project code. If it's taken, change it here and in both deploy workflows.
+STORAGE_ACCOUNT="stsageym04"
 # Who may use that robot account: workflows on main in this repo. Repos made after
 # 15 July 2026 are identified by name plus permanent ID (owner 164753108, repo 1391659537).
 GITHUB_SUBJECT="repo:BumeMxenge@164753108/SAGE@1391659537:ref:refs/heads/main"
@@ -35,7 +39,7 @@ fi
 
 # ---- 1. Switch on the Azure services SAGE uses (new subscriptions start with them off) ----
 say "Registering Azure services (slow the first time only)"
-for namespace in Microsoft.App Microsoft.OperationalInsights Microsoft.ManagedIdentity; do
+for namespace in Microsoft.App Microsoft.OperationalInsights Microsoft.ManagedIdentity Microsoft.Storage; do
   az provider register --namespace "$namespace" --wait
 done
 
@@ -64,7 +68,7 @@ if ! az containerapp env show --resource-group "$RESOURCE_GROUP" --name "$ENVIRO
     --location "$LOCATION" --logs-workspace-id "$LOG_ID" --logs-workspace-key "$LOG_KEY" --output none
 fi
 
-# ---- 5. GitHub's deploy identity (deploy-backend.yml uses it next) ----
+# ---- 5. GitHub's deploy identity (both deploy workflows sign in as it) ----
 # There's no password. For each run, GitHub signs a short-lived token saying which repo,
 # branch and workflow it came from. Azure accepts it only if it matches GITHUB_SUBJECT.
 say "Deploy identity $DEPLOY_IDENTITY"
@@ -82,6 +86,39 @@ az role assignment create --assignee-object-id "$PRINCIPAL_ID" \
   --assignee-principal-type ServicePrincipal --role Contributor \
   --scope "$(az group show --name "$RESOURCE_GROUP" --query id --output tsv)" --output none
 
+# ---- 6. Frontend website: a storage account that serves the built files ----
+say "Frontend storage account $STORAGE_ACCOUNT"
+if ! az storage account show --resource-group "$RESOURCE_GROUP" --name "$STORAGE_ACCOUNT" \
+  --output none 2>/dev/null; then
+  AVAILABLE=$(az storage account check-name --name "$STORAGE_ACCOUNT" --query nameAvailable --output tsv)
+  if [[ $AVAILABLE != true ]]; then
+    echo "Another Azure customer already has the name $STORAGE_ACCOUNT."
+    echo "Choose another (3 to 24 lowercase letters and digits) and change STORAGE_ACCOUNT here,"
+    echo "in .github/workflows/deploy-frontend.yml and in .github/workflows/deploy-backend.yml."
+    exit 1
+  fi
+  # Blob public access only affects the account's other containers. The website stays public either way.
+  az storage account create --resource-group "$RESOURCE_GROUP" --name "$STORAGE_ACCOUNT" \
+    --location "$LOCATION" --sku Standard_LRS --kind StorageV2 \
+    --allow-blob-public-access false --tags project=sage --output none
+fi
+
+# Serve the $web container as a website. Every unknown path gets index.html too, so a refresh
+# on a page like /history still loads the app (with a 404 status that visitors never see).
+# --auth-mode key: you own the subscription, so az fetches the account key for you.
+az storage blob service-properties update --account-name "$STORAGE_ACCOUNT" --auth-mode key \
+  --static-website true --index-document index.html --404-document index.html \
+  --only-show-errors --output none
+
+# Lets the deploy identity upload files, on this account only. Contributor alone could only upload
+# by fetching the account key; this role lets it upload with its own sign-in, so no key is handled.
+az role assignment create --assignee-object-id "$PRINCIPAL_ID" \
+  --assignee-principal-type ServicePrincipal --role "Storage Blob Data Contributor" \
+  --scope "$(az storage account show --resource-group "$RESOURCE_GROUP" --name "$STORAGE_ACCOUNT" \
+    --query id --output tsv)" --output none
+WEBSITE=$(az storage account show --resource-group "$RESOURCE_GROUP" --name "$STORAGE_ACCOUNT" \
+  --query primaryEndpoints.web --output tsv)
+
 CLIENT_ID=$(az identity show --resource-group "$RESOURCE_GROUP" --name "$DEPLOY_IDENTITY" \
   --query clientId --output tsv)
 cat <<DONE
@@ -92,4 +129,8 @@ Done. On GitHub, add these three as repository secrets
   AZURE_CLIENT_ID        $CLIENT_ID
   AZURE_TENANT_ID        $TENANT_ID
   AZURE_SUBSCRIPTION_ID  $SUBSCRIPTION_ID
+
+The frontend will be served at ${WEBSITE%/}
+Add ${WEBSITE%/}/** to Supabase: Authentication > URL Configuration > Redirect URLs.
+Then add the Supabase variables on GitHub (docs/setup.md, section 11).
 DONE

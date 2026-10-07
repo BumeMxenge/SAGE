@@ -27,6 +27,7 @@ env:
   RESOURCE_GROUP: rg-sage
   CONTAINER_ENV: cae-sage # the Container Apps environment from infra/azure/setup.sh
   APP: ca-sage-api
+  STORAGE_ACCOUNT: stsageym04 # hosts the frontend (infra/azure/setup.sh); its website may call the API
   # Size and scaling: edit, push, and the next deploy applies them
   CPU: "0.25" # vCPU per replica
   MEMORY: 0.5Gi # must be 2 x CPU in GiB
@@ -102,15 +103,24 @@ jobs:
       - name: Create or update the container app
         run: |
           size=(--cpu "$CPU" --memory "$MEMORY" --min-replicas "$MIN_REPLICAS" --max-replicas "$MAX_REPLICAS")
+          # Browsers only let the frontend's pages call the API if the API names their address (CORS).
+          # Looked up on every deploy rather than typed in here, so it can never go out of date.
+          website=$(az storage account show --resource-group "$RESOURCE_GROUP" --name "$STORAGE_ACCOUNT" \
+            --query primaryEndpoints.web --output tsv) || {
+            echo "::error::Storage account $STORAGE_ACCOUNT not found. Run infra/azure/setup.sh, then re-run this workflow."
+            exit 1
+          }
+          cors="CORS_ORIGINS=${website%/}" # Azure gives it with a trailing slash; browsers send it without
           if az containerapp show --resource-group "$RESOURCE_GROUP" --name "$APP" --output none 2>/dev/null; then
             az containerapp update --resource-group "$RESOURCE_GROUP" --name "$APP" \
-              --image "$IMAGE:$SHA" "${size[@]}" --output none
+              --image "$IMAGE:$SHA" "${size[@]}" --set-env-vars "$cors" --output none
           else
             # First deploy only. setup.sh couldn't create the app, because an app needs an image.
             az containerapp create --resource-group "$RESOURCE_GROUP" --name "$APP" \
               --environment "$CONTAINER_ENV" --image "$IMAGE:$SHA" \
-              --ingress external --target-port 8000 "${size[@]}" --output none
+              --ingress external --target-port 8000 "${size[@]}" --env-vars "$cors" --output none
           fi
+          echo "API allows browser calls from ${website%/}"
 
       - name: Check the new commit is live
         # Polls /health until it reports this commit. That proves the new image is the one answering:

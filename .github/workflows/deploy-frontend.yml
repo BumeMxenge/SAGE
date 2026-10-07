@@ -1,0 +1,123 @@
+# Ships the frontend after CI passes on main: build the static files, upload them to Azure Storage, confirm they're live
+name: Deploy frontend
+
+on:
+  workflow_run: # starts when the CI workflow finishes on main
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch: # adds a "Run workflow" button, to redeploy main without a new commit
+
+permissions:
+  contents: read # read the code
+  id-token: write # get the signed token that Azure swaps for a sign-in
+
+concurrency: # one deploy at a time; a deploy that has started is never cut off halfway
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash # stops at the first failed command, including one inside a pipe
+
+env:
+  SHA: ${{ github.event.workflow_run.head_sha || github.sha }} # the commit CI tested (or main's tip on a manual run)
+  RESOURCE_GROUP: rg-sage
+  STORAGE_ACCOUNT: stsageym04 # from infra/azure/setup.sh: holds the built files and serves them as a website
+  API_APP: ca-sage-api # the backend's container app, whose address the frontend calls
+
+jobs:
+  deploy:
+    name: Build, upload and check
+    # Same rule as the backend deploy: a CI run that passed on a push to main in this repo, or a manual run on main
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-24.04 # pinned, like CI: ubuntu-latest moves to Ubuntu 26 on 19 October
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.SHA }} # exactly the commit CI passed, even if main has moved on since
+          persist-credentials: false # this job never pushes to git
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install from package-lock.json
+        run: npm ci
+
+      - name: Sign in to Azure
+        # No password: Azure checks GitHub's signed token against the identity from setup.sh
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build
+        # Vite writes these into the files it builds, where any visitor can read them, so they are
+        # GitHub variables rather than secrets. The backend's address is looked up, so it can't go stale.
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          for name in VITE_SUPABASE_URL VITE_SUPABASE_PUBLISHABLE_KEY; do
+            if [[ -z ${!name} ]]; then
+              echo "::error::$name isn't set. Add it under Settings > Secrets and variables > Actions > Variables."
+              exit 1
+            fi
+          done
+          VITE_API_URL="https://$(az containerapp show --resource-group "$RESOURCE_GROUP" --name "$API_APP" \
+            --query properties.configuration.ingress.fqdn --output tsv)"
+          export VITE_API_URL
+          echo "Building against the backend at $VITE_API_URL"
+          npm run build
+
+      - name: Upload to Azure Storage
+        # --auth-mode login: uploads as the deploy identity, through the role setup.sh gave it. No key needed.
+        run: |
+          upload() {
+            az storage blob upload-batch --auth-mode login --account-name "$STORAGE_ACCOUNT" \
+              --destination "\$web" --overwrite --no-progress --only-show-errors --output none "$@"
+          }
+          # 1. The hashed files first. Each build gives them new names, so browsers may keep them for a year.
+          #    Older ones stay put, so a page someone already has open can still load its files.
+          upload --source dist/assets --destination-path assets \
+            --content-cache-control "public, max-age=31536000, immutable"
+          rm -r dist/assets
+          # 2. Then the rest, index.html included. Going second, it never points at a file that isn't up yet.
+          #    no-cache makes browsers check for a newer index.html on every visit.
+          upload --source dist --content-cache-control "no-cache"
+
+      - name: Check the new version is live
+        # The website must serve exactly the index.html just built, the files it loads, and the same
+        # index.html for an unknown path (which is how a refresh on a page like /history keeps working)
+        run: |
+          url=$(az storage account show --resource-group "$RESOURCE_GROUP" --name "$STORAGE_ACCOUNT" \
+            --query primaryEndpoints.web --output tsv)
+          url=${url%/}
+          curl --silent --show-error --max-time 30 "$url/" | cmp --silent - dist/index.html || {
+            echo "::error::$url/ doesn't serve the index.html this run built"
+            exit 1
+          }
+          grep --only-matching --extended-regexp '/assets/[^"]+' dist/index.html | while read -r file; do
+            curl --fail --silent --show-error --max-time 30 --output /dev/null "$url$file" || {
+              echo "::error::$url$file is missing, so the page can't load. Re-run this workflow."
+              exit 1
+            }
+          done
+          curl --silent --show-error --max-time 30 "$url/no-such-page" | cmp --silent - dist/index.html || {
+            echo "::error::Unknown paths don't fall back to index.html. Run infra/azure/setup.sh again."
+            exit 1
+          }
+          echo "$url serves commit $SHA"
+          echo "Frontend live at $url (commit $SHA)" >> "$GITHUB_STEP_SUMMARY"

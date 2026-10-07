@@ -1,0 +1,125 @@
+/* Global styles: SAGE's brand colours and the layout of the M0 shell */
+:root {
+  --navy: #16345c;
+  --navy-dark: #0f2645;
+  --teal: #4cae94;
+  --coral: #ea5b4c;
+  --coral-dark: #b23f30; /* coral dark enough to read as text */
+  --charcoal: #333b3f;
+  --grey: #6e767a;
+  --off-white: #fafaf9;
+
+  /* Inter, as in the prototypes, when the laptop has it; otherwise the system font */
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  color: var(--charcoal);
+  background: var(--off-white);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.shell {
+  display: grid;
+  gap: 2rem;
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 6rem 1.5rem 3rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+  color: var(--navy);
+}
+
+.brand p {
+  margin: 0;
+  color: var(--grey);
+}
+
+.account {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.account p {
+  margin: 0;
+  overflow-wrap: anywhere; /* long student emails wrap on narrow screens */
+}
+
+button {
+  justify-self: start;
+  padding: 0.75rem 1.25rem;
+  border: 2px solid var(--navy);
+  border-radius: 0.5rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--navy);
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--navy-dark);
+  background: var(--navy-dark);
+}
+
+button.secondary {
+  color: var(--navy);
+  background: transparent;
+}
+
+button.secondary:hover {
+  color: #fff;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.error {
+  color: var(--coral-dark);
+}
+
+/* The backend status line, with a coloured dot: grey while checking, teal when up, coral when down */
+.status {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--grey);
+}
+
+.status::before {
+  content: '';
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: 0.45rem;
+  border-radius: 50%;
+  background: var(--grey);
+}
+
+.status.up::before {
+  background: var(--teal);
+}
+
+.status.down::before {
+  background: var(--coral);
+}
