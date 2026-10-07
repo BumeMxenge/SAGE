@@ -4,17 +4,11 @@
 # Run from the repo root after `az login`: bash infra/azure/setup.sh. Safe to run again.
 set -euo pipefail # stop at the first error, unset variable or failed pipe
 
-# ---- Settings. Names follow Microsoft's naming guide: a type prefix, then the project ----
-LOCATION="southafricanorth"      # Johannesburg. Cape Town's region is disaster-recovery only.
-RESOURCE_GROUP="rg-sage"         # the folder that holds everything below
-LOG_WORKSPACE="log-sage"         # where the backend's logs go
-ENVIRONMENT="cae-sage"           # Container Apps environment: the space the backend runs in
-DEPLOY_IDENTITY="id-sage-github" # the robot account GitHub Actions deploys as
-# Holds the frontend's files and serves them as a website. Its name starts the website's address
-# (https://<name>.<zone>.web.core.windows.net), so it skips the type prefix to read cleanly.
-# Storage names are unique across all of Azure. If it's taken, change it here and in both deploy workflows.
-STORAGE_ACCOUNT="sageuct"
-# Who may use that robot account: workflows on main in this repo. Repos made after
+# ---- Settings. Resource names live in names.env, which the deploy workflows read too ----
+# shellcheck source=infra/azure/names.env
+source "$(dirname "${BASH_SOURCE[0]}")/names.env"
+LOCATION="southafricanorth" # Johannesburg. Cape Town's region is disaster-recovery only.
+# Who may use the deploy identity: workflows on main in this repo. Repos made after
 # 15 July 2026 are identified by name plus permanent ID (owner 164753108, repo 1391659537).
 GITHUB_SUBJECT="repo:BumeMxenge@164753108/SAGE@1391659537:ref:refs/heads/main"
 
@@ -58,14 +52,14 @@ az monitor log-analytics workspace create --resource-group "$RESOURCE_GROUP" \
 # ---- 4. Container Apps environment ----
 # Free on its own: you pay per app, and an idle app scales to zero. The app itself is
 # created by the first deploy, since it needs an image and GitHub hasn't built one yet.
-say "Container Apps environment $ENVIRONMENT (a few minutes the first time)"
-if ! az containerapp env show --resource-group "$RESOURCE_GROUP" --name "$ENVIRONMENT" \
+say "Container Apps environment $CONTAINER_ENV (a few minutes the first time)"
+if ! az containerapp env show --resource-group "$RESOURCE_GROUP" --name "$CONTAINER_ENV" \
   --output none 2>/dev/null; then
   LOG_ID=$(az monitor log-analytics workspace show --resource-group "$RESOURCE_GROUP" \
     --workspace-name "$LOG_WORKSPACE" --query customerId --output tsv)
   LOG_KEY=$(az monitor log-analytics workspace get-shared-keys --resource-group "$RESOURCE_GROUP" \
     --workspace-name "$LOG_WORKSPACE" --query primarySharedKey --output tsv)
-  az containerapp env create --resource-group "$RESOURCE_GROUP" --name "$ENVIRONMENT" \
+  az containerapp env create --resource-group "$RESOURCE_GROUP" --name "$CONTAINER_ENV" \
     --location "$LOCATION" --logs-workspace-id "$LOG_ID" --logs-workspace-key "$LOG_KEY" --output none
 fi
 
@@ -94,8 +88,7 @@ if ! az storage account show --resource-group "$RESOURCE_GROUP" --name "$STORAGE
   AVAILABLE=$(az storage account check-name --name "$STORAGE_ACCOUNT" --query nameAvailable --output tsv)
   if [[ $AVAILABLE != true ]]; then
     echo "Another Azure customer already has the name $STORAGE_ACCOUNT."
-    echo "Choose another (3 to 24 lowercase letters and digits) and change STORAGE_ACCOUNT here,"
-    echo "in .github/workflows/deploy-frontend.yml and in .github/workflows/deploy-backend.yml."
+    echo "Choose another (3 to 24 lowercase letters and digits) and change STORAGE_ACCOUNT in infra/azure/names.env."
     exit 1
   fi
   # Blob public access only affects the account's other containers. The website stays public either way.

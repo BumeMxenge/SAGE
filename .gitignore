@@ -1,4 +1,5 @@
-# Files git never tracks: secrets, local environments, build output, caches and macOS clutter
+# Files git never tracks: secrets, local environments, build output, caches and macOS clutter.
+# This is the repo's only .gitignore, so every rule lives here.
 .env
 .env.*
 !.env.example
@@ -10,3 +11,9 @@ node_modules/
 dist/
 private_data/
 .DS_Store
+# The Supabase CLI's local state: which project this laptop is linked to
+supabase/.temp/
+supabase/.branches/
+# Claude Code's per-laptop files: approvals you've saved and your own notes
+.claude/settings.local.json
+CLAUDE.local.md

@@ -96,16 +96,18 @@ From the **repo root** you can use the Makefile shortcuts. The middle column doe
 
 | From the repo root | Same thing, without `make` | What it does |
 | --- | --- | --- |
-| `make install` | `uv sync` | Install or update packages to match `uv.lock` |
+| `make install` | `uv sync`, then `npm ci` from `frontend/` | Install or update the backend and frontend packages to match their lockfiles |
 | `make dev` | `uv run uvicorn sage.main:app --reload` | Run the backend on port 8000 |
 | `make dev-web` | `npm run dev`, from `frontend/` | Run the frontend on port 3000 |
 | `make dev-all` | The two above, in two terminals | Run the backend and frontend together in one terminal. Their log lines mix; `Ctrl + C` stops both |
-| `make test` | `uv run pytest -m "not integration"` | Run the tests CI runs |
-| `make lint` | `uv run ruff check && uv run ruff format --check` | Check the code for mistakes and formatting |
+| `make test` | `uv run pytest -m "not integration"` | Run the backend's unit tests |
+| `make lint` | `uv run ruff check && uv run ruff format --check` | Check the backend for mistakes and formatting |
+| `make check` | `make lint` and `make test`, then `npm run lint`, `npm test --if-present` and `npm run build` from `frontend/` | Everything CI's backend and frontend jobs check. CI runs these same targets, so passing here means passing there |
+| `make check-db` | `npx supabase@2.120.0 db start`, `db lint` and `db advisors`, from the repo root | What CI's database job checks (section 12). Docker Desktop must be open |
 | `make format` | `uv run ruff check --fix && uv run ruff format` | Fix what can be fixed and tidy the formatting |
 | `make ingest YEAR=2026` | `uv run sage ingest --year 2026` | Load a year's handbook (not built yet) |
 
-Run `make install` (or `uv sync`) after every `git pull`, in case someone added a package.
+Run `make install` after every `git pull`, in case someone added a package.
 
 ## 6. Adding a package
 
@@ -136,6 +138,22 @@ Open the `SAGE` folder in VS Code. Then press `Cmd + Shift + P`, run **Python: S
 
 Install the **EditorConfig for VS Code** extension too. It makes VS Code follow `.editorconfig` (spaces, line endings, a newline at the end of every file).
 
+### Claude Code
+
+Claude Code works in this repo through its VS Code extension. It reads three things from the repo, so every session starts with the same rules:
+
+- `CLAUDE.md`: how to work on SAGE (planning first, writing style, the rules that catch people out)
+- `.claude/settings.json`: the models (Opus while planning, Sonnet while editing), which commands need your approval (`git push`, `az`, Supabase commands that reach the hosted project), and the files it may not read (`.env` files and `private_data/`)
+- `.claude/agents/`: two helpers on the cheaper Haiku model. `Explore` searches the code, and `test-runner` runs `make check` and reports only what failed
+
+Set it up once per laptop:
+
+1. Install the **Claude Code** extension from the Extensions view (`Cmd + Shift + X`) and sign in with your Claude account. The extension's version must be 2.1.280 or later, the first that knows Opus 5.5.
+2. Open VS Code's settings (`Cmd + ,`), search for `initialPermissionMode` and choose `plan`. The extension takes its starting mode from your own VS Code settings only, not from the repo, so every conversation then starts by planning and changes nothing until you approve.
+3. Open the Claude Code panel in the `SAGE` folder and type `/status`. It should show version 2.1.280 or later and the model `opusplan`.
+
+When you approve a plan, choose **Yes, and use auto mode** to let it work without stopping, or **Yes, manually approve edits** to review each change. The commands above still ask either way. Approvals you save with "don't ask again" go in `.claude/settings.local.json`, which git ignores.
+
 ## 9. Azure (one-off setup)
 
 The backend runs on Azure Container Apps and the frontend on an Azure Storage static website, both in South Africa North. `infra/azure/setup.sh` creates everything they need there. You run it once. Running it again is safe, because it skips or updates whatever already exists.
@@ -146,7 +164,7 @@ The backend runs on Azure Container Apps and the frontend on an Azure Storage st
    az login
    ```
    `az login` opens your browser. Sign in with the account that holds your Azure subscription.
-2. From the repo root, run `bash infra/azure/setup.sh`. It shows which subscription it will use and asks before creating anything. The first run takes about five minutes.
+2. From the repo root, run `bash infra/azure/setup.sh`. It shows which subscription it will use and asks before creating anything. The first run takes about five minutes. The names it creates live in `infra/azure/names.env`, which both deploy workflows read too.
 3. It ends by printing three values. On GitHub, add each one as a repository secret: Settings → Secrets and variables → Actions → New repository secret. It also prints the frontend's web address, which section 11 uses.
 
 If you ran the script before the frontend existed, run it again. It adds the storage account and leaves everything else as it is.
@@ -192,7 +210,7 @@ Add a migration:
 
 1. Run `npx supabase@2.120.0 migration new what_it_does`. It creates an empty, timestamped file in `supabase/migrations/`.
 2. Write the SQL. Every table in `public` needs row level security switched on, a policy for each kind of access, and a `grant` for each role that may reach it. Without the grant the Data API can't see the table at all. The heartbeat migration is a short example of all three.
-3. Commit and push. CI's **Database** job applies every migration to an empty database, lints them, and fails if a table the API can reach has no row level security.
+3. Commit and push. CI's **Database** job applies every migration to an empty database, lints them, and fails if a table the API can reach has no row level security. `make check-db` runs the same checks on your laptop first, with Docker Desktop open.
 
 Once CI is green, apply new migrations to the hosted project:
 
@@ -224,7 +242,7 @@ The first lists what would run. The second runs it, after asking. `npx supabase@
 | Tests pass locally but fail in CI | Run `uv sync` and commit `uv.lock`. CI installs exactly what the lockfile says. |
 | The Azure script says it can't use `southafricanorth` | Azure for Students limits each subscription to a few regions. Choose one from the list it prints and change `LOCATION` at the top of the script. |
 | The Azure script stops with `PrincipalNotFound` | Azure hadn't finished creating the deploy identity. Wait a minute and run the script again. |
-| CI fails at **Check formatting** or **Lint** | Run `make format`, then `make lint`, then commit and push. |
+| CI fails at **Lint, check formatting and run unit tests** | Run `make format`, then `make check`, then commit and push. |
 | CI passed but nothing deployed | Deploys follow pushes to `main` only, not pull requests. The deploy workflow must also be on `main` itself. |
 | The deploy stops at **Check the image is public** | Azure pulls without a password, so the package must be public. Open the link in the error, choose **Change visibility → Public**, then re-run the workflow. |
 | **Sign in to Azure** fails with `AADSTS70021: No matching federated identity record` | Azure only trusts runs on `main`. Run the workflow from `main`, and don't add `environment:` to the job. The error shows the subject GitHub sent, to compare with `GITHUB_SUBJECT` in `infra/azure/setup.sh`. |
@@ -234,7 +252,7 @@ The first lists what would run. The second runs it, after asking. `npx supabase@
 | A blank page at http://localhost:3000 | Open the browser console (`Cmd + Option + J` in Chrome). If it says a `VITE_` setting isn't set, copy `.env.example` to `.env` in `frontend/`, fill it in and restart `npm run dev`. |
 | The page says it can't reach the backend | Locally: check the backend is running (`make dev`) and that `VITE_API_URL` in `frontend/.env` matches it. On Azure: run Deploy backend again, which re-reads the frontend's address. |
 | Sign-in ends on the wrong site, or Supabase says the redirect isn't allowed | Add that site's address followed by `/**` under Supabase's Redirect URLs (sections 4 and 11). |
-| The Azure script says another customer has the storage name | Choose a new name (3 to 24 lowercase letters and digits). Change `STORAGE_ACCOUNT` in `infra/azure/setup.sh` and in both deploy workflows, then run the script again. |
+| The Azure script says another customer has the storage name | Choose a new name (3 to 24 lowercase letters and digits). Change `STORAGE_ACCOUNT` in `infra/azure/names.env`, then run the script again. |
 | Deploy backend stops with `Storage account sageuct not found` | Run `infra/azure/setup.sh` (section 9), then re-run the workflow. |
 | Deploy frontend stops at **Build**, saying a `VITE_` variable isn't set | Add it on GitHub as a variable, not a secret (section 11). |
 | Deploy frontend stops at **Upload to Azure Storage** with `AuthorizationPermissionMismatch` | The upload role from the Azure script can take a few minutes to start working. Wait five minutes and re-run the workflow. If it keeps failing, run the script again. |

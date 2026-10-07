@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "opusplan",
+  "env": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5"
+  },
+  "permissions": {
+    "defaultMode": "plan",
+    "allow": [
+      "Bash(make check)",
+      "Bash(make check-backend)",
+      "Bash(make check-frontend)",
+      "Bash(make check-db)",
+      "Bash(make lint)",
+      "Bash(make test)",
+      "Bash(make format)",
+      "Bash(uv run ruff *)",
+      "Bash(uv run pytest *)",
+      "Bash(npm run lint)",
+      "Bash(npm run build)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(az *)",
+      "Bash(npx supabase@* db push*)",
+      "Bash(npx supabase@* link*)",
+      "Bash(npx supabase@* migration repair*)",
+      "Bash(npx supabase@*--linked*)"
+    ],
+    "deny": [
+      "Read(.env*)",
+      "Read(!.env.example)",
+      "Read(private_data/**)"
+    ]
+  }
+}

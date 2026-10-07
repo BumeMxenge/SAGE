@@ -24,10 +24,6 @@ defaults:
 env:
   IMAGE: ghcr.io/bumemxenge/sage-backend # ghcr.io only accepts lowercase names
   SHA: ${{ github.event.workflow_run.head_sha || github.sha }} # the commit CI tested (or main's tip on a manual run)
-  RESOURCE_GROUP: rg-sage
-  CONTAINER_ENV: cae-sage # the Container Apps environment from infra/azure/setup.sh
-  APP: ca-sage-api
-  STORAGE_ACCOUNT: sageuct # hosts the frontend (infra/azure/setup.sh); its website may call the API
   # Size and scaling: edit, push, and the next deploy applies them
   CPU: "0.25" # vCPU per replica
   MEMORY: 0.5Gi # must be 2 x CPU in GiB
@@ -51,6 +47,10 @@ jobs:
         with:
           ref: ${{ env.SHA }} # exactly the commit CI passed, even if main has moved on since
           persist-credentials: false # this job never pushes to git
+
+      - name: Load the Azure resource names
+        # One list in infra/azure/names.env, shared with infra/azure/setup.sh
+        run: grep -E '^[A-Z_]+=' infra/azure/names.env >> "$GITHUB_ENV"
 
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -111,12 +111,12 @@ jobs:
             exit 1
           }
           cors="CORS_ORIGINS=${website%/}" # Azure gives it with a trailing slash; browsers send it without
-          if az containerapp show --resource-group "$RESOURCE_GROUP" --name "$APP" --output none 2>/dev/null; then
-            az containerapp update --resource-group "$RESOURCE_GROUP" --name "$APP" \
+          if az containerapp show --resource-group "$RESOURCE_GROUP" --name "$API_APP" --output none 2>/dev/null; then
+            az containerapp update --resource-group "$RESOURCE_GROUP" --name "$API_APP" \
               --image "$IMAGE:$SHA" "${size[@]}" --set-env-vars "$cors" --output none
           else
             # First deploy only. setup.sh couldn't create the app, because an app needs an image.
-            az containerapp create --resource-group "$RESOURCE_GROUP" --name "$APP" \
+            az containerapp create --resource-group "$RESOURCE_GROUP" --name "$API_APP" \
               --environment "$CONTAINER_ENV" --image "$IMAGE:$SHA" \
               --ingress external --target-port 8000 "${size[@]}" --env-vars "$cors" --output none
           fi
@@ -126,7 +126,7 @@ jobs:
         # Polls /health until it reports this commit. That proves the new image is the one answering:
         # if it fails to start, Azure quietly keeps the old version serving, and the old commit shows here.
         run: |
-          url="https://$(az containerapp show --resource-group "$RESOURCE_GROUP" --name "$APP" \
+          url="https://$(az containerapp show --resource-group "$RESOURCE_GROUP" --name "$API_APP" \
             --query properties.configuration.ingress.fqdn --output tsv)"
           for _ in {1..30}; do # up to about 5 minutes, enough for a cold start
             body=$(curl --silent --show-error --max-time 30 "$url/health" || true)
@@ -138,5 +138,5 @@ jobs:
             echo "Not live yet: ${body:0:200}"
             sleep 10
           done
-          echo "::error::$url/health never reported commit $SHA. See why: az containerapp logs show -g $RESOURCE_GROUP -n $APP --type system"
+          echo "::error::$url/health never reported commit $SHA. See why: az containerapp logs show -g $RESOURCE_GROUP -n $API_APP --type system"
           exit 1

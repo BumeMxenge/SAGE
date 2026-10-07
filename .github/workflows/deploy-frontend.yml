@@ -22,9 +22,6 @@ defaults:
 
 env:
   SHA: ${{ github.event.workflow_run.head_sha || github.sha }} # the commit CI tested (or main's tip on a manual run)
-  RESOURCE_GROUP: rg-sage
-  STORAGE_ACCOUNT: sageuct # from infra/azure/setup.sh: holds the built files and serves them as a website
-  API_APP: ca-sage-api # the backend's container app, whose address the frontend calls
 
 jobs:
   deploy:
@@ -45,6 +42,11 @@ jobs:
         with:
           ref: ${{ env.SHA }} # exactly the commit CI passed, even if main has moved on since
           persist-credentials: false # this job never pushes to git
+
+      - name: Load the Azure resource names
+        # One list in infra/azure/names.env, shared with infra/azure/setup.sh
+        working-directory: .
+        run: grep -E '^[A-Z_]+=' infra/azure/names.env >> "$GITHUB_ENV"
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
