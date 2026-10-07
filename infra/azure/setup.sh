@@ -10,9 +10,10 @@ RESOURCE_GROUP="rg-sage"         # the folder that holds everything below
 LOG_WORKSPACE="log-sage"         # where the backend's logs go
 ENVIRONMENT="cae-sage"           # Container Apps environment: the space the backend runs in
 DEPLOY_IDENTITY="id-sage-github" # the robot account GitHub Actions deploys as
-# Holds the frontend's files and serves them as a website. Storage names are unique across all of
-# Azure, so this one carries the project code. If it's taken, change it here and in both deploy workflows.
-STORAGE_ACCOUNT="stsageym04"
+# Holds the frontend's files and serves them as a website. Its name starts the website's address
+# (https://<name>.<zone>.web.core.windows.net), so it skips the type prefix to read cleanly.
+# Storage names are unique across all of Azure. If it's taken, change it here and in both deploy workflows.
+STORAGE_ACCOUNT="sageuct"
 # Who may use that robot account: workflows on main in this repo. Repos made after
 # 15 July 2026 are identified by name plus permanent ID (owner 164753108, repo 1391659537).
 GITHUB_SUBJECT="repo:BumeMxenge@164753108/SAGE@1391659537:ref:refs/heads/main"

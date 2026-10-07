@@ -23,7 +23,7 @@ defaults:
 env:
   SHA: ${{ github.event.workflow_run.head_sha || github.sha }} # the commit CI tested (or main's tip on a manual run)
   RESOURCE_GROUP: rg-sage
-  STORAGE_ACCOUNT: stsageym04 # from infra/azure/setup.sh: holds the built files and serves them as a website
+  STORAGE_ACCOUNT: sageuct # from infra/azure/setup.sh: holds the built files and serves them as a website
   API_APP: ca-sage-api # the backend's container app, whose address the frontend calls
 
 jobs:

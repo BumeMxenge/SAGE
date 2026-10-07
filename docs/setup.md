@@ -164,7 +164,7 @@ To delete everything SAGE has on Azure and stop all charges, run `az group delet
 
 ## 11. Deploying the frontend
 
-`.github/workflows/deploy-frontend.yml` also deploys on its own after every push to `main` that passes CI. It looks up the backend's address, builds the frontend with it, uploads the files to the storage account `stsageym04`, then checks the website serves the new version. The run's summary page shows the web address.
+`.github/workflows/deploy-frontend.yml` also deploys on its own after every push to `main` that passes CI. It looks up the backend's address, builds the frontend with it, uploads the files to the storage account `sageuct`, then checks the website serves the new version. The run's summary page shows the web address.
 
 Before the first deploy (once):
 
@@ -199,7 +199,7 @@ Before the first deploy (once):
 | The page says it can't reach the backend | Locally: check the backend is running (`make dev`) and that `VITE_API_URL` in `frontend/.env` matches it. On Azure: run Deploy backend again, which re-reads the frontend's address. |
 | Sign-in ends on the wrong site, or Supabase says the redirect isn't allowed | Add that site's address followed by `/**` under Supabase's Redirect URLs (sections 4 and 11). |
 | The Azure script says another customer has the storage name | Choose a new name (3 to 24 lowercase letters and digits). Change `STORAGE_ACCOUNT` in `infra/azure/setup.sh` and in both deploy workflows, then run the script again. |
-| Deploy backend stops with `Storage account stsageym04 not found` | Run `infra/azure/setup.sh` (section 9), then re-run the workflow. |
+| Deploy backend stops with `Storage account sageuct not found` | Run `infra/azure/setup.sh` (section 9), then re-run the workflow. |
 | Deploy frontend stops at **Build**, saying a `VITE_` variable isn't set | Add it on GitHub as a variable, not a secret (section 11). |
 | Deploy frontend stops at **Upload to Azure Storage** with `AuthorizationPermissionMismatch` | The upload role from the Azure script can take a few minutes to start working. Wait five minutes and re-run the workflow. If it keeps failing, run the script again. |
 

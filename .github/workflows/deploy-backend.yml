@@ -27,7 +27,7 @@ env:
   RESOURCE_GROUP: rg-sage
   CONTAINER_ENV: cae-sage # the Container Apps environment from infra/azure/setup.sh
   APP: ca-sage-api
-  STORAGE_ACCOUNT: stsageym04 # hosts the frontend (infra/azure/setup.sh); its website may call the API
+  STORAGE_ACCOUNT: sageuct # hosts the frontend (infra/azure/setup.sh); its website may call the API
   # Size and scaling: edit, push, and the next deploy applies them
   CPU: "0.25" # vCPU per replica
   MEMORY: 0.5Gi # must be 2 x CPU in GiB
