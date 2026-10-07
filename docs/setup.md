@@ -62,18 +62,22 @@ Nothing in `.env` is needed yet. The backend runs with the values blank. When Su
 
 The first time only, tell Supabase that sign-in may return to your laptop: in your Supabase project, go to Authentication → URL Configuration and add `http://localhost:3000/**` under **Redirect URLs**.
 
-Then, in a second terminal (leave the backend from step 3 running), from the `frontend` folder:
+Then, in a second terminal (leave the backend from step 3 running), from the repo root:
 
 ```bash
 cd frontend
-cp .env.example .env        # your settings file; fill in the two Supabase values next
-npm ci                      # installs exactly what package-lock.json lists, into frontend/node_modules
-npm run dev                 # serves the app on port 3000
+cp .env.example .env
+npm ci
+npm run dev
 ```
 
-In `frontend/.env`, `VITE_API_URL` already points at your local backend. Copy the other two values from your Supabase project's API settings: the project URL, and the **publishable** key (it starts with `sb_publishable_`). Vite reads `.env` only when it starts, so restart `npm run dev` after editing it.
+`cp` makes your settings file. Fill it in before `npm run dev`: `VITE_API_URL` already points at your local backend, and the other two values come from your Supabase project's API settings. They are the project URL (just `https://<project>.supabase.co`, without `/rest/v1/` on the end) and the **publishable** key (it starts with `sb_publishable_`). Vite reads `.env` only when it starts, so restart `npm run dev` after editing it.
+
+`npm ci` installs exactly what `package-lock.json` lists, into `frontend/node_modules`. `npm run dev` serves the app on port 3000.
 
 Then open http://localhost:3000. The page should say the backend is up, running a local build. **Continue with UCT email** sends you to Microsoft and back, then shows your email.
+
+From then on, `make dev-all` from the repo root starts the backend and the frontend together in one terminal, and one `Ctrl + C` stops both.
 
 Everything in `frontend/.env` ends up in the files your browser downloads, where anyone can read it. That's fine for the publishable key. The **secret** key only ever goes in `backend/.env`.
 
@@ -88,12 +92,14 @@ Everything in `frontend/.env` ends up in the files your browser downloads, where
 
 ## 5. Everyday commands
 
-From the **repo root** you can use the Makefile shortcuts. The right-hand column does the same thing from inside `backend/`.
+From the **repo root** you can use the Makefile shortcuts. The middle column does the same thing without `make`, from inside `backend/` unless it says otherwise.
 
-| From the repo root | Same thing, from `backend/` | What it does |
+| From the repo root | Same thing, without `make` | What it does |
 | --- | --- | --- |
 | `make install` | `uv sync` | Install or update packages to match `uv.lock` |
 | `make dev` | `uv run uvicorn sage.main:app --reload` | Run the backend on port 8000 |
+| `make dev-web` | `npm run dev`, from `frontend/` | Run the frontend on port 3000 |
+| `make dev-all` | The two above, in two terminals | Run the backend and frontend together in one terminal. Their log lines mix; `Ctrl + C` stops both |
 | `make test` | `uv run pytest -m "not integration"` | Run the tests CI runs |
 | `make lint` | `uv run ruff check && uv run ruff format --check` | Check the code for mistakes and formatting |
 | `make format` | `uv run ruff check --fix && uv run ruff format` | Fix what can be fixed and tidy the formatting |
