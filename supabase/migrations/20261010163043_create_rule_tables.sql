@@ -141,10 +141,10 @@ create table public.course_group_members (
   handbook_year smallint not null,
   group_key text not null,
   course_code text not null,
-  -- the Explore Electives tab for a complementary course; tab labels and subheadings live in the
-  -- frontend; null on every other list
-  category text check (category in ('arts', 'business', 'econ', 'ethics', 'history', 'languages',
-    'literature', 'logic', 'media', 'religion', 'science', 'society')),
+  -- the Explore Electives tab key for a complementary course (null on every other list); the tab
+  -- list lives in one place in the backend, which the loader's LLM picks from, the frontend reads
+  -- and the backend checks every value against, so tabs can change without a migration
+  category text,
   primary key (handbook_year, group_key, course_code),
   foreign key (handbook_year, group_key)
     references public.course_groups (handbook_year, group_key) on delete cascade,
@@ -260,7 +260,7 @@ create table public.passages (
   -- curriculum_code and course_code are both null for faculty rules or a department introduction
   curriculum_code text, -- prose printed under one curriculum's heading; null = not under one
   course_code text, -- one course entry; null = not a course entry
-  source text not null, -- the document ("EBE handbook")
+  source text not null, -- the handbook's official title, e.g. "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"
   section text not null, -- the heading the chunk sits under
   page smallint not null check (page > 0), -- the printed page number
   content text not null,
