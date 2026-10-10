@@ -1,0 +1,2504 @@
+{
+  "_readme": [
+    "Mbali's seed for 2026. Each key is a table and each row uses the table's column names.",
+    "Rows carry no uuids or student_id. sage seed fills student_id from the signed-in account and makes the uuids.",
+    "Rows that point at other seed rows use local keys: plan_set, plan, other_plan, chat. sage seed swaps them for uuids.",
+    "chats.plan and other_plan must be stored with plan_id < other_plan_id, so sage seed orders each pair after making the uuids.",
+    "course_history is B's own 2023-2025 record, used for Mbali by his choice. The planner prototype already shows it.",
+    "Equivalences EEE1006F->EEE1008F, EEE1007S->EEE1009S and EEE2048F->EEE2048S are synthetic: the 2026 handbook doesn't state them.",
+    "Complementary entry rules are a refer leaf holding the printed text (null where it says exactly None) until the rule extractor runs.",
+    "plan_sets.answers uses the prototype's questionnaire; its shape belongs to the backend.",
+    "courses.summary is the Explore Electives card outline: one or two sentences written from the handbook outline.",
+    "fake_account is Mbali's made-up identity for the fakes only. sage seed never writes it: a real account supplies its own name and number."
+  ],
+  "fake_account": {
+    "name": "Mbali Dlamini",
+    "student_number": "DLMMBA001",
+    "email": "dlmmba001@example.com"
+  },
+  "handbook_versions": [
+    {
+      "year": 2026,
+      "approved": true
+    }
+  ],
+  "curricula": [
+    {
+      "handbook_year": 2026,
+      "code": "EB011EEE05",
+      "department": "Electrical Engineering",
+      "name": "Bachelor of Science in Engineering in Mechatronics 4-year curriculum",
+      "degree_rule": null
+    }
+  ],
+  "curriculum_rules": [
+    {
+      "handbook_year": 2026,
+      "curriculum_code": "EB011EEE05",
+      "year_of_study": 4,
+      "rule": {
+        "all": [
+          {
+            "all_of_group": "EB011EEE05-y4-core"
+          },
+          {
+            "choose": 2,
+            "from_group": "EB011EEE05-y4-group-1"
+          },
+          {
+            "credits": 48,
+            "from_groups": [
+              "EB011EEE05-y4-group-1",
+              "EB011EEE05-y4-group-2"
+            ]
+          },
+          {
+            "total_credits": 138
+          }
+        ]
+      }
+    }
+  ],
+  "courses": [
+    {
+      "handbook_year": 2026,
+      "code": "EEE4022S",
+      "name": "RESEARCH PROJECT",
+      "credits": 40,
+      "nqf_level": 8,
+      "term": "sem2",
+      "entry_rule": {
+        "any": [
+          {
+            "course": "EEE4114F",
+            "need": "pass"
+          },
+          {
+            "course": "EEE4126F",
+            "need": "pass"
+          },
+          {
+            "course": "EEE4117F",
+            "need": "pass"
+          },
+          {
+            "course": "EEE4118F",
+            "need": "pass"
+          },
+          {
+            "course": "EEE4121F",
+            "need": "pass"
+          },
+          {
+            "course": "EEE4120F",
+            "need": "pass"
+          },
+          {
+            "course": "EEE4119F",
+            "need": "pass"
+          }
+        ]
+      },
+      "convener": "Associate Professor S Chowdhury",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "EEE4113F",
+      "name": "ENGINEERING SYSTEM DESIGN",
+      "credits": 16,
+      "nqf_level": 8,
+      "term": "sem1",
+      "entry_rule": {
+        "any": [
+          {
+            "course": "EEE3097S",
+            "need": "pass"
+          },
+          {
+            "course": "EEE3098S",
+            "need": "pass"
+          },
+          {
+            "course": "EEE3099S",
+            "need": "pass"
+          }
+        ]
+      },
+      "convener": "Dr S Paine",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "CML4607F",
+      "name": "LAW FOR ENGINEERS",
+      "credits": 10,
+      "nqf_level": 8,
+      "term": "sem1",
+      "entry_rule": {
+        "student_in": [
+          "EB009EEE01",
+          "EB809EEE01",
+          "EB022EEE02",
+          "EB822EEE02",
+          "EB011EEE05",
+          "EB811EEE05"
+        ]
+      },
+      "convener": "B Zungu",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "EEE4124C",
+      "name": "IMPACT OF ENGINEERING ON THE NATURAL AND SOCIAL ENVIRONMENT",
+      "credits": 8,
+      "nqf_level": 8,
+      "term": "q3",
+      "entry_rule": {
+        "course": "EEE3088F",
+        "need": "pass"
+      },
+      "convener": "M Moorlach",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "EEE4125C",
+      "name": "NEW VENTURES: PLANNING, PRACTICE AND PROFESSIONALISM",
+      "credits": 16,
+      "nqf_level": 8,
+      "term": "q3",
+      "entry_rule": {
+        "any": [
+          {
+            "course": "EEE3097S",
+            "need": "pass"
+          },
+          {
+            "course": "EEE3098S",
+            "need": "pass"
+          },
+          {
+            "course": "EEE3099S",
+            "need": "pass"
+          }
+        ]
+      },
+      "convener": "TBC",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "EEE4117F",
+      "name": "ENERGY CONVERSION II",
+      "credits": 16,
+      "nqf_level": 8,
+      "term": "sem1",
+      "entry_rule": {
+        "course": "EEE3091F",
+        "need": "pass"
+      },
+      "convener": "Dr S Jayalath",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "EEE4118F",
+      "name": "PROCESS CONTROL AND INSTRUMENTATION",
+      "credits": 16,
+      "nqf_level": 8,
+      "term": "sem1",
+      "entry_rule": {
+        "course": "EEE3094S",
+        "need": "pass"
+      },
+      "convener": "Professor E Boje",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "EEE4119F",
+      "name": "MECHATRONICS",
+      "credits": 16,
+      "nqf_level": 8,
+      "term": "sem1",
+      "entry_rule": {
+        "all": [
+          {
+            "course": "MEC2047F",
+            "need": "pass"
+          },
+          {
+            "course": "MEC2045S",
+            "need": "pass"
+          },
+          {
+            "course": "EEE3094S",
+            "need": "pass"
+          }
+        ]
+      },
+      "convener": "Dr S Shield",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "EEE4114F",
+      "name": "DIGITAL SIGNAL PROCESSING",
+      "credits": 16,
+      "nqf_level": 8,
+      "term": "sem1",
+      "entry_rule": {
+        "any": [
+          {
+            "course": "EEE3092F",
+            "need": "pass"
+          },
+          {
+            "course": "EEE3094S",
+            "need": "pass"
+          }
+        ]
+      },
+      "convener": "Dr Y Martin",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "EEE4120F",
+      "name": "HIGH PERFORMANCE DIGITAL EMBEDDED SYSTEMS",
+      "credits": 16,
+      "nqf_level": 8,
+      "term": "sem1",
+      "entry_rule": {
+        "course": "EEE3096S",
+        "need": "pass"
+      },
+      "convener": "Associate Professor S Winberg",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "HUB4049F",
+      "name": "Introduction to Medical Imaging & Image Processing",
+      "credits": 16,
+      "nqf_level": 8,
+      "term": "sem1",
+      "entry_rule": {
+        "min_year_of_study": 4
+      },
+      "convener": "Dr F Robertson",
+      "summary": null
+    },
+    {
+      "handbook_year": 2026,
+      "code": "AGE1002S",
+      "name": "THE HUMAN PLANET: PREHISTORY TO PRESENT",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "Dr V J Hare",
+      "summary": "An introduction to archaeology and human origins through the material record people leave behind. Surveys prehistory to the present and the climate, ecology and society that shaped modern humans."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "BIO1000F",
+      "name": "CELL BIOLOGY",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "Admission will be restricted to students who have passed either NSC Physical Science or Life Science with at least 60%. NOTE: Preference will be given to students registered in the Science Faculty. Students registered for this course will be assessed in week 5; if it is judged that they are not coping with the level and pace of the course and would benefit from an opportunity to strengthen foundational concepts and learn new material at a slower pace, they will be required to transfer to BIO1000H from week 7."
+      },
+      "convener": "Associate Professor J M Bishop",
+      "summary": "How living things work at the level of the cell. Covers cell structure, biological molecules, cell division and genetics, metabolism, photosynthesis and respiration, cell communication and the immune system."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "BIO1004S",
+      "name": "BIOLOGICAL DIVERSITY",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": {
+        "refer": "A pass at 60% in NSC Life Sciences or Physical Sciences or by permission of the Head of Department."
+      },
+      "convener": "Dr S Welman",
+      "summary": "The diversity of life from viruses to humans, and the evolution behind it. Covers how species arise, microbes, fungi, plants and animals, and conservation in South African biomes."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "BUS1007S",
+      "name": "INTRODUCTION TO INDUSTRIAL AND ORGANISATIONAL PSYCHOLOGY",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": {
+        "refer": "This course is intended for students in the special field of Industrial and Organisational Psychology, but students from other faculties may choose this course as an elective."
+      },
+      "convener": "B Arendse",
+      "summary": "Applies psychological theory to workplace problems. Explores how the field developed, why people behave as they do at work, and how organisations shape that behaviour."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "BUS2010F",
+      "name": "MARKETING I",
+      "credits": 18,
+      "nqf_level": 6,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "Students should be in their second AYOS or above."
+      },
+      "convener": "Associate Professor J Lappeman",
+      "summary": "A broad grounding in marketing, from buyer behaviour and market research to segmentation and targeting. Covers the marketing mix of product, price, distribution and promotion, and how results are measured."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "ECO1007S",
+      "name": "ECONOMICS FOR ENGINEERS",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "C Mlatsheni",
+      "summary": "Core micro- and macroeconomics for engineers, focused on ideas and applications rather than proofs. Covers supply and demand, elasticity, trade, money, inflation, exchange rates, unemployment and GDP."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "ECO1010F",
+      "name": "MICROECONOMICS",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "Admission to degree and a pass (5) in National Senior Certificate: Mathematics."
+      },
+      "convener": "R Chetty",
+      "summary": "How individuals, firms and markets make choices. Covers supply and demand, elasticity, utility, production and costs, market structures from competition to monopoly, and an introduction to game theory."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "ECO1010S",
+      "name": "MICROECONOMICS",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": {
+        "refer": "Admission to degree and a pass (5) in National Senior Certificate: Mathematics."
+      },
+      "convener": "N Narker",
+      "summary": "How individuals, firms and markets make choices. Covers supply and demand, elasticity, utility, production and costs, market structures from competition to monopoly, and an introduction to game theory."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "ECO1011F",
+      "name": "MACROECONOMICS",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "A minimum mark of 50% for ECO1010F/S or ECO1110F/S. ECO1010F/S may be taken concurrently with ECO1011F/S if ECO1010F/S has been previously attempted."
+      },
+      "convener": "Y Sibda",
+      "summary": "How the economy works as a whole, set in South African economic history. Covers GDP, growth, unemployment, inflation, exchange rates, business cycles, and fiscal and monetary policy."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "ECO1011S",
+      "name": "MACROECONOMICS",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": {
+        "refer": "A minimum mark of 50% for ECO1010F/S or ECO1110F/S. ECO1010F/S may be taken concurrently with ECO1011F/S if ECO1010F/S has been previously attempted."
+      },
+      "convener": "Dr R Lepelle",
+      "summary": "How the economy works as a whole, set in South African economic history. Covers GDP, growth, unemployment, inflation, exchange rates, business cycles, and fiscal and monetary policy."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "ELL1013F",
+      "name": "LITERATURE: HOW AND WHY?",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "Dr H Moosa",
+      "summary": "What literature is and why close reading matters. Introduces critical tools and literary terms across novels, poetry and drama, and builds your own critical writing."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "ELL1016S",
+      "name": "IMAGE, VOICE, WORD",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "Professor B Boswell",
+      "summary": "How texts of all kinds make meaning and persuade, from hip hop and protest posters to novels and archived documents. Builds the critical skills to read contemporary culture and politics."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "FAM1000S",
+      "name": "SCREEN STUDIES AS SOCIAL PRACTICE",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "Dr I-M Rijsdijk and Dr A Smit",
+      "summary": "A critical introduction to film and television and the vocabulary to analyse them. Covers narrative, spectatorship, genre and realism, with a creative assignment such as a short phone film."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "FAM1001F",
+      "name": "MEDIA AND SOCIETY",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "Associate Professor M Walton and Dr D Becker",
+      "summary": "An introduction to media studies and the role of mass media in public life. Covers how media make meaning, media effects and ethics, and writing for newspapers, television and the internet."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "FIN1006F",
+      "name": "INTRODUCTION TO AFRICAN ART",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "Professor N Makhubu",
+      "summary": "Introduces the theory of African art across historical periods. Focuses on 20th-century art movements and schools across Africa in the independence decades, and debates about modernity and colonialism."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "FTX2000S",
+      "name": "PERSONAL FINANCIAL MANAGEMENT",
+      "credits": 18,
+      "nqf_level": 6,
+      "term": "sem2",
+      "entry_rule": {
+        "refer": "Students must be in at least their 2nd year of study to register for the course. 3rd and 4th year students may also register for the course."
+      },
+      "convener": "Dr E Swanepoel",
+      "summary": "Practical tools for managing your own money. Covers financial planning, the time value of money, credit, property, investing, income tax, medical schemes, insurance, and estate and retirement planning."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "GEO1009F",
+      "name": "GEOSYSTEMS: AN INTRODUCTION TO EARTH & ENVIRONMENTAL SCIENCES",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "At least 50% for NSC Geography or at least 60% for NSC Physical Science or Life Sciences. NOTE: Preference will be given to students majoring in Archaeology, Environmental and Geographical Science, Geology or Oceanography."
+      },
+      "convener": "Associate Professor E M Bordy",
+      "summary": "How the Earth works, read from its rock record over more than 4.5 billion years. Covers land, ocean, atmosphere and ice, climate change, our species' impact, and environmental hazards and adaptation."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "HST1013F",
+      "name": "CONNECTIONS AND INTERRUPTIONS, 1500-1800",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "TBA",
+      "summary": "A critical narrative of world history from the sixteenth to the eighteenth century. Looks at how travel, trade and colonisation connected regions while disrupting many societies, shaping today's world."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "HST1014S",
+      "name": "EMPIRES AND MODERNITIES",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "Dr A Sen",
+      "summary": "World history from the nineteenth century to today, through the links between empire and modernity. Questions the concepts we still use to understand the modern world."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "MUZ1339H",
+      "name": "JAZZ IN CONTEXT I",
+      "credits": 18,
+      "nqf_level": 5,
+      "term": "full_year",
+      "entry_rule": {
+        "refer": "No pre-requisite for Jazz students; registration for other students is at the discretion of the course convener."
+      },
+      "convener": "M van Noie",
+      "summary": "The history of jazz from its African, European and Latin American roots. Covers early jazz, swing and cool jazz from the 1900s to the 1950s, and links with South African jazz."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "MUZ1340H",
+      "name": "MUSIC IN HISTORY AND SOCIETY I",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "full_year",
+      "entry_rule": {
+        "refer": "Admission to the BMus degree, BA major in Music or Diploma in Music Performance. Registration for students in other programmes is at the discretion of the course convener."
+      },
+      "convener": "Professor R Sandmeier",
+      "summary": "Western music from about 1600 to today, through its key figures, works, genres and techniques. Also builds skills in reading scholarly texts and academic writing."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "PHI1010S",
+      "name": "ETHICS",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "Dr O Mogomotsi",
+      "summary": "An introduction to moral philosophy. Asks what makes an action right, whether morality is relative or objective, how religion relates to ethics, and what it is to be a good person."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "PHI1024F",
+      "name": "INTRODUCTION TO PHILOSOPHY",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "Professor R Nefdt",
+      "summary": "A first course in philosophy that challenges your own beliefs and values. Explores knowledge, mind and body, free will and the meaning of life, with thinkers from Plato to Biko."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "PHI1025F",
+      "name": "CRITICAL THINKING",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "TBA",
+      "summary": "A practical course in judging whether beliefs are justified. Teaches the kinds of justification and their pitfalls, so you can explain why an argument does or doesn't convince you."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "PHI2012F",
+      "name": "PHILOSOPHY OF PSYCHOLOGY AND MIND",
+      "credits": 20,
+      "nqf_level": 6,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "At least second year status."
+      },
+      "convener": "Associate Professor J Ritchie",
+      "summary": "What the mind is and how it relates to the brain and body. Weighs dualism, behaviourism, physicalism and functionalism, and may cover action, free will and personal identity."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "PHI2040S",
+      "name": "PHILOSOPHY OF SCIENCE",
+      "credits": 20,
+      "nqf_level": 6,
+      "term": "sem2",
+      "entry_rule": {
+        "refer": "At least second year status."
+      },
+      "convener": "Associate Professor J Ritchie",
+      "summary": "Asks what sets science apart, whether unseen things like electrons really exist, and whether science can be value free, through Popper, Kuhn, Feyerabend and others."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "PHI2043F",
+      "name": "BUSINESS ETHICS",
+      "credits": 18,
+      "nqf_level": 6,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "At least second year status or be registered for an ACC04/ACC08 programme."
+      },
+      "convener": "G E T James",
+      "summary": "Ethical choices are unavoidable in business, and this course helps you reason through them. Ranges from dilemmas in a first job to the regulation a future leader may face."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "PHI2043S",
+      "name": "BUSINESS ETHICS",
+      "credits": 18,
+      "nqf_level": 6,
+      "term": "sem2",
+      "entry_rule": {
+        "refer": "At least second year status or be registered for an ACC04/ACC08 programme."
+      },
+      "convener": "G E T James",
+      "summary": "Ethical choices are unavoidable in business, and this course helps you reason through them. Ranges from dilemmas in a first job to the regulation a future leader may face."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "PHI2044F",
+      "name": "PHILOSOPHY OF MATHEMATICS",
+      "credits": 20,
+      "nqf_level": 6,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "Second year status and at least 50% for Matric mathematics, or a pass for a MAM course, or a lower intermediate score for the NBT in Quantitative Literacy."
+      },
+      "convener": "Professor B Weiss",
+      "summary": "Philosophical questions raised by mathematics. Asks how we can know numbers that exist outside space and time, why mathematics applies to the physical world, and whether it has a foundation."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "REL1002F",
+      "name": "RELIGIONS PAST AND PRESENT",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "Professor E Porcu",
+      "summary": "An introduction to the study of religion through symbols, myths, rituals and teachings. Focuses on African indigenous traditions, Asian religions and new religious movements."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "REL1006S",
+      "name": "JUDAISM, CHRISTIANITY AND ISLAM",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "Dr L P Blond",
+      "summary": "Judaism, Christianity and Islam from their roots in the ancient Near East. Compares how their sacred texts formed, how they are interpreted, and how each faith is practised."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SLL1002F",
+      "name": "WORD POWER",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "Associate Professor J A Murray",
+      "summary": "Builds your English vocabulary through Greek and Latin roots and the ideas of the ancient Mediterranean. Shows how English words are formed, to strengthen your academic English."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SLL1002S",
+      "name": "WORD POWER",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "Associate Professor J A Murray",
+      "summary": "Builds your English vocabulary through Greek and Latin roots and the ideas of the ancient Mediterranean. Shows how English words are formed, to strengthen your academic English."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SLL1016S",
+      "name": "SOTHO ADDITIONAL A",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": {
+        "refer": "None. This is a beginners’ course. Students with a Sotho language as a 1st language are not permitted to do Sotho Additional."
+      },
+      "convener": "Associate Professor R Possa",
+      "summary": "Sesotho for complete beginners. Builds speaking, writing and comprehension through task-based modules, with grammar taught in context and an introduction to Sesotho varieties and culture."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SLL1018S",
+      "name": "XHOSA ADDITIONAL A",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": {
+        "refer": "None. This is a beginners’ course. Students with an Nguni language as a 1st language are not permitted to do Xhosa Additional, and are encouraged to register for SLL1131F isiXhosa Language & Literature Studies IA."
+      },
+      "convener": "S Ntshingana",
+      "summary": "Xhosa for complete beginners. Builds grammar and speaking skills through task-based modules and multimedia lab sessions, and covers varieties of Xhosa and when to use them."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SLL1054F",
+      "name": "THE WORLD OF ODYSSEUS",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "Associate Professor C E Chandler",
+      "summary": "The ancient Mediterranean world through Homer's Odyssey and its hero in early Greek society. Follows Odysseus through later literature, film and art, with all texts read in English."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SLL1097S",
+      "name": "INTRODUCING ANCIENT HISTORY",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "Professor R Roth",
+      "summary": "Ancient history and classical archaeology of the Mediterranean, from the 8th century BC to the 1st century AD. Follows Rome's rise to power and the reigns of the early emperors."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SLL1101F",
+      "name": "XHOSA COMMUNICATION IA",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "None. This is a course for beginners. Students with an Nguni language as a 1st language are not permitted to do this course and are encouraged to register for SLL1131F isiXhosa Language & Literature Studies IA."
+      },
+      "convener": "S Ntshingana",
+      "summary": "Xhosa for complete beginners, aiming for good basic competency. Builds speaking, writing and comprehension through task-based modules, with grammar taught in context and varieties of Xhosa in social use."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SLL1121F",
+      "name": "CHINESE STUDIES IA",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": {
+        "refer": "None. This is a course designed for beginners."
+      },
+      "convener": "Dr S An",
+      "summary": "Chinese for complete beginners, spoken and written. Builds a set of everyday characters and simple conversation through lectures, conversation classes and language labs."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SOC1001F",
+      "name": "INTRODUCTION TO SOCIOLOGY",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem1",
+      "entry_rule": null,
+      "convener": "Professor J Seekings",
+      "summary": "How society shapes us and how we can shape it. Introduces the sociological imagination as a way to see beneath everyday life in a changing, globalised world."
+    },
+    {
+      "handbook_year": 2026,
+      "code": "SOC1005S",
+      "name": "INDIVIDUAL AND SOCIETY",
+      "credits": 15,
+      "nqf_level": 5,
+      "term": "sem2",
+      "entry_rule": null,
+      "convener": "Associate Professor J de Wet",
+      "summary": "Key issues in South African society today and the inequalities behind them. Teaches you to find reliable information, put it in social context and examine how people respond."
+    }
+  ],
+  "course_groups": [
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-core",
+      "label": "Fourth Year Core Courses (ME)"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-group-1",
+      "label": "Fourth Year Elective Core Courses (ME)"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-group-2",
+      "label": "Fourth Year Further Elective Core Courses (ME)"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "label": "Approved complementary studies courses"
+    }
+  ],
+  "course_group_members": [
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-core",
+      "course_code": "EEE4113F",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-core",
+      "course_code": "CML4607F",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-core",
+      "course_code": "EEE4124C",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-core",
+      "course_code": "EEE4125C",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-core",
+      "course_code": "EEE4022S",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-group-1",
+      "course_code": "EEE4117F",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-group-1",
+      "course_code": "EEE4118F",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-group-1",
+      "course_code": "EEE4119F",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-group-2",
+      "course_code": "EEE4114F",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-group-2",
+      "course_code": "EEE4120F",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "EB011EEE05-y4-group-2",
+      "course_code": "HUB4049F",
+      "category": null
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "AGE1002S",
+      "category": "science"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "BIO1000F",
+      "category": "science"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "BIO1004S",
+      "category": "science"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "BUS1007S",
+      "category": "business"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "BUS2010F",
+      "category": "business"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "ECO1007S",
+      "category": "econ"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "ECO1010F",
+      "category": "econ"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "ECO1010S",
+      "category": "econ"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "ECO1011F",
+      "category": "econ"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "ECO1011S",
+      "category": "econ"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "ELL1013F",
+      "category": "literature"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "ELL1016S",
+      "category": "literature"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "FAM1000S",
+      "category": "media"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "FAM1001F",
+      "category": "media"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "FIN1006F",
+      "category": "arts"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "FTX2000S",
+      "category": "econ"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "GEO1009F",
+      "category": "science"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "HST1013F",
+      "category": "history"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "HST1014S",
+      "category": "history"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "MUZ1339H",
+      "category": "arts"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "MUZ1340H",
+      "category": "arts"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "PHI1010S",
+      "category": "ethics"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "PHI1024F",
+      "category": "logic"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "PHI1025F",
+      "category": "logic"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "PHI2012F",
+      "category": "society"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "PHI2040S",
+      "category": "logic"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "PHI2043F",
+      "category": "ethics"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "PHI2043S",
+      "category": "ethics"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "PHI2044F",
+      "category": "logic"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "REL1002F",
+      "category": "religion"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "REL1006S",
+      "category": "religion"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SLL1002F",
+      "category": "literature"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SLL1002S",
+      "category": "literature"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SLL1016S",
+      "category": "languages"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SLL1018S",
+      "category": "languages"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SLL1054F",
+      "category": "history"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SLL1097S",
+      "category": "history"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SLL1101F",
+      "category": "languages"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SLL1121F",
+      "category": "languages"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SOC1001F",
+      "category": "society"
+    },
+    {
+      "handbook_year": 2026,
+      "group_key": "complementary",
+      "course_code": "SOC1005S",
+      "category": "society"
+    }
+  ],
+  "equivalences": [
+    {
+      "handbook_year": 2026,
+      "course_code": "ECO1010F",
+      "counts_as": "ECO1010S"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "ECO1010S",
+      "counts_as": "ECO1010F"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "ECO1011F",
+      "counts_as": "ECO1011S"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "ECO1011S",
+      "counts_as": "ECO1011F"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "PHI2043F",
+      "counts_as": "PHI2043S"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "PHI2043S",
+      "counts_as": "PHI2043F"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "SLL1002F",
+      "counts_as": "SLL1002S"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "SLL1002S",
+      "counts_as": "SLL1002F"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE1006F",
+      "counts_as": "EEE1008F"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE1007S",
+      "counts_as": "EEE1009S"
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE2048F",
+      "counts_as": "EEE2048S"
+    }
+  ],
+  "timetable_slots": [
+    {
+      "handbook_year": 2026,
+      "course_code": "CML4607F",
+      "term": "sem1",
+      "day": 2,
+      "start_time": "12:00",
+      "end_time": "12:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "CML4607F",
+      "term": "sem1",
+      "day": 3,
+      "start_time": "12:00",
+      "end_time": "12:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "CML4607F",
+      "term": "sem1",
+      "day": 4,
+      "start_time": "12:00",
+      "end_time": "12:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "CML4607F",
+      "term": "sem1",
+      "day": 5,
+      "start_time": "12:00",
+      "end_time": "12:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4113F",
+      "term": "sem1",
+      "day": 3,
+      "start_time": "14:00",
+      "end_time": "15:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4113F",
+      "term": "sem1",
+      "day": 5,
+      "start_time": "14:00",
+      "end_time": "17:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4114F",
+      "term": "sem1",
+      "day": 2,
+      "start_time": "14:00",
+      "end_time": "15:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4114F",
+      "term": "sem1",
+      "day": 4,
+      "start_time": "14:00",
+      "end_time": "15:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4117F",
+      "term": "sem1",
+      "day": 1,
+      "start_time": "08:00",
+      "end_time": "09:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4117F",
+      "term": "sem1",
+      "day": 3,
+      "start_time": "08:00",
+      "end_time": "09:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4117F",
+      "term": "sem1",
+      "day": 5,
+      "start_time": "08:00",
+      "end_time": "08:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4118F",
+      "term": "sem1",
+      "day": 1,
+      "start_time": "12:00",
+      "end_time": "12:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4118F",
+      "term": "sem1",
+      "day": 2,
+      "start_time": "10:00",
+      "end_time": "11:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4118F",
+      "term": "sem1",
+      "day": 4,
+      "start_time": "10:00",
+      "end_time": "11:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4119F",
+      "term": "sem1",
+      "day": 1,
+      "start_time": "10:00",
+      "end_time": "11:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4119F",
+      "term": "sem1",
+      "day": 2,
+      "start_time": "08:00",
+      "end_time": "09:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4119F",
+      "term": "sem1",
+      "day": 3,
+      "start_time": "10:00",
+      "end_time": "11:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4120F",
+      "term": "sem1",
+      "day": 1,
+      "start_time": "14:00",
+      "end_time": "15:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4120F",
+      "term": "sem1",
+      "day": 4,
+      "start_time": "16:00",
+      "end_time": "17:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4120F",
+      "term": "sem1",
+      "day": 5,
+      "start_time": "10:00",
+      "end_time": "11:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4125C",
+      "term": "q3",
+      "day": 2,
+      "start_time": "14:00",
+      "end_time": "15:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "EEE4125C",
+      "term": "q3",
+      "day": 4,
+      "start_time": "14:00",
+      "end_time": "15:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "HUB4049F",
+      "term": "sem1",
+      "day": 1,
+      "start_time": "13:00",
+      "end_time": "13:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "HUB4049F",
+      "term": "sem1",
+      "day": 2,
+      "start_time": "13:00",
+      "end_time": "13:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    },
+    {
+      "handbook_year": 2026,
+      "course_code": "HUB4049F",
+      "term": "sem1",
+      "day": 3,
+      "start_time": "13:00",
+      "end_time": "13:45",
+      "kind": null,
+      "choice_group": null,
+      "choice": null
+    }
+  ],
+  "timetable_slot_curricula": [],
+  "passages": [],
+  "handbook_deltas": [],
+  "students": [
+    {
+      "curriculum_code": "EB011EEE05",
+      "intake_year": 2023,
+      "onboarding_complete": true
+    }
+  ],
+  "course_history": [
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "ASL1200S",
+      "course_name": "Africa: Culture, ID & Glblsn",
+      "credits": 8,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 78
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "CSC1015F",
+      "course_name": "Computer Science 1015",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 77
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "CSC1016S",
+      "course_name": "Computer Science 1016",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 69
+    },
+    {
+      "academic_year": 2023,
+      "term": "other",
+      "course_code": "EEE1000X",
+      "course_name": "Practical Training",
+      "credits": 0,
+      "nqf_level": 5,
+      "result": "GIP",
+      "mark": null
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "EEE1006F",
+      "course_name": "Intro Electronic Engineering",
+      "credits": 12,
+      "nqf_level": 5,
+      "result": "3",
+      "mark": 59
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "EEE1007S",
+      "course_name": "Intro Electrical Engineering",
+      "credits": 12,
+      "nqf_level": 5,
+      "result": "2+",
+      "mark": 73
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "MAM1020F",
+      "course_name": "Mathematics 1A for Engineers",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 87
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "MAM1021S",
+      "course_name": "Mathematics 1B for Engineers",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 87
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "MEC1003F",
+      "course_name": "Engineering Drawing",
+      "credits": 8,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 95
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "PHY1012F",
+      "course_name": "Physics A for Engineers",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "3",
+      "mark": 52
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "PHY1013S",
+      "course_name": "Physics B for Engineers",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "3",
+      "mark": 50
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "CON2026S",
+      "course_name": "Project Management",
+      "credits": 8,
+      "nqf_level": 6,
+      "result": "1",
+      "mark": 85
+    },
+    {
+      "academic_year": 2024,
+      "term": "other",
+      "course_code": "EEE1000X",
+      "course_name": "Practical Training",
+      "credits": 0,
+      "nqf_level": 5,
+      "result": "GIP",
+      "mark": null
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "EEE2044S",
+      "course_name": "Introduction to Power Eng",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "3",
+      "mark": 58
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "EEE2045F",
+      "course_name": "Analogue Electronics",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "1",
+      "mark": 80
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "EEE2046F",
+      "course_name": "Embedded Systems I",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 65
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "EEE2047S",
+      "course_name": "Signals and Systems I",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 68
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "EEE2048F",
+      "course_name": "Prof Comm for Elec Eng",
+      "credits": 8,
+      "nqf_level": 6,
+      "result": "1",
+      "mark": 86
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "MAM2083F",
+      "course_name": "Vector Calculus for Engineers",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "1",
+      "mark": 78
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "MAM2084S",
+      "course_name": "Linear Alg & De for Engineers",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "1",
+      "mark": 85
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "MEC1009F",
+      "course_name": "Intro to Engineering Mechanics",
+      "credits": 16,
+      "nqf_level": 5,
+      "result": "2+",
+      "mark": 74
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "PHY2010S",
+      "course_name": "Electromagnetism for Engineers",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "SP",
+      "mark": null
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "ECO2007S",
+      "course_name": "Cooperation and Competition",
+      "credits": 18,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 69
+    },
+    {
+      "academic_year": 2025,
+      "term": "other",
+      "course_code": "EEE1000X",
+      "course_name": "Practical Training",
+      "credits": 0,
+      "nqf_level": 5,
+      "result": "GIP",
+      "mark": null
+    },
+    {
+      "academic_year": 2025,
+      "term": "other",
+      "course_code": "EEE3000X",
+      "course_name": "Practical Training",
+      "credits": 0,
+      "nqf_level": 7,
+      "result": "GIP",
+      "mark": null
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3088F",
+      "course_name": "Design Principles",
+      "credits": 8,
+      "nqf_level": 7,
+      "result": "3",
+      "mark": 59
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3090F",
+      "course_name": "Electronic Devices & Circuits",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "SP",
+      "mark": null
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3091F",
+      "course_name": "Energy Conversion I",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "2+",
+      "mark": 73
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3092F",
+      "course_name": "Signals & Systems II",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "2-",
+      "mark": 68
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3094S",
+      "course_name": "Control Systems Engineering",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "3",
+      "mark": 54
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3096S",
+      "course_name": "Embedded Systems II",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "1",
+      "mark": 80
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3099S",
+      "course_name": "Engineering Design: ME",
+      "credits": 8,
+      "nqf_level": 7,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "MEC2045S",
+      "course_name": "Applied Engineering Mechanics",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "3",
+      "mark": 50
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "MEC2047F",
+      "course_name": "Engineering Dynamics",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "3",
+      "mark": 57
+    }
+  ],
+  "favourites": [
+    {
+      "course_code": "EEE4117F"
+    },
+    {
+      "course_code": "EEE4118F"
+    },
+    {
+      "course_code": "EEE4119F"
+    },
+    {
+      "course_code": "EEE4114F"
+    },
+    {
+      "course_code": "EEE4120F"
+    },
+    {
+      "course_code": "HUB4049F"
+    }
+  ],
+  "plan_sets": [
+    {
+      "key": "2026-v1",
+      "period": 2026,
+      "version": 1,
+      "complete": true,
+      "answers": {
+        "q1": "Mechatronics",
+        "q2": "Robotics & mechatronics",
+        "q3": "No timetable-shape preference"
+      }
+    }
+  ],
+  "plans": [
+    {
+      "key": "V01",
+      "plan_set": "2026-v1",
+      "position": 1,
+      "name": "Power & Robotics",
+      "hidden": false
+    },
+    {
+      "key": "V02",
+      "plan_set": "2026-v1",
+      "position": 2,
+      "name": "Signals & Power",
+      "hidden": true
+    },
+    {
+      "key": "V03",
+      "plan_set": "2026-v1",
+      "position": 3,
+      "name": "Embedded & Power",
+      "hidden": true
+    },
+    {
+      "key": "V04",
+      "plan_set": "2026-v1",
+      "position": 4,
+      "name": "Imaging & Control",
+      "hidden": true
+    },
+    {
+      "key": "V05",
+      "plan_set": "2026-v1",
+      "position": 5,
+      "name": "Signals & Robotics",
+      "hidden": false
+    },
+    {
+      "key": "V06",
+      "plan_set": "2026-v1",
+      "position": 6,
+      "name": "Embedded & Robotics",
+      "hidden": false
+    },
+    {
+      "key": "V07",
+      "plan_set": "2026-v1",
+      "position": 7,
+      "name": "Imaging & Power",
+      "hidden": false
+    },
+    {
+      "key": "V08",
+      "plan_set": "2026-v1",
+      "position": 8,
+      "name": "Signals & Control",
+      "hidden": false
+    },
+    {
+      "key": "V09",
+      "plan_set": "2026-v1",
+      "position": 9,
+      "name": "Embedded & Control",
+      "hidden": false
+    },
+    {
+      "key": "V10",
+      "plan_set": "2026-v1",
+      "position": 10,
+      "name": "Imaging & Robotics",
+      "hidden": false
+    }
+  ],
+  "plan_courses": [
+    {
+      "plan": "V01",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V01",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V01",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V01",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V01",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V01",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V01",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V01",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V02",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V02",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V02",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V02",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V02",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V02",
+      "course_code": "EEE4114F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V02",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V02",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V03",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V03",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V03",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V03",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V03",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V03",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V03",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V03",
+      "course_code": "EEE4120F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V04",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V04",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V04",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V04",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V04",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V04",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V04",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V04",
+      "course_code": "HUB4049F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V05",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V05",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V05",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V05",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V05",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V05",
+      "course_code": "EEE4114F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V05",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V05",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V06",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V06",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V06",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V06",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V06",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V06",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V06",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V06",
+      "course_code": "EEE4120F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V07",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V07",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V07",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V07",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V07",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V07",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V07",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V07",
+      "course_code": "HUB4049F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V08",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V08",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V08",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V08",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V08",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V08",
+      "course_code": "EEE4114F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V08",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V08",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V09",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V09",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V09",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V09",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V09",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V09",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V09",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V09",
+      "course_code": "EEE4120F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V10",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V10",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V10",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V10",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V10",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V10",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V10",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "V10",
+      "course_code": "HUB4049F",
+      "handbook_year": 2026,
+      "choices": null
+    }
+  ],
+  "plan_reasons": [
+    {
+      "key": "r1",
+      "plan": null,
+      "course_code": null,
+      "kind": "included",
+      "message": "Every plan includes the five core courses: EEE4113F, CML4607F, EEE4124C, EEE4125C and EEE4022S.",
+      "plan_set": "2026-v1",
+      "passage_id": null,
+      "details": null
+    },
+    {
+      "key": "r2",
+      "plan": null,
+      "course_code": null,
+      "kind": "included",
+      "message": "Every plan takes at least two of EEE4117F, EEE4118F and EEE4119F, and 48 elective credits in all, which makes 138 credits for the year.",
+      "plan_set": "2026-v1",
+      "passage_id": null,
+      "details": null
+    },
+    {
+      "key": "r3",
+      "plan": null,
+      "course_code": "EEE4022S",
+      "kind": "included",
+      "message": "EEE4022S needs a pass in one of the fourth-year electives. Every plan takes at least two of them in the first semester.",
+      "plan_set": "2026-v1",
+      "passage_id": null,
+      "details": null
+    },
+    {
+      "key": "r4",
+      "plan": null,
+      "course_code": null,
+      "kind": "excluded",
+      "message": "Plans with a fourth elective aren't listed. The handbook allows more than 48 elective credits, so ask your advisor if you want to add one.",
+      "plan_set": "2026-v1",
+      "passage_id": null,
+      "details": null
+    },
+    {
+      "key": "r5",
+      "plan": null,
+      "course_code": "EEE3000X",
+      "kind": "conditional",
+      "message": "Your record shows Practical Training (EEE1000X and EEE3000X) still in progress. Both are needed to graduate, so check with your advisor when they will be signed off.",
+      "plan_set": "2026-v1",
+      "passage_id": null,
+      "details": null
+    },
+    {
+      "key": "r6",
+      "plan": "V07",
+      "course_code": null,
+      "kind": "included",
+      "message": "In semester 1 this plan has one class on Thursdays: CML4607F at 12:00.",
+      "plan_set": "2026-v1",
+      "passage_id": null,
+      "details": null
+    }
+  ],
+  "chats": [
+    {
+      "key": "c1",
+      "plan": "V01",
+      "other_plan": null,
+      "title": "Fridays on Power & Robotics"
+    },
+    {
+      "key": "c2",
+      "plan": "V01",
+      "other_plan": "V07",
+      "title": "Process Control or Medical Imaging"
+    }
+  ],
+  "messages": [
+    {
+      "key": "m1",
+      "chat": "c1",
+      "role": "user",
+      "term": "sem1",
+      "content": "How busy are my Fridays on this plan?"
+    },
+    {
+      "key": "m2",
+      "chat": "c1",
+      "role": "assistant",
+      "term": "sem1",
+      "content": "In semester 1 you have three Friday sessions: EEE4117F from 08:00 to 08:45, CML4607F from 12:00 to 12:45, and EEE4113F from 14:00 to 17:45. In semester 2 your Fridays are free."
+    },
+    {
+      "key": "m3",
+      "chat": "c2",
+      "role": "user",
+      "term": "sem1",
+      "content": "What's the difference between these two plans?"
+    },
+    {
+      "key": "m4",
+      "chat": "c2",
+      "role": "assistant",
+      "term": "sem1",
+      "content": "They differ in one elective. Power & Robotics takes EEE4118F Process Control and Instrumentation, and Imaging & Power takes HUB4049F Medical Imaging instead. Both keep EEE4117F and EEE4119F, so both meet the group 1 rule. EEE4118F meets on Tuesday and Thursday from 10:00 to 11:45 and Monday at 12:00. HUB4049F meets Monday to Wednesday at 13:00, over the lunch hour."
+    }
+  ],
+  "message_citations": []
+}

@@ -25,8 +25,10 @@ Submission is 26 October 2026. B wants to understand every step, not just receiv
 
 - Never ask B to paste a secret into the chat. Secrets go straight into GitHub, Azure, Supabase or a
   local `.env`, which is never committed. `.claude/settings.json` blocks you from reading `.env` files.
-- The repo is public. Tests and fixtures use made-up data only. B's real transcript stays in
-  `private_data/`, which git ignores and you can't read.
+- The repo is public. Tests and fixtures use made-up data only, with one exception by B's choice:
+  the course history in `data/synthetic/mbali.json` is B's own 2023-2025 record, which the planner
+  prototype already shows. His transcript itself stays in `private_data/`, which git ignores and
+  you can't read.
 
 ## Commands B pastes into his terminal
 
