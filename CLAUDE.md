@@ -19,6 +19,7 @@ Submission is 26 October 2026. B wants to understand every step, not just receiv
 - In comparisons, list only options that would genuinely work.
 - UK English, concise, no em dashes. This covers code comments, docs and commit messages.
 - Commit messages: a short title, then a body saying what changed and why.
+- Never add Co-Authored-By trailers, 'Generated with Claude Code' lines, or any other AI attribution to commits, PR titles or PR descriptions.
 
 ## Secrets and private data
 

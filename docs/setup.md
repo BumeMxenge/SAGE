@@ -37,6 +37,8 @@ cd SAGE
 
 The `SAGE` at the end names the folder. Keep the folder name free of colons. uv refuses to run inside a path that contains `:`.
 
+Then turn on the repo's git hooks once with `git config core.hooksPath .githooks`. The `commit-msg` hook strips any Claude co-author or "Generated with Claude Code" line from a commit message.
+
 ## 3. Set up and run the backend
 
 Run these from the `backend` folder:

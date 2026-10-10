@@ -1,0 +1,12 @@
+#!/bin/sh
+# Keeps AI attribution out of commit messages, whatever tool wrote them.
+# Git passes the path of the message file as the first argument.
+msg_file="$1"
+tmp_file="$(mktemp)"
+
+grep -v -i -E -e '^Co-Authored-By:.*(claude|anthropic)' -e 'Generated with Claude Code' "$msg_file" > "$tmp_file"
+
+# Drop blank lines the removal left at the end of the message.
+awk '{ lines[NR] = $0 } END { n = NR; while (n > 0 && lines[n] ~ /^[[:space:]]*$/) n--; for (i = 1; i <= n; i++) print lines[i] }' "$tmp_file" > "$msg_file"
+
+rm -f "$tmp_file"
