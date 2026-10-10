@@ -18,7 +18,9 @@ Submission is 26 October 2026. B wants to understand every step, not just receiv
 - Make minimal, targeted changes. Explain why each one is needed.
 - In comparisons, list only options that would genuinely work.
 - UK English, concise, no em dashes. This covers code comments, docs and commit messages.
-- Commit messages: a short title, then a body saying what changed and why.
+- Commit messages: a short imperative title ("Add the rule tables"), then a body in the past
+  tense with no subject ("Added courses.summary", "Dropped the trigger") saying what changed and
+  why. Never refer to B in the third person or as "we"; where B has to be mentioned, write "my".
 - Never add Co-Authored-By trailers, 'Generated with Claude Code' lines, or any other AI attribution to commits, PR titles or PR descriptions.
 
 ## Secrets and private data
