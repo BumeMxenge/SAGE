@@ -47,3 +47,7 @@ Defects caught before acceptance testing, for Section 5.2.
 | Oct | The database is in the EU and the backend in South Africa | Supabase has no African region | None | Latency on every request, measured in ATP-5 |
 | Oct | All test students are synthetic | POPIA and ethics scope | None | Limitation of the evaluation |
 | 12 Oct | 93% line coverage, but only 75% of the planted faults caught | Coverage counts lines run, not checks made | Both reported in 5.2 | None |
+| 12 Oct | mutmut 3.8 can't be installed on my laptop | It needs libcst 1.9, which has no Intel Mac wheel for Python 3.12 | Pinned mutmut 3.7.0, with libcst below 1.9 | Lift the pin once the wheel exists, then measure again, as another version plants different mutants |
+| 12 Oct | Under mutmut, every test failed to find Mbali's seed file | mutmut runs a copy of the code from `backend/mutants/`, one folder deeper, and `SEED_FILE` is found four folders up from `seed.py` | `make mutation` links `backend/data` to `data/` while it runs | None, while `SEED_FILE` depends on depth |
+| 12 Oct | The mutation score covers the unit tests only | The integration tests need Docker and a rebuilt database, far too slow to run once per mutant | Each integration test cut is argued on its own | Limitation: the score says nothing about the Supabase adapters or the SQL |
+| 12 Oct | mutmut leaves code outside functions alone | mutmut 3 mutates function bodies only | None | Limitation: the transcript reader's patterns and constants such as the lunch hour aren't mutated |
