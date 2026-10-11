@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from sage.cli import SEED_FILE
 from sage.main import create_app
 
 
@@ -14,7 +15,7 @@ def client() -> TestClient:
 
 @pytest.fixture(scope="session")
 def seed_file() -> Path:
-    return Path(__file__).resolve().parents[2] / "data" / "synthetic" / "mbali.json"
+    return SEED_FILE
 
 
 @pytest.fixture(scope="session")

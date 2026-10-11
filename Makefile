@@ -49,7 +49,6 @@ check-db:
 # Loads the made-up student onto one local account: make seed USER_ID=<account id>.
 # The URL and key come from the running local Supabase, never from backend/.env.
 seed:
-	@test -n "$(USER_ID)" || { echo "Usage: make seed USER_ID=<account id>"; exit 1; }
 	@env=$$($(SUPABASE) status -o env) && eval "$$env" && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
 		uv run sage seed --user "$(USER_ID)"

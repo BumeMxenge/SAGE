@@ -1,8 +1,10 @@
 # Checks the elective tab list is the backend's one check on categories, now the database has none
+from typing import get_args
+
 import pytest
 from pydantic import ValidationError
 
-from sage.domain.electives import ELECTIVE_TABS
+from sage.domain.electives import ElectiveTab
 from sage.domain.rules import CourseGroupMember
 
 
@@ -16,7 +18,7 @@ def member(category: str | None) -> CourseGroupMember:
 
 
 def test_the_twelve_prototype_tabs():
-    assert len(ELECTIVE_TABS) == 12
+    assert len(get_args(ElectiveTab)) == 12
     assert member("science").category == "science"
 
 

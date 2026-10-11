@@ -13,17 +13,24 @@ ACCOUNT = UUID("00000000-0000-4000-8000-000000000001")
 
 
 @pytest.fixture
-def connected(monkeypatch):
-    # Count connections, and hand the command the fakes instead of Supabase
-    calls = []
-    monkeypatch.setattr(sage.cli, "connect", lambda *args: calls.append(args))
+def opened(monkeypatch):
+    # Hands the command the fakes instead of Supabase, and records each store it opens
+    urls = []
+
+    def fake(store):
+        def open_at(url, secret_key):
+            urls.append(url)
+            return store()
+
+        return open_at
+
     monkeypatch.setattr(
-        sage.cli, "SupabaseRuleRepository", lambda _: InMemoryRuleRepository()
+        sage.cli, "SupabaseRuleRepository", fake(InMemoryRuleRepository)
     )
     monkeypatch.setattr(
-        sage.cli, "SupabaseStudentRepository", lambda _: InMemoryStudentRepository()
+        sage.cli, "SupabaseStudentRepository", fake(InMemoryStudentRepository)
     )
-    return calls
+    return urls
 
 
 @pytest.fixture
@@ -43,32 +50,32 @@ def never_asked(prompt: str) -> str:
 
 
 def test_local_supabase_is_seeded_without_asking(
-    seed_file, connected, database, monkeypatch, capsys
+    seed_file, opened, database, monkeypatch, capsys
 ):
     database("http://127.0.0.1:54321")
     monkeypatch.setattr("builtins.input", never_asked)
     sage.cli.run_seed(ACCOUNT, seed_file, yes=False)
-    assert len(connected) == 1
+    assert len(opened) == 2
     assert "her data matches the file" in capsys.readouterr().out
 
 
-def test_a_hosted_project_needs_a_yes(seed_file, connected, database, monkeypatch):
+def test_a_hosted_project_needs_a_yes(seed_file, opened, database, monkeypatch):
     database("https://example.supabase.co")
     monkeypatch.setattr("builtins.input", lambda prompt: "no")
     with pytest.raises(SystemExit, match="Nothing written"):
         sage.cli.run_seed(ACCOUNT, seed_file, yes=False)
-    assert connected == []
+    assert opened == []
 
 
-def test_yes_answers_for_you(seed_file, connected, database, monkeypatch):
+def test_yes_answers_for_you(seed_file, opened, database, monkeypatch):
     database("https://example.supabase.co")
     monkeypatch.setattr("builtins.input", never_asked)
     sage.cli.run_seed(ACCOUNT, seed_file, yes=True)
-    assert len(connected) == 1
+    assert len(opened) == 2
 
 
-def test_missing_settings_stop_it_before_anything_else(seed_file, connected, database):
+def test_missing_settings_stop_it_before_anything_else(seed_file, opened, database):
     database("")
     with pytest.raises(SystemExit, match="SUPABASE_URL"):
         sage.cli.run_seed(ACCOUNT, seed_file, yes=True)
-    assert connected == []
+    assert opened == []

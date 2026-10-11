@@ -4,7 +4,7 @@
 from uuid import UUID
 
 from postgrest import APIError
-from supabase import Client
+from supabase import create_client
 
 from sage.adapters.supabase.tables import insert, row_type, select
 from sage.domain.repositories import AccountNotFound
@@ -28,8 +28,9 @@ ORDER = {
 
 
 class SupabaseStudentRepository:
-    def __init__(self, client: Client) -> None:
-        self._client = client
+    def __init__(self, url: str, secret_key: str) -> None:
+        # The secret key skips row level security, because only the backend writes
+        self._client = create_client(url, secret_key)
 
     def replace(self, state: StudentState) -> None:
         student_id = str(state.student.id)

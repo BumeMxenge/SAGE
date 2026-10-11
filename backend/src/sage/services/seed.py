@@ -28,37 +28,29 @@ from sage.domain.students import (
 RULEBOOK_IDS = uuid5(NAMESPACE_URL, "https://github.com/BumeMxenge/SAGE/rulebook")
 
 
-class FakeAccount(Row):
-    # Who she is to the fakes. A real account supplies its own name, number and email
-    name: str
-    student_number: str
-    email: str
-
-
 class Seed(Row):
     rules: RuleSet
     student: StudentState
-    fake_account: FakeAccount
 
 
 class SeedResult(Row):
     written: dict[str, int]  # rows per table, as in the file
-    rulebook_differences: tuple[
-        str, ...
-    ]  # rulebook rows stored differently from the file
+    # Rulebook rows already stored differently from the file, which seeding leaves alone
+    rulebook_differences: tuple[str, ...]
     student_differences: tuple[str, ...]  # empty when her data reads back as written
 
 
 def load_seed(path: Path, account_id: UUID) -> Seed:
     data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
-    data.pop("_readme", None)  # notes for people reading the file
-    fake_account = FakeAccount.model_validate(data.pop("fake_account"))
+    # Notes for people, and the identity only the fakes use: neither is part of her data
+    data.pop("_readme", None)
+    data.pop("fake_account", None)
     rules = _rulebook(data)
     student = _student(data, account_id)
     if data:
         unknown = ", ".join(sorted(data))
         raise ValueError(f"{path.name} has tables the seed doesn't know: {unknown}")
-    return Seed(rules=rules, student=student, fake_account=fake_account)
+    return Seed(rules=rules, student=student)
 
 
 def seed(rules: RuleRepository, students: StudentRepository, data: Seed) -> SeedResult:

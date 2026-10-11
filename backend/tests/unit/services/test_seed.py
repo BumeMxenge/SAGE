@@ -64,10 +64,9 @@ def test_plan_courses_take_the_year_of_their_plan_set(seed_file, tmp_path):
         load_seed(edited_copy(seed_file, tmp_path, wrong_year), ACCOUNT)
 
 
-def test_her_made_up_identity_stays_out_of_her_data(seed_file):
-    data = load_seed(seed_file, ACCOUNT)
-    assert data.fake_account.name == "Mbali Dlamini"
-    assert "Mbali" not in data.student.model_dump_json()
+def test_her_made_up_identity_is_skipped(seed_file):
+    # fake_account is only for the fakes, so nothing of it reaches what seed writes
+    assert "Mbali" not in load_seed(seed_file, ACCOUNT).model_dump_json()
 
 
 def test_an_unknown_category_is_refused(seed_file, tmp_path):

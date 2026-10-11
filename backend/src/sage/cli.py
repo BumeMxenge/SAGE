@@ -4,7 +4,6 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from uuid import UUID
 
-from sage.adapters.supabase.client import connect
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import get_settings
@@ -47,15 +46,15 @@ def run_seed(account: UUID, file: Path, *, yes: bool) -> None:
 
     # Anywhere but this laptop is real data, so it needs a yes
     if host not in LOCAL_HOSTS and not yes:
-        try:
-            answer = input(f"This writes to {host}. Type yes to continue: ")
-        except EOFError:
-            answer = ""
+        answer = input(f"This writes to {host}. Type yes to continue: ")
         if answer.strip().lower() != "yes":
             raise SystemExit("Nothing written")
 
-    client = connect(settings.supabase_url, settings.supabase_secret_key)
-    rules, students = SupabaseRuleRepository(client), SupabaseStudentRepository(client)
+    url, key = settings.supabase_url, settings.supabase_secret_key
+    rules, students = (
+        SupabaseRuleRepository(url, key),
+        SupabaseStudentRepository(url, key),
+    )
     try:
         result = seed(rules, students, data)
     except AccountNotFound:
