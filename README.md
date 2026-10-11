@@ -85,7 +85,7 @@ The onboarding flow, the registration planner and their loading and error states
 | 2. Data foundation | Ingest handbook and timetable sources, verify extracted rules and build the versioned knowledge store. | 🚧 In progress |
 | 3. Planning engine | Implement eligibility checks, valid plan search and structured explanations. | Planned |
 | 4. Advisor | Add handbook retrieval, engine tools, grounded answers and student-confirmed proposals. | Planned |
-| 5. Shared state and interface | Connect the React interface to the plan service and the advisor. | Planned |
+| 5. Interface | Connect the React interface to the plan service and the advisor. | Planned |
 | 6. Deployment and system checks | Deploy the integrated application and run end-to-end, load, access and usability checks. | Planned |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
