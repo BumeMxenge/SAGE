@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sage.domain.rules import Outcome, TermCode
 from sage.domain.students import ReasonKind
 from sage.ingestion.transcript import WarningCode
+from sage.services.questionnaire import QuestionId
 
 
 class RequestBody(BaseModel):
@@ -191,3 +192,28 @@ class Comparison(BaseModel):
     shared: list[str]  # course codes
     only_first: list[str]
     only_second: list[str]
+
+
+class Option(BaseModel):
+    id: str  # a course code, or one of the week options, or no_preference
+    label: str
+    hearted: bool  # a course she hearted, listed first
+    keeps: list[UUID]  # the plans this answer keeps
+
+
+class Question(BaseModel):
+    id: QuestionId
+    prompt: str
+    hint: str | None
+    options: list[Option]
+
+
+class Questionnaire(BaseModel):
+    needed: bool
+    questions: list[Question]  # empty when it isn't needed
+
+
+class Answers(RequestBody):
+    # An option id per question. A question left out doesn't narrow her plans.
+    course: str | None = None
+    week: Literal["fewest_8am", "lunch_free", "no_preference"] | None = None

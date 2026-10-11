@@ -8,7 +8,7 @@
     "course_history is my own 2023-2025 record, used for Mbali by my choice. The planner prototype already shows it.",
     "Equivalences EEE1006F->EEE1008F, EEE1007S->EEE1009S and EEE2048F->EEE2048S are synthetic: the 2026 handbook doesn't state them.",
     "Complementary entry rules are a refer leaf holding the printed text (null where it says exactly None) until the rule extractor runs.",
-    "plan_sets.answers uses the prototype's questionnaire; its shape belongs to the backend.",
+    "plan_sets.answers holds the questionnaire's answers as {question id: option id}. Wanting EEE4119F with no week preference keeps exactly the 7 plans left visible.",
     "courses.summary is the Explore Electives card outline: one or two sentences written from the handbook outline."
   ],
   "fake_account": {
@@ -1833,9 +1833,8 @@
       "version": 1,
       "complete": true,
       "answers": {
-        "q1": "Mechatronics",
-        "q2": "Robotics & mechatronics",
-        "q3": "No timetable-shape preference"
+        "course": "EEE4119F",
+        "week": "no_preference"
       }
     }
   ],

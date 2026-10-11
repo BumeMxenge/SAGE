@@ -28,6 +28,10 @@ class Code(StrEnum):
     PLANS_NOT_READY = "plans_not_ready"
     PLAN_NOT_FOUND = "plan_not_found"
     SAME_PLAN = "same_plan"
+    QUESTIONNAIRE_NOT_NEEDED = "questionnaire_not_needed"
+    QUESTIONNAIRE_ANSWERED = "questionnaire_answered"
+    UNKNOWN_ANSWER = "unknown_answer"
+    NO_PLAN_MATCHES = "no_plan_matches"
 
 
 class Refusal(Exception):
@@ -167,3 +171,23 @@ class PlanNotFound(Refusal):
 class SamePlan(Refusal):
     status, code = 422, Code.SAME_PLAN
     message = "Choose two different plans."
+
+
+class QuestionnaireNotNeeded(Refusal):
+    status, code = 409, Code.QUESTIONNAIRE_NOT_NEEDED
+    message = "Your plan set is short enough that it doesn't need the questionnaire."
+
+
+class QuestionnaireAnswered(Refusal):
+    status, code = 409, Code.QUESTIONNAIRE_ANSWERED
+    message = "You've already answered the questionnaire."
+
+
+class UnknownAnswer(Refusal):
+    status, code = 422, Code.UNKNOWN_ANSWER
+    message = "That answer isn't one of the options."
+
+
+class NoPlanMatches(Refusal):
+    status, code = 422, Code.NO_PLAN_MATCHES
+    message = "No plan matches all of those answers. Change one and try again."

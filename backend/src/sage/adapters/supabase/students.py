@@ -2,7 +2,7 @@
 # everything of hers, then writes the new state table by table in foreign-key order. Separate REST
 # calls can't share a transaction, so a write that fails part-way is repaired by running it again.
 # Reads for the API embed related rows, so each is one request.
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from typing import Any
 from uuid import UUID
 
@@ -13,6 +13,7 @@ from sage.adapters.supabase.tables import columns, insert, row_type, select
 from sage.domain.repositories import AccountNotFound
 from sage.domain.students import (
     CourseHistoryLine,
+    Favourite,
     Plan,
     PlanCourse,
     PlanReason,
@@ -158,6 +159,40 @@ class SupabaseStudentRepository:
             .eq("student_id", str(rows.plan_set.student_id))
             .execute()
         )
+
+    def hide_plans(
+        self, student_id: UUID, plan_set_id: UUID, keep: Collection[UUID]
+    ) -> None:
+        (
+            self._client.table("plans")
+            .update({"hidden": True})
+            .eq("student_id", str(student_id))
+            .eq("plan_set_id", str(plan_set_id))
+            .not_.in_("id", [str(plan_id) for plan_id in keep])
+            .execute()
+        )
+
+    def save_answers(
+        self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]
+    ) -> None:
+        (
+            self._client.table("plan_sets")
+            .update({"answers": answers})
+            .eq("id", str(plan_set_id))
+            .eq("student_id", str(student_id))
+            .execute()
+        )
+
+    def favourites(self, student_id: UUID) -> tuple[str, ...]:
+        rows = select(
+            self._client,
+            "favourites",
+            Favourite,
+            "student_id",
+            str(student_id),
+            ORDER["favourites"],
+        )
+        return tuple(row.course_code for row in rows)
 
 
 def plan_set_rows(row: dict[str, Any]) -> PlanSetRows:

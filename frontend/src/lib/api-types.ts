@@ -140,10 +140,35 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/questionnaire": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whether her plan set needs narrowing, and the questions that would */
+        get: operations["getQuestionnaire"];
+        put?: never;
+        /** Answer the questionnaire, hiding every plan the answers don't keep */
+        post: operations["answerQuestionnaire"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Answers */
+        Answers: {
+            /** Course */
+            course?: string | null;
+            /** Week */
+            week?: ("fewest_8am" | "lunch_free" | "no_preference") | null;
+        };
         /** Catalogue */
         Catalogue: {
             /** Year */
@@ -159,7 +184,7 @@ export interface components {
          * Code
          * @enum {string}
          */
-        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan";
+        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan" | "questionnaire_not_needed" | "questionnaire_answered" | "unknown_answer" | "no_plan_matches";
         /** Comparison */
         Comparison: {
             first: components["schemas"]["Plan"];
@@ -288,6 +313,17 @@ export interface components {
             /** Choice */
             choice: string | null;
         };
+        /** Option */
+        Option: {
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Hearted */
+            hearted: boolean;
+            /** Keeps */
+            keeps: string[];
+        };
         /** Plan */
         Plan: {
             /**
@@ -379,6 +415,27 @@ export interface components {
             transcript_student_number?: string | null;
             /** Account Student Number */
             account_student_number?: string | null;
+        };
+        /** Question */
+        Question: {
+            /**
+             * Id
+             * @enum {string}
+             */
+            id: "course" | "week";
+            /** Prompt */
+            prompt: string;
+            /** Hint */
+            hint: string | null;
+            /** Options */
+            options: components["schemas"]["Option"][];
+        };
+        /** Questionnaire */
+        Questionnaire: {
+            /** Needed */
+            needed: boolean;
+            /** Questions */
+            questions: components["schemas"]["Question"][];
         };
         /** Reason */
         Reason: {
@@ -971,6 +1028,149 @@ export interface operations {
                 };
             };
             /** @description invalid_request */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getQuestionnaire: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Questionnaire"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    answerQuestionnaire: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Answers"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanSet"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete, questionnaire_not_needed, questionnaire_answered */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request, unknown_answer, no_plan_matches */
             422: {
                 headers: {
                     [name: string]: unknown;

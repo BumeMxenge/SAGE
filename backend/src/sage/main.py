@@ -12,7 +12,7 @@ from sage.adapters.supabase.auth import SupabaseTokenVerifier
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.api import problems
-from sage.api.routes import health, me, onboarding, plans
+from sage.api.routes import health, me, onboarding, plans, questionnaire
 from sage.config import get_settings
 from sage.domain.errors import InternalError
 from sage.services.rulebook import Rulebook
@@ -72,7 +72,7 @@ def create_app() -> FastAPI:
 
     # /health stays at the root, where Azure checks it. Everything a student uses is versioned.
     app.include_router(health.router)
-    for area in (me, onboarding, plans):
+    for area in (me, onboarding, plans, questionnaire):
         app.include_router(area.router, prefix="/v1")
     return app
 

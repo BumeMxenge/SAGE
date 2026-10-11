@@ -1,6 +1,6 @@
 # Each student's data in one dictionary, keyed by her account id. Reads come back in the order the
 # Supabase adapter returns them, so the two can be checked against each other.
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Collection, Iterable, Sequence
 from typing import Any
 from uuid import UUID
 
@@ -121,6 +121,40 @@ class InMemoryStudentRepository:
             plan_reasons=_added(
                 state.plan_reasons, rows.plan_reasons, lambda row: row.id
             ),
+        )
+
+    def hide_plans(
+        self, student_id: UUID, plan_set_id: UUID, keep: Collection[UUID]
+    ) -> None:
+        state = self._students[student_id]
+        self._change(
+            student_id,
+            plans=tuple(
+                plan.model_copy(update={"hidden": True})
+                if plan.plan_set_id == plan_set_id and plan.id not in keep
+                else plan
+                for plan in state.plans
+            ),
+        )
+
+    def save_answers(
+        self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]
+    ) -> None:
+        state = self._students[student_id]
+        self._change(
+            student_id,
+            plan_sets=tuple(
+                row.model_copy(update={"answers": answers})
+                if row.id == plan_set_id
+                else row
+                for row in state.plan_sets
+            ),
+        )
+
+    def favourites(self, student_id: UUID) -> tuple[str, ...]:
+        state = self._students.get(student_id)
+        return (
+            tuple(sorted(row.course_code for row in state.favourites)) if state else ()
         )
 
     def _change(self, student_id: UUID, **tables: tuple[Row, ...]) -> None:

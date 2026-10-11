@@ -106,3 +106,27 @@ def test_plans_by_id_bring_their_set_and_reasons_and_only_hers(store):
     both = store.students.plans(her.student.id, [by_position[1].id, by_position[2].id])
     assert {rows.plans[0].position for rows in both} == {1, 2}
     assert store.students.plans(store.stranger, [by_position[7].id]) == ()
+
+
+def test_her_favourites_are_her_six_electives(store):
+    assert store.students.favourites(store.mbali.student.student.id) == (
+        "EEE4114F",
+        "EEE4117F",
+        "EEE4118F",
+        "EEE4119F",
+        "EEE4120F",
+        "HUB4049F",
+    )
+    assert store.students.favourites(store.stranger) == ()
+
+
+def test_hiding_plans_hides_the_others_and_never_shows_one_again(store):
+    # Her seeded set already hides positions 2 to 4
+    her = store.mbali.student
+    plan_set = her.plan_sets[0]
+    keep = {plan.id for plan in her.plans if plan.position in (1, 2, 5)}
+    store.students.hide_plans(her.student.id, plan_set.id, keep)
+    store.students.save_answers(her.student.id, plan_set.id, {"course": "EEE4118F"})
+    current = store.students.current_plan_set(her.student.id)
+    assert [plan.position for plan in current.plans if not plan.hidden] == [1, 5]
+    assert current.plan_set.answers == {"course": "EEE4118F"}

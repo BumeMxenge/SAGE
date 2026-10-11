@@ -1,8 +1,8 @@
 # The interfaces adapters implement: one home for the rulebook, one for students' data. Services
 # depend on these and never on Supabase, so unit tests can use the in-memory versions instead.
 # Every student method reads or writes only the rows of the student it names.
-from collections.abc import Sequence
-from typing import Protocol
+from collections.abc import Collection, Sequence
+from typing import Any, Protocol
 from uuid import UUID
 
 from sage.domain.rules import ResultSymbol, RuleSet
@@ -59,3 +59,16 @@ class StudentRepository(Protocol):
     # Writes a generated set, skipping rows already stored, and marks it complete last, so a retry
     # after a failure finishes the same set
     def add_plan_set(self, rows: PlanSetRows) -> None: ...
+
+    # Hides every plan in the set except those kept. Plans are only ever hidden, never shown again.
+    def hide_plans(
+        self, student_id: UUID, plan_set_id: UUID, keep: Collection[UUID]
+    ) -> None: ...
+
+    # Stores the questionnaire's answers on the set, which marks it answered
+    def save_answers(
+        self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]
+    ) -> None: ...
+
+    # The codes of the courses she hearted
+    def favourites(self, student_id: UUID) -> tuple[str, ...]: ...
