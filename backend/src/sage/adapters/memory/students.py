@@ -13,12 +13,12 @@ from sage.domain.students import (
     CourseHistoryLine,
     Favourite,
     Message,
-    MessageCitation,
     Plan,
     PlanSetRows,
     Student,
     StudentRecord,
     StudentState,
+    message_citations,
 )
 
 # Where the fake's clock starts. Each stored chat and message gets the next microsecond, so they
@@ -223,16 +223,7 @@ class InMemoryStudentRepository:
     ) -> tuple[Message, Message]:
         state = self._students[reply.student_id]
         stored = self._stamp(question), self._stamp(reply)
-        cited = tuple(
-            MessageCitation(
-                message_id=reply.id,
-                passage_id=citation.passage_id,
-                student_id=reply.student_id,
-                position=citation.position,
-                quote=citation.quote,
-            )
-            for citation in citations
-        )
+        cited = message_citations(reply, citations)
         self._change(
             reply.student_id,
             messages=(*state.messages, *stored),

@@ -16,19 +16,27 @@ class HistoryYear(Row):
     lines: tuple[CourseHistoryLine, ...]
 
 
-def years(lines: Sequence[CourseHistoryLine], intake_year: int) -> list[HistoryYear]:
+class History(Row):
+    cumulative_average: Decimal | None
+    years: tuple[HistoryYear, ...]  # newest first
+
+
+def summary(lines: Sequence[CourseHistoryLine], intake_year: int) -> History:
     by_year: dict[int, list[CourseHistoryLine]] = defaultdict(list)
     for line in lines:
         by_year[line.academic_year].append(line)
-    return [
-        HistoryYear(
-            academic_year=year,
-            year_of_study=year - intake_year + 1,
-            credits=sum(line.credits for line in year_lines),
-            average=average(year_lines),
-            lines=tuple(
-                sorted(year_lines, key=lambda line: (line.course_code, line.term))
-            ),
-        )
-        for year, year_lines in sorted(by_year.items(), reverse=True)
-    ]
+    return History(
+        cumulative_average=average(lines),
+        years=tuple(
+            HistoryYear(
+                academic_year=year,
+                year_of_study=year - intake_year + 1,
+                credits=sum(line.credits for line in year_lines),
+                average=average(year_lines),
+                lines=tuple(
+                    sorted(year_lines, key=lambda line: (line.course_code, line.term))
+                ),
+            )
+            for year, year_lines in sorted(by_year.items(), reverse=True)
+        ),
+    )

@@ -13,7 +13,6 @@ import pytest
 from postgrest import APIError
 from supabase import Client, create_client
 
-from sage.adapters.supabase import connect
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.cli import LOCAL_HOSTS
@@ -48,9 +47,8 @@ def anon(url) -> Client:
 
 
 @pytest.fixture(scope="session")
-def stores(url) -> tuple[SupabaseRuleRepository, SupabaseStudentRepository]:
-    client = connect(url, os.environ["SAGE_TEST_SECRET_KEY"])
-    return SupabaseRuleRepository(client), SupabaseStudentRepository(client)
+def stores(secret) -> tuple[SupabaseRuleRepository, SupabaseStudentRepository]:
+    return SupabaseRuleRepository(secret), SupabaseStudentRepository(secret)
 
 
 @pytest.fixture(scope="session")

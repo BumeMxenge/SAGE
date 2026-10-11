@@ -18,7 +18,6 @@ from sage.domain.students import (
     CourseHistoryLine,
     Favourite,
     Message,
-    MessageCitation,
     Plan,
     PlanCourse,
     PlanReason,
@@ -27,6 +26,7 @@ from sage.domain.students import (
     Student,
     StudentRecord,
     StudentState,
+    message_citations,
 )
 
 FOREIGN_KEY_VIOLATION = "23503"
@@ -309,17 +309,7 @@ class SupabaseStudentRepository:
             .execute()
             .data
         )
-        cited = [
-            MessageCitation(
-                message_id=reply.id,
-                passage_id=citation.passage_id,
-                student_id=reply.student_id,
-                position=citation.position,
-                quote=citation.quote,
-            )
-            for citation in citations
-        ]
-        insert(self._client, "message_citations", cited)
+        insert(self._client, "message_citations", message_citations(reply, citations))
         stored = {row["id"]: Message.model_validate(row) for row in rows}
         return stored[str(question.id)], stored[str(reply.id)]
 

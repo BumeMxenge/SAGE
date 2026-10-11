@@ -171,3 +171,19 @@ def average(lines: Iterable[Graded]) -> Decimal | None:
     if not weight:
         return None
     return (Decimal(total) / weight).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
+def message_citations(
+    reply: Message, citations: Iterable[Citation]
+) -> tuple[MessageCitation, ...]:
+    # The rows that store what a reply cites
+    return tuple(
+        MessageCitation(
+            message_id=reply.id,
+            passage_id=citation.passage_id,
+            student_id=reply.student_id,
+            position=citation.position,
+            quote=citation.quote,
+        )
+        for citation in citations
+    )

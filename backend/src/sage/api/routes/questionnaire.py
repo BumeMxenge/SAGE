@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from sage.api.deps import ONBOARDED_ERRORS, Onboarded, Rules, Students
 from sage.api.models import Answers, PlanSet, Question, Questionnaire
 from sage.api.problems import errors
-from sage.api.routes.plans import plan_set
+from sage.api.routes.plans import get_plans
 from sage.domain.errors import (
     InvalidRequest,
     NoPlanMatches,
@@ -14,7 +14,7 @@ from sage.domain.errors import (
     RulebookNotLoaded,
     UnknownAnswer,
 )
-from sage.services import plans, questionnaire
+from sage.services import questionnaire
 
 router = APIRouter(prefix="/questionnaire", tags=["questionnaire"])
 
@@ -56,5 +56,4 @@ def answer_questionnaire(
     questionnaire.answer(
         students, rulebook, student, answers.model_dump(exclude_none=True)
     )
-    rows = plans.current_set(students, student.id)
-    return plan_set(rows, rulebook.year(rows.plan_set.period))
+    return get_plans(student, students, rulebook)

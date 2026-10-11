@@ -53,9 +53,8 @@ class TranscriptLine(Row):
     result: str
     mark: int | None
     result_printed: bool  # false when the row had no result and GIP was filled in
-    unverified: (
-        bool  # the parser had to guess part of it, so the student should check it
-    )
+    # The parser had to guess part of it, so the student should check it
+    unverified: bool
 
 
 class TranscriptWarning(Row):
@@ -102,7 +101,9 @@ def read_lines(pages: list[list[str]], student_number: str) -> Transcript:
     if len(pages) < max(printed_pages, default=0) or not ends:
         raise TranscriptIncomplete()
     begins = [index for index, line in enumerate(lines) if BEGINNING in line]
-    record = lines[begins[0] + 1 : ends[0]] if begins else []
+    if not begins:
+        raise TranscriptUnreadable()
+    record = lines[begins[0] + 1 : ends[0]]
 
     year, programme = None, None
     printed_gpa: dict[int, Decimal] = {}

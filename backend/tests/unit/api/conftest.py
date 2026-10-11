@@ -67,3 +67,17 @@ def signed_in(app) -> Callable[[str], TestClient]:
         return TestClient(app, headers={"Authorization": f"Bearer {token}"})
 
     return client
+
+
+@pytest.fixture
+def mbali(signed_in) -> TestClient:
+    # Signed in as Mbali, with her data as seeded
+    return signed_in("mbali")
+
+
+@pytest.fixture
+def plan_ids(mbali) -> dict[int, str]:
+    # Her plan ids by position, as the planner learns them from the set
+    return {
+        plan["position"]: plan["id"] for plan in mbali.get("/v1/plans").json()["plans"]
+    }

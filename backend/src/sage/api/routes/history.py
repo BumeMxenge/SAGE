@@ -6,7 +6,6 @@ from fastapi import APIRouter
 from sage.api.deps import ONBOARDED_ERRORS, Onboarded, Students
 from sage.api.models import History, HistoryLine, HistoryYear
 from sage.api.problems import errors
-from sage.domain.students import average
 from sage.services import history
 
 router = APIRouter(tags=["history"])
@@ -18,9 +17,11 @@ router = APIRouter(tags=["history"])
     responses=errors(*ONBOARDED_ERRORS),
 )
 def get_history(student: Onboarded, students: Students) -> History:
-    lines = students.record(student.id).course_history
+    found = history.summary(
+        students.record(student.id).course_history, student.intake_year
+    )
     return History(
-        cumulative_average=number(average(lines)),
+        cumulative_average=number(found.cumulative_average),
         years=[
             HistoryYear(
                 academic_year=year.academic_year,
@@ -40,7 +41,7 @@ def get_history(student: Onboarded, students: Students) -> History:
                     for line in year.lines
                 ],
             )
-            for year in history.years(lines, student.intake_year)
+            for year in found.years
         ],
     )
 

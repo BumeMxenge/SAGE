@@ -8,11 +8,6 @@ from sage.domain.students import CourseHistoryLine
 from tests.unit.api.accounts import MBALI
 
 
-@pytest.fixture
-def mbali(signed_in):
-    return signed_in("mbali")
-
-
 def electives(mbali) -> dict[str, dict]:
     # Every course on every tab, by code, as the page would read them now
     tabs = mbali.get("/v1/electives").json()["tabs"]

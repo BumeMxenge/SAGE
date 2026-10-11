@@ -32,7 +32,8 @@ from sage.services.stubs import FixedAdvisor, InterimEligibility, SeededPlanGene
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # Builds what every request shares, once. A missing setting stops the app here, loudly, rather
-    # than failing every request. Unit tests never run this: they hand the routes fakes instead.
+    # than failing every request. Unit tests run this only to check startup fails; the rest hand
+    # the routes fakes instead.
     settings = get_settings()
     if not settings.supabase_url or not settings.supabase_secret_key:
         raise RuntimeError(

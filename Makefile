@@ -6,15 +6,18 @@
 SUPABASE ?= npx supabase@2.120.0
 # Services `start` skips. None on a laptop, so Studio runs; CI skips the ones its checks never use.
 SUPABASE_START_FLAGS ?=
+# The running local Supabase's URL and keys, from `supabase status`, as shell variables such as
+# API_URL and SECRET_KEY. Targets take them from here, never from backend/.env.
+LOCAL_SUPABASE = env=$$($(SUPABASE) status -o env) && eval "$$env"
 
 install:
 	@cd backend && uv sync
 	@cd frontend && npm ci
 
 # The backend on port 8000, against the running local Supabase (make check-db or supabase start
-# starts it). The URL and key come from supabase status, never from backend/.env.
+# starts it)
 dev:
-	@env=$$($(SUPABASE) status -o env) && eval "$$env" && cd backend && \
+	@$(LOCAL_SUPABASE) && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
 		uv run uvicorn sage.main:app --reload
 
@@ -70,16 +73,14 @@ check-migrations:
 	@$(SUPABASE) db lint --local --fail-on error
 	@$(SUPABASE) db advisors --local --type security --fail-on error
 
-# The integration tests, against the running local Supabase. The URL and keys come from
-# `supabase status`, never from backend/.env, and the tests refuse any URL that isn't local.
+# The integration tests, against the running local Supabase. They refuse any URL that isn't local.
 test-integration:
-	@env=$$($(SUPABASE) status -o env) && eval "$$env" && cd backend && \
+	@$(LOCAL_SUPABASE) && cd backend && \
 		SAGE_TEST_SUPABASE_URL="$$API_URL" SAGE_TEST_PUBLISHABLE_KEY="$$PUBLISHABLE_KEY" \
 		SAGE_TEST_SECRET_KEY="$$SECRET_KEY" uv run pytest -m integration
 
-# Loads the made-up student onto one local account: make seed USER_ID=<account id>.
-# The URL and key come from the running local Supabase, never from backend/.env.
+# Loads the made-up student onto one local account: make seed USER_ID=<account id>
 seed:
-	@env=$$($(SUPABASE) status -o env) && eval "$$env" && cd backend && \
+	@$(LOCAL_SUPABASE) && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
 		uv run sage seed --user "$(USER_ID)"

@@ -149,6 +149,16 @@ def test_a_transcript_missing_a_page_or_its_end(transcript_pages, missing):
         read_lines(transcript_pages, MBALI)
 
 
+def test_a_record_with_no_beginning_line_is_unreadable(transcript_pages):
+    # Without it there's no telling where the record starts, which isn't the same as no courses
+    pages = [
+        [line for line in page if "Beginning of Undergraduate Record" not in line]
+        for page in transcript_pages
+    ]
+    with pytest.raises(TranscriptUnreadable):
+        read_lines(pages, MBALI)
+
+
 def test_a_row_that_cant_be_read_makes_the_transcript_unreadable(transcript_pages):
     replace(
         transcript_pages,
@@ -178,7 +188,7 @@ def test_a_pdf_with_no_text_is_unreadable():
         pdf_pages(bytes(pdf.output()))
 
 
-def test_a_locked_pdf_is_unreadable(transcript_pages):
+def test_a_locked_pdf_is_unreadable():
     pdf = FPDF()
     pdf.set_encryption(owner_password="made-up-owner", user_password="made-up-user")
     pdf.set_font("Helvetica", size=9)

@@ -33,7 +33,7 @@ def list_chats(
     other_plan_id: UUID | None = None,
 ) -> list[Chat]:
     return [
-        chat_model(chat)
+        Chat.model_validate(chat, from_attributes=True)
         for chat in chats.on(students, student.id, plan_id, other_plan_id)
     ]
 
@@ -52,7 +52,8 @@ def list_chats(
     ),
 )
 def start_chat(new: NewChat, student: Onboarded, students: Students) -> Chat:
-    return chat_model(chats.start(students, student.id, new.plan_id, new.other_plan_id))
+    chat = chats.start(students, student.id, new.plan_id, new.other_plan_id)
+    return Chat.model_validate(chat, from_attributes=True)
 
 
 @router.get(
@@ -87,16 +88,6 @@ def send_message(
         students, advisor, student.id, chat_id, new.content, new.term
     )
     return Exchange(question=message_model(question), reply=message_model(reply))
-
-
-def chat_model(chat: domain.Chat) -> Chat:
-    return Chat(
-        id=chat.id,
-        plan_id=chat.plan_id,
-        other_plan_id=chat.other_plan_id,
-        title=chat.title,
-        created_at=chat.created_at,
-    )
 
 
 def message_model(row: domain.CitedMessage) -> Message:

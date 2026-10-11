@@ -6,7 +6,6 @@ from sage.domain.advisor import Advisor
 from sage.domain.errors import (
     ChatNotFound,
     DifferentPlanSets,
-    PlanNotFound,
     QuestionnairePending,
     SamePlan,
 )
@@ -48,15 +47,12 @@ def start(
 ) -> Chat:
     ensure_ready(students, student_id)
     first, second = stored_pair(plan_id, other_plan_id)
-    wanted = [first] if second is None else [first, second]
-    found = {
-        rows.plans[0].id: rows.plan_set.id
-        for rows in students.plans(student_id, wanted)
-    }
-    if len(found) < len(wanted):
-        raise PlanNotFound()
-    if second is not None and found[first] != found[second]:
-        raise DifferentPlanSets()
+    if second is None:
+        plans.one_plan(students, student_id, first)  # only to check it's hers
+    else:
+        one, two = plans.two_plans(students, student_id, first, second)
+        if one.plan_set.id != two.plan_set.id:
+            raise DifferentPlanSets()
     return students.add_chat(
         Chat(id=uuid4(), student_id=student_id, plan_id=first, other_plan_id=second)
     )

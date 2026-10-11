@@ -12,19 +12,6 @@ from tests.unit.api.accounts import MBALI
 QUESTION = {"content": "Which plan has the lighter Fridays?", "term": "sem1"}
 
 
-@pytest.fixture
-def mbali(signed_in):
-    return signed_in("mbali")
-
-
-@pytest.fixture
-def plan_ids(mbali) -> dict[int, str]:
-    # Her plan ids by position, as the planner learns them from the set
-    return {
-        plan["position"]: plan["id"] for plan in mbali.get("/v1/plans").json()["plans"]
-    }
-
-
 def chats_on(client, plan_id: str, other_plan_id: str | None = None):
     # The chats listed for a plan, or for a pair when a second plan is given. A missing second plan
     # is left out of the query, as the client would send None as an empty value that isn't an id.

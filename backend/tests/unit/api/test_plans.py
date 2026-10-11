@@ -1,21 +1,6 @@
 # Checks the planner's plan reads on Mbali's seeded set: what the set shows, each plan in full, a
 # comparison, and that no student can open another's plan
-import pytest
-
 from tests.unit.api.accounts import MBALI
-
-
-@pytest.fixture
-def mbali(signed_in):
-    return signed_in("mbali")
-
-
-@pytest.fixture
-def plan_ids(mbali) -> dict[int, str]:
-    # Her plan ids by position, as the planner learns them from the set
-    return {
-        plan["position"]: plan["id"] for plan in mbali.get("/v1/plans").json()["plans"]
-    }
 
 
 def test_her_set_has_10_plans_and_7_still_visible(mbali):

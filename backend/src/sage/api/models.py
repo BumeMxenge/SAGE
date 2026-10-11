@@ -254,7 +254,7 @@ class HistoryYear(BaseModel):
     year_of_study: int  # her first year is 1
     credits: int
     # The credit-weighted mean of marks to two decimals, as the transcript's Term GPA works it out;
-    # null when no line has a mark
+    # null when no line counts towards it
     average: float | None
     lines: list[HistoryLine]
 
@@ -269,7 +269,7 @@ class Chat(BaseModel):
     plan_id: UUID
     # The second plan of a compared pair, stored lowest id first
     other_plan_id: UUID | None
-    title: str | None  # named after the first exchange; null until then
+    title: str | None  # null on a new chat, as nothing names one yet
     created_at: datetime
 
 
