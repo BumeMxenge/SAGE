@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/onboarding/transcript": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read the course history off her transcript PDF, keeping nothing */
+        post: operations["readTranscript"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/catalogue": {
         parameters: {
             query?: never;
@@ -91,7 +108,7 @@ export interface components {
          * Code
          * @enum {string}
          */
-        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result";
+        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history";
         /** ConfirmedLine */
         ConfirmedLine: {
             /** Academic Year */
@@ -192,6 +209,10 @@ export interface components {
             errors?: components["schemas"]["FieldError"][] | null;
             /** Reference */
             reference?: string | null;
+            /** Transcript Student Number */
+            transcript_student_number?: string | null;
+            /** Account Student Number */
+            account_student_number?: string | null;
         };
         /** ResultSymbol */
         ResultSymbol: {
@@ -211,6 +232,55 @@ export interface components {
             curriculum_code: string;
             /** Lines */
             lines: components["schemas"]["ConfirmedLine"][];
+        };
+        /** Transcript */
+        Transcript: {
+            /** Student Number */
+            student_number: string;
+            /** Programme */
+            programme: string | null;
+            /** Curriculum Options */
+            curriculum_options: components["schemas"]["Curriculum"][];
+            /** Issued On */
+            issued_on: string | null;
+            /** Lines */
+            lines: components["schemas"]["TranscriptLine"][];
+            /** Warnings */
+            warnings: components["schemas"]["TranscriptWarning"][];
+        };
+        /** TranscriptLine */
+        TranscriptLine: {
+            /** Academic Year */
+            academic_year: number;
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+            /** Course Code */
+            course_code: string;
+            /** Course Name */
+            course_name: string;
+            /** Credits */
+            credits: number;
+            /** Nqf Level */
+            nqf_level: number | null;
+            /** Result */
+            result: string;
+            /** Mark */
+            mark: number | null;
+            /** Unverified */
+            unverified: boolean;
+        };
+        /** TranscriptWarning */
+        TranscriptWarning: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "term_gpa_mismatch" | "recent_year_missing" | "results_pending";
+            /** Message */
+            message: string;
         };
     };
     responses: never;
@@ -288,6 +358,93 @@ export interface operations {
             };
             /** @description internal_error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    readTranscript: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/pdf": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Transcript"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description file_too_large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description not_a_pdf */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description transcript_unreadable, not_a_transcript, transcript_not_yours, transcript_incomplete, no_course_history */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

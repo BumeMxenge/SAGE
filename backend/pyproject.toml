@@ -10,6 +10,7 @@ dependencies = [
     "pydantic-settings>=2.0",
     "supabase>=2.0",
     "postgrest>=2.0", # imported directly, not only through supabase
+    "pdfplumber>=0.11.10",
 ]
 
 [project.scripts]
@@ -17,6 +18,7 @@ sage = "sage.cli:main"
 
 [dependency-groups]
 dev = [
+    "fpdf2>=2.8.9",
     "httpx2>=2.13.1", # FastAPI's TestClient uses it to call the app in tests
     "pytest>=8.0",
     "ruff>=0.6",

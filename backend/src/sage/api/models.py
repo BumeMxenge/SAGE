@@ -1,10 +1,12 @@
 # The API's contract: every request and response body. These stay separate from the domain's row
 # types, so the database can change without the frontend noticing, and the other way round.
+from datetime import date
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from sage.domain.rules import Outcome, TermCode
+from sage.ingestion.transcript import WarningCode
 
 
 class RequestBody(BaseModel):
@@ -52,6 +54,35 @@ class Catalogue(BaseModel):
     curricula: list[Curriculum]
     courses: list[Course]
     symbols: list[ResultSymbol]
+
+
+class TranscriptLine(BaseModel):
+    academic_year: int
+    term: TermCode
+    course_code: str
+    course_name: str
+    credits: int
+    nqf_level: int | None
+    result: str
+    mark: int | None
+    unverified: bool  # part of it was guessed, so the review screen flags it
+
+
+class TranscriptWarning(BaseModel):
+    code: WarningCode
+    message: str
+
+
+class Transcript(BaseModel):
+    # What the review screen starts from. Nothing of it is stored until Finish setup.
+    student_number: str
+    programme: str | None  # the latest year's, as printed
+    curriculum_options: list[
+        Curriculum
+    ]  # the current curricula that programme could be
+    issued_on: date | None
+    lines: list[TranscriptLine]
+    warnings: list[TranscriptWarning]
 
 
 class ConfirmedLine(RequestBody):

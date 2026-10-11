@@ -1,12 +1,61 @@
-# Onboarding: saving the course history she confirmed, and attaching her plans
+# Onboarding: reading her transcript for the review screen, then saving the course history she
+# confirmed and attaching her plans
 from collections.abc import Sequence
 from uuid import UUID
 
+from sage.domain.accounts import Account
 from sage.domain.errors import UnknownCurriculum, UnknownResult
 from sage.domain.planning import PlanGenerator
 from sage.domain.repositories import StudentRepository
+from sage.domain.rules import Curriculum
 from sage.domain.students import CourseHistoryLine, Student
+from sage.ingestion.transcript import (
+    Transcript,
+    TranscriptWarning,
+    pdf_pages,
+    read_lines,
+)
 from sage.services.rulebook import Rulebook
+
+
+def read_transcript(
+    data: bytes, account: Account, rulebook: Rulebook
+) -> tuple[Transcript, tuple[Curriculum, ...]]:
+    # Her transcript's lines, warnings and the curricula her programme could be. The PDF and its
+    # text are only ever in memory, and nothing is saved until Finish setup.
+    transcript = read_lines(pdf_pages(data), account.student_number)
+    year = rulebook.current_year()
+    previous = year - 1
+    warnings = list(transcript.warnings)
+    if not any(line.academic_year == previous for line in transcript.lines):
+        # A gap year looks the same, so she can carry on
+        warnings.append(
+            TranscriptWarning(
+                code="recent_year_missing",
+                message=f"Your record has no courses for {previous}. If you took that year "
+                "off, you can carry on.",
+            )
+        )
+    elif any(
+        line.academic_year == previous and not line.result_printed
+        for line in transcript.lines
+    ):
+        warnings.append(
+            TranscriptWarning(
+                code="results_pending",
+                message=f"Some of your {previous} results aren't out yet, so those courses "
+                "are marked in progress. Check them before you finish.",
+            )
+        )
+    programme = (transcript.programme or "").casefold()
+    options = tuple(
+        curriculum
+        for curriculum in sorted(
+            rulebook.year(year).curricula, key=lambda row: row.code
+        )
+        if programme and curriculum.name.casefold().startswith(programme)
+    )
+    return transcript.model_copy(update={"warnings": tuple(warnings)}), options
 
 
 def complete(

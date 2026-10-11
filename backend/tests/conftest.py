@@ -1,9 +1,11 @@
 # Shared pytest fixtures for every backend test
 import json
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from fpdf import FPDF
 
 from sage.domain.rules import ResultSymbol
 from sage.main import create_app
@@ -60,3 +62,30 @@ def mbali_counts() -> dict[str, int]:
         "messages": 4,
         "message_citations": 0,
     }
+
+
+@pytest.fixture
+def transcript_pages() -> list[list[str]]:
+    # The made-up transcript in the real layout, page by page, as pdf_pages reads one: Mbali's
+    # identity and her seeded lines. A fresh copy each time, so a test can edit it.
+    text = (Path(__file__).parent / "fixtures" / "transcript.txt").read_text(
+        encoding="utf-8"
+    )
+    return [page.strip("\n").split("\n") for page in text.split("\f")]
+
+
+@pytest.fixture(scope="session")
+def pdf_of() -> Callable[[list[list[str]]], bytes]:
+    # Prints pages of lines into a PDF, one line per row. Windows-1252 lets the built-in font print
+    # the record's dashes.
+    def make(pages: list[list[str]]) -> bytes:
+        pdf = FPDF()
+        pdf.core_fonts_encoding = "windows-1252"
+        pdf.set_font("Helvetica", size=9)
+        for page in pages:
+            pdf.add_page()
+            for line in page:
+                pdf.cell(text=line, new_x="LMARGIN", new_y="NEXT")
+        return bytes(pdf.output())
+
+    return make

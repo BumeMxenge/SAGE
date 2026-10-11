@@ -1,6 +1,8 @@
 # One student's data as types: one per table row, named after its columns. Timestamps the database
 # stamps itself (created_at, updated_at) are left out until something reads them.
-from typing import Any
+from collections.abc import Iterable
+from decimal import ROUND_HALF_UP, Decimal
+from typing import Any, Protocol
 from uuid import UUID
 
 from sage.domain.base import Row
@@ -113,3 +115,25 @@ class StudentState(Row):
     chats: tuple[Chat, ...] = ()
     messages: tuple[Message, ...] = ()
     message_citations: tuple[MessageCitation, ...] = ()
+
+
+class Graded(Protocol):
+    # Anything with a line's credits, mark and result: a stored line, or one read off a transcript
+    credits: int
+    mark: int | None
+    result: str
+
+
+def average(lines: Iterable[Graded]) -> Decimal | None:
+    # The credit-weighted mean of marks, worked out as the transcript's Term GPA is. A supplementary
+    # pass (SP) counts as 50, and any other line without a mark is left out. Two decimals, half up,
+    # and None when no line counts.
+    total = weight = 0
+    for line in lines:
+        mark = 50 if line.result == "SP" else line.mark
+        if mark is not None:
+            total += mark * line.credits
+            weight += line.credits
+    if not weight:
+        return None
+    return (Decimal(total) / weight).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)

@@ -44,6 +44,9 @@ class Problem(BaseModel):
     errors: list[FieldError] | None = None  # invalid_request only
     # internal_error only; the server log has the same reference
     reference: str | None = None
+    # transcript_not_yours only
+    transcript_student_number: str | None = None
+    account_student_number: str | None = None
 
 
 def problem(

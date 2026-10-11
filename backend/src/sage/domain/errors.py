@@ -17,6 +17,13 @@ class Code(StrEnum):
     RULEBOOK_NOT_LOADED = "rulebook_not_loaded"
     UNKNOWN_CURRICULUM = "unknown_curriculum"
     UNKNOWN_RESULT = "unknown_result"
+    NOT_A_PDF = "not_a_pdf"
+    FILE_TOO_LARGE = "file_too_large"
+    TRANSCRIPT_UNREADABLE = "transcript_unreadable"
+    NOT_A_TRANSCRIPT = "not_a_transcript"
+    TRANSCRIPT_NOT_YOURS = "transcript_not_yours"
+    TRANSCRIPT_INCOMPLETE = "transcript_incomplete"
+    NO_COURSE_HISTORY = "no_course_history"
 
 
 class Refusal(Exception):
@@ -88,3 +95,51 @@ class UnknownCurriculum(Refusal):
 class UnknownResult(Refusal):
     status, code = 422, Code.UNKNOWN_RESULT
     message = "A result isn't one of UCT's result symbols."
+
+
+class NotAPdf(Refusal):
+    status, code = 415, Code.NOT_A_PDF
+    message = "That file isn't a PDF. Export your transcript as a PDF and try again."
+
+
+class FileTooLarge(Refusal):
+    status, code = 413, Code.FILE_TOO_LARGE
+    message = "That file is over 10 MB. Upload a smaller PDF of your transcript."
+
+
+class TranscriptUnreadable(Refusal):
+    status, code = 422, Code.TRANSCRIPT_UNREADABLE
+    message = (
+        "SAGE couldn't read this transcript. Download it again from PeopleSoft and "
+        "upload the new copy."
+    )
+
+
+class NotATranscript(Refusal):
+    status, code = 422, Code.NOT_A_TRANSCRIPT
+    message = (
+        "This PDF isn't a UCT academic record. Upload the academic record you "
+        "downloaded from PeopleSoft."
+    )
+
+
+class TranscriptNotYours(Refusal):
+    status, code = 422, Code.TRANSCRIPT_NOT_YOURS
+    message = "This transcript belongs to another student."
+
+
+class TranscriptIncomplete(Refusal):
+    status, code = 422, Code.TRANSCRIPT_INCOMPLETE
+    message = (
+        "This transcript is missing pages. Download your whole academic record from "
+        "PeopleSoft again."
+    )
+
+
+class NoCourseHistory(Refusal):
+    status, code = 422, Code.NO_COURSE_HISTORY
+    message = (
+        "Your academic record has no courses on it yet. SAGE plans from your course "
+        "history, so there's nothing to plan from. First-year registration follows "
+        "the fixed first-year curriculum in the handbook."
+    )

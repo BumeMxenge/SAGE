@@ -14,6 +14,26 @@ from sage.domain.electives import ElectiveTab
 TermCode = Literal[
     "q1", "q2", "q3", "q4", "sem1", "sem2", "full_year", "winter", "summer", "other"
 ]
+# The handbook's course-code suffix key, as the rule-tables migration gives it: A to D are quarters,
+# F and S semesters, H and W the whole year, L winter, U, J and P summer, and M, X and Z other
+TERM_BY_SUFFIX: dict[str, TermCode] = {
+    "A": "q1",
+    "B": "q2",
+    "C": "q3",
+    "D": "q4",
+    "F": "sem1",
+    "S": "sem2",
+    "H": "full_year",
+    "W": "full_year",
+    "L": "winter",
+    "U": "summer",
+    "J": "summer",
+    "P": "summer",
+    "M": "other",
+    "X": "other",
+    "Z": "other",
+}
+
 # What a result symbol means, as result_symbols.outcome allows
 Outcome = Literal[
     "pass",

@@ -1,6 +1,7 @@
-# Onboarding: the catalogue the review screen picks from, and Finish setup, which saves the lines she
-# confirmed and attaches her plans
-from fastapi import APIRouter, Depends
+# Onboarding: reading her transcript, the catalogue the review screen picks from, and Finish setup,
+# which saves the lines she confirmed and attaches her plans
+from fastapi import APIRouter, Depends, Request
+from starlette.concurrency import run_in_threadpool
 
 from sage.api.deps import (
     STUDENT_ERRORS,
@@ -10,19 +11,101 @@ from sage.api.deps import (
     Students,
     student_account,
 )
-from sage.api.models import Catalogue, Course, Curriculum, Me, ResultSymbol, Setup
+from sage.api.models import (
+    Catalogue,
+    Course,
+    Curriculum,
+    Me,
+    ResultSymbol,
+    Setup,
+    Transcript,
+    TranscriptLine,
+    TranscriptWarning,
+)
 from sage.api.problems import errors
 from sage.api.routes.me import me
 from sage.domain.errors import (
+    FileTooLarge,
     InvalidRequest,
+    NoCourseHistory,
+    NotAPdf,
+    NotATranscript,
     RulebookNotLoaded,
+    TranscriptIncomplete,
+    TranscriptNotYours,
+    TranscriptUnreadable,
     UnknownCurriculum,
     UnknownResult,
 )
 from sage.domain.students import CourseHistoryLine
 from sage.services import onboarding
 
+MAX_TRANSCRIPT_BYTES = 10 * 1024 * 1024
+
 router = APIRouter(tags=["onboarding"])
+
+
+@router.post(
+    "/onboarding/transcript",
+    summary="Read the course history off her transcript PDF, keeping nothing",
+    # The PDF is the whole body rather than a multipart form, because Starlette writes a multipart
+    # upload over 1 MB to disk, and the transcript must never touch disk
+    openapi_extra={
+        "requestBody": {
+            "required": True,
+            "content": {
+                "application/pdf": {"schema": {"type": "string", "format": "binary"}}
+            },
+        }
+    },
+    responses=errors(
+        *STUDENT_ERRORS,
+        FileTooLarge,
+        NotAPdf,
+        TranscriptUnreadable,
+        NotATranscript,
+        TranscriptNotYours,
+        TranscriptIncomplete,
+        NoCourseHistory,
+        RulebookNotLoaded,
+    ),
+)
+async def read_transcript(
+    request: Request, account: StudentAccount, rulebook: Rules
+) -> Transcript:
+    if (
+        request.headers.get("content-type", "").partition(";")[0].strip()
+        != "application/pdf"
+    ):
+        raise NotAPdf()
+    data = bytearray()
+    async for chunk in request.stream():
+        data += chunk
+        if len(data) > MAX_TRANSCRIPT_BYTES:
+            raise FileTooLarge()
+    if not data.startswith(b"%PDF-"):
+        raise NotAPdf()
+    # Reading a PDF is slow work for the CPU, and the rulebook may need a database read, so both
+    # run off the event loop
+    transcript, options = await run_in_threadpool(
+        onboarding.read_transcript, bytes(data), account, rulebook
+    )
+    return Transcript(
+        student_number=transcript.student_number,
+        programme=transcript.programme,
+        curriculum_options=[
+            Curriculum(code=row.code, name=row.name) for row in options
+        ],
+        issued_on=transcript.issued_on,
+        lines=[
+            TranscriptLine.model_validate(line, from_attributes=True)
+            for line in transcript.lines
+        ],
+        warnings=[
+            TranscriptWarning.model_validate(warning, from_attributes=True)
+            for warning in transcript.warnings
+        ],
+    )
 
 
 @router.get(
