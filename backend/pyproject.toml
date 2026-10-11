@@ -9,6 +9,7 @@ dependencies = [
     "uvicorn[standard]>=0.30",
     "pydantic-settings>=2.0",
     "supabase>=2.0",
+    "postgrest>=2.0", # imported directly, not only through supabase
 ]
 
 [project.scripts]
