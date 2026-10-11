@@ -49,33 +49,31 @@ def never_asked(prompt: str) -> str:
     raise AssertionError(f"asked: {prompt}")
 
 
-def test_local_supabase_is_seeded_without_asking(
-    seed_file, opened, database, monkeypatch, capsys
-):
+def test_local_supabase_is_seeded_without_asking(opened, database, monkeypatch, capsys):
     database("http://127.0.0.1:54321")
     monkeypatch.setattr("builtins.input", never_asked)
-    sage.cli.run_seed(ACCOUNT, seed_file, yes=False)
+    sage.cli.run_seed(ACCOUNT, yes=False)
     assert len(opened) == 2
     assert "her data matches the file" in capsys.readouterr().out
 
 
-def test_a_hosted_project_needs_a_yes(seed_file, opened, database, monkeypatch):
+def test_a_hosted_project_needs_a_yes(opened, database, monkeypatch):
     database("https://example.supabase.co")
     monkeypatch.setattr("builtins.input", lambda prompt: "no")
     with pytest.raises(SystemExit, match="Nothing written"):
-        sage.cli.run_seed(ACCOUNT, seed_file, yes=False)
+        sage.cli.run_seed(ACCOUNT, yes=False)
     assert opened == []
 
 
-def test_yes_answers_for_you(seed_file, opened, database, monkeypatch):
+def test_yes_answers_for_you(opened, database, monkeypatch):
     database("https://example.supabase.co")
     monkeypatch.setattr("builtins.input", never_asked)
-    sage.cli.run_seed(ACCOUNT, seed_file, yes=True)
+    sage.cli.run_seed(ACCOUNT, yes=True)
     assert len(opened) == 2
 
 
-def test_missing_settings_stop_it_before_anything_else(seed_file, opened, database):
+def test_missing_settings_stop_it_before_anything_else(opened, database):
     database("")
     with pytest.raises(SystemExit, match="SUPABASE_URL"):
-        sage.cli.run_seed(ACCOUNT, seed_file, yes=True)
+        sage.cli.run_seed(ACCOUNT, yes=True)
     assert opened == []

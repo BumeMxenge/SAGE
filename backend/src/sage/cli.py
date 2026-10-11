@@ -24,17 +24,16 @@ def main(argv: list[str] | None = None) -> None:
     seed_command.add_argument(
         "--user", type=UUID, required=True, help="the account's id in Supabase Auth"
     )
-    seed_command.add_argument("--file", type=Path, default=SEED_FILE)
     seed_command.add_argument(
         "--yes", action="store_true", help="write to a hosted project without asking"
     )
 
     args = parser.parse_args(argv)
     if args.command == "seed":
-        run_seed(args.user, args.file, yes=args.yes)
+        run_seed(args.user, yes=args.yes)
 
 
-def run_seed(account: UUID, file: Path, *, yes: bool) -> None:
+def run_seed(account: UUID, *, yes: bool) -> None:
     settings = get_settings()
     if not settings.supabase_url or not settings.supabase_secret_key:
         raise SystemExit(
@@ -42,7 +41,8 @@ def run_seed(account: UUID, file: Path, *, yes: bool) -> None:
             "local Supabase, and backend/.env holds the hosted project's"
         )
     host = urlsplit(settings.supabase_url).hostname or settings.supabase_url
-    data = load_seed(file, account)  # a bad file stops here, before anything is written
+    # A bad file stops here, before anything is written
+    data = load_seed(SEED_FILE, account)
 
     # Anywhere but this laptop is real data, so it needs a yes
     if host not in LOCAL_HOSTS and not yes:
@@ -63,7 +63,7 @@ def run_seed(account: UUID, file: Path, *, yes: bool) -> None:
             "Authentication > Users in the Supabase dashboard"
         ) from None
 
-    print(f"Seeded {file.name} onto account {account} on {host}:")
+    print(f"Seeded {SEED_FILE.name} onto account {account} on {host}:")
     for table, count in result.written.items():
         print(f"  {table}: {count}")
     for difference in result.rulebook_differences:
@@ -72,7 +72,3 @@ def run_seed(account: UUID, file: Path, *, yes: bool) -> None:
         problems = "; ".join(result.student_differences)
         raise SystemExit(f"Her data didn't read back as written: {problems}")
     print("Read back: her data matches the file.")
-
-
-if __name__ == "__main__":
-    main()

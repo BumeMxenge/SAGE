@@ -20,7 +20,7 @@ def seed_file() -> Path:
 
 @pytest.fixture(scope="session")
 def mbali_counts() -> dict[str, int]:
-    # The rows per table that the M1 plan's Mbali table lists for the seed file
+    # The rows per table the seed file holds, written out by hand rather than counted from the file
     return {
         "handbook_versions": 1,
         "curricula": 1,

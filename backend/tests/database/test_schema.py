@@ -2,12 +2,13 @@
 # a passage can hold an embedding
 import pytest
 
-from sage.adapters.supabase import rules, students
+from sage.adapters.supabase import students
+from sage.domain.rules import RuleSet
 
 pytestmark = pytest.mark.integration
 
 # Every table the backend uses. Not heartbeat: only the keep-alive's publishable key reads that.
-TABLES = [*rules.ORDER, "students", *students.ORDER, "result_symbols"]
+TABLES = [*RuleSet.model_fields, "students", *students.ORDER, "result_symbols"]
 
 
 @pytest.mark.parametrize("table", TABLES)

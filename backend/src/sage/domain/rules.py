@@ -116,3 +116,25 @@ class RuleSet(Row):
     timetable_slot_curricula: tuple[TimetableSlotCurriculum, ...] = ()
     passages: tuple[Passage, ...] = ()
     handbook_deltas: tuple[HandbookDelta, ...] = ()
+
+
+# Each table's primary key. A store skips a row whose key it already holds, and reads rows in key
+# order, which gives every row one fixed place across pages
+PRIMARY_KEYS: dict[str, tuple[str, ...]] = {
+    "handbook_versions": ("year",),
+    "curricula": ("handbook_year", "code"),
+    "curriculum_rules": ("handbook_year", "curriculum_code", "year_of_study"),
+    "courses": ("handbook_year", "code"),
+    "course_groups": ("handbook_year", "group_key"),
+    "course_group_members": ("handbook_year", "group_key", "course_code"),
+    "equivalences": ("handbook_year", "course_code", "counts_as"),
+    "timetable_slots": ("id",),
+    "timetable_slot_curricula": ("slot_id", "curriculum_code"),
+    "passages": ("id",),
+    "handbook_deltas": ("handbook_year", "entity", "entity_key"),
+}
+
+
+def year_column(table: str) -> str:
+    # handbook_versions names its year "year"; every other table "handbook_year"
+    return "year" if table == "handbook_versions" else "handbook_year"

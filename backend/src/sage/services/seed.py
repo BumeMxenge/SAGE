@@ -42,9 +42,8 @@ class SeedResult(Row):
 
 def load_seed(path: Path, account_id: UUID) -> Seed:
     data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
-    # Notes for people, and the identity only the fakes use: neither is part of her data
+    # Notes for people, not part of her data
     data.pop("_readme", None)
-    data.pop("fake_account", None)
     rules = _rulebook(data)
     student = _student(data, account_id)
     if data:

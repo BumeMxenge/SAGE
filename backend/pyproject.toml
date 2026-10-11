@@ -9,6 +9,7 @@ dependencies = [
     "uvicorn[standard]>=0.30",
     "pydantic-settings>=2.0",
     "supabase>=2.0",
+    "postgrest>=2.0", # imported directly, not only through supabase
 ]
 
 [project.scripts]
@@ -31,7 +32,7 @@ packages = ["src/sage"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--import-mode=importlib"]
-markers = ["integration: needs live Supabase or a model API"]
+markers = ["integration: needs local Supabase (make test-integration)"]
 
 [tool.ruff.lint]
 extend-select = ["I", "B", "UP"] # import order, likely bugs, outdated syntax

@@ -1,15 +1,16 @@
 # Checks sage seed's path through the real database: the counts, a second run, the read-back, and
-# the query the browser makes to show her plans
+# the query the browser will make to show her plans
 import pytest
 from postgrest import CountMethod
 
-from sage.adapters.supabase import rules, students
+from sage.adapters.supabase import students
+from sage.domain.rules import RuleSet, year_column
 from sage.services.seed import load_seed, seed
 
 pytestmark = pytest.mark.integration
 
-# The query the frontend makes: her latest complete plan set, its visible plans in order, and each
-# plan's courses with their names and credits
+# The query the frontend will make: her latest complete plan set, its visible plans in order, and
+# each plan's courses with their names and credits
 PLANS = "period, version, plans(position, name, hidden, plan_courses(course_code, courses(name, credits)))"
 
 
@@ -19,10 +20,7 @@ def stored_counts(secret, student_id: str) -> dict[str, int]:
         return query.eq(column, value).execute().count
 
     rulebook = {
-        table: count(
-            table, "year" if table == "handbook_versions" else "handbook_year", 2026
-        )
-        for table in rules.ORDER
+        table: count(table, year_column(table), 2026) for table in RuleSet.model_fields
     }
     hers = {"students": count("students", "id", student_id)}
     hers |= {table: count(table, "student_id", student_id) for table in students.ORDER}

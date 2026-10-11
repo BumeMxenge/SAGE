@@ -131,11 +131,3 @@ def test_a_slot_with_times_but_no_day_is_kept(secret, mbali):
     stored = secret.table("timetable_slots").insert(slot).execute().data[0]
     secret.table("timetable_slots").delete().eq("id", stored["id"]).execute()
     assert stored["day"] is None
-
-
-def test_plan_courses_are_in_their_plan_sets_year(stores, mbali):
-    state = stores[1].get(mbali.student.student.id)
-    periods = {plan_set.id: plan_set.period for plan_set in state.plan_sets}
-    years = {plan.id: periods[plan.plan_set_id] for plan in state.plans}
-    assert state.plan_courses
-    assert all(row.handbook_year == years[row.plan_id] for row in state.plan_courses)

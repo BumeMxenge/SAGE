@@ -1,24 +1,27 @@
-<!-- Component map and dependency rule for the whole system. The black-box architecture diagram goes here -->
+<!-- Component map and dependency rule for the whole system -->
 # Architecture
 
 ## Where things live
 
+Folders marked (planned) don't exist yet; each arrives with its first code.
+
 | Folder | What it does |
 | --- | --- |
 | `backend/src/sage/api` | HTTP routes, request and response schemas, auth dependencies |
+| `backend/src/sage/cli.py` | The `sage` command, such as `sage seed`, which loads the made-up student |
 | `backend/src/sage/services` | Use cases that join the components: onboarding, planning, check-ins |
-| `backend/src/sage/ingestion` | Turns handbook, transcript, timetable and electives sources into a year-versioned rule model |
-| `backend/src/sage/engine` | Validates plans and generates every valid plan (clingo) |
-| `backend/src/sage/advisor` | Conversational agent: engine tools, retrieval, guardrails, prompts |
+| `backend/src/sage/ingestion` (planned) | Turns handbook, transcript, timetable and electives sources into a year-versioned rule model |
+| `backend/src/sage/engine` (planned) | Validates plans and generates every valid plan (clingo) |
+| `backend/src/sage/advisor` (planned) | Conversational agent: engine tools, retrieval, guardrails, prompts |
 | `backend/src/sage/domain` | Shared models (plan, course, rule model, student) and interfaces |
-| `backend/src/sage/adapters` | Supabase and model-provider implementations of those interfaces |
+| `backend/src/sage/adapters` | Supabase and (planned) model-provider implementations of those interfaces, and in-memory fakes for tests |
 | `frontend/` | React and TypeScript interface, deployed as static files |
 | `supabase/` | Database migrations |
-| `data/` | Raw sources and reviewed rule snapshots, by year |
+| `data/` | Raw sources and reviewed rule snapshots by year, and the made-up student in `synthetic/` |
 
 ## Dependency rule
 
-Imports only point inward: `api → services → ingestion / engine / advisor → domain`.
+Imports only point inward: `api / cli → services → ingestion / engine / advisor → domain`.
 
 - `adapters/` implements interfaces defined in `domain/`.
 - `advisor` may call `engine` (its tools). `engine` never calls `advisor`.

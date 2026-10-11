@@ -1,1 +1,1 @@
-# Supabase: database repositories and auth
+# Supabase: the database repositories
