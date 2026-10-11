@@ -4,7 +4,7 @@
     "Rows carry no uuids or student_id. sage seed fills student_id from the signed-in account and makes the uuids.",
     "Rows that point at other seed rows use local keys: plan_set, plan, other_plan, chat. sage seed swaps them for uuids.",
     "chats.plan and other_plan must be stored with plan_id < other_plan_id, so sage seed orders each pair after making the uuids.",
-    "course_history is B's own 2023-2025 record, used for Mbali by his choice. The planner prototype already shows it.",
+    "course_history is my own 2023-2025 record, used for Mbali by my choice. The planner prototype already shows it.",
     "Equivalences EEE1006F->EEE1008F, EEE1007S->EEE1009S and EEE2048F->EEE2048S are synthetic: the 2026 handbook doesn't state them.",
     "Complementary entry rules are a refer leaf holding the printed text (null where it says exactly None) until the rule extractor runs.",
     "plan_sets.answers uses the prototype's questionnaire; its shape belongs to the backend.",

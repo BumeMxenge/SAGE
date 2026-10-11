@@ -70,22 +70,22 @@ These are the selected technologies and development tools for the planned implem
 
 Python will support ingestion, deterministic rule evaluation, the plan service and advisor tools. Supabase Postgres is the selected store for versioned rules, plans and handbook passages. The FastAPI backend runs as a container on Azure Container Apps, the React interface is deployed separately as static files, and Supabase (EU) holds the data and handles sign-in.
 
-The PDF library, plan solver, embedding and search configuration, language model, and synchronisation protocol will be selected through design experiments.
+pdfplumber reads the handbooks and clingo generates plans. The embedding and search configuration and the language model will be selected through design experiments.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- STATUS -->
 ## Project Status
 
-The onboarding and registration planner have interactive HTML prototypes with mock data. The implementation roadmap below covers the application only.
+The onboarding flow, the registration planner and their loading and error states have interactive HTML prototypes with mock data. The implementation roadmap below covers the application only.
 
 | Stage | Implementation work | Status |
 | --- | --- | --- |
 | 1. Interface prototypes | Explore the onboarding and planning flows with mock data. | ✅ Complete |
-| 2. Data foundation | Ingest handbook and timetable sources, verify extracted rules and build the versioned knowledge store. | 📍 Current starting point |
+| 2. Data foundation | Ingest handbook and timetable sources, verify extracted rules and build the versioned knowledge store. | 🚧 In progress |
 | 3. Planning engine | Implement eligibility checks, valid plan search and structured explanations. | Planned |
 | 4. Advisor | Add handbook retrieval, engine tools, grounded answers and student-confirmed proposals. | Planned |
-| 5. Shared state and interface | Connect the React interface to the plan service and synchronise timetable and chat changes. | Planned |
+| 5. Shared state and interface | Connect the React interface to the plan service and the advisor. | Planned |
 | 6. Deployment and system checks | Deploy the integrated application and run end-to-end, load, access and usability checks. | Planned |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

@@ -1,5 +1,5 @@
 # Checks sage seed's path through the real database: the counts, a second run, the read-back, and
-# the query the browser makes to show her plans
+# the query the browser will make to show her plans
 import pytest
 from postgrest import CountMethod
 
@@ -9,8 +9,8 @@ from sage.services.seed import load_seed, seed
 
 pytestmark = pytest.mark.integration
 
-# The query the frontend makes: her latest complete plan set, its visible plans in order, and each
-# plan's courses with their names and credits
+# The query the frontend will make: her latest complete plan set, its visible plans in order, and
+# each plan's courses with their names and credits
 PLANS = "period, version, plans(position, name, hidden, plan_courses(course_code, courses(name, credits)))"
 
 
