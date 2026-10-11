@@ -2,14 +2,16 @@
 # and a signed-out browser read nothing, and nobody in a browser writes
 import pytest
 
-from sage.adapters.supabase import rules, students
+from sage.adapters.supabase import students
+from sage.domain.rules import RuleSet
 
 pytestmark = pytest.mark.integration
 
 PERMISSION_DENIED = "42501"
+RULEBOOK_TABLES = [*RuleSet.model_fields]
 STUDENT_TABLES = ["students", *students.ORDER]
 # Students read the approved rulebook, except the review of changes, which only the backend sees
-READABLE_RULEBOOK = [table for table in rules.ORDER if table != "handbook_deltas"]
+READABLE_RULEBOOK = [table for table in RULEBOOK_TABLES if table != "handbook_deltas"]
 
 
 @pytest.mark.parametrize("table", STUDENT_TABLES)
@@ -22,7 +24,7 @@ def test_she_reads_her_own_rows_and_a_stranger_reads_none(
     assert stranger.client.table(table).select("*").execute().data == []
 
 
-@pytest.mark.parametrize("table", [*rules.ORDER, *STUDENT_TABLES, "result_symbols"])
+@pytest.mark.parametrize("table", [*RULEBOOK_TABLES, *STUDENT_TABLES, "result_symbols"])
 def test_a_signed_out_browser_is_refused(anon, refused, table):
     refused(anon.table(table).select("*"), PERMISSION_DENIED)
 

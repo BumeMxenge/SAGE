@@ -3,7 +3,8 @@
 import pytest
 from postgrest import CountMethod
 
-from sage.adapters.supabase import rules, students
+from sage.adapters.supabase import students
+from sage.domain.rules import RuleSet, year_column
 from sage.services.seed import load_seed, seed
 
 pytestmark = pytest.mark.integration
@@ -19,10 +20,7 @@ def stored_counts(secret, student_id: str) -> dict[str, int]:
         return query.eq(column, value).execute().count
 
     rulebook = {
-        table: count(
-            table, "year" if table == "handbook_versions" else "handbook_year", 2026
-        )
-        for table in rules.ORDER
+        table: count(table, year_column(table), 2026) for table in RuleSet.model_fields
     }
     hers = {"students": count("students", "id", student_id)}
     hers |= {table: count(table, "student_id", student_id) for table in students.ORDER}
