@@ -12,6 +12,12 @@ ENV UV_COMPILE_BYTECODE=1 \
 COPY pyproject.toml uv.lock .python-version ./
 RUN uv sync --frozen --no-dev --no-install-project
 
+# Mbali's seed, which the plan stand-in reads at runtime. services/seed.py looks for it four folders
+# above itself, which in the image is /data/synthetic. It lives outside backend/, so the build passes
+# its folder as a named context: --build-context seed=../data/synthetic. It goes when the engine
+# replaces the stand-in.
+COPY --from=seed mbali.json /data/synthetic/mbali.json
+
 # Then the app itself
 COPY src/ src/
 RUN uv sync --frozen --no-dev

@@ -1,7 +1,13 @@
 # One student's data as types: one per table row, named after its columns. Timestamps the database
-# stamps itself (created_at, updated_at) are left out until something reads them.
-from typing import Any
+# stamps itself (created_at, updated_at) are left out until something reads them, and then are
+# read-only: excluded from every dump, so a write never sends one.
+from collections.abc import Iterable
+from datetime import datetime
+from decimal import ROUND_HALF_UP, Decimal
+from typing import Any, Literal, Protocol
 from uuid import UUID
+
+from pydantic import Field
 
 from sage.domain.base import Row
 
@@ -56,6 +62,10 @@ class PlanCourse(Row):
     choices: dict[str, str] | None = None
 
 
+# What a reason explains, as plan_reasons.kind allows
+ReasonKind = Literal["excluded", "conflict", "conditional", "included"]
+
+
 class PlanReason(Row):
     id: UUID
     plan_set_id: UUID
@@ -63,7 +73,7 @@ class PlanReason(Row):
     plan_id: UUID | None = None
     course_code: str | None = None
     passage_id: UUID | None = None
-    kind: str
+    kind: ReasonKind
     message: str
     details: dict[str, Any] | None = None
 
@@ -74,15 +84,19 @@ class Chat(Row):
     plan_id: UUID
     other_plan_id: UUID | None = None
     title: str | None = None
+    created_at: datetime | None = Field(default=None, exclude=True)
 
 
 class Message(Row):
     id: UUID
     chat_id: UUID
     student_id: UUID
-    role: str
+    role: Literal["user", "assistant"]
     content: str
     term: str | None = None
+    referral: bool = False  # the reply hands the question to a human advisor
+    open_plan_id: UUID | None = None  # a plan the reply offers to open
+    created_at: datetime | None = Field(default=None, exclude=True)
 
 
 class MessageCitation(Row):
@@ -91,6 +105,36 @@ class MessageCitation(Row):
     student_id: UUID
     position: int
     quote: str
+
+
+class Citation(Row):
+    # A handbook passage an answer cites: the words quoted and where the passage sits
+    passage_id: UUID
+    position: int
+    quote: str
+    source: str
+    section: str
+    page: int
+
+
+class CitedMessage(Row):
+    # A message as a chat shows it, with the passages it cites
+    message: Message
+    citations: tuple[Citation, ...] = ()
+
+
+class PlanSetRows(Row):
+    # A plan set with some or all of its plans, their courses and the reasons, as the API reads them
+    plan_set: PlanSet
+    plans: tuple[Plan, ...] = ()
+    plan_courses: tuple[PlanCourse, ...] = ()
+    plan_reasons: tuple[PlanReason, ...] = ()
+
+
+class StudentRecord(Row):
+    # Her course history and the codes of the courses she hearted, which the planner reads together
+    course_history: tuple[CourseHistoryLine, ...] = ()
+    favourites: tuple[str, ...] = ()
 
 
 class StudentState(Row):
@@ -105,3 +149,41 @@ class StudentState(Row):
     chats: tuple[Chat, ...] = ()
     messages: tuple[Message, ...] = ()
     message_citations: tuple[MessageCitation, ...] = ()
+
+
+class Graded(Protocol):
+    # Anything with a line's credits, mark and result: a stored line, or one read off a transcript
+    credits: int
+    mark: int | None
+    result: str
+
+
+def average(lines: Iterable[Graded]) -> Decimal | None:
+    # The credit-weighted mean of marks, worked out as the transcript's Term GPA is. A supplementary
+    # pass (SP) counts as 50, and any other line without a mark is left out. Two decimals, half up,
+    # and None when no line counts.
+    total = weight = 0
+    for line in lines:
+        mark = 50 if line.result == "SP" else line.mark
+        if mark is not None:
+            total += mark * line.credits
+            weight += line.credits
+    if not weight:
+        return None
+    return (Decimal(total) / weight).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
+def message_citations(
+    reply: Message, citations: Iterable[Citation]
+) -> tuple[MessageCitation, ...]:
+    # The rows that store what a reply cites
+    return tuple(
+        MessageCitation(
+            message_id=reply.id,
+            passage_id=citation.passage_id,
+            student_id=reply.student_id,
+            position=citation.position,
+            quote=citation.quote,
+        )
+        for citation in citations
+    )

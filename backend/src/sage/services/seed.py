@@ -23,6 +23,10 @@ from sage.domain.students import (
     StudentState,
 )
 
+# Four folders up from this file: the repo root on a laptop, and / in the backend image, which copies
+# the file there for the plan stand-in
+SEED_FILE = Path(__file__).resolve().parents[4] / "data" / "synthetic" / "mbali.json"
+
 # Rulebook ids come from the row alone, not the account, so every account seeded from the file
 # shares the same timetable slots instead of adding its own copies
 RULEBOOK_IDS = uuid5(NAMESPACE_URL, "https://github.com/BumeMxenge/SAGE/rulebook")
@@ -42,8 +46,9 @@ class SeedResult(Row):
 
 def load_seed(path: Path, account_id: UUID) -> Seed:
     data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
-    # Notes for people, not part of her data
+    # Notes for people, and her made-up identity, which only the tests use: neither is her data
     data.pop("_readme", None)
+    data.pop("fake_account", None)
     rules = _rulebook(data)
     student = _student(data, account_id)
     if data:
@@ -174,8 +179,15 @@ def _student(data: dict[str, Any], account_id: UUID) -> StudentState:
     messages = []
     for row in data.pop("messages", []):
         key, chat = row.pop("key"), chats[row.pop("chat")]
+        offered = row.pop("open_plan", None)  # a plan the reply offers to open
         messages.append(
-            Message(id=new_id("messages", key), chat_id=chat.id, **owner, **row)
+            Message(
+                id=new_id("messages", key),
+                chat_id=chat.id,
+                open_plan_id=plans[offered].id if offered else None,
+                **owner,
+                **row,
+            )
         )
 
     return StudentState(

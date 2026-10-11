@@ -10,6 +10,11 @@ PAGE = 1000  # the most rows the Data API returns per request (max_rows)
 BATCH = 500  # rows per write, so no single request grows too large
 
 
+def columns(model: type[BaseModel]) -> str:
+    # A select list naming exactly the type's columns
+    return ",".join(model.model_fields)
+
+
 def row_type(container: type[BaseModel], field: str) -> type[BaseModel]:
     # The row type inside a field such as `courses: tuple[Course, ...]`
     return get_args(container.model_fields[field].annotation)[0]
@@ -45,9 +50,7 @@ def select[T: BaseModel](
     # Only the type's columns, a page at a time, in a fixed order so the pages don't overlap
     rows: list[dict[str, Any]] = []
     while True:
-        query = (
-            client.table(table).select(",".join(model.model_fields)).eq(column, value)
-        )
+        query = client.table(table).select(columns(model)).eq(column, value)
         for name in order:
             query = query.order(name)
         page = query.range(len(rows), len(rows) + PAGE - 1).execute().data

@@ -4,13 +4,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
+from sage.api.models import Health
 from sage.config import Settings, get_settings
 
 router = APIRouter(tags=["health"])
 
 
-@router.get("/health")
-async def health(
-    settings: Annotated[Settings, Depends(get_settings)],
-) -> dict[str, str]:
-    return {"status": "ok", "commit": settings.git_sha}
+@router.get("/health", summary="Check the backend is up, and which commit it runs")
+async def get_health(settings: Annotated[Settings, Depends(get_settings)]) -> Health:
+    return Health(status="ok", commit=settings.git_sha)

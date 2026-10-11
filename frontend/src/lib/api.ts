@@ -1,7 +1,8 @@
 // Calls to the SAGE backend (FastAPI). Every request goes through here, so the address lives in one place.
+import type { components } from './api-types.ts'
 import { env } from './env.ts'
 
-export type Health = { status: string; commit: string }
+export type Health = components['schemas']['Health']
 
 export async function getHealth(signal?: AbortSignal): Promise<Health> {
   const response = await fetch(`${env.apiUrl}/health`, { signal })

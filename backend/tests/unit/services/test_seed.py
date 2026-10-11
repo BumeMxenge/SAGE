@@ -87,4 +87,5 @@ def test_the_fakes_give_back_what_was_seeded(seed_file):
     again = seed(rules, students, data)
     assert first.rulebook_differences == first.student_differences == ()
     assert again == first
-    assert students.get(ACCOUNT) == data.student
+    # Compared as written: the fake stamps each chat and message with a time, as the database does
+    assert students.get(ACCOUNT).model_dump() == data.student.model_dump()

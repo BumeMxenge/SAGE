@@ -1,16 +1,15 @@
 # Command-line entry point: `uv run sage <command>`, e.g. `uv run sage seed --user <account id>`
 import argparse
-from pathlib import Path
 from urllib.parse import urlsplit
 from uuid import UUID
 
+from sage.adapters.supabase import connect
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import get_settings
 from sage.domain.repositories import AccountNotFound
-from sage.services.seed import load_seed, seed
+from sage.services.seed import SEED_FILE, load_seed, seed
 
-SEED_FILE = Path(__file__).resolve().parents[3] / "data" / "synthetic" / "mbali.json"
 LOCAL_HOSTS = {"127.0.0.1", "localhost"}
 
 
@@ -50,11 +49,8 @@ def run_seed(account: UUID, *, yes: bool) -> None:
         if answer.strip().lower() != "yes":
             raise SystemExit("Nothing written")
 
-    url, key = settings.supabase_url, settings.supabase_secret_key
-    rules, students = (
-        SupabaseRuleRepository(url, key),
-        SupabaseStudentRepository(url, key),
-    )
+    client = connect(settings.supabase_url, settings.supabase_secret_key)
+    rules, students = SupabaseRuleRepository(client), SupabaseStudentRepository(client)
     try:
         result = seed(rules, students, data)
     except AccountNotFound:
