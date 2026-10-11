@@ -8,14 +8,8 @@
     "Equivalences EEE1006F->EEE1008F, EEE1007S->EEE1009S and EEE2048F->EEE2048S are synthetic: the 2026 handbook doesn't state them.",
     "Complementary entry rules are a refer leaf holding the printed text (null where it says exactly None) until the rule extractor runs.",
     "plan_sets.answers uses the prototype's questionnaire; its shape belongs to the backend.",
-    "courses.summary is the Explore Electives card outline: one or two sentences written from the handbook outline.",
-    "fake_account is Mbali's made-up identity for the fakes only. sage seed never writes it: a real account supplies its own name and number."
+    "courses.summary is the Explore Electives card outline: one or two sentences written from the handbook outline."
   ],
-  "fake_account": {
-    "name": "Mbali Dlamini",
-    "student_number": "DLMMBA001",
-    "email": "dlmmba001@example.com"
-  },
   "handbook_versions": [
     {
       "year": 2026,
