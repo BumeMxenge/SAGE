@@ -1,6 +1,6 @@
-# Shortcuts for common tasks, run from the repo root. CI runs the check targets too,
-# so `make check` passing on your laptop means CI's backend and frontend jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-db check-migrations test-integration seed
+# Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
+# passing on your laptop means CI's backend, frontend and contract jobs will pass.
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -34,13 +34,30 @@ lint:
 format:
 	@cd backend && uv run ruff check --fix && uv run ruff format
 
-# Everything CI's backend and frontend jobs check. The database check is separate because it needs Docker.
-check: check-backend check-frontend
+# Everything CI's backend, frontend and contract jobs check. The database check is separate because
+# it needs Docker.
+check: check-backend check-frontend check-contract
 
 check-backend: lint test
 
 check-frontend:
 	@cd frontend && npm run lint && npm test --if-present && npm run build
+
+# The frontend's types for every request and response, generated from the backend's OpenAPI schema.
+# The schema goes to a temporary file, so only api-types.ts is ever committed.
+api-types:
+	@schema=$$(mktemp) && trap 'rm -f "$$schema"' EXIT && \
+		(cd backend && uv run python -c \
+			"import json; from sage.main import app; print(json.dumps(app.openapi()))") > "$$schema" && \
+		cd frontend && npx openapi-typescript "$$schema" --output src/lib/api-types.ts
+
+# Fails when api-types.ts doesn't match the backend, so a frontend built on an old contract never
+# reaches main. It compares only that one file, so other uncommitted work never fails it.
+check-contract: api-types
+	@git ls-files --error-unmatch frontend/src/lib/api-types.ts > /dev/null 2>&1 && \
+		git diff --quiet -- frontend/src/lib/api-types.ts || { \
+		echo "frontend/src/lib/api-types.ts doesn't match the backend. Commit what make api-types wrote."; \
+		exit 1; }
 
 # What CI's database job runs, as its two steps: rebuild the local database from every migration and
 # check it, then run the integration tests against it. The rebuild wipes local data, accounts
