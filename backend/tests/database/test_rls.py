@@ -1,0 +1,60 @@
+# Checks row level security as a browser meets it: a student reads only her own rows, a stranger
+# and a signed-out browser read nothing, and nobody in a browser writes
+import pytest
+
+from sage.adapters.supabase import rules, students
+
+pytestmark = pytest.mark.integration
+
+PERMISSION_DENIED = "42501"
+STUDENT_TABLES = ["students", *students.ORDER]
+# Students read the approved rulebook, except the review of changes, which only the backend sees
+READABLE_RULEBOOK = [table for table in rules.ORDER if table != "handbook_deltas"]
+
+
+@pytest.mark.parametrize("table", STUDENT_TABLES)
+def test_she_reads_her_own_rows_and_a_stranger_reads_none(
+    her, stranger, mbali_counts, table
+):
+    assert (
+        len(her.client.table(table).select("*").execute().data) == mbali_counts[table]
+    )
+    assert stranger.client.table(table).select("*").execute().data == []
+
+
+@pytest.mark.parametrize("table", [*rules.ORDER, *STUDENT_TABLES, "result_symbols"])
+def test_a_signed_out_browser_is_refused(anon, refused, table):
+    refused(anon.table(table).select("*"), PERMISSION_DENIED)
+
+
+@pytest.mark.parametrize("table", READABLE_RULEBOOK)
+def test_she_reads_the_rulebook_but_cannot_change_it(her, refused, mbali_counts, table):
+    assert (
+        len(her.client.table(table).select("*").execute().data) == mbali_counts[table]
+    )
+    refused(her.client.table(table).insert({}), PERMISSION_DENIED)
+
+
+def test_she_reads_every_result_symbol(her):
+    assert len(her.client.table("result_symbols").select("*").execute().data) == 26
+
+
+def test_an_unapproved_year_and_every_delta_stay_hidden(her, secret, refused):
+    secret.table("handbook_versions").insert({"year": 2099}).execute()  # not approved
+    course = {
+        "handbook_year": 2099,
+        "code": "TST2099F",
+        "name": "Test",
+        "credits": 0,
+        "nqf_level": 5,
+        "term": "sem1",
+    }
+    secret.table("courses").insert(course).execute()
+    years = her.client.table("handbook_versions").select("year").execute().data
+    courses = her.client.table("courses").select("code").eq("handbook_year", 2099)
+    hidden = courses.execute().data
+    # Deleting the year deletes its course too
+    secret.table("handbook_versions").delete().eq("year", 2099).execute()
+    assert years == [{"year": 2026}]
+    assert hidden == []
+    refused(her.client.table("handbook_deltas").select("*"), PERMISSION_DENIED)

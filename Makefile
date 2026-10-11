@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too,
 # so `make check` passing on your laptop means CI's backend and frontend jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-db seed
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-db check-migrations test-integration seed
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -38,13 +38,23 @@ check-backend: lint test
 check-frontend:
 	@cd frontend && npm run lint && npm test --if-present && npm run build
 
-# What CI's database job runs: rebuild the local database from every migration, then lint and
-# security-check it. The rebuild wipes local data, accounts included. Docker must be running.
-check-db:
+# What CI's database job runs, as its two steps: rebuild the local database from every migration and
+# check it, then run the integration tests against it. The rebuild wipes local data, accounts
+# included. Docker must be running.
+check-db: check-migrations test-integration
+
+check-migrations:
 	@$(SUPABASE) start $(SUPABASE_START_FLAGS)
 	@$(SUPABASE) db reset --local
 	@$(SUPABASE) db lint --local --fail-on error
 	@$(SUPABASE) db advisors --local --type security --fail-on error
+
+# The integration tests, against the running local Supabase. The URL and keys come from
+# `supabase status`, never from backend/.env, and the tests refuse any URL that isn't local.
+test-integration:
+	@env=$$($(SUPABASE) status -o env) && eval "$$env" && cd backend && \
+		SAGE_TEST_SUPABASE_URL="$$API_URL" SAGE_TEST_PUBLISHABLE_KEY="$$PUBLISHABLE_KEY" \
+		SAGE_TEST_SECRET_KEY="$$SECRET_KEY" uv run pytest -m integration
 
 # Loads the made-up student onto one local account: make seed USER_ID=<account id>.
 # The URL and key come from the running local Supabase, never from backend/.env.

@@ -50,7 +50,7 @@ jobs:
         run: make check-frontend
 
   database:
-    name: Database (SQL migrations)
+    name: Database (migrations and integration tests)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -58,9 +58,18 @@ jobs:
       - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
         with:
           version: 2.120.0 # same CLI as the Makefile's npx supabase@2.120.0
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.23" # same uv as the backend job
+      - name: Install from uv.lock
+        working-directory: backend
+        run: uv sync --locked
       - name: Apply migrations to an empty database, then lint and check them
         # The security check fails if a table the API can reach has no row level security.
         # -x skips services nothing here uses, keeping Postgres, Auth, the REST API and the gateway.
         run: >-
-          make check-db SUPABASE=supabase
+          make check-migrations SUPABASE=supabase
           SUPABASE_START_FLAGS="-x studio,postgres-meta,storage-api,imgproxy,realtime,edge-runtime,logflare,vector,supavisor"
+      - name: Run the integration tests against it
+        # The backend's tests, through the same REST API, sign-in and security rules the app uses
+        run: make test-integration SUPABASE=supabase
