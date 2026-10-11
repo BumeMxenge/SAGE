@@ -193,6 +193,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Her course history by year, newest first, with averages */
+        get: operations["getHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -347,6 +364,46 @@ export interface components {
             status: "ok";
             /** Commit */
             commit: string;
+        };
+        /** History */
+        History: {
+            /** Cumulative Average */
+            cumulative_average: number | null;
+            /** Years */
+            years: components["schemas"]["HistoryYear"][];
+        };
+        /** HistoryLine */
+        HistoryLine: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+            /** Credits */
+            credits: number;
+            /** Nqf Level */
+            nqf_level: number | null;
+            /** Result */
+            result: string;
+            /** Mark */
+            mark: number | null;
+        };
+        /** HistoryYear */
+        HistoryYear: {
+            /** Academic Year */
+            academic_year: number;
+            /** Year Of Study */
+            year_of_study: number;
+            /** Credits */
+            credits: number;
+            /** Average */
+            average: number | null;
+            /** Lines */
+            lines: components["schemas"]["HistoryLine"][];
         };
         /** Me */
         Me: {
@@ -1502,6 +1559,62 @@ export interface operations {
             };
             /** @description rulebook_not_loaded */
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["History"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };

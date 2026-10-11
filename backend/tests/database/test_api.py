@@ -50,3 +50,13 @@ def test_plans(api):
     visible = [plan["position"] for plan in plan_set["plans"] if not plan["hidden"]]
     assert visible == [1, 5, 6, 7, 8, 9, 10]
     assert {plan["credits"] for plan in plan_set["plans"]} == {138}
+
+
+def test_history(api):
+    history = api.get("/v1/history").json()
+    assert [(year["academic_year"], year["average"]) for year in history["years"]] == [
+        (2025, 63.19),
+        (2024, 71.50),
+        (2023, 71.38),
+    ]
+    assert history["cumulative_average"] == 68.69
