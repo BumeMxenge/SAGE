@@ -71,6 +71,16 @@ def test_an_invalid_request_says_what_and_where(client):
     ]
 
 
+def test_a_body_that_isnt_utf8_is_an_invalid_request(client):
+    # FastAPI refuses it with a 400 of its own, before any sign-in check
+    response = client.post(
+        "/v1/chats", content=b"\xff", headers={"Content-Type": "application/json"}
+    )
+    assert response.status_code == 422
+    assert response.headers["content-type"] == PROBLEM
+    assert response.json()["code"] == "invalid_request"
+
+
 def test_a_refusal_keeps_its_own_detail(client):
     response = client.get("/gone")
     assert response.status_code == 404

@@ -107,6 +107,23 @@ def test_an_answer_that_isnt_an_option_is_refused(mbali):
     assert (response.status_code, response.json()["code"]) == (422, "unknown_answer")
 
 
+def test_a_retry_after_a_failed_save_shows_exactly_what_its_answers_keep(
+    mbali, stores, monkeypatch
+):
+    # The first attempt hides the plans HUB4049F doesn't keep, then fails before storing its
+    # answers, so the questionnaire stays open for another answer
+    def outage(*args):
+        raise ConnectionError("made-up outage")
+
+    monkeypatch.setattr(stores[1], "save_answers", outage)
+    failed = mbali.post("/v1/questionnaire", json={"course": "HUB4049F"})
+    assert failed.status_code == 500
+    monkeypatch.undo()
+    response = mbali.post("/v1/questionnaire", json={"course": "EEE4118F"})
+    assert response.status_code == 200
+    assert visible(response.json()) == [1, 2, 3, 4, 8, 9, 10]
+
+
 def test_it_can_only_be_answered_once(mbali):
     assert (
         mbali.post("/v1/questionnaire", json={"course": "EEE4119F"}).status_code == 200

@@ -1291,6 +1291,7 @@ dependencies = [
     { name = "pdfplumber" },
     { name = "postgrest" },
     { name = "pydantic-settings" },
+    { name = "pyjwt" },
     { name = "supabase" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -1298,6 +1299,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "fpdf2" },
+    { name = "httpx" },
     { name = "httpx2" },
     { name = "pytest" },
     { name = "ruff" },
@@ -1309,6 +1311,7 @@ requires-dist = [
     { name = "pdfplumber", specifier = ">=0.11.10" },
     { name = "postgrest", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.0" },
+    { name = "pyjwt", specifier = ">=2.0" },
     { name = "supabase", specifier = ">=2.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
 ]
@@ -1316,6 +1319,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "fpdf2", specifier = ">=2.8.9" },
+    { name = "httpx", specifier = ">=0.28" },
     { name = "httpx2", specifier = ">=2.13.1" },
     { name = "pytest", specifier = ">=8.0" },
     { name = "ruff", specifier = ">=0.6" },

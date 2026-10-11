@@ -176,12 +176,23 @@ class SupabaseStudentRepository:
     def hide_plans(
         self, student_id: UUID, plan_set_id: UUID, keep: Collection[UUID]
     ) -> None:
+        # The Data API can't set two values in one update, so this shows, then hides. Showing first
+        # means a failure between them never leaves fewer plans visible than before.
+        kept = [str(plan_id) for plan_id in keep]
+        (
+            self._client.table("plans")
+            .update({"hidden": False})
+            .eq("student_id", str(student_id))
+            .eq("plan_set_id", str(plan_set_id))
+            .in_("id", kept)
+            .execute()
+        )
         (
             self._client.table("plans")
             .update({"hidden": True})
             .eq("student_id", str(student_id))
             .eq("plan_set_id", str(plan_set_id))
-            .not_.in_("id", [str(plan_id) for plan_id in keep])
+            .not_.in_("id", kept)
             .execute()
         )
 

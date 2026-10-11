@@ -1,6 +1,6 @@
 # The questionnaire that narrows a long plan set. Its questions are built from the set itself rather
 # than typed in, and each option carries the plans it keeps, so the frontend can grey out options
-# that would leave nothing. Answering only ever hides plans.
+# that would leave nothing. Answering hides the plans the answers don't keep, and never deletes one.
 from collections import defaultdict
 from collections.abc import Collection
 from datetime import time

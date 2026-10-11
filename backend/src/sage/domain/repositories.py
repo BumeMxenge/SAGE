@@ -70,7 +70,8 @@ class StudentRepository(Protocol):
     # after a failure finishes the same set
     def add_plan_set(self, rows: PlanSetRows) -> None: ...
 
-    # Hides every plan in the set except those kept. Plans are only ever hidden, never shown again.
+    # Shows the kept plans in the set and hides the rest, so a retry after a failure leaves exactly
+    # its own answers' plans visible, whatever an earlier attempt hid
     def hide_plans(
         self, student_id: UUID, plan_set_id: UUID, keep: Collection[UUID]
     ) -> None: ...

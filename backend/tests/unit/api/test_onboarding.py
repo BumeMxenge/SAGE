@@ -92,6 +92,10 @@ def an_extra_key(setup):
     setup["nickname"] = "Mbali"
 
 
+def credits_too_large_to_store(setup):
+    setup["lines"][0]["credits"] = 40000  # course_history.credits is a smallint
+
+
 @pytest.mark.parametrize(
     ("edit", "code"),
     [
@@ -101,6 +105,7 @@ def an_extra_key(setup):
         (a_line_twice, "invalid_request"),
         (no_lines, "invalid_request"),
         (an_extra_key, "invalid_request"),
+        (credits_too_large_to_store, "invalid_request"),
     ],
 )
 def test_finish_setup_refuses_what_the_handbook_doesnt_know(

@@ -10,7 +10,7 @@ from typing import Literal
 
 import pdfplumber
 from pdfminer.psexceptions import PSException
-from pdfplumber.utils.exceptions import PdfminerException
+from pdfplumber.utils.exceptions import MalformedPDFException, PdfminerException
 
 from sage.domain.base import Row
 from sage.domain.errors import (
@@ -75,7 +75,7 @@ def pdf_pages(data: bytes) -> list[list[str]]:
     try:
         with pdfplumber.open(io.BytesIO(data)) as pdf:
             pages = [(page.extract_text() or "").splitlines() for page in pdf.pages]
-    except (PdfminerException, PSException) as error:
+    except (MalformedPDFException, PdfminerException, PSException) as error:
         # Damaged, or locked with a password
         raise TranscriptUnreadable() from error
     if not any(line.strip() for page in pages for line in page):
@@ -124,14 +124,11 @@ def read_lines(pages: list[list[str]], student_number: str) -> Transcript:
     if not rows:
         raise NoCourseHistory()
 
-    issued = first(ISSUED, lines)
     lines_read, warnings = checked(rows, printed_gpa)
     return Transcript(
         student_number=printed_number,
         programme=programme,
-        issued_on=date(int(issued[3]), int(issued[2]), int(issued[1]))
-        if issued
-        else None,
+        issued_on=issued_on(lines),
         lines=lines_read,
         warnings=warnings,
     )
@@ -139,6 +136,19 @@ def read_lines(pages: list[list[str]], student_number: str) -> Transcript:
 
 def first(pattern: re.Pattern[str], lines: list[str]) -> re.Match[str] | None:
     return next((found for line in lines if (found := pattern.search(line))), None)
+
+
+def issued_on(lines: list[str]) -> date | None:
+    # The date the record was issued, or None when it has none or one that can't exist, such as
+    # 31/02/2026
+    issued = first(ISSUED, lines)
+    if issued is None:
+        return None
+    day, month, year = (int(part) for part in issued.groups())
+    try:
+        return date(year, month, day)
+    except ValueError:
+        return None
 
 
 def checked(

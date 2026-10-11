@@ -134,15 +134,15 @@ def test_hearting_twice_and_unhearting_twice_change_nothing_more(store):
     assert "ECO1006F" not in store.students.record(her).favourites
 
 
-def test_hiding_plans_hides_the_others_and_never_shows_one_again(store):
-    # Her seeded set already hides positions 2 to 4
+def test_hiding_plans_leaves_exactly_the_kept_ones_visible(store):
+    # Her seeded set already hides positions 2 to 4, so keeping 2 shows it again, as a retry needs
     her = store.mbali.student
     plan_set = her.plan_sets[0]
     keep = {plan.id for plan in her.plans if plan.position in (1, 2, 5)}
     store.students.hide_plans(her.student.id, plan_set.id, keep)
     store.students.save_answers(her.student.id, plan_set.id, {"course": "EEE4118F"})
     current = store.students.current_plan_set(her.student.id)
-    assert [plan.position for plan in current.plans if not plan.hidden] == [1, 5]
+    assert [plan.position for plan in current.plans if not plan.hidden] == [1, 2, 5]
     assert current.plan_set.answers == {"course": "EEE4118F"}
 
 

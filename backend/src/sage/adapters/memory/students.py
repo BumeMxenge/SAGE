@@ -124,8 +124,8 @@ class InMemoryStudentRepository:
         self._change(
             student_id,
             plans=tuple(
-                plan.model_copy(update={"hidden": True})
-                if plan.plan_set_id == plan_set_id and plan.id not in keep
+                plan.model_copy(update={"hidden": plan.id not in keep})
+                if plan.plan_set_id == plan_set_id
                 else plan
                 for plan in state.plans
             ),

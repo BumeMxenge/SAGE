@@ -96,8 +96,11 @@ async def invalid(request: Request, error: RequestValidationError) -> JSONRespon
 
 
 async def not_routed(request: Request, error: HTTPException) -> JSONResponse:
-    # Starlette's routing raises these for an unknown address or a method the address doesn't take
-    refusal = {404: RouteNotFound, 405: MethodNotAllowed}[error.status_code]()
+    # Starlette's routing raises these for an unknown address or a method the address doesn't take.
+    # Anything else, such as FastAPI's 400 for a body that isn't UTF-8, is an invalid request.
+    refusal = {404: RouteNotFound, 405: MethodNotAllowed}.get(
+        error.status_code, InvalidRequest
+    )()
     return problem(refusal, headers=error.headers)
 
 

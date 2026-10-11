@@ -113,6 +113,14 @@ def test_a_suffix_outside_the_handbook_key_is_unverified(transcript_pages):
     assert (line.term, line.unverified) == ("other", True)
 
 
+def test_an_issue_date_that_cant_exist_is_left_out(transcript_pages):
+    pages = [
+        [line.replace("05/02/2026", "31/02/2026") for line in page]
+        for page in transcript_pages
+    ]
+    assert read_lines(pages, MBALI).issued_on is None
+
+
 def test_another_students_transcript_is_refused_with_both_numbers(transcript_pages):
     with pytest.raises(TranscriptNotYours) as refusal:
         read_lines(transcript_pages, "ZVSORW999")
@@ -183,3 +191,11 @@ def test_a_locked_pdf_is_unreadable(transcript_pages):
 def test_a_damaged_pdf_is_unreadable():
     with pytest.raises(TranscriptUnreadable):
         pdf_pages(b"%PDF-1.7\nthis is not really a PDF")
+
+
+def test_a_pdf_with_a_malformed_page_is_unreadable(pdf_of):
+    # The page's width printed as text, which pdfplumber calls malformed. The swap keeps the file's
+    # length, so its byte offsets still hold.
+    pdf = pdf_of([["ACADEMIC RECORD"]]).replace(b"595.28", b"(595.)")
+    with pytest.raises(TranscriptUnreadable):
+        pdf_pages(pdf)

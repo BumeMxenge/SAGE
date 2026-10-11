@@ -94,7 +94,7 @@ class ConfirmedLine(RequestBody):
     # The handbook's format
     course_code: str = Field(pattern=r"^[A-Z]{3}[0-9]{4}[A-Z]$")
     course_name: str = Field(min_length=1)
-    credits: int = Field(ge=0)
+    credits: int = Field(ge=0, le=32767)  # course_history.credits is a smallint
     nqf_level: int | None = Field(ge=5, le=10)
     result: str
     mark: int | None = Field(ge=0, le=100)
