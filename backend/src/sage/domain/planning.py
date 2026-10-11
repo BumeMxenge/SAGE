@@ -7,9 +7,12 @@ from sage.domain.base import Row
 from sage.domain.rules import Course, ResultSymbol, RuleSet
 from sage.domain.students import CourseHistoryLine, PlanSetRows, Student
 
+# Whether she may take a course, or needs to check with her advisor first
+EligibilityStatus = Literal["eligible", "check", "not_eligible"]
+
 
 class Eligibility(Row):
-    status: Literal["eligible", "check", "not_eligible"]
+    status: EligibilityStatus
     reason: str | None = None  # what to tell her, when there's something to tell
 
 

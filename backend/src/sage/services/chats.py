@@ -104,6 +104,7 @@ def ask(
         open_plan_id=reply.open_plan_id,
     )
     question, answer = students.add_exchange(asked, answered, reply.citations)
-    return CitedMessage(message=question), CitedMessage(
-        message=answer, citations=reply.citations
+    return (
+        CitedMessage(message=question),
+        CitedMessage(message=answer, citations=reply.citations),
     )

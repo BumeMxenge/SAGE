@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from sage.domain.electives import ElectiveTab
+from sage.domain.planning import EligibilityStatus
 from sage.domain.rules import Outcome, TermCode
 from sage.domain.students import ReasonKind
 from sage.ingestion.transcript import WarningCode
@@ -28,9 +29,8 @@ class Me(BaseModel):
     name: str | None
     account: Literal["student", "staff"]
     student_number: str | None  # students only
-    onboarding_complete: (
-        bool  # false until she finishes setup, and always false for staff
-    )
+    # False until she finishes setup, and always false for staff
+    onboarding_complete: bool
 
 
 class Curriculum(BaseModel):
@@ -81,9 +81,8 @@ class Transcript(BaseModel):
     # What the review screen starts from. Nothing of it is stored until Finish setup.
     student_number: str
     programme: str | None  # the latest year's, as printed
-    curriculum_options: list[
-        Curriculum
-    ]  # the current curricula that programme could be
+    # The current curricula that programme could be
+    curriculum_options: list[Curriculum]
     issued_on: date | None
     lines: list[TranscriptLine]
     warnings: list[TranscriptWarning]
@@ -92,9 +91,8 @@ class Transcript(BaseModel):
 class ConfirmedLine(RequestBody):
     academic_year: int = Field(ge=2000, le=2100)
     term: TermCode
-    course_code: str = Field(
-        pattern=r"^[A-Z]{3}[0-9]{4}[A-Z]$"
-    )  # the handbook's format
+    # The handbook's format
+    course_code: str = Field(pattern=r"^[A-Z]{3}[0-9]{4}[A-Z]$")
     course_name: str = Field(min_length=1)
     credits: int = Field(ge=0)
     nqf_level: int | None = Field(ge=5, le=10)
@@ -221,7 +219,7 @@ class Answers(RequestBody):
 
 
 class Eligibility(BaseModel):
-    status: Literal["eligible", "check", "not_eligible"]
+    status: EligibilityStatus
     reason: str | None
 
 
@@ -269,9 +267,8 @@ class History(BaseModel):
 class Chat(BaseModel):
     id: UUID
     plan_id: UUID
-    other_plan_id: (
-        UUID | None
-    )  # the second plan of a compared pair, stored lowest id first
+    # The second plan of a compared pair, stored lowest id first
+    other_plan_id: UUID | None
     title: str | None  # named after the first exchange; null until then
     created_at: datetime
 

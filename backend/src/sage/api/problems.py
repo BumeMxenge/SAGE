@@ -84,7 +84,7 @@ async def refused(request: Request, refusal: Refusal) -> JSONResponse:
 
 
 async def invalid(request: Request, error: RequestValidationError) -> JSONResponse:
-    errors = [
+    found = [
         FieldError(
             location=item["loc"][0],
             field=".".join(str(part) for part in item["loc"][1:]),
@@ -92,7 +92,7 @@ async def invalid(request: Request, error: RequestValidationError) -> JSONRespon
         )
         for item in error.errors()
     ]
-    return problem(InvalidRequest(), errors=errors)
+    return problem(InvalidRequest(), errors=found)
 
 
 async def not_routed(request: Request, error: HTTPException) -> JSONResponse:

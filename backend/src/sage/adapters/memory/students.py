@@ -14,6 +14,7 @@ from sage.domain.students import (
     Favourite,
     Message,
     MessageCitation,
+    Plan,
     PlanSetRows,
     Student,
     StudentRecord,
@@ -90,36 +91,9 @@ class InMemoryStudentRepository:
         state = self._students.get(student_id)
         if state is None:
             return ()
-        found = []
-        for plan in state.plans:
-            if plan.id not in plan_ids:
-                continue
-            reasons = [
-                row for row in state.plan_reasons if row.plan_set_id == plan.plan_set_id
-            ]
-            courses = [row for row in state.plan_courses if row.plan_id == plan.id]
-            found.append(
-                PlanSetRows(
-                    plan_set=next(
-                        row for row in state.plan_sets if row.id == plan.plan_set_id
-                    ),
-                    plans=(plan,),
-                    plan_courses=tuple(
-                        sorted(courses, key=lambda row: row.course_code)
-                    ),
-                    plan_reasons=(
-                        *sorted(
-                            (row for row in reasons if row.plan_id is None),
-                            key=lambda row: row.id,
-                        ),
-                        *sorted(
-                            (row for row in reasons if row.plan_id == plan.id),
-                            key=lambda row: row.id,
-                        ),
-                    ),
-                )
-            )
-        return tuple(found)
+        return tuple(
+            _plan_rows(state, plan) for plan in state.plans if plan.id in plan_ids
+        )
 
     def add_plan_set(self, rows: PlanSetRows) -> None:
         student_id, set_id = rows.plan_set.student_id, rows.plan_set.id
@@ -279,6 +253,24 @@ class InMemoryStudentRepository:
         self._students[student_id] = self._students[student_id].model_copy(
             update=tables
         )
+
+
+def _plan_rows(state: StudentState, plan: Plan) -> PlanSetRows:
+    # The plan in its set, with its courses, then the set's reasons and the plan's own
+    reasons = sorted(
+        (row for row in state.plan_reasons if row.plan_set_id == plan.plan_set_id),
+        key=lambda row: row.id,
+    )
+    courses = [row for row in state.plan_courses if row.plan_id == plan.id]
+    return PlanSetRows(
+        plan_set=next(row for row in state.plan_sets if row.id == plan.plan_set_id),
+        plans=(plan,),
+        plan_courses=tuple(sorted(courses, key=lambda row: row.course_code)),
+        plan_reasons=(
+            *(row for row in reasons if row.plan_id is None),
+            *(row for row in reasons if row.plan_id == plan.id),
+        ),
+    )
 
 
 def _added[T: Row](

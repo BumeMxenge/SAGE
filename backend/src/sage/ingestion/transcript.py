@@ -86,23 +86,20 @@ def pdf_pages(data: bytes) -> list[list[str]]:
 
 def read_lines(pages: list[list[str]], student_number: str) -> Transcript:
     lines = [line.strip() for page in pages for line in page]
-    campus_id = next(
-        (found[1] for line in lines if (found := CAMPUS_ID.search(line))), None
-    )
+    campus_id = first(CAMPUS_ID, lines)
     if HEADING not in lines or campus_id is None:
         raise NotATranscript()
+    printed_number = campus_id[1]
     # Checked before the record is read, so no more of another student's transcript is
-    if campus_id != student_number:
+    if printed_number != student_number:
         raise TranscriptNotYours(
-            f"This transcript is for {campus_id}, but you're signed in as {student_number}.",
-            transcript_student_number=campus_id,
+            f"This transcript is for {printed_number}, but you're signed in as {student_number}.",
+            transcript_student_number=printed_number,
             account_student_number=student_number,
         )
-    printed_pages = max(
-        (int(found[1]) for line in lines if (found := PAGES.search(line))), default=0
-    )
+    printed_pages = [int(found[1]) for line in lines if (found := PAGES.search(line))]
     ends = [index for index, line in enumerate(lines) if END in line]
-    if len(pages) < printed_pages or not ends:
+    if len(pages) < max(printed_pages, default=0) or not ends:
         raise TranscriptIncomplete()
     begins = [index for index, line in enumerate(lines) if BEGINNING in line]
     record = lines[begins[0] + 1 : ends[0]] if begins else []
@@ -127,44 +124,51 @@ def read_lines(pages: list[list[str]], student_number: str) -> Transcript:
     if not rows:
         raise NoCourseHistory()
 
-    # A missing result is normal in the latest year, whose results aren't all out. Anywhere else
-    # it's a guess the student should check.
-    latest = max(row.academic_year for row in rows)
-    rows = [
-        row.model_copy(update={"unverified": True})
-        if not row.result_printed and row.academic_year != latest
-        else row
-        for row in rows
-    ]
-    # Each year's lines should give back the Term GPA printed under them. If they don't, the
-    # parser misread something in that year, so all of its lines need checking.
-    warnings, wrong = [], set()
-    for year, printed in sorted(printed_gpa.items()):
-        lines_of_year = [row for row in rows if row.academic_year == year]
-        if lines_of_year and (average(lines_of_year) or Decimal("0.00")) != printed:
-            wrong.add(year)
-            warnings.append(
-                TranscriptWarning(
-                    code="term_gpa_mismatch",
-                    message=f"Your {year} lines don't add up to the Term GPA printed for "
-                    f"{year}, so check them carefully.",
-                )
-            )
-    issued = next((found for line in lines if (found := ISSUED.search(line))), None)
+    issued = first(ISSUED, lines)
+    lines_read, warnings = checked(rows, printed_gpa)
     return Transcript(
-        student_number=campus_id,
+        student_number=printed_number,
         programme=programme,
         issued_on=date(int(issued[3]), int(issued[2]), int(issued[1]))
         if issued
         else None,
-        lines=tuple(
-            row.model_copy(update={"unverified": True})
-            if row.academic_year in wrong
-            else row
-            for row in rows
-        ),
-        warnings=tuple(warnings),
+        lines=lines_read,
+        warnings=warnings,
     )
+
+
+def first(pattern: re.Pattern[str], lines: list[str]) -> re.Match[str] | None:
+    return next((found for line in lines if (found := pattern.search(line))), None)
+
+
+def checked(
+    rows: list[TranscriptLine], printed_gpa: dict[int, Decimal]
+) -> tuple[tuple[TranscriptLine, ...], tuple[TranscriptWarning, ...]]:
+    # Flags what the student should check. A missing result is normal in the latest year, whose
+    # results aren't all out, but anywhere else it's a guess. And each year's lines should give back
+    # the Term GPA printed under them: if they don't, something in that year was misread.
+    latest = max(row.academic_year for row in rows)
+    mismatched = set()
+    for year, printed in printed_gpa.items():
+        lines = [row for row in rows if row.academic_year == year]
+        if lines and (average(lines) or Decimal("0.00")) != printed:
+            mismatched.add(year)
+    flagged = tuple(
+        row.model_copy(update={"unverified": True})
+        if row.academic_year in mismatched
+        or (not row.result_printed and row.academic_year != latest)
+        else row
+        for row in rows
+    )
+    warnings = tuple(
+        TranscriptWarning(
+            code="term_gpa_mismatch",
+            message=f"Your {year} lines don't add up to the Term GPA printed for {year}, "
+            "so check them carefully.",
+        )
+        for year in sorted(mismatched)
+    )
+    return flagged, warnings
 
 
 def course(row: re.Match[str], year: int) -> TranscriptLine:

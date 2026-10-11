@@ -178,11 +178,8 @@ def _student(data: dict[str, Any], account_id: UUID) -> StudentState:
 
     messages = []
     for row in data.pop("messages", []):
-        key, chat, offered = (
-            row.pop("key"),
-            chats[row.pop("chat")],
-            row.pop("open_plan", None),
-        )
+        key, chat = row.pop("key"), chats[row.pop("chat")]
+        offered = row.pop("open_plan", None)  # a plan the reply offers to open
         messages.append(
             Message(
                 id=new_id("messages", key),

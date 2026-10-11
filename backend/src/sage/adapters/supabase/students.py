@@ -50,15 +50,15 @@ PLAN_SET_ROWS = (
     f"{columns(PlanSet)},plans({columns(Plan)},plan_courses({columns(PlanCourse)})),"
     f"plan_reasons({columns(PlanReason)})"
 )
-# A chat's messages with their citations, and the passages those cite, in one select
-CHAT_MESSAGES = (
-    f"id,messages({columns(Message)},"
-    "message_citations(passage_id,position,quote,passages(source,section,page)))"
-)
 # A plan with its courses and own reasons, and its set with the set's reasons, in one select
 PLAN_ROWS = (
     f"{columns(Plan)},plan_courses({columns(PlanCourse)}),plan_reasons({columns(PlanReason)}),"
     f"plan_sets({columns(PlanSet)},plan_reasons({columns(PlanReason)}))"
+)
+# A chat's messages with their citations, and the passages those cite, in one select
+CHAT_MESSAGES = (
+    f"id,messages({columns(Message)},"
+    "message_citations(passage_id,position,quote,passages(source,section,page)))"
 )
 
 
@@ -103,9 +103,11 @@ class SupabaseStudentRepository:
         return rows[0] if rows else None
 
     def save_profile(self, student: Student) -> None:
-        row = student.model_dump(mode="json")
-        students = self._client.table("students")
-        students.upsert(row, returning=ReturnMethod.minimal).execute()
+        (
+            self._client.table("students")
+            .upsert(student.model_dump(mode="json"), returning=ReturnMethod.minimal)
+            .execute()
+        )
 
     def replace_history(
         self, student_id: UUID, lines: Sequence[CourseHistoryLine]
@@ -262,9 +264,12 @@ class SupabaseStudentRepository:
 
     def add_chat(self, chat: Chat) -> Chat:
         rows = (
-            self._client.table("chats").insert(chat.model_dump(mode="json")).execute()
+            self._client.table("chats")
+            .insert(chat.model_dump(mode="json"))
+            .execute()
+            .data
         )
-        return Chat.model_validate(rows.data[0])
+        return Chat.model_validate(rows[0])
 
     def messages(
         self, student_id: UUID, chat_id: UUID

@@ -115,17 +115,17 @@ def questions(
         plan.id: known_meetings(rows, plan.id, rules, curriculum) for plan in rows.plans
     }
     eights = {
-        plan_id: sum(m.start_time == EIGHT for m in week)
+        plan_id: sum(meeting.start_time == EIGHT for meeting in week)
         for plan_id, week in weeks.items()
     }
-    fewest = tuple(
-        plan_id for plan_id in everyone if eights[plan_id] == min(eights.values())
-    )
+    least = min(eights.values())
+    fewest = tuple(plan_id for plan_id in everyone if eights[plan_id] == least)
     lunch_free = tuple(
         plan_id
         for plan_id in everyone
         if not any(
-            m.start_time < LUNCH[1] and m.end_time > LUNCH[0] for m in weeks[plan_id]
+            meeting.start_time < LUNCH[1] and meeting.end_time > LUNCH[0]
+            for meeting in weeks[plan_id]
         )
     )
     week = Question(
