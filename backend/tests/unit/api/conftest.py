@@ -1,6 +1,6 @@
 # The app with its stores swapped for in-memory fakes, and a made-up token for each kind of account.
-# Mbali is seeded on her account and a copy of her data on another student's, so tests can check
-# neither ever sees the other's rows.
+# Mbali's data is seeded twice, on her account and on another student's, so tests can check neither
+# ever sees the other's rows.
 from collections.abc import Callable
 from uuid import UUID
 
@@ -14,27 +14,27 @@ from sage.adapters.memory.students import InMemoryStudentRepository
 from sage.api import deps
 from sage.domain.accounts import Identity
 from sage.main import create_app
+from sage.services.rulebook import Rulebook
 from sage.services.seed import load_seed, seed
-
-MBALI = UUID("00000000-0000-4000-8000-000000000001")
-ZVSORW = UUID(
-    "00000000-0000-4000-8000-000000000002"
-)  # another student, with her own plans
-QRTILV = UUID(
-    "00000000-0000-4000-8000-000000000003"
-)  # a student who hasn't started setup
+from sage.services.stubs import SeededPlanGenerator
+from tests.unit.api.accounts import MBALI, QRTILV, ZVSORW
 
 
 @pytest.fixture
-def stores(seed_file) -> tuple[InMemoryRuleRepository, InMemoryStudentRepository]:
-    rules, students = InMemoryRuleRepository(), InMemoryStudentRepository()
+def stores(
+    seed_file, result_symbols
+) -> tuple[InMemoryRuleRepository, InMemoryStudentRepository]:
+    rules, students = (
+        InMemoryRuleRepository(result_symbols),
+        InMemoryStudentRepository(),
+    )
     for account in (MBALI, ZVSORW):
         seed(rules, students, load_seed(seed_file, account))
     return rules, students
 
 
 @pytest.fixture
-def app(stores, fake_account) -> FastAPI:
+def app(stores, fake_account, seed_file) -> FastAPI:
     identities = {
         "mbali": Identity(id=MBALI, **fake_account),
         "zvsorw": Identity(
@@ -51,6 +51,10 @@ def app(stores, fake_account) -> FastAPI:
     app = create_app()
     app.dependency_overrides[deps.verifier] = lambda: FakeTokenVerifier(identities)
     app.dependency_overrides[deps.students] = lambda: stores[1]
+    rulebook = Rulebook(stores[0])
+    app.dependency_overrides[deps.rulebook] = lambda: rulebook
+    generator = SeededPlanGenerator(seed_file)
+    app.dependency_overrides[deps.plan_generator] = lambda: generator
     return app
 
 

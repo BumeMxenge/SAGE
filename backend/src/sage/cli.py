@@ -1,6 +1,5 @@
 # Command-line entry point: `uv run sage <command>`, e.g. `uv run sage seed --user <account id>`
 import argparse
-from pathlib import Path
 from urllib.parse import urlsplit
 from uuid import UUID
 
@@ -9,9 +8,8 @@ from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import get_settings
 from sage.domain.repositories import AccountNotFound
-from sage.services.seed import load_seed, seed
+from sage.services.seed import SEED_FILE, load_seed, seed
 
-SEED_FILE = Path(__file__).resolve().parents[3] / "data" / "synthetic" / "mbali.json"
 LOCAL_HOSTS = {"127.0.0.1", "localhost"}
 
 

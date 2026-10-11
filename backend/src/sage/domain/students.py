@@ -93,6 +93,14 @@ class MessageCitation(Row):
     quote: str
 
 
+class PlanSetRows(Row):
+    # A plan set with some or all of its plans, their courses and the reasons, as the API reads them
+    plan_set: PlanSet
+    plans: tuple[Plan, ...] = ()
+    plan_courses: tuple[PlanCourse, ...] = ()
+    plan_reasons: tuple[PlanReason, ...] = ()
+
+
 class StudentState(Row):
     # Her profile, then her rows named after their tables, in foreign-key order
     student: Student

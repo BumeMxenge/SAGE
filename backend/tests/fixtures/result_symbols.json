@@ -1,0 +1,132 @@
+[
+  {
+    "symbol": "1",
+    "outcome": "pass",
+    "label": "First class (75 to 100%)"
+  },
+  {
+    "symbol": "2+",
+    "outcome": "pass",
+    "label": "Second class, division one (70 to 74%)"
+  },
+  {
+    "symbol": "2-",
+    "outcome": "pass",
+    "label": "Second class, division two (60 to 69%)"
+  },
+  {
+    "symbol": "3",
+    "outcome": "pass",
+    "label": "Third class (50 to 59%)"
+  },
+  {
+    "symbol": "PA",
+    "outcome": "pass",
+    "label": "Pass (pass or fail course)"
+  },
+  {
+    "symbol": "SP",
+    "outcome": "pass",
+    "label": "Pass via a supplementary exam"
+  },
+  {
+    "symbol": "UP",
+    "outcome": "pass",
+    "label": "Unclassified pass"
+  },
+  {
+    "symbol": "F",
+    "outcome": "fail",
+    "label": "Fail"
+  },
+  {
+    "symbol": "SF",
+    "outcome": "fail",
+    "label": "Supplementary exam failed"
+  },
+  {
+    "symbol": "UF",
+    "outcome": "fail",
+    "label": "Unclassified fail"
+  },
+  {
+    "symbol": "SM",
+    "outcome": "fail",
+    "label": "Subminimum not met"
+  },
+  {
+    "symbol": "AB",
+    "outcome": "fail",
+    "label": "Absent from the exam"
+  },
+  {
+    "symbol": "INC",
+    "outcome": "fail",
+    "label": "Incomplete"
+  },
+  {
+    "symbol": "FS",
+    "outcome": "supp_pending",
+    "label": "Failed, supplementary exam allowed"
+  },
+  {
+    "symbol": "OSS",
+    "outcome": "supp_pending",
+    "label": "Subminimum failed, supplementary exam awarded"
+  },
+  {
+    "symbol": "DE",
+    "outcome": "supp_pending",
+    "label": "Deferred exam granted"
+  },
+  {
+    "symbol": "DPR",
+    "outcome": "dp_refused",
+    "label": "Duly performed certificate refused"
+  },
+  {
+    "symbol": "GIP",
+    "outcome": "in_progress",
+    "label": "Grade in progress"
+  },
+  {
+    "symbol": "OS",
+    "outcome": "in_progress",
+    "label": "Result not yet available"
+  },
+  {
+    "symbol": "CR",
+    "outcome": "credited",
+    "label": "Credit"
+  },
+  {
+    "symbol": "EX",
+    "outcome": "credited",
+    "label": "Exemption"
+  },
+  {
+    "symbol": "CX",
+    "outcome": "credited",
+    "label": "Credit and exemption"
+  },
+  {
+    "symbol": "EXC",
+    "outcome": "not_counted",
+    "label": "Credit excluded"
+  },
+  {
+    "symbol": "ATT",
+    "outcome": "not_counted",
+    "label": "Course attended"
+  },
+  {
+    "symbol": "LOA",
+    "outcome": "not_counted",
+    "label": "Leave of absence"
+  },
+  {
+    "symbol": "EXA",
+    "outcome": "not_counted",
+    "label": "Excluded from assessment"
+  }
+]

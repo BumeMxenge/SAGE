@@ -5,8 +5,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from sage.cli import SEED_FILE
+from sage.domain.rules import ResultSymbol
 from sage.main import create_app
+from sage.services.seed import SEED_FILE
 
 
 @pytest.fixture
@@ -17,6 +18,14 @@ def client() -> TestClient:
 @pytest.fixture(scope="session")
 def seed_file() -> Path:
     return SEED_FILE
+
+
+@pytest.fixture(scope="session")
+def result_symbols() -> tuple[ResultSymbol, ...]:
+    # UCT's 26 symbols, as the rule-tables migration stores them, for the in-memory rulebook
+    path = Path(__file__).parent / "fixtures" / "result_symbols.json"
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    return tuple(ResultSymbol.model_validate(row) for row in rows)
 
 
 @pytest.fixture(scope="session")

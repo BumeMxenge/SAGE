@@ -6,9 +6,11 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from sage.domain.accounts import Account, TokenVerifier
-from sage.domain.errors import NotSignedIn
+from sage.domain.errors import NotSignedIn, StudentsOnly, UctAccountRequired
+from sage.domain.planning import PlanGenerator
 from sage.domain.repositories import StudentRepository
 from sage.services.accounts import account_of
+from sage.services.rulebook import Rulebook
 
 
 def verifier(request: Request) -> TokenVerifier:
@@ -19,7 +21,17 @@ def students(request: Request) -> StudentRepository:
     return request.app.state.students
 
 
+def rulebook(request: Request) -> Rulebook:
+    return request.app.state.rulebook
+
+
+def plan_generator(request: Request) -> PlanGenerator:
+    return request.app.state.plan_generator
+
+
 Students = Annotated[StudentRepository, Depends(students)]
+Rules = Annotated[Rulebook, Depends(rulebook)]
+Generator = Annotated[PlanGenerator, Depends(plan_generator)]
 
 # With auto_error off, a missing token becomes the not_signed_in problem rather than FastAPI's own
 # error. It also gives /docs its Authorize button.
@@ -36,3 +48,16 @@ def signed_in(
 
 
 SignedIn = Annotated[Account, Depends(signed_in)]
+
+
+def student_account(account: SignedIn) -> Account:
+    if account.kind != "student":
+        raise StudentsOnly()
+    return account
+
+
+StudentAccount = Annotated[Account, Depends(student_account)]
+
+# The refusals each guard can raise, for the routes' declared errors
+SIGNED_IN_ERRORS = (NotSignedIn, UctAccountRequired)
+STUDENT_ERRORS = (*SIGNED_IN_ERRORS, StudentsOnly)

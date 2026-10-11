@@ -13,6 +13,10 @@ class Code(StrEnum):
     INTERNAL_ERROR = "internal_error"
     NOT_SIGNED_IN = "not_signed_in"
     UCT_ACCOUNT_REQUIRED = "uct_account_required"
+    STUDENTS_ONLY = "students_only"
+    RULEBOOK_NOT_LOADED = "rulebook_not_loaded"
+    UNKNOWN_CURRICULUM = "unknown_curriculum"
+    UNKNOWN_RESULT = "unknown_result"
 
 
 class Refusal(Exception):
@@ -64,3 +68,23 @@ class UctAccountRequired(Refusal):
     message = (
         "SAGE is for UCT students and staff. Sign in with your UCT Microsoft account."
     )
+
+
+class StudentsOnly(Refusal):
+    status, code = 403, Code.STUDENTS_ONLY
+    message = "This part of SAGE is for students."
+
+
+class RulebookNotLoaded(Refusal):
+    status, code = 503, Code.RULEBOOK_NOT_LOADED
+    message = "The handbook rules aren't loaded yet. Try again later."
+
+
+class UnknownCurriculum(Refusal):
+    status, code = 422, Code.UNKNOWN_CURRICULUM
+    message = "That curriculum isn't in the current handbook."
+
+
+class UnknownResult(Refusal):
+    status, code = 422, Code.UNKNOWN_RESULT
+    message = "A result isn't one of UCT's result symbols."

@@ -2,13 +2,28 @@
 # rule on these rows except the elective tab, which only the backend checks. Passage embeddings
 # arrive with the advisor, so they aren't here yet.
 from datetime import time
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import JsonValue
 
 from sage.domain.base import Row
 from sage.domain.electives import ElectiveTab
+
+# The term_code domain in the rule-tables migration: every term a course or meeting can run in
+TermCode = Literal[
+    "q1", "q2", "q3", "q4", "sem1", "sem2", "full_year", "winter", "summer", "other"
+]
+# What a result symbol means, as result_symbols.outcome allows
+Outcome = Literal[
+    "pass",
+    "fail",
+    "dp_refused",
+    "supp_pending",
+    "in_progress",
+    "credited",
+    "not_counted",
+]
 
 
 class HandbookVersion(Row):
@@ -100,6 +115,13 @@ class HandbookDelta(Row):
     new_value: JsonValue = None
     corrected_value: JsonValue = None
     approved: bool | None = None
+
+
+class ResultSymbol(Row):
+    # One of UCT's result symbols. Not tied to a year, so it isn't part of a RuleSet.
+    symbol: str
+    outcome: Outcome
+    label: str
 
 
 class RuleSet(Row):

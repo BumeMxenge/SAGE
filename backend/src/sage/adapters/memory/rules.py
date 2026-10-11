@@ -1,14 +1,16 @@
 # The rulebook in one dictionary per table, keyed like the table's primary key
 from typing import Any
 
-from sage.domain.rules import PRIMARY_KEYS, RuleSet, year_column
+from sage.domain.rules import PRIMARY_KEYS, ResultSymbol, RuleSet, year_column
 
 
 class InMemoryRuleRepository:
-    def __init__(self) -> None:
+    def __init__(self, symbols: tuple[ResultSymbol, ...] = ()) -> None:
         self._tables: dict[str, dict[tuple[Any, ...], Any]] = {
             table: {} for table in RuleSet.model_fields
         }
+        # A migration stores the real symbols, so a fake is handed them
+        self._symbols = symbols
 
     def add_missing(self, rules: RuleSet) -> None:
         for table, stored in self._tables.items():
@@ -26,3 +28,10 @@ class InMemoryRuleRepository:
                 for table, stored in self._tables.items()
             }
         )
+
+    def current_year(self) -> int | None:
+        versions = self._tables["handbook_versions"].values()
+        return max((row.year for row in versions if row.approved), default=None)
+
+    def symbols(self) -> tuple[ResultSymbol, ...]:
+        return tuple(sorted(self._symbols, key=lambda row: row.symbol))

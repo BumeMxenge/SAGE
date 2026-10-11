@@ -38,15 +38,103 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/catalogue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The current handbook's curricula, courses and result symbols */
+        get: operations["getCatalogue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/onboarding/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Save the course history she confirmed, and attach her plans */
+        post: operations["completeOnboarding"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Catalogue */
+        Catalogue: {
+            /** Year */
+            year: number;
+            /** Curricula */
+            curricula: components["schemas"]["Curriculum"][];
+            /** Courses */
+            courses: components["schemas"]["Course"][];
+            /** Symbols */
+            symbols: components["schemas"]["ResultSymbol"][];
+        };
         /**
          * Code
          * @enum {string}
          */
-        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required";
+        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result";
+        /** ConfirmedLine */
+        ConfirmedLine: {
+            /** Academic Year */
+            academic_year: number;
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+            /** Course Code */
+            course_code: string;
+            /** Course Name */
+            course_name: string;
+            /** Credits */
+            credits: number;
+            /** Nqf Level */
+            nqf_level: number | null;
+            /** Result */
+            result: string;
+            /** Mark */
+            mark: number | null;
+        };
+        /** Course */
+        Course: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Credits */
+            credits: number;
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+        };
+        /** Curriculum */
+        Curriculum: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+        };
         /** FieldError */
         FieldError: {
             /**
@@ -104,6 +192,25 @@ export interface components {
             errors?: components["schemas"]["FieldError"][] | null;
             /** Reference */
             reference?: string | null;
+        };
+        /** ResultSymbol */
+        ResultSymbol: {
+            /** Symbol */
+            symbol: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "pass" | "fail" | "dp_refused" | "supp_pending" | "in_progress" | "credited" | "not_counted";
+            /** Label */
+            label: string;
+        };
+        /** Setup */
+        Setup: {
+            /** Curriculum Code */
+            curriculum_code: string;
+            /** Lines */
+            lines: components["schemas"]["ConfirmedLine"][];
         };
     };
     responses: never;
@@ -181,6 +288,131 @@ export interface operations {
             };
             /** @description internal_error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getCatalogue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Catalogue"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    completeOnboarding: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Setup"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request, unknown_curriculum, unknown_result */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

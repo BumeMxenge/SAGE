@@ -1,8 +1,8 @@
 # The rulebook in Supabase
 from supabase import Client
 
-from sage.adapters.supabase.tables import insert, row_type, select
-from sage.domain.rules import PRIMARY_KEYS, RuleSet, year_column
+from sage.adapters.supabase.tables import columns, insert, row_type, select
+from sage.domain.rules import PRIMARY_KEYS, ResultSymbol, RuleSet, year_column
 
 
 class SupabaseRuleRepository:
@@ -20,3 +20,25 @@ class SupabaseRuleRepository:
             return select(self._client, table, model, column, year, PRIMARY_KEYS[table])
 
         return RuleSet(**{table: rows(table) for table in RuleSet.model_fields})
+
+    def current_year(self) -> int | None:
+        rows = (
+            self._client.table("handbook_versions")
+            .select("year")
+            .eq("approved", True)
+            .order("year", desc=True)
+            .limit(1)
+            .execute()
+            .data
+        )
+        return rows[0]["year"] if rows else None
+
+    def symbols(self) -> tuple[ResultSymbol, ...]:
+        rows = (
+            self._client.table("result_symbols")
+            .select(columns(ResultSymbol))
+            .order("symbol")
+            .execute()
+            .data
+        )
+        return tuple(ResultSymbol.model_validate(row) for row in rows)

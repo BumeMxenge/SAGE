@@ -23,6 +23,10 @@ from sage.domain.students import (
     StudentState,
 )
 
+# Four folders up from this file: the repo root on a laptop, and / in the backend image, which copies
+# the file there for the plan stand-in
+SEED_FILE = Path(__file__).resolve().parents[4] / "data" / "synthetic" / "mbali.json"
+
 # Rulebook ids come from the row alone, not the account, so every account seeded from the file
 # shares the same timetable slots instead of adding its own copies
 RULEBOOK_IDS = uuid5(NAMESPACE_URL, "https://github.com/BumeMxenge/SAGE/rulebook")
