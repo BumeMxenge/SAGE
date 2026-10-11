@@ -1,16 +1,16 @@
 # Reads a UCT academic record, the transcript a student downloads from PeopleSoft, in two layers:
 # pdf_pages turns the PDF into lines of text with pdfplumber, and read_lines turns those lines into
 # her course history. It goes line by line, because table extraction failed on the real layout.
-# Nothing is kept or logged, and the name and birthdate printed on every page are never read.
+# Nothing from the file is kept or logged, and the name and birthdate printed on every page are
+# never read.
 import io
+import logging
 import re
 from datetime import date
 from decimal import Decimal
 from typing import Literal
 
 import pdfplumber
-from pdfminer.psexceptions import PSException
-from pdfplumber.utils.exceptions import MalformedPDFException, PdfminerException
 
 from sage.domain.base import Row
 from sage.domain.errors import (
@@ -22,6 +22,8 @@ from sage.domain.errors import (
 )
 from sage.domain.rules import TERM_BY_SUFFIX, TermCode
 from sage.domain.students import average
+
+logger = logging.getLogger(__name__)
 
 HEADING = "ACADEMIC RECORD"
 BEGINNING = "Beginning of Undergraduate Record"
@@ -74,8 +76,13 @@ def pdf_pages(data: bytes) -> list[list[str]]:
     try:
         with pdfplumber.open(io.BytesIO(data)) as pdf:
             pages = [(page.extract_text() or "").splitlines() for page in pdf.pages]
-    except (MalformedPDFException, PdfminerException, PSException) as error:
-        # Damaged, or locked with a password
+    except Exception as error:
+        # Damaged, locked with a password, or malformed in one of the many ways that crash the PDF
+        # library on untrusted input, so any failure here is unreadable. Only the error's type is
+        # logged, as its message can quote the file.
+        logger.warning(
+            "pdfplumber couldn't read a transcript: %s", type(error).__name__
+        )
         raise TranscriptUnreadable() from error
     if not any(line.strip() for page in pages for line in page):
         # A scan or a photo: there's no text to read
@@ -102,7 +109,11 @@ def read_lines(pages: list[list[str]], student_number: str) -> Transcript:
         raise TranscriptIncomplete()
     begins = [index for index, line in enumerate(lines) if BEGINNING in line]
     if not begins:
-        raise TranscriptUnreadable()
+        # Course history is decided by rows, not by this line: with no row before the end line
+        # there's none, but rows with nothing to say where the record starts can't be placed
+        if any(ROW.fullmatch(line) for line in lines[: ends[0]]):
+            raise TranscriptUnreadable()
+        raise NoCourseHistory()
     record = lines[begins[0] + 1 : ends[0]]
 
     year, programme = None, None

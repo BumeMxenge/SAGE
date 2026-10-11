@@ -15,7 +15,7 @@ from sage.domain.errors import (
     TranscriptUnreadable,
 )
 from sage.domain.students import CourseHistoryLine
-from sage.ingestion.transcript import pdf_pages, read_lines
+from sage.ingestion.transcript import BEGINNING, ROW, pdf_pages, read_lines
 from sage.services.seed import load_seed
 
 MBALI = "DLMMBA999"
@@ -149,11 +149,10 @@ def test_a_transcript_missing_a_page_or_its_end(transcript_pages, missing):
         read_lines(transcript_pages, MBALI)
 
 
-def test_a_record_with_no_beginning_line_is_unreadable(transcript_pages):
-    # Without it there's no telling where the record starts, which isn't the same as no courses
+def test_rows_with_no_beginning_line_are_unreadable(transcript_pages):
+    # Without it there's no telling where the record starts, so its rows can't be placed
     pages = [
-        [line for line in page if "Beginning of Undergraduate Record" not in line]
-        for page in transcript_pages
+        [line for line in page if BEGINNING not in line] for page in transcript_pages
     ]
     with pytest.raises(TranscriptUnreadable):
         read_lines(pages, MBALI)
@@ -173,6 +172,16 @@ def test_a_record_with_no_courses(transcript_pages):
     course_row = re.compile(r"[A-Z]{3} [0-9]{4}[A-Z] ")
     pages = [
         [line for line in page if not course_row.match(line)]
+        for page in transcript_pages
+    ]
+    with pytest.raises(NoCourseHistory):
+        read_lines(pages, MBALI)
+
+
+def test_no_rows_and_no_beginning_line_is_no_course_history(transcript_pages):
+    # Course history is decided by rows, so with none anywhere the missing line changes nothing
+    pages = [
+        [line for line in page if not ROW.fullmatch(line) and BEGINNING not in line]
         for page in transcript_pages
     ]
     with pytest.raises(NoCourseHistory):
@@ -209,3 +218,18 @@ def test_a_pdf_with_a_malformed_page_is_unreadable(pdf_of):
     pdf = pdf_of([["ACADEMIC RECORD"]]).replace(b"595.28", b"(595.)")
     with pytest.raises(TranscriptUnreadable):
         pdf_pages(pdf)
+
+
+def test_a_pdf_the_pdf_library_crashes_on_is_unreadable(pdf_of, caplog):
+    # A page rotation that's a name rather than a number, which pdfplumber fails on with a bare
+    # TypeError: one of the many ways a malformed file can break it
+    pdf = pdf_of([["ACADEMIC RECORD"]]).replace(
+        b"/Type /Page\n", b"/Rotate /X\n/Type /Page\n"
+    )
+    with pytest.raises(TranscriptUnreadable) as refusal:
+        pdf_pages(pdf)
+    error = refusal.value.__cause__
+    assert isinstance(error, TypeError)
+    # Only its type is logged, as an error's message can quote the file
+    assert "pdfplumber couldn't read a transcript: TypeError" in caplog.messages
+    assert str(error) not in caplog.text

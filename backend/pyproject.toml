@@ -12,7 +12,6 @@ dependencies = [
     "postgrest>=2.0", # imported directly, not only through supabase
     "pyjwt>=2.0", # imported directly, not only through supabase
     "pdfplumber>=0.11.10",
-    "pdfminer.six>=20260107", # imported directly, not only through pdfplumber
 ]
 
 [project.scripts]
