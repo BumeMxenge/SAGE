@@ -14,6 +14,8 @@ private_data/
 # The Supabase CLI's local state: which project this laptop is linked to
 supabase/.temp/
 supabase/.branches/
-# Claude Code's per-laptop files: approvals you've saved and your own notes
-.claude/settings.local.json
+# My local setup: Claude Code's files and my laptop setup guide
+.claude/
+CLAUDE.md
 CLAUDE.local.md
+docs/setup.md

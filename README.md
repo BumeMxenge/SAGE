@@ -18,7 +18,6 @@
     <li><a href="#about-the-project">About the Project</a></li>
     <li><a href="#planned-capabilities">Planned Capabilities</a></li>
     <li><a href="#technical-direction">Technical Direction</a></li>
-    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#project-status">Project Status</a></li>
     <li><a href="#contributor">Contributor</a></li>
   </ol>
@@ -72,13 +71,6 @@ These are the selected technologies and development tools for the planned implem
 Python will support ingestion, deterministic rule evaluation, the plan service and advisor tools. Supabase Postgres is the selected store for versioned rules, plans and handbook passages. The FastAPI backend runs as a container on Azure Container Apps, the React interface is deployed separately as static files, and Supabase (EU) holds the data and handles sign-in.
 
 The PDF library, plan solver, embedding and search configuration, language model, and synchronisation protocol will be selected through design experiments.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-To run SAGE on your own machine, follow [docs/setup.md](docs/setup.md).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

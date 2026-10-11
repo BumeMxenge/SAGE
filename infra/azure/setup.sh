@@ -126,5 +126,6 @@ Done. On GitHub, add these three as repository secrets
 
 The frontend will be served at ${WEBSITE%/}
 Add ${WEBSITE%/}/** to Supabase: Authentication > URL Configuration > Redirect URLs.
-Then add the Supabase variables on GitHub (docs/setup.md, section 11).
+Then add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY on GitHub as repository
+variables (Settings > Secrets and variables > Actions > Variables), not secrets.
 DONE

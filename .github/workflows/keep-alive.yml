@@ -29,7 +29,7 @@ jobs:
           SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: |
           if [[ -z $SUPABASE_URL || -z $SUPABASE_PUBLISHABLE_KEY ]]; then
-            echo "::error::VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY isn't set. Add both on GitHub as variables, not secrets (docs/setup.md section 11)."
+            echo "::error::VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY isn't set. Add both on GitHub as variables, not secrets: Settings > Secrets and variables > Actions > Variables."
             exit 1
           fi
 
@@ -42,7 +42,7 @@ jobs:
             --output "$answer" \
             "${SUPABASE_URL%/}/rest/v1/heartbeat?select=id"; then
             details=$(cat "$answer")
-            echo "::error::Couldn't read the heartbeat row (${details:-no answer}). A paused project needs restoring from the Supabase dashboard (docs/setup.md section 12)."
+            echo "::error::Couldn't read the heartbeat row (${details:-no answer}). If the project is paused, restore it with Resume project on its Supabase dashboard page."
             exit 1
           fi
           body=$(cat "$answer")
