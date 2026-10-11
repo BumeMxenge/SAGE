@@ -1,4 +1,5 @@
 # Shared pytest fixtures for every backend test
+import json
 from pathlib import Path
 
 import pytest
@@ -16,6 +17,12 @@ def client() -> TestClient:
 @pytest.fixture(scope="session")
 def seed_file() -> Path:
     return SEED_FILE
+
+
+@pytest.fixture(scope="session")
+def fake_account(seed_file) -> dict[str, str]:
+    # Mbali's made-up name and email, which the seed file keeps for the tests
+    return json.loads(seed_file.read_text(encoding="utf-8"))["fake_account"]
 
 
 @pytest.fixture(scope="session")

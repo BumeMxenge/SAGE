@@ -4,6 +4,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from uuid import UUID
 
+from sage.adapters.supabase import connect
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import get_settings
@@ -50,11 +51,8 @@ def run_seed(account: UUID, *, yes: bool) -> None:
         if answer.strip().lower() != "yes":
             raise SystemExit("Nothing written")
 
-    url, key = settings.supabase_url, settings.supabase_secret_key
-    rules, students = (
-        SupabaseRuleRepository(url, key),
-        SupabaseStudentRepository(url, key),
-    )
+    client = connect(settings.supabase_url, settings.supabase_secret_key)
+    rules, students = SupabaseRuleRepository(client), SupabaseStudentRepository(client)
     try:
         result = seed(rules, students, data)
     except AccountNotFound:

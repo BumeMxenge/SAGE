@@ -14,21 +14,16 @@ ACCOUNT = UUID("00000000-0000-4000-8000-000000000001")
 
 @pytest.fixture
 def opened(monkeypatch):
-    # Hands the command the fakes instead of Supabase, and records each store it opens
+    # Hands the command the fakes instead of Supabase, and records each connection it opens
     urls = []
-
-    def fake(store):
-        def open_at(url, secret_key):
-            urls.append(url)
-            return store()
-
-        return open_at
-
+    monkeypatch.setattr(sage.cli, "connect", lambda url, secret_key: urls.append(url))
     monkeypatch.setattr(
-        sage.cli, "SupabaseRuleRepository", fake(InMemoryRuleRepository)
+        sage.cli, "SupabaseRuleRepository", lambda client: InMemoryRuleRepository()
     )
     monkeypatch.setattr(
-        sage.cli, "SupabaseStudentRepository", fake(InMemoryStudentRepository)
+        sage.cli,
+        "SupabaseStudentRepository",
+        lambda client: InMemoryStudentRepository(),
     )
     return urls
 
@@ -53,7 +48,7 @@ def test_local_supabase_is_seeded_without_asking(opened, database, monkeypatch, 
     database("http://127.0.0.1:54321")
     monkeypatch.setattr("builtins.input", never_asked)
     sage.cli.run_seed(ACCOUNT, yes=False)
-    assert len(opened) == 2
+    assert opened == ["http://127.0.0.1:54321"]
     assert "her data matches the file" in capsys.readouterr().out
 
 
@@ -69,7 +64,7 @@ def test_yes_answers_for_you(opened, database, monkeypatch):
     database("https://example.supabase.co")
     monkeypatch.setattr("builtins.input", never_asked)
     sage.cli.run_seed(ACCOUNT, yes=True)
-    assert len(opened) == 2
+    assert opened == ["https://example.supabase.co"]
 
 
 def test_missing_settings_stop_it_before_anything_else(opened, database):

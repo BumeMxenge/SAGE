@@ -1,14 +1,35 @@
 # App factory: builds the FastAPI app, adds middleware and mounts routers
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from importlib.metadata import version
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
+from sage.adapters.supabase import connect
+from sage.adapters.supabase.auth import SupabaseTokenVerifier
+from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.api import problems
-from sage.api.routes import health
+from sage.api.routes import health, me
 from sage.config import get_settings
 from sage.domain.errors import InternalError
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    # Builds what every request shares, once. A missing setting stops the app here, loudly, rather
+    # than failing every request. Unit tests never run this: they hand the routes fakes instead.
+    settings = get_settings()
+    if not settings.supabase_url or not settings.supabase_secret_key:
+        raise RuntimeError(
+            "Set SUPABASE_URL and SUPABASE_SECRET_KEY. make dev takes them from local Supabase, "
+            "and the deploy sets them on Azure."
+        )
+    client = connect(settings.supabase_url, settings.supabase_secret_key)
+    app.state.verifier = SupabaseTokenVerifier(client)
+    app.state.students = SupabaseStudentRepository(client)
+    yield
 
 
 def operation_id(route: APIRoute) -> str:
@@ -24,14 +45,15 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="SAGE",
         version=version("sage-backend"),
+        lifespan=lifespan,
         generate_unique_id_function=operation_id,
         responses=problems.errors(InternalError),  # any route can fail unexpectedly
     )
     problems.install(app)
 
     # A browser only lets a page from another address call this API if the API names that
-    # address. The frontend will send its sign-in token in a header, not a cookie, so
-    # credentials stay off.
+    # address. The frontend sends its sign-in token in a header, not a cookie, so credentials
+    # stay off.
     origins = [origin.strip() for origin in settings.cors_origins.split(",")]
     app.add_middleware(
         CORSMiddleware,
@@ -40,7 +62,9 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # /health stays at the root, where Azure checks it. Everything a student uses is versioned.
     app.include_router(health.router)
+    app.include_router(me.router, prefix="/v1")
     return app
 
 

@@ -1,6 +1,7 @@
 # Every way SAGE turns a request down: one stable code each, which the frontend switches on, with its
 # HTTP status and the sentence a student reads. Services, adapters and ingestion raise these, and the
 # API sends them as problem details, so this module is the one list of codes.
+from collections.abc import Mapping
 from enum import StrEnum
 from typing import ClassVar
 
@@ -10,6 +11,8 @@ class Code(StrEnum):
     METHOD_NOT_ALLOWED = "method_not_allowed"
     INVALID_REQUEST = "invalid_request"
     INTERNAL_ERROR = "internal_error"
+    NOT_SIGNED_IN = "not_signed_in"
+    UCT_ACCOUNT_REQUIRED = "uct_account_required"
 
 
 class Refusal(Exception):
@@ -17,6 +20,7 @@ class Refusal(Exception):
     code: ClassVar[Code]
     # The detail a raise gives when it has nothing more specific to say
     message: ClassVar[str]
+    headers: ClassVar[Mapping[str, str] | None] = None
 
     def __init__(self, detail: str | None = None, **extra: str) -> None:
         self.detail = detail or self.message
@@ -45,4 +49,18 @@ class InternalError(Refusal):
     message = (
         "Something went wrong on our side. Try again, and if it keeps happening, "
         "quote the reference."
+    )
+
+
+class NotSignedIn(Refusal):
+    status, code = 401, Code.NOT_SIGNED_IN
+    message = "Your sign-in is missing or has expired. Sign in again."
+    # HTTP's way of saying which kind of sign-in the API wants
+    headers: ClassVar[Mapping[str, str]] = {"WWW-Authenticate": "Bearer"}
+
+
+class UctAccountRequired(Refusal):
+    status, code = 403, Code.UCT_ACCOUNT_REQUIRED
+    message = (
+        "SAGE is for UCT students and staff. Sign in with your UCT Microsoft account."
     )

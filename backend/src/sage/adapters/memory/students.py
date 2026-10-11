@@ -1,7 +1,7 @@
 # Each student's data in one dictionary, keyed by her account id
 from uuid import UUID
 
-from sage.domain.students import StudentState
+from sage.domain.students import Student, StudentState
 
 
 class InMemoryStudentRepository:
@@ -13,3 +13,7 @@ class InMemoryStudentRepository:
 
     def get(self, student_id: UUID) -> StudentState | None:
         return self._students.get(student_id)
+
+    def profile(self, student_id: UUID) -> Student | None:
+        state = self._students.get(student_id)
+        return state.student if state else None

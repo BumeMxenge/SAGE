@@ -8,3 +8,13 @@ from pydantic import BaseModel
 class Health(BaseModel):
     status: Literal["ok"]
     commit: str  # the commit the image was built from; "dev" on a laptop
+
+
+class Me(BaseModel):
+    email: str
+    name: str | None
+    account: Literal["student", "staff"]
+    student_number: str | None  # students only
+    onboarding_complete: (
+        bool  # false until she finishes setup, and always false for staff
+    )

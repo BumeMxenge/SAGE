@@ -11,8 +11,12 @@ install:
 	@cd backend && uv sync
 	@cd frontend && npm ci
 
+# The backend on port 8000, against the running local Supabase (make check-db or supabase start
+# starts it). The URL and key come from supabase status, never from backend/.env.
 dev:
-	@cd backend && uv run uvicorn sage.main:app --reload
+	@env=$$($(SUPABASE) status -o env) && eval "$$env" && cd backend && \
+		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
+		uv run uvicorn sage.main:app --reload
 
 dev-web:
 	@cd frontend && npm run dev

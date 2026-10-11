@@ -1,14 +1,13 @@
-# The rulebook in Supabase, written and read with the secret key
-from supabase import create_client
+# The rulebook in Supabase
+from supabase import Client
 
 from sage.adapters.supabase.tables import insert, row_type, select
 from sage.domain.rules import PRIMARY_KEYS, RuleSet, year_column
 
 
 class SupabaseRuleRepository:
-    def __init__(self, url: str, secret_key: str) -> None:
-        # The secret key skips row level security, because only the backend writes
-        self._client = create_client(url, secret_key)
+    def __init__(self, client: Client) -> None:
+        self._client = client
 
     def add_missing(self, rules: RuleSet) -> None:
         # In RuleSet's foreign-key order

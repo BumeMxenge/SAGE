@@ -77,7 +77,7 @@ def errors(*refusals: type[Refusal]) -> dict[int | str, dict[str, Any]]:
 
 
 async def refused(request: Request, refusal: Refusal) -> JSONResponse:
-    return problem(refusal)
+    return problem(refusal, headers=refusal.headers)
 
 
 async def invalid(request: Request, error: RequestValidationError) -> JSONResponse:

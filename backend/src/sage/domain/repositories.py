@@ -4,7 +4,7 @@ from typing import Protocol
 from uuid import UUID
 
 from sage.domain.rules import RuleSet
-from sage.domain.students import StudentState
+from sage.domain.students import Student, StudentState
 
 
 class AccountNotFound(Exception):
@@ -26,3 +26,6 @@ class StudentRepository(Protocol):
 
     # The stored student, or None if there isn't one
     def get(self, student_id: UUID) -> StudentState | None: ...
+
+    # Her profile row alone, or None before onboarding writes one
+    def profile(self, student_id: UUID) -> Student | None: ...
