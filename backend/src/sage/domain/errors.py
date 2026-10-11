@@ -24,6 +24,10 @@ class Code(StrEnum):
     TRANSCRIPT_NOT_YOURS = "transcript_not_yours"
     TRANSCRIPT_INCOMPLETE = "transcript_incomplete"
     NO_COURSE_HISTORY = "no_course_history"
+    ONBOARDING_INCOMPLETE = "onboarding_incomplete"
+    PLANS_NOT_READY = "plans_not_ready"
+    PLAN_NOT_FOUND = "plan_not_found"
+    SAME_PLAN = "same_plan"
 
 
 class Refusal(Exception):
@@ -143,3 +147,23 @@ class NoCourseHistory(Refusal):
         "history, so there's nothing to plan from. First-year registration follows "
         "the fixed first-year curriculum in the handbook."
     )
+
+
+class OnboardingIncomplete(Refusal):
+    status, code = 409, Code.ONBOARDING_INCOMPLETE
+    message = "Finish setting up your account first."
+
+
+class PlansNotReady(Refusal):
+    status, code = 409, Code.PLANS_NOT_READY
+    message = "Your plans aren't ready yet."
+
+
+class PlanNotFound(Refusal):
+    status, code = 404, Code.PLAN_NOT_FOUND
+    message = "There's no plan with that id on your account."
+
+
+class SamePlan(Refusal):
+    status, code = 422, Code.SAME_PLAN
+    message = "Choose two different plans."

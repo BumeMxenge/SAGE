@@ -2,7 +2,7 @@
 # stamps itself (created_at, updated_at) are left out until something reads them.
 from collections.abc import Iterable
 from decimal import ROUND_HALF_UP, Decimal
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 from uuid import UUID
 
 from sage.domain.base import Row
@@ -58,6 +58,10 @@ class PlanCourse(Row):
     choices: dict[str, str] | None = None
 
 
+# What a reason explains, as plan_reasons.kind allows
+ReasonKind = Literal["excluded", "conflict", "conditional", "included"]
+
+
 class PlanReason(Row):
     id: UUID
     plan_set_id: UUID
@@ -65,7 +69,7 @@ class PlanReason(Row):
     plan_id: UUID | None = None
     course_code: str | None = None
     passage_id: UUID | None = None
-    kind: str
+    kind: ReasonKind
     message: str
     details: dict[str, Any] | None = None
 

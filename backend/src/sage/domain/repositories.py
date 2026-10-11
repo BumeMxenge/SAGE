@@ -50,6 +50,12 @@ class StudentRepository(Protocol):
     # reason, or None
     def current_plan_set(self, student_id: UUID) -> PlanSetRows | None: ...
 
+    # Each of these plans that is hers, from any set, as its set holding just that plan, with its
+    # courses, then the set's reasons and the plan's own. Another student's plan isn't returned.
+    def plans(
+        self, student_id: UUID, plan_ids: Sequence[UUID]
+    ) -> tuple[PlanSetRows, ...]: ...
+
     # Writes a generated set, skipping rows already stored, and marks it complete last, so a retry
     # after a failure finishes the same set
     def add_plan_set(self, rows: PlanSetRows) -> None: ...

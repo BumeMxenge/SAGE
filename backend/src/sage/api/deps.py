@@ -6,9 +6,15 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from sage.domain.accounts import Account, TokenVerifier
-from sage.domain.errors import NotSignedIn, StudentsOnly, UctAccountRequired
+from sage.domain.errors import (
+    NotSignedIn,
+    OnboardingIncomplete,
+    StudentsOnly,
+    UctAccountRequired,
+)
 from sage.domain.planning import PlanGenerator
 from sage.domain.repositories import StudentRepository
+from sage.domain.students import Student
 from sage.services.accounts import account_of
 from sage.services.rulebook import Rulebook
 
@@ -58,6 +64,18 @@ def student_account(account: SignedIn) -> Account:
 
 StudentAccount = Annotated[Account, Depends(student_account)]
 
+
+def onboarded(account: StudentAccount, students: Students) -> Student:
+    # Her profile, once she has finished setup
+    profile = students.profile(account.id)
+    if profile is None or not profile.onboarding_complete:
+        raise OnboardingIncomplete()
+    return profile
+
+
+Onboarded = Annotated[Student, Depends(onboarded)]
+
 # The refusals each guard can raise, for the routes' declared errors
 SIGNED_IN_ERRORS = (NotSignedIn, UctAccountRequired)
 STUDENT_ERRORS = (*SIGNED_IN_ERRORS, StudentsOnly)
+ONBOARDED_ERRORS = (*STUDENT_ERRORS, OnboardingIncomplete)

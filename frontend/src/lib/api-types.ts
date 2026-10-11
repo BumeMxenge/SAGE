@@ -89,6 +89,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Her current plan set, with hidden plans flagged */
+        get: operations["getPlans"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/plans/compare": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Two of her plans side by side */
+        get: operations["comparePlans"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/plans/{plan_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of her plans in full, from any set, hidden or not */
+        get: operations["getPlan"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -108,7 +159,18 @@ export interface components {
          * Code
          * @enum {string}
          */
-        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history";
+        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan";
+        /** Comparison */
+        Comparison: {
+            first: components["schemas"]["Plan"];
+            second: components["schemas"]["Plan"];
+            /** Shared */
+            shared: string[];
+            /** Only First */
+            only_first: string[];
+            /** Only Second */
+            only_second: string[];
+        };
         /** ConfirmedLine */
         ConfirmedLine: {
             /** Academic Year */
@@ -145,6 +207,15 @@ export interface components {
              */
             term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
         };
+        /** Credits */
+        Credits: {
+            /** Total */
+            total: number;
+            /** By Term */
+            by_term: {
+                [key: string]: number;
+            };
+        };
         /** Curriculum */
         Curriculum: {
             /** Code */
@@ -163,6 +234,13 @@ export interface components {
             field: string;
             /** Detail */
             detail: string;
+        };
+        /** Group */
+        Group: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
         };
         /** Health */
         Health: {
@@ -190,6 +268,94 @@ export interface components {
             /** Onboarding Complete */
             onboarding_complete: boolean;
         };
+        /** Meeting */
+        Meeting: {
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+            /** Day */
+            day: number | null;
+            /** Start Time */
+            start_time: string | null;
+            /** End Time */
+            end_time: string | null;
+            /** Kind */
+            kind: string | null;
+            /** Choice Group */
+            choice_group: string | null;
+            /** Choice */
+            choice: string | null;
+        };
+        /** Plan */
+        Plan: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Period */
+            period: number;
+            /** Position */
+            position: number;
+            /** Name */
+            name: string;
+            /** Hidden */
+            hidden: boolean;
+            credits: components["schemas"]["Credits"];
+            /** Courses */
+            courses: components["schemas"]["PlanCourse"][];
+            /** Reasons */
+            reasons: components["schemas"]["Reason"][];
+        };
+        /** PlanCourse */
+        PlanCourse: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Credits */
+            credits: number;
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+            /** Groups */
+            groups: components["schemas"]["Group"][];
+            /** Meetings */
+            meetings: components["schemas"]["Meeting"][];
+        };
+        /** PlanSet */
+        PlanSet: {
+            /** Period */
+            period: number;
+            /** Version */
+            version: number;
+            /** Questionnaire Needed */
+            questionnaire_needed: boolean;
+            /** Reasons */
+            reasons: components["schemas"]["Reason"][];
+            /** Plans */
+            plans: components["schemas"]["PlanSummary"][];
+        };
+        /** PlanSummary */
+        PlanSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Position */
+            position: number;
+            /** Name */
+            name: string;
+            /** Hidden */
+            hidden: boolean;
+            /** Credits */
+            credits: number;
+        };
         /** Problem */
         Problem: {
             /**
@@ -213,6 +379,24 @@ export interface components {
             transcript_student_number?: string | null;
             /** Account Student Number */
             account_student_number?: string | null;
+        };
+        /** Reason */
+        Reason: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "excluded" | "conflict" | "conditional" | "included";
+            /** Message */
+            message: string;
+            /** Course Code */
+            course_code: string | null;
+            /** Source */
+            source: string | null;
+            /** Section */
+            section: string | null;
+            /** Page */
+            page: number | null;
         };
         /** ResultSymbol */
         ResultSymbol: {
@@ -551,6 +735,242 @@ export interface operations {
                 };
             };
             /** @description invalid_request, unknown_curriculum, unknown_result */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getPlans: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanSet"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete, plans_not_ready */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    comparePlans: {
+        parameters: {
+            query: {
+                first: string;
+                second: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comparison"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description plan_not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request, same_plan */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Plan"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description plan_not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request */
             422: {
                 headers: {
                     [name: string]: unknown;

@@ -90,3 +90,19 @@ def test_a_generated_set_is_written_complete_and_once(store, seed_file):
     assert current.plan_set.complete
     assert [plan.id for plan in current.plans] == [plan.id for plan in rows.plans]
     assert len(store.students.get(store.stranger).plan_sets) == 1
+
+
+def test_plans_by_id_bring_their_set_and_reasons_and_only_hers(store):
+    her = store.mbali.student
+    by_position = {plan.position: plan for plan in her.plans}
+    (rows,) = store.students.plans(her.student.id, [by_position[7].id])
+    assert rows.plan_set == her.plan_sets[0]
+    assert rows.plans == (by_position[7],)
+    assert len(rows.plan_courses) == 8
+    # The set's five reasons, then the plan's own
+    assert [reason.plan_id for reason in rows.plan_reasons] == [None] * 5 + [
+        by_position[7].id
+    ]
+    both = store.students.plans(her.student.id, [by_position[1].id, by_position[2].id])
+    assert {rows.plans[0].position for rows in both} == {1, 2}
+    assert store.students.plans(store.stranger, [by_position[7].id]) == ()

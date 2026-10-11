@@ -43,3 +43,10 @@ def test_me(api, student):
         "student_number": student.email[:9].upper(),
         "onboarding_complete": True,
     }
+
+
+def test_plans(api):
+    plan_set = api.get("/v1/plans").json()
+    visible = [plan["position"] for plan in plan_set["plans"] if not plan["hidden"]]
+    assert visible == [1, 5, 6, 7, 8, 9, 10]
+    assert {plan["credits"] for plan in plan_set["plans"]} == {138}

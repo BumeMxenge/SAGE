@@ -43,6 +43,11 @@ PLAN_SET_ROWS = (
     f"{columns(PlanSet)},plans({columns(Plan)},plan_courses({columns(PlanCourse)})),"
     f"plan_reasons({columns(PlanReason)})"
 )
+# A plan with its courses and own reasons, and its set with the set's reasons, in one select
+PLAN_ROWS = (
+    f"{columns(Plan)},plan_courses({columns(PlanCourse)}),plan_reasons({columns(PlanReason)}),"
+    f"plan_sets({columns(PlanSet)},plan_reasons({columns(PlanReason)}))"
+)
 
 
 class SupabaseStudentRepository:
@@ -120,6 +125,23 @@ class SupabaseStudentRepository:
         )
         return plan_set_rows(rows[0]) if rows else None
 
+    def plans(
+        self, student_id: UUID, plan_ids: Sequence[UUID]
+    ) -> tuple[PlanSetRows, ...]:
+        rows = (
+            self._client.table("plans")
+            .select(PLAN_ROWS)
+            .eq("student_id", str(student_id))
+            .in_("id", [str(plan_id) for plan_id in plan_ids])
+            .is_("plan_sets.plan_reasons.plan_id", "null")  # the set's own reasons
+            .order("course_code", foreign_table="plan_courses")
+            .order("id", foreign_table="plan_reasons")
+            .order("id", foreign_table="plan_sets.plan_reasons")
+            .execute()
+            .data
+        )
+        return tuple(plan_rows(row) for row in rows)
+
     def add_plan_set(self, rows: PlanSetRows) -> None:
         unfinished = rows.plan_set.model_copy(update={"complete": False})
         for table, batch in (
@@ -147,4 +169,19 @@ def plan_set_rows(row: dict[str, Any]) -> PlanSetRows:
         plans=tuple(Plan.model_validate(plan) for plan in plans),
         plan_courses=tuple(PlanCourse.model_validate(course) for course in courses),
         plan_reasons=tuple(PlanReason.model_validate(reason) for reason in reasons),
+    )
+
+
+def plan_rows(row: dict[str, Any]) -> PlanSetRows:
+    # One embedded plans row as a set holding just that plan, with the set's reasons first
+    plan_set = row.pop("plan_sets")
+    set_reasons = plan_set.pop("plan_reasons")
+    courses, own_reasons = row.pop("plan_courses"), row.pop("plan_reasons")
+    return PlanSetRows(
+        plan_set=PlanSet.model_validate(plan_set),
+        plans=(Plan.model_validate(row),),
+        plan_courses=tuple(PlanCourse.model_validate(course) for course in courses),
+        plan_reasons=tuple(
+            PlanReason.model_validate(reason) for reason in [*set_reasons, *own_reasons]
+        ),
     )

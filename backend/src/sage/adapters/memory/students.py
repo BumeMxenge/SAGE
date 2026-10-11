@@ -64,6 +64,43 @@ class InMemoryStudentRepository:
             plan_reasons=tuple(sorted(reasons, key=lambda row: row.id)),
         )
 
+    def plans(
+        self, student_id: UUID, plan_ids: Sequence[UUID]
+    ) -> tuple[PlanSetRows, ...]:
+        state = self._students.get(student_id)
+        if state is None:
+            return ()
+        found = []
+        for plan in state.plans:
+            if plan.id not in plan_ids:
+                continue
+            reasons = [
+                row for row in state.plan_reasons if row.plan_set_id == plan.plan_set_id
+            ]
+            courses = [row for row in state.plan_courses if row.plan_id == plan.id]
+            found.append(
+                PlanSetRows(
+                    plan_set=next(
+                        row for row in state.plan_sets if row.id == plan.plan_set_id
+                    ),
+                    plans=(plan,),
+                    plan_courses=tuple(
+                        sorted(courses, key=lambda row: row.course_code)
+                    ),
+                    plan_reasons=(
+                        *sorted(
+                            (row for row in reasons if row.plan_id is None),
+                            key=lambda row: row.id,
+                        ),
+                        *sorted(
+                            (row for row in reasons if row.plan_id == plan.id),
+                            key=lambda row: row.id,
+                        ),
+                    ),
+                )
+            )
+        return tuple(found)
+
     def add_plan_set(self, rows: PlanSetRows) -> None:
         student_id, set_id = rows.plan_set.student_id, rows.plan_set.id
         state = self._students[student_id]
