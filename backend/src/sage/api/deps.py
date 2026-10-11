@@ -12,7 +12,7 @@ from sage.domain.errors import (
     StudentsOnly,
     UctAccountRequired,
 )
-from sage.domain.planning import PlanGenerator
+from sage.domain.planning import EligibilityChecker, PlanGenerator
 from sage.domain.repositories import StudentRepository
 from sage.domain.students import Student
 from sage.services.accounts import account_of
@@ -35,9 +35,14 @@ def plan_generator(request: Request) -> PlanGenerator:
     return request.app.state.plan_generator
 
 
+def eligibility_checker(request: Request) -> EligibilityChecker:
+    return request.app.state.eligibility_checker
+
+
 Students = Annotated[StudentRepository, Depends(students)]
 Rules = Annotated[Rulebook, Depends(rulebook)]
 Generator = Annotated[PlanGenerator, Depends(plan_generator)]
+Checker = Annotated[EligibilityChecker, Depends(eligibility_checker)]
 
 # With auto_error off, a missing token becomes the not_signed_in problem rather than FastAPI's own
 # error. It also gives /docs its Authorize button.

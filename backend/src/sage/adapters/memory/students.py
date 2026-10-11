@@ -7,8 +7,10 @@ from uuid import UUID
 from sage.domain.base import Row
 from sage.domain.students import (
     CourseHistoryLine,
+    Favourite,
     PlanSetRows,
     Student,
+    StudentRecord,
     StudentState,
 )
 
@@ -151,10 +153,37 @@ class InMemoryStudentRepository:
             ),
         )
 
-    def favourites(self, student_id: UUID) -> tuple[str, ...]:
+    def record(self, student_id: UUID) -> StudentRecord:
         state = self._students.get(student_id)
-        return (
-            tuple(sorted(row.course_code for row in state.favourites)) if state else ()
+        if state is None:
+            return StudentRecord()
+        return StudentRecord(
+            course_history=tuple(
+                sorted(
+                    state.course_history,
+                    key=lambda line: (line.academic_year, line.term, line.course_code),
+                )
+            ),
+            favourites=tuple(sorted(row.course_code for row in state.favourites)),
+        )
+
+    def add_favourite(self, student_id: UUID, course_code: str) -> None:
+        state = self._students[student_id]
+        favourite = Favourite(student_id=student_id, course_code=course_code)
+        self._change(
+            student_id,
+            favourites=_added(
+                state.favourites, [favourite], lambda row: row.course_code
+            ),
+        )
+
+    def remove_favourite(self, student_id: UUID, course_code: str) -> None:
+        state = self._students[student_id]
+        self._change(
+            student_id,
+            favourites=tuple(
+                row for row in state.favourites if row.course_code != course_code
+            ),
         )
 
     def _change(self, student_id: UUID, **tables: tuple[Row, ...]) -> None:

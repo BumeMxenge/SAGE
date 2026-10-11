@@ -16,7 +16,7 @@ from sage.domain.accounts import Identity
 from sage.main import create_app
 from sage.services.rulebook import Rulebook
 from sage.services.seed import load_seed, seed
-from sage.services.stubs import SeededPlanGenerator
+from sage.services.stubs import InterimEligibility, SeededPlanGenerator
 from tests.unit.api.accounts import MBALI, QRTILV, ZVSORW
 
 
@@ -55,6 +55,7 @@ def app(stores, fake_account, seed_file) -> FastAPI:
     app.dependency_overrides[deps.rulebook] = lambda: rulebook
     generator = SeededPlanGenerator(seed_file)
     app.dependency_overrides[deps.plan_generator] = lambda: generator
+    app.dependency_overrides[deps.eligibility_checker] = InterimEligibility
     return app
 
 

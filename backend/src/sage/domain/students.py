@@ -107,6 +107,12 @@ class PlanSetRows(Row):
     plan_reasons: tuple[PlanReason, ...] = ()
 
 
+class StudentRecord(Row):
+    # Her course history and the codes of the courses she hearted, which the planner reads together
+    course_history: tuple[CourseHistoryLine, ...] = ()
+    favourites: tuple[str, ...] = ()
+
+
 class StudentState(Row):
     # Her profile, then her rows named after their tables, in foreign-key order
     student: Student

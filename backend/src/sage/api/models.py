@@ -6,6 +6,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from sage.domain.electives import ElectiveTab
 from sage.domain.rules import Outcome, TermCode
 from sage.domain.students import ReasonKind
 from sage.ingestion.transcript import WarningCode
@@ -217,3 +218,24 @@ class Answers(RequestBody):
     # An option id per question. A question left out doesn't narrow her plans.
     course: str | None = None
     week: Literal["fewest_8am", "lunch_free", "no_preference"] | None = None
+
+
+class Eligibility(BaseModel):
+    status: Literal["eligible", "check", "not_eligible"]
+    reason: str | None
+
+
+class Elective(Course):
+    summary: str | None  # the card's outline
+    convener: str | None
+    favourite: bool
+    eligibility: Eligibility
+
+
+class Tab(BaseModel):
+    key: ElectiveTab  # the tab's label lives in the frontend
+    courses: list[Elective]
+
+
+class Electives(BaseModel):
+    tabs: list[Tab]

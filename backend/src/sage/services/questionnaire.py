@@ -47,9 +47,8 @@ def current(
     if rows is None or not plans.questionnaire_needed(rows):
         return None
     rules = rulebook.year(rows.plan_set.period)
-    return questions(
-        rows, rules, student.curriculum_code, students.favourites(student.id)
-    )
+    favourites = students.record(student.id).favourites
+    return questions(rows, rules, student.curriculum_code, favourites)
 
 
 def answer(

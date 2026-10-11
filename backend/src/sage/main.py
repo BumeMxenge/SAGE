@@ -12,12 +12,12 @@ from sage.adapters.supabase.auth import SupabaseTokenVerifier
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.api import problems
-from sage.api.routes import health, me, onboarding, plans, questionnaire
+from sage.api.routes import electives, health, me, onboarding, plans, questionnaire
 from sage.config import get_settings
 from sage.domain.errors import InternalError
 from sage.services.rulebook import Rulebook
 from sage.services.seed import SEED_FILE
-from sage.services.stubs import SeededPlanGenerator
+from sage.services.stubs import InterimEligibility, SeededPlanGenerator
 
 
 @asynccontextmanager
@@ -33,6 +33,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # The plan stand-in reads its seed file now, so a wrong path in the image fails the deploy's
     # health check rather than the first onboarding
     app.state.plan_generator = SeededPlanGenerator(SEED_FILE)
+    app.state.eligibility_checker = InterimEligibility()
     client = connect(settings.supabase_url, settings.supabase_secret_key)
     app.state.verifier = SupabaseTokenVerifier(client)
     app.state.rulebook = Rulebook(SupabaseRuleRepository(client))
@@ -72,7 +73,7 @@ def create_app() -> FastAPI:
 
     # /health stays at the root, where Azure checks it. Everything a student uses is versioned.
     app.include_router(health.router)
-    for area in (me, onboarding, plans, questionnaire):
+    for area in (me, onboarding, plans, questionnaire, electives):
         app.include_router(area.router, prefix="/v1")
     return app
 

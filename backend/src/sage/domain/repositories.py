@@ -6,7 +6,13 @@ from typing import Any, Protocol
 from uuid import UUID
 
 from sage.domain.rules import ResultSymbol, RuleSet
-from sage.domain.students import CourseHistoryLine, PlanSetRows, Student, StudentState
+from sage.domain.students import (
+    CourseHistoryLine,
+    PlanSetRows,
+    Student,
+    StudentRecord,
+    StudentState,
+)
 
 
 class AccountNotFound(Exception):
@@ -70,5 +76,11 @@ class StudentRepository(Protocol):
         self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]
     ) -> None: ...
 
-    # The codes of the courses she hearted
-    def favourites(self, student_id: UUID) -> tuple[str, ...]: ...
+    # Her course history and hearted courses, in one read
+    def record(self, student_id: UUID) -> StudentRecord: ...
+
+    # Hearts a course. Hearting it again changes nothing.
+    def add_favourite(self, student_id: UUID, course_code: str) -> None: ...
+
+    # Unhearts a course. Unhearting one she never hearted changes nothing.
+    def remove_favourite(self, student_id: UUID, course_code: str) -> None: ...

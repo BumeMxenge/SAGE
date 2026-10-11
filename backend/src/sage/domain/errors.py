@@ -32,6 +32,7 @@ class Code(StrEnum):
     QUESTIONNAIRE_ANSWERED = "questionnaire_answered"
     UNKNOWN_ANSWER = "unknown_answer"
     NO_PLAN_MATCHES = "no_plan_matches"
+    COURSE_NOT_FOUND = "course_not_found"
 
 
 class Refusal(Exception):
@@ -191,3 +192,8 @@ class UnknownAnswer(Refusal):
 class NoPlanMatches(Refusal):
     status, code = 422, Code.NO_PLAN_MATCHES
     message = "No plan matches all of those answers. Change one and try again."
+
+
+class CourseNotFound(Refusal):
+    status, code = 404, Code.COURSE_NOT_FOUND
+    message = "That course isn't in the current handbook."

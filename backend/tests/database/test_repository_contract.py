@@ -9,7 +9,7 @@ import pytest
 from sage.adapters.memory.rules import InMemoryRuleRepository
 from sage.adapters.memory.students import InMemoryStudentRepository
 from sage.domain.repositories import RuleRepository, StudentRepository
-from sage.domain.students import Student
+from sage.domain.students import Student, StudentRecord
 from sage.services.seed import Seed, load_seed, seed
 from sage.services.stubs import SeededPlanGenerator
 
@@ -108,8 +108,11 @@ def test_plans_by_id_bring_their_set_and_reasons_and_only_hers(store):
     assert store.students.plans(store.stranger, [by_position[7].id]) == ()
 
 
-def test_her_favourites_are_her_six_electives(store):
-    assert store.students.favourites(store.mbali.student.student.id) == (
+def test_her_record_is_her_history_and_six_hearted_electives(store):
+    her = store.mbali.student
+    record = store.students.record(her.student.id)
+    assert set(record.course_history) == set(her.course_history)
+    assert record.favourites == (
         "EEE4114F",
         "EEE4117F",
         "EEE4118F",
@@ -117,7 +120,17 @@ def test_her_favourites_are_her_six_electives(store):
         "EEE4120F",
         "HUB4049F",
     )
-    assert store.students.favourites(store.stranger) == ()
+    assert store.students.record(store.stranger) == StudentRecord()
+
+
+def test_hearting_twice_and_unhearting_twice_change_nothing_more(store):
+    her = store.mbali.student.student.id
+    for _ in range(2):
+        store.students.add_favourite(her, "ECO1006F")
+    assert store.students.record(her).favourites.count("ECO1006F") == 1
+    for _ in range(2):
+        store.students.remove_favourite(her, "ECO1006F")
+    assert "ECO1006F" not in store.students.record(her).favourites
 
 
 def test_hiding_plans_hides_the_others_and_never_shows_one_again(store):

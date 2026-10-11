@@ -20,6 +20,7 @@ from sage.domain.students import (
     PlanSet,
     PlanSetRows,
     Student,
+    StudentRecord,
     StudentState,
 )
 
@@ -183,16 +184,42 @@ class SupabaseStudentRepository:
             .execute()
         )
 
-    def favourites(self, student_id: UUID) -> tuple[str, ...]:
-        rows = select(
-            self._client,
-            "favourites",
-            Favourite,
-            "student_id",
-            str(student_id),
-            ORDER["favourites"],
+    def record(self, student_id: UUID) -> StudentRecord:
+        rows = (
+            self._client.table("students")
+            .select(
+                f"course_history({columns(CourseHistoryLine)}),favourites(course_code)"
+            )
+            .eq("id", str(student_id))
+            .order("academic_year", foreign_table="course_history")
+            .order("term", foreign_table="course_history")
+            .order("course_code", foreign_table="course_history")
+            .order("course_code", foreign_table="favourites")
+            .execute()
+            .data
         )
-        return tuple(row.course_code for row in rows)
+        if not rows:
+            return StudentRecord()
+        return StudentRecord(
+            course_history=tuple(
+                CourseHistoryLine.model_validate(line)
+                for line in rows[0]["course_history"]
+            ),
+            favourites=tuple(row["course_code"] for row in rows[0]["favourites"]),
+        )
+
+    def add_favourite(self, student_id: UUID, course_code: str) -> None:
+        favourite = Favourite(student_id=student_id, course_code=course_code)
+        insert(self._client, "favourites", [favourite], skip_existing=True)
+
+    def remove_favourite(self, student_id: UUID, course_code: str) -> None:
+        (
+            self._client.table("favourites")
+            .delete()
+            .eq("student_id", str(student_id))
+            .eq("course_code", course_code)
+            .execute()
+        )
 
 
 def plan_set_rows(row: dict[str, Any]) -> PlanSetRows:

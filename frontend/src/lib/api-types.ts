@@ -158,6 +158,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/electives": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The current year's electives by tab, with whether she may take each */
+        get: operations["getElectives"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/favourites/{course_code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Heart a course; hearting it again changes nothing */
+        put: operations["addFavourite"];
+        post?: never;
+        /** Unheart a course; unhearting it again changes nothing */
+        delete: operations["removeFavourite"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -184,7 +219,7 @@ export interface components {
          * Code
          * @enum {string}
          */
-        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan" | "questionnaire_not_needed" | "questionnaire_answered" | "unknown_answer" | "no_plan_matches";
+        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan" | "questionnaire_not_needed" | "questionnaire_answered" | "unknown_answer" | "no_plan_matches" | "course_not_found";
         /** Comparison */
         Comparison: {
             first: components["schemas"]["Plan"];
@@ -247,6 +282,42 @@ export interface components {
             code: string;
             /** Name */
             name: string;
+        };
+        /** Elective */
+        Elective: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Credits */
+            credits: number;
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+            /** Summary */
+            summary: string | null;
+            /** Convener */
+            convener: string | null;
+            /** Favourite */
+            favourite: boolean;
+            eligibility: components["schemas"]["Eligibility"];
+        };
+        /** Electives */
+        Electives: {
+            /** Tabs */
+            tabs: components["schemas"]["Tab"][];
+        };
+        /** Eligibility */
+        Eligibility: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "eligible" | "check" | "not_eligible";
+            /** Reason */
+            reason: string | null;
         };
         /** FieldError */
         FieldError: {
@@ -473,6 +544,16 @@ export interface components {
             curriculum_code: string;
             /** Lines */
             lines: components["schemas"]["ConfirmedLine"][];
+        };
+        /** Tab */
+        Tab: {
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "arts" | "business" | "econ" | "ethics" | "history" | "languages" | "literature" | "logic" | "media" | "religion" | "science" | "society";
+            /** Courses */
+            courses: components["schemas"]["Elective"][];
         };
         /** Transcript */
         Transcript: {
@@ -1171,6 +1252,237 @@ export interface operations {
                 };
             };
             /** @description invalid_request, unknown_answer, no_plan_matches */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getElectives: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Electives"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    addFavourite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description course_not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    removeFavourite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description course_not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request */
             422: {
                 headers: {
                     [name: string]: unknown;
