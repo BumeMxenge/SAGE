@@ -33,6 +33,9 @@ class Code(StrEnum):
     UNKNOWN_ANSWER = "unknown_answer"
     NO_PLAN_MATCHES = "no_plan_matches"
     COURSE_NOT_FOUND = "course_not_found"
+    DIFFERENT_PLAN_SETS = "different_plan_sets"
+    QUESTIONNAIRE_PENDING = "questionnaire_pending"
+    CHAT_NOT_FOUND = "chat_not_found"
 
 
 class Refusal(Exception):
@@ -197,3 +200,18 @@ class NoPlanMatches(Refusal):
 class CourseNotFound(Refusal):
     status, code = 404, Code.COURSE_NOT_FOUND
     message = "That course isn't in the current handbook."
+
+
+class DifferentPlanSets(Refusal):
+    status, code = 422, Code.DIFFERENT_PLAN_SETS
+    message = "Those plans come from different plan sets, so they can't share a chat."
+
+
+class QuestionnairePending(Refusal):
+    status, code = 409, Code.QUESTIONNAIRE_PENDING
+    message = "Answer the questionnaire before you start chatting about your plans."
+
+
+class ChatNotFound(Refusal):
+    status, code = 404, Code.CHAT_NOT_FOUND
+    message = "There's no chat with that id on your account."

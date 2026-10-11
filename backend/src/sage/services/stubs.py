@@ -4,12 +4,16 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from uuid import UUID
 
+from sage.domain.advisor import Reply
 from sage.domain.planning import Eligibility
 from sage.domain.rules import Course, ResultSymbol, RuleSet
-from sage.domain.students import CourseHistoryLine, PlanSetRows, Student
+from sage.domain.students import Chat, CourseHistoryLine, PlanSetRows, Student
 from sage.services.seed import load_seed
 
 UNCHECKED = "SAGE can't check this requirement yet. Ask your advisor."
+FIXED_REPLY = (
+    "I can't answer questions yet. Your faculty advisor can help with this one."
+)
 
 
 class SeededPlanGenerator:
@@ -72,3 +76,12 @@ class InterimEligibility:
         if course.entry_rule.keys() == {"refer"}:
             return Eligibility(status="check", reason=course.entry_rule["refer"])
         return Eligibility(status="check", reason=UNCHECKED)
+
+
+class FixedAdvisor:
+    # One fixed reply in the final format, handing every question to a human advisor. In a pair
+    # chat its Open plan action points at the second plan. The real advisor replaces this.
+    def reply(self, chat: Chat, question: str, term: str | None) -> Reply:
+        return Reply(
+            content=FIXED_REPLY, referral=True, open_plan_id=chat.other_plan_id
+        )

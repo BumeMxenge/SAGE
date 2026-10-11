@@ -1,26 +1,44 @@
 # Each student's data in one dictionary, keyed by her account id. Reads come back in the order the
 # Supabase adapter returns them, so the two can be checked against each other.
 from collections.abc import Callable, Collection, Iterable, Sequence
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
 from sage.domain.base import Row
 from sage.domain.students import (
+    Chat,
+    Citation,
+    CitedMessage,
     CourseHistoryLine,
     Favourite,
+    Message,
+    MessageCitation,
     PlanSetRows,
     Student,
     StudentRecord,
     StudentState,
 )
 
+# Where the fake's clock starts. Each stored chat and message gets the next microsecond, so they
+# keep the order they were written in, as Postgres's clock_timestamp() gives them.
+EPOCH = datetime(2026, 1, 1, tzinfo=UTC)
+
 
 class InMemoryStudentRepository:
     def __init__(self) -> None:
         self._students: dict[UUID, StudentState] = {}
+        self._ticks = 0
+        # The database joins a citation to its passage; the fake keeps what it was handed instead
+        self._citations: dict[UUID, tuple[Citation, ...]] = {}
 
     def replace(self, state: StudentState) -> None:
-        self._students[state.student.id] = state
+        self._students[state.student.id] = state.model_copy(
+            update={
+                "chats": tuple(self._stamp(row) for row in state.chats),
+                "messages": tuple(self._stamp(row) for row in state.messages),
+            }
+        )
 
     def get(self, student_id: UUID) -> StudentState | None:
         return self._students.get(student_id)
@@ -184,6 +202,77 @@ class InMemoryStudentRepository:
             favourites=tuple(
                 row for row in state.favourites if row.course_code != course_code
             ),
+        )
+
+    def chats(
+        self, student_id: UUID, plan_id: UUID, other_plan_id: UUID | None
+    ) -> tuple[Chat, ...]:
+        state = self._students.get(student_id)
+        found = [
+            chat
+            for chat in (state.chats if state else ())
+            if chat.plan_id == plan_id and chat.other_plan_id == other_plan_id
+        ]
+        return tuple(
+            sorted(found, key=lambda chat: (chat.created_at, chat.id), reverse=True)
+        )
+
+    def chat(self, student_id: UUID, chat_id: UUID) -> Chat | None:
+        state = self._students.get(student_id)
+        return next(
+            (chat for chat in (state.chats if state else ()) if chat.id == chat_id),
+            None,
+        )
+
+    def add_chat(self, chat: Chat) -> Chat:
+        stored = self._stamp(chat)
+        self._change(
+            chat.student_id, chats=(*self._students[chat.student_id].chats, stored)
+        )
+        return stored
+
+    def messages(
+        self, student_id: UUID, chat_id: UUID
+    ) -> tuple[CitedMessage, ...] | None:
+        if self.chat(student_id, chat_id) is None:
+            return None
+        found = [
+            row for row in self._students[student_id].messages if row.chat_id == chat_id
+        ]
+        return tuple(
+            CitedMessage(message=row, citations=self._citations.get(row.id, ()))
+            for row in sorted(found, key=lambda row: (row.created_at, row.id))
+        )
+
+    def add_exchange(
+        self, question: Message, reply: Message, citations: Sequence[Citation]
+    ) -> tuple[Message, Message]:
+        state = self._students[reply.student_id]
+        stored = self._stamp(question), self._stamp(reply)
+        cited = tuple(
+            MessageCitation(
+                message_id=reply.id,
+                passage_id=citation.passage_id,
+                student_id=reply.student_id,
+                position=citation.position,
+                quote=citation.quote,
+            )
+            for citation in citations
+        )
+        self._change(
+            reply.student_id,
+            messages=(*state.messages, *stored),
+            message_citations=(*state.message_citations, *cited),
+        )
+        self._citations[reply.id] = tuple(citations)
+        return stored
+
+    def _stamp[T: (Chat, Message)](self, row: T) -> T:
+        if row.created_at is not None:
+            return row
+        self._ticks += 1
+        return row.model_copy(
+            update={"created_at": EPOCH + timedelta(microseconds=self._ticks)}
         )
 
     def _change(self, student_id: UUID, **tables: tuple[Row, ...]) -> None:

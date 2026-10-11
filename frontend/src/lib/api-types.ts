@@ -210,6 +210,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/chats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Her chats on exactly this plan or pair, newest first */
+        get: operations["listChats"];
+        put?: never;
+        /** Start a chat about one of her plans, or a pair from the same set */
+        post: operations["startChat"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/chats/{chat_id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A chat's messages in order, with what each answer cites */
+        get: operations["listMessages"];
+        put?: never;
+        /** Ask a question in a chat, and get the advisor's reply */
+        post: operations["sendMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -232,11 +268,46 @@ export interface components {
             /** Symbols */
             symbols: components["schemas"]["ResultSymbol"][];
         };
+        /** Chat */
+        Chat: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Plan Id
+             * Format: uuid
+             */
+            plan_id: string;
+            /** Other Plan Id */
+            other_plan_id: string | null;
+            /** Title */
+            title: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** Citation */
+        Citation: {
+            /** Position */
+            position: number;
+            /** Quote */
+            quote: string;
+            /** Source */
+            source: string;
+            /** Section */
+            section: string;
+            /** Page */
+            page: number;
+        };
         /**
          * Code
          * @enum {string}
          */
-        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan" | "questionnaire_not_needed" | "questionnaire_answered" | "unknown_answer" | "no_plan_matches" | "course_not_found";
+        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan" | "questionnaire_not_needed" | "questionnaire_answered" | "unknown_answer" | "no_plan_matches" | "course_not_found" | "different_plan_sets" | "questionnaire_pending" | "chat_not_found";
         /** Comparison */
         Comparison: {
             first: components["schemas"]["Plan"];
@@ -335,6 +406,11 @@ export interface components {
             status: "eligible" | "check" | "not_eligible";
             /** Reason */
             reason: string | null;
+        };
+        /** Exchange */
+        Exchange: {
+            question: components["schemas"]["Message"];
+            reply: components["schemas"]["Message"];
         };
         /** FieldError */
         FieldError: {
@@ -440,6 +516,51 @@ export interface components {
             choice_group: string | null;
             /** Choice */
             choice: string | null;
+        };
+        /** Message */
+        Message: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+            /** Content */
+            content: string;
+            /** Term */
+            term: ("q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other") | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Referral */
+            referral: boolean;
+            /** Open Plan Id */
+            open_plan_id: string | null;
+            /** Citations */
+            citations: components["schemas"]["Citation"][];
+        };
+        /** NewChat */
+        NewChat: {
+            /**
+             * Plan Id
+             * Format: uuid
+             */
+            plan_id: string;
+            /** Other Plan Id */
+            other_plan_id?: string | null;
+        };
+        /** NewMessage */
+        NewMessage: {
+            /** Content */
+            content: string;
+            /** Term */
+            term?: ("q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other") | null;
         };
         /** Option */
         Option: {
@@ -1606,6 +1727,308 @@ export interface operations {
             };
             /** @description onboarding_incomplete */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    listChats: {
+        parameters: {
+            query: {
+                plan_id: string;
+                other_plan_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Chat"][];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete, questionnaire_pending */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request, same_plan */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    startChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewChat"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Chat"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description plan_not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete, questionnaire_pending */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request, same_plan, different_plan_sets */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    listMessages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chat_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"][];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description chat_not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete, questionnaire_pending */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    sendMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chat_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewMessage"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Exchange"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description chat_not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete, questionnaire_pending */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -1,6 +1,6 @@
 # The API's contract: every request and response body. These stay separate from the domain's row
 # types, so the database can change without the frontend noticing, and the other way round.
-from datetime import date, time
+from datetime import date, datetime, time
 from typing import Literal
 from uuid import UUID
 
@@ -264,3 +264,47 @@ class HistoryYear(BaseModel):
 class History(BaseModel):
     cumulative_average: float | None
     years: list[HistoryYear]  # newest first
+
+
+class Chat(BaseModel):
+    id: UUID
+    plan_id: UUID
+    other_plan_id: (
+        UUID | None
+    )  # the second plan of a compared pair, stored lowest id first
+    title: str | None  # named after the first exchange; null until then
+    created_at: datetime
+
+
+class NewChat(RequestBody):
+    plan_id: UUID
+    other_plan_id: UUID | None = None  # set to chat about a pair, in either order
+
+
+class Citation(BaseModel):
+    position: int  # its number in the answer
+    quote: str
+    source: str
+    section: str
+    page: int
+
+
+class Message(BaseModel):
+    id: UUID
+    role: Literal["user", "assistant"]
+    content: str
+    term: TermCode | None  # the term on screen when she asked
+    created_at: datetime
+    referral: bool  # the reply hands the question to a human advisor
+    open_plan_id: UUID | None  # a plan the reply offers to open
+    citations: list[Citation]
+
+
+class NewMessage(RequestBody):
+    content: str = Field(min_length=1, max_length=2000)
+    term: TermCode | None = None
+
+
+class Exchange(BaseModel):
+    question: Message
+    reply: Message

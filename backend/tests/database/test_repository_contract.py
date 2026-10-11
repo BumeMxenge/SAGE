@@ -9,7 +9,8 @@ import pytest
 from sage.adapters.memory.rules import InMemoryRuleRepository
 from sage.adapters.memory.students import InMemoryStudentRepository
 from sage.domain.repositories import RuleRepository, StudentRepository
-from sage.domain.students import Student, StudentRecord
+from sage.domain.rules import HandbookVersion, Passage, RuleSet
+from sage.domain.students import Chat, Citation, Message, Student, StudentRecord
 from sage.services.seed import Seed, load_seed, seed
 from sage.services.stubs import SeededPlanGenerator
 
@@ -143,3 +144,115 @@ def test_hiding_plans_hides_the_others_and_never_shows_one_again(store):
     current = store.students.current_plan_set(her.student.id)
     assert [plan.position for plan in current.plans if not plan.hidden] == [1, 5]
     assert current.plan_set.answers == {"course": "EEE4118F"}
+
+
+def chat_titled(store: Store, title: str) -> Chat:
+    return next(chat for chat in store.mbali.student.chats if chat.title == title)
+
+
+def test_her_chats_list_under_exactly_their_plan_or_pair(store):
+    her = store.mbali.student.student.id
+    single = chat_titled(store, "Fridays on Power & Robotics")
+    pair = chat_titled(store, "Process Control or Medical Imaging")
+    alone = store.students.chats(her, single.plan_id, None)
+    together = store.students.chats(her, pair.plan_id, pair.other_plan_id)
+    assert [chat.id for chat in alone] == [single.id]
+    assert [chat.id for chat in together] == [pair.id]
+    assert store.students.chat(her, single.id).title == single.title
+    assert store.students.chats(store.stranger, single.plan_id, None) == ()
+    assert store.students.chat(store.stranger, single.id) is None
+
+
+def test_a_new_chat_has_its_time_and_lists_first(store):
+    her = store.mbali.student.student.id
+    single = chat_titled(store, "Fridays on Power & Robotics")
+    new = store.students.add_chat(
+        Chat(id=uuid4(), student_id=her, plan_id=single.plan_id)
+    )
+    assert new.created_at is not None
+    newest_first = store.students.chats(her, single.plan_id, None)
+    assert [chat.id for chat in newest_first] == [new.id, single.id]
+
+
+def test_a_chat_reads_back_its_messages_in_order(store):
+    her = store.mbali.student
+    pair = chat_titled(store, "Process Control or Medical Imaging")
+    question, reply = store.students.messages(her.student.id, pair.id)
+    assert (question.message.role, reply.message.role) == ("user", "assistant")
+    imaging_and_power = next(plan for plan in her.plans if plan.position == 7)
+    assert reply.message.open_plan_id == imaging_and_power.id
+    assert reply.citations == ()
+    assert store.students.messages(store.stranger, pair.id) is None
+
+
+def test_a_question_and_its_reply_are_stored_together_in_order(store):
+    her = store.mbali.student.student.id
+    chat = chat_titled(store, "Fridays on Power & Robotics")
+    asked = Message(
+        id=uuid4(),
+        chat_id=chat.id,
+        student_id=her,
+        role="user",
+        content="Test",
+        term="sem1",
+    )
+    answered = asked.model_copy(
+        update={
+            "id": uuid4(),
+            "role": "assistant",
+            "referral": True,
+            "open_plan_id": chat.plan_id,
+        }
+    )
+    question, reply = store.students.add_exchange(asked, answered, [])
+    assert question.created_at < reply.created_at
+    assert (question.model_dump(), reply.model_dump()) == (
+        asked.model_dump(),
+        answered.model_dump(),
+    )
+    in_order = [row.message.id for row in store.students.messages(her, chat.id)]
+    assert in_order[-2:] == [asked.id, answered.id]
+
+
+@pytest.mark.integration
+def test_a_cited_reply_reads_back_with_its_passage(
+    stores, new_account, seed_file, secret
+):
+    # Supabase only: it joins each citation to its passage, which the fake has no table for. The
+    # passage gets a year of its own, removed before the asserts.
+    rules, students = stores
+    account = new_account()
+    mbali = load_seed(seed_file, account.id)
+    seed(rules, students, mbali)
+    passage = Passage(
+        id=uuid4(),
+        handbook_year=2098,
+        source="Test handbook",
+        section="Test",
+        page=7,
+        content="Test",
+    )
+    rules.add_missing(
+        RuleSet(handbook_versions=(HandbookVersion(year=2098),), passages=(passage,))
+    )
+    chat = mbali.student.chats[0]
+    asked = Message(
+        id=uuid4(), chat_id=chat.id, student_id=account.id, role="user", content="Test"
+    )
+    answered = asked.model_copy(update={"id": uuid4(), "role": "assistant"})
+    citation = Citation(
+        passage_id=passage.id,
+        position=1,
+        quote="Test",
+        source="Test handbook",
+        section="Test",
+        page=7,
+    )
+    students.add_exchange(asked, answered, [citation])
+    reply = students.messages(account.id, chat.id)[-1]
+    # A citation holds its passage, so the messages, and their citations, go first
+    secret.table("messages").delete().in_(
+        "id", [str(asked.id), str(answered.id)]
+    ).execute()
+    secret.table("handbook_versions").delete().eq("year", 2098).execute()
+    assert reply.citations == (citation,)

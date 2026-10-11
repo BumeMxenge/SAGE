@@ -131,3 +131,43 @@ def test_a_slot_with_times_but_no_day_is_kept(secret, mbali):
     stored = secret.table("timetable_slots").insert(slot).execute().data[0]
     secret.table("timetable_slots").delete().eq("id", stored["id"]).execute()
     assert stored["day"] is None
+
+
+def test_only_a_reply_can_refer_or_offer_a_plan(secret, mbali, refused):
+    chat = mbali.student.chats[0]
+    question = {
+        "chat_id": str(chat.id),
+        "student_id": str(chat.student_id),
+        "role": "user",
+        "content": "Test",
+    }
+    refused(secret.table("messages").insert(question | {"referral": True}), CHECK)
+    offer = {"open_plan_id": str(chat.plan_id)}
+    refused(secret.table("messages").insert(question | offer), CHECK)
+
+
+def test_deleting_the_plan_a_reply_offers_clears_the_offer(secret, mbali):
+    # The offered plan sits in a set of its own, so deleting it leaves her seeded plans alone
+    student_id = str(mbali.student.student.id)
+    plan_set = {"student_id": student_id, "period": 2026, "version": 3}
+    set_id = secret.table("plan_sets").insert(plan_set).execute().data[0]["id"]
+    plan = {
+        "plan_set_id": set_id,
+        "student_id": student_id,
+        "position": 1,
+        "name": "Test",
+    }
+    plan_id = secret.table("plans").insert(plan).execute().data[0]["id"]
+    reply = {
+        "chat_id": str(mbali.student.chats[0].id),
+        "student_id": student_id,
+        "role": "assistant",
+        "content": "Test",
+        "open_plan_id": plan_id,
+    }
+    stored = secret.table("messages").insert(reply).execute().data[0]
+    secret.table("plan_sets").delete().eq("id", set_id).execute()  # and its plan
+    query = secret.table("messages").select("open_plan_id").eq("id", stored["id"])
+    after = query.execute().data
+    secret.table("messages").delete().eq("id", stored["id"]).execute()
+    assert after == [{"open_plan_id": None}]

@@ -13,6 +13,7 @@ from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.api import problems
 from sage.api.routes import (
+    chats,
     electives,
     health,
     history,
@@ -25,7 +26,7 @@ from sage.config import get_settings
 from sage.domain.errors import InternalError
 from sage.services.rulebook import Rulebook
 from sage.services.seed import SEED_FILE
-from sage.services.stubs import InterimEligibility, SeededPlanGenerator
+from sage.services.stubs import FixedAdvisor, InterimEligibility, SeededPlanGenerator
 
 
 @asynccontextmanager
@@ -42,6 +43,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # health check rather than the first onboarding
     app.state.plan_generator = SeededPlanGenerator(SEED_FILE)
     app.state.eligibility_checker = InterimEligibility()
+    app.state.advisor = FixedAdvisor()
     client = connect(settings.supabase_url, settings.supabase_secret_key)
     app.state.verifier = SupabaseTokenVerifier(client)
     app.state.rulebook = Rulebook(SupabaseRuleRepository(client))
@@ -81,7 +83,7 @@ def create_app() -> FastAPI:
 
     # /health stays at the root, where Azure checks it. Everything a student uses is versioned.
     app.include_router(health.router)
-    for area in (me, onboarding, plans, questionnaire, electives, history):
+    for area in (me, onboarding, plans, questionnaire, electives, history, chats):
         app.include_router(area.router, prefix="/v1")
     return app
 

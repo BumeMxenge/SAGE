@@ -3,7 +3,7 @@
     "Mbali's seed for 2026. Each key is a table and each row uses the table's column names.",
     "Rows carry no uuids or student_id. sage seed fills student_id from the signed-in account and makes the uuids.",
     "fake_account is Mbali's made-up identity, for the tests' fake sign-in and transcript only. sage seed never writes it: a real account brings its own name and email.",
-    "Rows that point at other seed rows use local keys: plan_set, plan, other_plan, chat. sage seed swaps them for uuids.",
+    "Rows that point at other seed rows use local keys: plan_set, plan, other_plan, chat, open_plan. sage seed swaps them for uuids.",
     "chats.plan and other_plan must be stored with plan_id < other_plan_id, so sage seed orders each pair after making the uuids.",
     "course_history is my own 2023-2025 record, used for Mbali by my choice. The planner prototype already shows it.",
     "Equivalences EEE1006F->EEE1008F, EEE1007S->EEE1009S and EEE2048F->EEE2048S are synthetic: the 2026 handbook doesn't state them.",
@@ -2495,6 +2495,7 @@
       "chat": "c2",
       "role": "assistant",
       "term": "sem1",
+      "open_plan": "V07",
       "content": "They differ in one elective. Power & Robotics takes EEE4118F Process Control and Instrumentation, and Imaging & Power takes HUB4049F Medical Imaging instead. Both keep EEE4117F and EEE4119F, so both meet the group 1 rule. EEE4118F meets on Tuesday and Thursday from 10:00 to 11:45 and Monday at 12:00. HUB4049F meets Monday to Wednesday at 13:00, over the lunch hour."
     }
   ],

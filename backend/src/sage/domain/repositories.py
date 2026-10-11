@@ -7,7 +7,11 @@ from uuid import UUID
 
 from sage.domain.rules import ResultSymbol, RuleSet
 from sage.domain.students import (
+    Chat,
+    Citation,
+    CitedMessage,
     CourseHistoryLine,
+    Message,
     PlanSetRows,
     Student,
     StudentRecord,
@@ -84,3 +88,25 @@ class StudentRepository(Protocol):
 
     # Unhearts a course. Unhearting one she never hearted changes nothing.
     def remove_favourite(self, student_id: UUID, course_code: str) -> None: ...
+
+    # Her chats on exactly this plan, or this pair stored lowest id first, newest first
+    def chats(
+        self, student_id: UUID, plan_id: UUID, other_plan_id: UUID | None
+    ) -> tuple[Chat, ...]: ...
+
+    # One of her chats, or None if it isn't hers
+    def chat(self, student_id: UUID, chat_id: UUID) -> Chat | None: ...
+
+    # Stores a new chat, and returns it with the time it was stored
+    def add_chat(self, chat: Chat) -> Chat: ...
+
+    # The chat's messages in order, with what each cites, or None if the chat isn't hers
+    def messages(
+        self, student_id: UUID, chat_id: UUID
+    ) -> tuple[CitedMessage, ...] | None: ...
+
+    # Stores a question and its reply in one write, so neither is kept without the other, then the
+    # reply's citations. Returns both with the times they were stored, the question first.
+    def add_exchange(
+        self, question: Message, reply: Message, citations: Sequence[Citation]
+    ) -> tuple[Message, Message]: ...

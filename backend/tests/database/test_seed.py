@@ -52,7 +52,8 @@ def test_seeding_again_changes_nothing_and_reads_back_as_the_file(
     before = stores[1].get(her.id)
     result = seed(*stores, load_seed(seed_file, her.id))
     assert result.rulebook_differences == result.student_differences == ()
-    assert stores[1].get(her.id) == before
+    # Compared as written: seeding again stamps her chats and messages with new times
+    assert stores[1].get(her.id).model_dump() == before.model_dump()
     assert stored_counts(secret, str(her.id)) == mbali_counts
 
 

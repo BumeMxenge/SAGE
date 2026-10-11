@@ -12,8 +12,13 @@ from supabase import Client
 from sage.adapters.supabase.tables import columns, insert, row_type, select
 from sage.domain.repositories import AccountNotFound
 from sage.domain.students import (
+    Chat,
+    Citation,
+    CitedMessage,
     CourseHistoryLine,
     Favourite,
+    Message,
+    MessageCitation,
     Plan,
     PlanCourse,
     PlanReason,
@@ -44,6 +49,11 @@ ORDER = {
 PLAN_SET_ROWS = (
     f"{columns(PlanSet)},plans({columns(Plan)},plan_courses({columns(PlanCourse)})),"
     f"plan_reasons({columns(PlanReason)})"
+)
+# A chat's messages with their citations, and the passages those cite, in one select
+CHAT_MESSAGES = (
+    f"id,messages({columns(Message)},"
+    "message_citations(passage_id,position,quote,passages(source,section,page)))"
 )
 # A plan with its courses and own reasons, and its set with the set's reasons, in one select
 PLAN_ROWS = (
@@ -221,6 +231,82 @@ class SupabaseStudentRepository:
             .execute()
         )
 
+    def chats(
+        self, student_id: UUID, plan_id: UUID, other_plan_id: UUID | None
+    ) -> tuple[Chat, ...]:
+        query = (
+            self._client.table("chats")
+            .select(columns(Chat))
+            .eq("student_id", str(student_id))
+            .eq("plan_id", str(plan_id))
+        )
+        if other_plan_id is None:
+            query = query.is_("other_plan_id", "null")
+        else:
+            query = query.eq("other_plan_id", str(other_plan_id))
+        rows = (
+            query.order("created_at", desc=True).order("id", desc=True).execute().data
+        )
+        return tuple(Chat.model_validate(row) for row in rows)
+
+    def chat(self, student_id: UUID, chat_id: UUID) -> Chat | None:
+        rows = (
+            self._client.table("chats")
+            .select(columns(Chat))
+            .eq("id", str(chat_id))
+            .eq("student_id", str(student_id))
+            .execute()
+            .data
+        )
+        return Chat.model_validate(rows[0]) if rows else None
+
+    def add_chat(self, chat: Chat) -> Chat:
+        rows = (
+            self._client.table("chats").insert(chat.model_dump(mode="json")).execute()
+        )
+        return Chat.model_validate(rows.data[0])
+
+    def messages(
+        self, student_id: UUID, chat_id: UUID
+    ) -> tuple[CitedMessage, ...] | None:
+        rows = (
+            self._client.table("chats")
+            .select(CHAT_MESSAGES)
+            .eq("id", str(chat_id))
+            .eq("student_id", str(student_id))
+            .order("created_at", foreign_table="messages")
+            .order("id", foreign_table="messages")
+            .order("position", foreign_table="messages.message_citations")
+            .execute()
+            .data
+        )
+        return (
+            tuple(cited_message(row) for row in rows[0]["messages"]) if rows else None
+        )
+
+    def add_exchange(
+        self, question: Message, reply: Message, citations: Sequence[Citation]
+    ) -> tuple[Message, Message]:
+        rows = (
+            self._client.table("messages")
+            .insert([question.model_dump(mode="json"), reply.model_dump(mode="json")])
+            .execute()
+            .data
+        )
+        cited = [
+            MessageCitation(
+                message_id=reply.id,
+                passage_id=citation.passage_id,
+                student_id=reply.student_id,
+                position=citation.position,
+                quote=citation.quote,
+            )
+            for citation in citations
+        ]
+        insert(self._client, "message_citations", cited)
+        stored = {row["id"]: Message.model_validate(row) for row in rows}
+        return stored[str(question.id)], stored[str(reply.id)]
+
 
 def plan_set_rows(row: dict[str, Any]) -> PlanSetRows:
     # One embedded plan_sets row as domain rows, keeping the order the select asked for
@@ -245,5 +331,22 @@ def plan_rows(row: dict[str, Any]) -> PlanSetRows:
         plan_courses=tuple(PlanCourse.model_validate(course) for course in courses),
         plan_reasons=tuple(
             PlanReason.model_validate(reason) for reason in [*set_reasons, *own_reasons]
+        ),
+    )
+
+
+def cited_message(row: dict[str, Any]) -> CitedMessage:
+    # One embedded message with its citations, each carrying where its passage sits
+    citations = row.pop("message_citations")
+    return CitedMessage(
+        message=Message.model_validate(row),
+        citations=tuple(
+            Citation(
+                passage_id=citation["passage_id"],
+                position=citation["position"],
+                quote=citation["quote"],
+                **citation["passages"],
+            )
+            for citation in citations
         ),
     )

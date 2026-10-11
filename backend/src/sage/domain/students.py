@@ -1,9 +1,13 @@
 # One student's data as types: one per table row, named after its columns. Timestamps the database
-# stamps itself (created_at, updated_at) are left out until something reads them.
+# stamps itself (created_at, updated_at) are left out until something reads them, and then are
+# read-only: excluded from every dump, so a write never sends one.
 from collections.abc import Iterable
+from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any, Literal, Protocol
 from uuid import UUID
+
+from pydantic import Field
 
 from sage.domain.base import Row
 
@@ -80,15 +84,19 @@ class Chat(Row):
     plan_id: UUID
     other_plan_id: UUID | None = None
     title: str | None = None
+    created_at: datetime | None = Field(default=None, exclude=True)
 
 
 class Message(Row):
     id: UUID
     chat_id: UUID
     student_id: UUID
-    role: str
+    role: Literal["user", "assistant"]
     content: str
     term: str | None = None
+    referral: bool = False  # the reply hands the question to a human advisor
+    open_plan_id: UUID | None = None  # a plan the reply offers to open
+    created_at: datetime | None = Field(default=None, exclude=True)
 
 
 class MessageCitation(Row):
@@ -97,6 +105,22 @@ class MessageCitation(Row):
     student_id: UUID
     position: int
     quote: str
+
+
+class Citation(Row):
+    # A handbook passage an answer cites: the words quoted and where the passage sits
+    passage_id: UUID
+    position: int
+    quote: str
+    source: str
+    section: str
+    page: int
+
+
+class CitedMessage(Row):
+    # A message as a chat shows it, with the passages it cites
+    message: Message
+    citations: tuple[Citation, ...] = ()
 
 
 class PlanSetRows(Row):

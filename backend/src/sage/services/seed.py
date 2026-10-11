@@ -178,9 +178,19 @@ def _student(data: dict[str, Any], account_id: UUID) -> StudentState:
 
     messages = []
     for row in data.pop("messages", []):
-        key, chat = row.pop("key"), chats[row.pop("chat")]
+        key, chat, offered = (
+            row.pop("key"),
+            chats[row.pop("chat")],
+            row.pop("open_plan", None),
+        )
         messages.append(
-            Message(id=new_id("messages", key), chat_id=chat.id, **owner, **row)
+            Message(
+                id=new_id("messages", key),
+                chat_id=chat.id,
+                open_plan_id=plans[offered].id if offered else None,
+                **owner,
+                **row,
+            )
         )
 
     return StudentState(

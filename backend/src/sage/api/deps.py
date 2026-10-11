@@ -6,6 +6,7 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from sage.domain.accounts import Account, TokenVerifier
+from sage.domain.advisor import Advisor
 from sage.domain.errors import (
     NotSignedIn,
     OnboardingIncomplete,
@@ -39,10 +40,15 @@ def eligibility_checker(request: Request) -> EligibilityChecker:
     return request.app.state.eligibility_checker
 
 
+def advisor(request: Request) -> Advisor:
+    return request.app.state.advisor
+
+
 Students = Annotated[StudentRepository, Depends(students)]
 Rules = Annotated[Rulebook, Depends(rulebook)]
 Generator = Annotated[PlanGenerator, Depends(plan_generator)]
 Checker = Annotated[EligibilityChecker, Depends(eligibility_checker)]
+ChatAdvisor = Annotated[Advisor, Depends(advisor)]
 
 # With auto_error off, a missing token becomes the not_signed_in problem rather than FastAPI's own
 # error. It also gives /docs its Authorize button.
