@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too,
 # so `make check` passing on your laptop means CI's backend and frontend jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-db ingest
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-db seed
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -46,5 +46,10 @@ check-db:
 	@$(SUPABASE) db lint --local --fail-on error
 	@$(SUPABASE) db advisors --local --type security --fail-on error
 
-ingest:
-	@cd backend && uv run sage ingest --year $(YEAR)
+# Loads the made-up student onto one local account: make seed USER_ID=<account id>.
+# The URL and key come from the running local Supabase, never from backend/.env.
+seed:
+	@test -n "$(USER_ID)" || { echo "Usage: make seed USER_ID=<account id>"; exit 1; }
+	@env=$$($(SUPABASE) status -o env) && eval "$$env" && cd backend && \
+		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
+		uv run sage seed --user "$(USER_ID)"
