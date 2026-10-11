@@ -1,4 +1,4 @@
-// The M0 shell. It proves two things: the browser can reach the backend (VITE_API_URL and CORS),
+// The starter shell. It proves two things: the browser can reach the backend (VITE_API_URL and CORS),
 // and a student can sign in with their UCT Microsoft account through Supabase.
 import { useEffect, useState } from 'react'
 import { useAuth } from '../features/auth/useAuth.ts'
