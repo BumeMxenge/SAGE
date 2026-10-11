@@ -59,5 +59,8 @@ jobs:
         with:
           version: 2.120.0 # same CLI as the Makefile's npx supabase@2.120.0
       - name: Apply migrations to an empty database, then lint and check them
-        # The security check fails if a table the API can reach has no row level security
-        run: make check-db SUPABASE=supabase
+        # The security check fails if a table the API can reach has no row level security.
+        # -x skips services nothing here uses, keeping Postgres, Auth, the REST API and the gateway.
+        run: >-
+          make check-db SUPABASE=supabase
+          SUPABASE_START_FLAGS="-x studio,postgres-meta,storage-api,imgproxy,realtime,edge-runtime,logflare,vector,supavisor"

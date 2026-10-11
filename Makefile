@@ -4,6 +4,8 @@
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
+# Services `start` skips. None on a laptop, so Studio runs; CI skips the ones its checks never use.
+SUPABASE_START_FLAGS ?=
 
 install:
 	@cd backend && uv sync
@@ -36,10 +38,11 @@ check-backend: lint test
 check-frontend:
 	@cd frontend && npm run lint && npm test --if-present && npm run build
 
-# What CI's database job runs: start Postgres with every migration applied, then lint and security-check them.
-# Docker must be running.
+# What CI's database job runs: rebuild the local database from every migration, then lint and
+# security-check it. The rebuild wipes local data, accounts included. Docker must be running.
 check-db:
-	@$(SUPABASE) db start
+	@$(SUPABASE) start $(SUPABASE_START_FLAGS)
+	@$(SUPABASE) db reset --local
 	@$(SUPABASE) db lint --local --fail-on error
 	@$(SUPABASE) db advisors --local --type security --fail-on error
 
