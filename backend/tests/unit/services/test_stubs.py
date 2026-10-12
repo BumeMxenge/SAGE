@@ -1,23 +1,33 @@
 # Checks the stand-ins. The plan one reads its seed file as it's built, and gives a student Mbali's
 # plan set, unanswered and with nothing hidden, with the ids sage seed would make. The eligibility
-# one applies its rules in order, and leaves a rule it can't read to her advisor
-from uuid import UUID
+# one applies its rules in order, and leaves a rule it can't read to her advisor. The advisor one
+# hands every question to a human advisor.
+from uuid import UUID, uuid4
 
 import pytest
 
+from sage.domain.advisor import Reply
 from sage.domain.rules import ResultSymbol, RuleSet
-from sage.domain.students import CourseHistoryLine, Student
+from sage.domain.students import Chat, CourseHistoryLine, Student
 from sage.services.seed import load_seed
-from sage.services.stubs import UNCHECKED, InterimEligibility, SeededPlanGenerator
+from sage.services.stubs import (
+    FIXED_REPLY,
+    UNCHECKED,
+    FixedAdvisor,
+    InterimEligibility,
+    SeededPlanGenerator,
+)
 
 STUDENT = Student(id=UUID(int=7))
 
 
+@pytest.mark.stub("engine")
 def test_a_missing_seed_file_stops_it_at_once(tmp_path):
     with pytest.raises(FileNotFoundError):
         SeededPlanGenerator(tmp_path / "mbali.json")
 
 
+@pytest.mark.stub("engine")
 def test_it_gives_mbalis_set_unanswered_and_all_visible(seed_file):
     rows = SeededPlanGenerator(seed_file).generate(STUDENT, [], RuleSet())
     seeded = load_seed(seed_file, STUDENT.id).student
@@ -39,12 +49,14 @@ def symbols(result_symbols) -> dict[str, ResultSymbol]:
     return {symbol.symbol: symbol for symbol in result_symbols}
 
 
+@pytest.mark.stub("engine")
 def test_an_entry_rule_it_cant_check_says_to_ask_her_advisor(rules, symbols):
     # EEE4117F's rule needs a pass in EEE3091F, so it's neither empty nor a printed refer
     verdict = InterimEligibility().check(rules.courses, [], rules, symbols)["EEE4117F"]
     assert (verdict.status, verdict.reason) == ("check", UNCHECKED)
 
 
+@pytest.mark.stub("engine")
 def test_a_course_she_passed_is_not_eligible_whatever_its_entry_rule(rules, symbols):
     passed = CourseHistoryLine(
         student_id=STUDENT.id,
@@ -57,5 +69,22 @@ def test_a_course_she_passed_is_not_eligible_whatever_its_entry_rule(rules, symb
         result="1",
         mark=75,
     )
-    verdicts = InterimEligibility().check(rules.courses, [passed], rules, symbols)
-    assert verdicts["EEE4117F"].status == "not_eligible"
+    verdict = InterimEligibility().check(rules.courses, [passed], rules, symbols)[
+        "EEE4117F"
+    ]
+    assert (verdict.status, verdict.reason) == (
+        "not_eligible",
+        "You've already passed EEE4117F.",
+    )
+
+
+@pytest.mark.stub("advisor")
+def test_the_fixed_reply_refers_her_and_offers_a_pairs_second_plan():
+    pair = Chat(
+        id=uuid4(), student_id=STUDENT.id, plan_id=uuid4(), other_plan_id=uuid4()
+    )
+    assert FixedAdvisor().reply(pair, "Which plan?", "sem1") == Reply(
+        content=FIXED_REPLY, referral=True, open_plan_id=pair.other_plan_id
+    )
+    alone = pair.model_copy(update={"other_plan_id": None})
+    assert FixedAdvisor().reply(alone, "Which plan?", "sem1").open_plan_id is None

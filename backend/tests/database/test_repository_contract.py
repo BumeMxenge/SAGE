@@ -10,9 +10,15 @@ from sage.adapters.memory.rules import InMemoryRuleRepository
 from sage.adapters.memory.students import InMemoryStudentRepository
 from sage.domain.repositories import RuleRepository, StudentRepository
 from sage.domain.rules import HandbookVersion, Passage, RuleSet
-from sage.domain.students import Chat, Citation, Message, Student, StudentRecord
+from sage.domain.students import (
+    Chat,
+    Citation,
+    Message,
+    PlanSetRows,
+    Student,
+    StudentRecord,
+)
 from sage.services.seed import Seed, load_seed, seed
-from sage.services.stubs import SeededPlanGenerator
 
 
 @dataclass(frozen=True)
@@ -81,10 +87,15 @@ def test_her_current_set_is_her_seeded_one_and_a_stranger_has_none(store):
 
 
 def test_a_generated_set_is_written_complete_and_once(store, seed_file):
-    store.students.save_profile(Student(id=store.stranger))
-    rows = SeededPlanGenerator(seed_file).generate(
-        Student(id=store.stranger), [], store.rules.get(2026)
+    # Mbali's seeded set, made the stranger's and marked not yet complete, as a new set arrives
+    seeded = load_seed(seed_file, store.stranger).student
+    rows = PlanSetRows(
+        plan_set=seeded.plan_sets[0].model_copy(update={"complete": False}),
+        plans=seeded.plans,
+        plan_courses=seeded.plan_courses,
+        plan_reasons=seeded.plan_reasons,
     )
+    store.students.save_profile(Student(id=store.stranger))
     store.students.add_plan_set(rows)
     store.students.add_plan_set(rows)  # as a retry would
     current = store.students.current_plan_set(store.stranger)

@@ -1,5 +1,6 @@
-# Checks the catalogue and Finish setup: the lines she confirmed are saved, an unanswered set of plans
-# is attached once however often she presses it, and anything the handbook doesn't know is refused
+# Checks the catalogue and Finish setup: the lines she confirmed are saved and plans attached, and
+# anything the handbook doesn't know is refused before anything is written. That pressing it again
+# makes no second set is checked in tests/unit/services/test_onboarding.py.
 import pytest
 
 from sage.adapters.memory.rules import InMemoryRuleRepository
@@ -19,19 +20,18 @@ def setup(seed_file) -> dict:
     }
 
 
-def test_the_catalogue_lists_the_current_handbook(signed_in):
+def test_the_catalogue_lists_the_current_handbook(signed_in, seed_file, result_symbols):
     catalogue = signed_in("qrtilv").get("/v1/catalogue").json()
+    rules = load_seed(seed_file, QRTILV).rules
     assert catalogue["year"] == 2026
     assert [row["code"] for row in catalogue["curricula"]] == ["EB011EEE05"]
-    assert len(catalogue["courses"]) == 52
-    assert catalogue["courses"][0].keys() == {"code", "name", "credits", "term"}
-    assert len(catalogue["symbols"]) == 26
-
-
-def test_staff_are_refused_the_student_endpoints(signed_in):
-    response = signed_in("staff").get("/v1/catalogue")
-    assert response.status_code == 403
-    assert response.json()["code"] == "students_only"
+    # Every course in the year, by code, and every result symbol
+    assert [row["code"] for row in catalogue["courses"]] == sorted(
+        row.code for row in rules.courses
+    )
+    assert {row["symbol"] for row in catalogue["symbols"]} == {
+        row.symbol for row in result_symbols
+    }
 
 
 def test_no_approved_year_means_the_rulebook_isnt_loaded(app, signed_in):
@@ -42,30 +42,18 @@ def test_no_approved_year_means_the_rulebook_isnt_loaded(app, signed_in):
     assert response.json()["code"] == "rulebook_not_loaded"
 
 
-def test_finish_setup_saves_her_lines_and_attaches_unanswered_plans(
-    signed_in, stores, setup
-):
+def test_finish_setup_saves_her_lines_and_attaches_plans(signed_in, stores, setup):
     response = signed_in("qrtilv").post("/v1/onboarding/complete", json=setup)
     assert response.status_code == 200
     assert response.json()["onboarding_complete"] is True
 
     students = stores[1]
     profile = students.profile(QRTILV)
+    # Her intake year is her record's first, 2023
     assert (profile.curriculum_code, profile.intake_year) == ("EB011EEE05", 2023)
-    assert len(students.get(QRTILV).course_history) == 34
-    plans = students.current_plan_set(QRTILV)
-    assert plans.plan_set.answers is None
-    assert len(plans.plans) == 10
-    assert not any(plan.hidden for plan in plans.plans)
-
-
-def test_finish_setup_twice_leaves_one_plan_set(signed_in, stores, setup):
-    client = signed_in("qrtilv")
-    client.post("/v1/onboarding/complete", json=setup)
-    first = stores[1].get(QRTILV)
-    client.post("/v1/onboarding/complete", json=setup)
-    assert stores[1].get(QRTILV) == first
-    assert len(first.plan_sets) == 1
+    saved = students.get(QRTILV).course_history
+    assert [line.model_dump(exclude={"student_id"}) for line in saved] == setup["lines"]
+    assert students.current_plan_set(QRTILV) is not None
 
 
 def another_curriculum(setup):

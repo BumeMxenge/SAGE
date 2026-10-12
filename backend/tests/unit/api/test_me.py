@@ -1,25 +1,4 @@
-# Checks /v1/me: only a valid token from a UCT account gets an answer, and the answer is what the
-# frontend routes from
-from fastapi.testclient import TestClient
-
-
-def test_no_token_is_not_signed_in(app):
-    response = TestClient(app).get("/v1/me")
-    assert response.status_code == 401
-    assert response.headers["www-authenticate"] == "Bearer"
-    assert response.json()["code"] == "not_signed_in"
-
-
-def test_a_bad_token_is_not_signed_in(signed_in):
-    response = signed_in("made-up-token").get("/v1/me")
-    assert response.status_code == 401
-    assert response.json()["code"] == "not_signed_in"
-
-
-def test_an_account_outside_uct_is_refused(signed_in):
-    response = signed_in("outsider").get("/v1/me")
-    assert response.status_code == 403
-    assert response.json()["code"] == "uct_account_required"
+# Checks what /v1/me answers, which the frontend routes from. Who may ask is in test_guards.py.
 
 
 def test_mbali_is_a_student_who_has_finished_setup(signed_in, fake_account):

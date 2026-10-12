@@ -76,6 +76,25 @@ def mbali(signed_in) -> TestClient:
 
 
 @pytest.fixture
+def unanswered(stores) -> None:
+    # Puts her seeded set back as it was before she answered: nothing hidden and no answers
+    students = stores[1]
+    state = students.get(MBALI)
+    students.replace(
+        state.model_copy(
+            update={
+                "plan_sets": tuple(
+                    row.model_copy(update={"answers": None}) for row in state.plan_sets
+                ),
+                "plans": tuple(
+                    plan.model_copy(update={"hidden": False}) for plan in state.plans
+                ),
+            }
+        )
+    )
+
+
+@pytest.fixture
 def plan_ids(mbali) -> dict[int, str]:
     # Her plan ids by position, as the planner learns them from the set
     return {

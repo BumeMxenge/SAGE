@@ -1,5 +1,6 @@
-# Checks the planner's plan reads on Mbali's seeded set: what the set shows, each plan in full, a
-# comparison, and that no student can open another's plan
+# Checks the planner's plan reads on Mbali's seeded set: what the set shows, each plan in full, and a
+# comparison, which needs both plans to be hers. Her other plans and chats are guarded in
+# test_guards.py.
 from tests.unit.api.accounts import MBALI
 
 
@@ -12,6 +13,7 @@ def test_her_set_has_10_plans_and_7_still_visible(mbali):
     visible = [plan["position"] for plan in plan_set["plans"] if not plan["hidden"]]
     assert visible == [1, 5, 6, 7, 8, 9, 10]
     assert {plan["credits"] for plan in plan_set["plans"]} == {138}
+    # The set's own reasons: the seed's six, less the one for plan 7 alone
     assert len(plan_set["reasons"]) == 5
 
 
@@ -71,23 +73,14 @@ def test_a_plan_compared_with_itself_is_refused(mbali, plan_ids):
     assert (response.status_code, response.json()["code"]) == (422, "same_plan")
 
 
-def test_another_students_plan_is_not_found(signed_in, plan_ids):
+def test_another_students_plan_beside_their_own_is_not_found(signed_in, plan_ids):
+    # The sweep sends two of Mbali's plans. One of the student's own beside one of hers must fail too.
     other = signed_in("zvsorw")
-    response = other.get(f"/v1/plans/{plan_ids[1]}")
-    assert (response.status_code, response.json()["code"]) == (404, "plan_not_found")
-    mine = other.get("/v1/plans").json()["plans"][0]["id"]
+    own = other.get("/v1/plans").json()["plans"][0]["id"]
     response = other.get(
-        "/v1/plans/compare", params={"first": mine, "second": plan_ids[1]}
+        "/v1/plans/compare", params={"first": own, "second": plan_ids[1]}
     )
-    assert response.status_code == 404
-
-
-def test_plans_wait_for_onboarding(signed_in):
-    response = signed_in("qrtilv").get("/v1/plans")
-    assert (response.status_code, response.json()["code"]) == (
-        409,
-        "onboarding_incomplete",
-    )
+    assert (response.status_code, response.json()["code"]) == (404, "plan_not_found")
 
 
 def test_no_complete_set_means_plans_arent_ready(mbali, stores):

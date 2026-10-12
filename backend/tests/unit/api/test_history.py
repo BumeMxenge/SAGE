@@ -43,11 +43,3 @@ def test_each_line_is_as_she_confirmed_it(history):
         "result": "SP",
         "mark": None,
     }
-
-
-def test_history_waits_for_onboarding(signed_in):
-    response = signed_in("qrtilv").get("/v1/history")
-    assert (response.status_code, response.json()["code"]) == (
-        409,
-        "onboarding_incomplete",
-    )
