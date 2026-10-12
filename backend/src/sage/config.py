@@ -11,8 +11,11 @@ class Settings(BaseSettings):
     supabase_url: str = ""
     supabase_secret_key: str = ""
     # Websites whose pages may call this API from a browser (CORS), comma-separated.
-    # The backend deploy sets the hosted frontend's address. The default is your laptop's frontend.
-    cors_origins: str = "http://localhost:3000"
+    # The backend deploy sets the hosted frontend's address. The default is your laptop's frontend,
+    # on port 3000, or 3001 and 3002 for worktrees.
+    cors_origins: str = (
+        "http://localhost:3000,http://localhost:3001,http://localhost:3002"
+    )
 
 
 @lru_cache
