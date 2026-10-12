@@ -10,6 +10,12 @@ on:
 permissions:
   contents: read # the run can read the code and change nothing
 
+# One version of each tool for every job: the same uv as the Dockerfile and laptop, and the same
+# Node as the frontend deploy
+env:
+  UV_VERSION: "0.12.23"
+  NODE_VERSION: 24
+
 concurrency: # a newer push cancels the older run on the same branch
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -25,7 +31,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          version: "0.12.23" # same uv as the Dockerfile and laptop
+          version: ${{ env.UV_VERSION }}
       - name: Install from uv.lock
         working-directory: backend
         run: uv sync --locked # fails if uv.lock is out of date, rather than quietly updating it
@@ -40,7 +46,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - name: Install from package-lock.json
@@ -57,10 +63,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          version: "0.12.23" # same uv as the backend job
+          version: ${{ env.UV_VERSION }}
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - name: Install from uv.lock
@@ -84,7 +90,7 @@ jobs:
           version: 2.120.0 # same CLI as the Makefile's npx supabase@2.120.0
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          version: "0.12.23" # same uv as the backend job
+          version: ${{ env.UV_VERSION }}
       - name: Install from uv.lock
         working-directory: backend
         run: uv sync --locked
