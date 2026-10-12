@@ -12,7 +12,6 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 | 11 Oct | Every question gets a fixed referral reply | The advisor isn't built | `FixedAdvisor` stands in, with no retrieval or citations, and `passages` is empty | The advisor replaces it before ATP-3 |
 | 11 Oct | The rulebook comes only from the seed, with one curriculum (Mechatronics) and 52 courses | Handbook ingestion isn't built, and `data/rules/2026` and `data/sources/2026` are empty | None yet | Needed for ATP-1, and for S1 to S4 in three programmes |
 | 11 Oct | No delta review rows | Handbook ingestion isn't built | None yet | Needed for ATP-1's 2023 to 2026 check |
-| 11 Oct | Six of the 24 planted faults survive the tests | Missing boundaries, a seed with no curriculum-only meetings, and a stand-in that returns identical plans | None yet | The test-strength branch |
 | 11 Oct | No frontend tests | No test script, and the M3 screens aren't built yet | None yet | Needed for ATP-4 |
 | 11 Oct | No ATP harness or load scripts | `tests/` holds only a README | None yet | Build before 14 Oct |
 | 11 Oct | The design experiments aren't in the repo | `experiments/` holds only a README | None yet | Add them, or say where they live |
@@ -31,6 +30,8 @@ Defects caught before acceptance testing, for Section 5.2.
 | 11 Oct | A PDF with `/Rotate /X` raised a `TypeError`, a 500 | Only a list of pdfplumber's errors counted as unreadable, and pdfminer fails on malformed files in many other ways | Any PDF library failure now counts as unreadable (cf57593) | None |
 | 11 Oct | An impossible issue date such as 31/02/2026 crashed the reader | Building the date raised a `ValueError` that nothing caught | Read as an empty `issued_on` (36578eb) | None |
 | 11 Oct | A record with no "Beginning of Undergraduate Record" line read as having no courses, so it showed the first-year message | The reader decided "no course history" from that line | `transcript_unreadable` instead, with "no course history" decided by the rows (c224040, cf57593) | None |
+| 11 Oct | Six of the 24 planted faults survived the tests | Missing boundaries, a seed with no curriculum-only meetings, and a stand-in that returns identical plans | A test for each rule, on rows built for it: 24 of 24 caught | None |
+| 12 Oct | Mutation testing found rules no test checked, though the code was right: a record with no student number or page numbers, a printed Term GPA of 0.00, and which meetings count towards the week options | The seed has no such records, alternatives or curriculum-only meetings | A test for each | None |
 
 ## Lasting: for the thesis
 

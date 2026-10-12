@@ -34,6 +34,17 @@ def year_of(transcript, year: int):
     return [line for line in transcript.lines if line.academic_year == year]
 
 
+def add_2026(pages: list[list[str]], *lines: str) -> None:
+    # Prints a 2026 year with these lines just before the end line, in place
+    end = pages[1].index("– – – – – End of Academic Record – – – – –")
+    pages[1][end:end] = [
+        "2026",
+        "Programme: Bachelor of Science in Engineering in Mechatronics",
+        "Specialisation: Mechatronics",
+        *lines,
+    ]
+
+
 def test_the_fixture_reads_as_her_seeded_history(transcript_pages, seed_file):
     transcript = read_lines(transcript_pages, MBALI)
     account = UUID(int=1)
@@ -59,14 +70,11 @@ def test_a_generated_pdf_reads_back_line_for_line(transcript_pages, pdf_of):
 
 def test_a_latest_year_with_results_to_come_is_in_progress(transcript_pages):
     # 2026 in progress: rows print only a description and 0 credits until results are out
-    end = transcript_pages[1].index("– – – – – End of Academic Record – – – – –")
-    transcript_pages[1][end:end] = [
-        "2026",
-        "Programme: Bachelor of Science in Engineering in Mechatronics",
-        "Specialisation: Mechatronics",
+    add_2026(
+        transcript_pages,
         "EEE 4022S Research Project 0",
         "EEE 4124C Impact of Engineering 0",
-    ]
+    )
     new = year_of(read_lines(transcript_pages, MBALI), 2026)
     assert [line.course_code for line in new] == ["EEE4022S", "EEE4124C"]
     for line in new:
@@ -77,6 +85,21 @@ def test_a_latest_year_with_results_to_come_is_in_progress(transcript_pages):
             None,
         )
         assert not line.unverified  # expected in the latest year
+
+
+def test_a_term_gpa_of_zero_matches_a_year_with_no_marks_yet(transcript_pages):
+    add_2026(transcript_pages, "EEE 4022S Research Project 0", "Term GPA: 0.00")
+    transcript = read_lines(transcript_pages, MBALI)
+    assert transcript.warnings == ()
+    assert not any(line.unverified for line in transcript.lines)
+
+
+def test_page_numbers_only_decide_whether_pages_are_missing(transcript_pages):
+    pages = [
+        [line for line in page if not line.startswith("Page ")]
+        for page in transcript_pages
+    ]
+    assert read_lines(pages, MBALI) == read_lines(transcript_pages, MBALI)
 
 
 def test_a_missing_result_in_an_earlier_year_is_unverified(transcript_pages):
@@ -130,11 +153,13 @@ def test_another_students_transcript_is_refused_with_both_numbers(transcript_pag
     }
 
 
-def test_a_pdf_that_isnt_an_academic_record(transcript_pages):
-    pages = [
-        [line for line in page if line != "ACADEMIC RECORD"]
-        for page in transcript_pages
-    ]
+@pytest.mark.parametrize(
+    "missing",
+    ["ACADEMIC RECORD", "Campus ID: DLMMBA999 Student Records Office"],
+    ids=["its heading", "its student number"],
+)
+def test_a_pdf_without_a_records_heading_or_student_number(transcript_pages, missing):
+    pages = [[line for line in page if line != missing] for page in transcript_pages]
     with pytest.raises(NotATranscript):
         read_lines(pages, MBALI)
 

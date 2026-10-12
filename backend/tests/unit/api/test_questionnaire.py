@@ -2,6 +2,7 @@
 # prototype's, answers hide exactly the plans they don't keep, and it can only be answered once
 import pytest
 
+from sage.domain.rules import RuleSet, TimetableSlotCurriculum
 from tests.unit.api.accounts import MBALI
 
 
@@ -78,6 +79,34 @@ def test_each_option_keeps_the_prototypes_plans(mbali, positions):
     assert kept(week["lunch_free"], positions) == [1, 2, 3, 5, 6, 8, 9]
     assert kept(course["no_preference"], positions) == list(range(1, 11))
     assert kept(week["no_preference"], positions) == list(range(1, 11))
+
+
+def test_meetings_for_her_curriculum_alone_still_count_towards_her_week(mbali, stores):
+    # Energy Conversion II's 08:00 lectures, linked to her curriculum, are still hers. So fewest 8am
+    # starts keeps the prototype's plans 8 to 10, and answering it leaves just those.
+    rules = stores[0]
+    lectures = [
+        slot
+        for slot in rules.get(2026).timetable_slots
+        if slot.course_code == "EEE4117F"
+    ]
+    rules.add_missing(
+        RuleSet(
+            timetable_slot_curricula=tuple(
+                TimetableSlotCurriculum(
+                    slot_id=slot.id, handbook_year=2026, curriculum_code="EB011EEE05"
+                )
+                for slot in lectures
+            )
+        )
+    )
+    positions = {
+        plan["id"]: plan["position"] for plan in mbali.get("/v1/plans").json()["plans"]
+    }
+    assert kept(options(mbali, "week")["fewest_8am"], positions) == [8, 9, 10]
+    response = mbali.post("/v1/questionnaire", json={"week": "fewest_8am"})
+    assert response.status_code == 200
+    assert visible(response.json()) == [8, 9, 10]
 
 
 def test_answering_hides_every_plan_the_answers_dont_keep(mbali):
