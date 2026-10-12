@@ -160,8 +160,8 @@ max_indexes = 5
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-# SAGE: the frontend's address under make dev-web. A sign-in must end on the site it began on, where
-# the browser keeps its half of the PKCE check, so 127.0.0.1 here stopped local sign-in finishing.
+# SAGE: where make dev-web serves the frontend. A sign-in must end on the site it began on, where
+# the browser keeps its half of the PKCE check.
 site_url = "http://localhost:3000"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
