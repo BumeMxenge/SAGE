@@ -1,8 +1,10 @@
-// Sign-in state for any component: who is signed in, plus sign-in and sign-out actions
+// Sign-in state for any component: who is signed in and their name, plus sign-in and sign-out
+// actions
 import type { AuthError, Session } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { env } from '../../lib/env.ts'
 import { supabase } from '../../lib/supabase.ts'
+import { forgetName, keepName, type Name, nameFromGraph, storedName } from './name.ts'
 
 // A link from `make sign-in` carries a one-time token, swapped for a session here once per page
 // load, as React runs effects twice in development. Only on local Supabase: on the hosted site,
@@ -14,8 +16,13 @@ const started: Promise<{ error: AuthError | null }> = linkToken
   ? supabase.auth.verifyOtp({ token_hash: linkToken, type: 'magiclink' })
   : supabase.auth.initialize()
 
+// Accounts whose name Graph was asked for on this page, so React's second subscription in
+// development, or a later event carrying the same Microsoft token, never asks again
+const askedGraph = new Set<string>()
+
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null)
+  const [name, setName] = useState<Name>() // none for Mbali's link, which brings no Microsoft token
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -26,10 +33,28 @@ export function useAuth() {
       if (error) setError(error.message)
       if (error || linkToken) window.history.replaceState(null, '', window.location.pathname)
     })
+    let accountId: string | undefined
     // Runs once with the current session, then on every sign-in, sign-out and token refresh
-    const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === 'SIGNED_OUT' && accountId) forgetName(accountId)
+      const id = newSession?.user.id
+      accountId = id
       setSession(newSession)
+      setName(id ? storedName(id) : undefined)
       setLoading(false)
+      // Microsoft's token rides on the session only until its first refresh, and the sign-in can
+      // finish before this subscribes, so whichever event first carries it is used
+      const microsoftToken = newSession?.provider_token
+      if (id && microsoftToken && !askedGraph.has(id) && !storedName(id)) {
+        askedGraph.add(id)
+        void nameFromGraph(microsoftToken).then((fetched) => {
+          // Kept only if the same account is still signed in when Graph answers
+          if (fetched && accountId === id) {
+            keepName(id, fetched)
+            setName(fetched)
+          }
+        })
+      }
     })
     return () => data.subscription.unsubscribe()
   }, [])
@@ -39,7 +64,9 @@ export function useAuth() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'azure', // Microsoft, through the Azure provider set up in Supabase
       options: {
-        scopes: 'email', // without it Microsoft doesn't share the email address
+        // email for the account, and Graph's basic profile so this browser can read the name.
+        // Not profile, which would put every student's name in Supabase.
+        scopes: 'email User.Read',
         redirectTo: `${window.location.origin}/`, // come back to this site, local or hosted
       },
     })
@@ -51,5 +78,5 @@ export function useAuth() {
     if (error) setError(error.message)
   }
 
-  return { session, loading, error, signIn, signOut }
+  return { session, name, loading, error, signIn, signOut }
 }
