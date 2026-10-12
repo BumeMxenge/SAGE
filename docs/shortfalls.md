@@ -16,6 +16,7 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 | 11 Oct | No ATP harness or load scripts | `tests/` holds only a README | None yet | Build before 14 Oct |
 | 11 Oct | The design experiments aren't in the repo | `experiments/` holds only a README | None yet | Add them, or say where they live |
 | 12 Oct | ATP-5's load test can't sign its test accounts in on the hosted project | The hosted Email provider is off, the backend counts only Microsoft sign-ins there, and Microsoft's sign-in page can't be automated | `ACCEPT_EMAIL_SIGN_IN` lets the backend count email-provider accounts during a test window | Follow the ATP-5 checklist below, then switch everything back |
+| 12 Oct | The privacy page and the privacy note don't say where chat questions go | The advisor is a stand-in, `FixedAdvisor`, which sends nothing anywhere | None yet | When the real advisor replaces it, update `frontend/public/privacy.html` and the privacy note in `docs/architecture.md` to say that chat questions, and the evidence sent with them, go to the chosen model provider, and where it processes them |
 
 **ATP-5 test window checklist.** Before the load test:
 
