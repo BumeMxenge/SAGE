@@ -8,11 +8,9 @@ from sage.adapters.supabase import connect
 from sage.adapters.supabase.auth import sign_in_token
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
-from sage.config import get_settings
+from sage.config import LOCAL_HOSTS, get_settings, is_local
 from sage.domain.repositories import AccountNotFound
 from sage.services.seed import SEED_FILE, SeedResult, load_seed, seed
-
-LOCAL_HOSTS = {"127.0.0.1", "localhost"}
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -83,7 +81,7 @@ def run_seed(account: UUID, *, yes: bool) -> None:
 def run_sign_in(port: int) -> None:
     settings = get_settings()
     # The link needs no password, so it may only ever sign in to this laptop's Supabase
-    if urlsplit(settings.supabase_url).hostname not in LOCAL_HOSTS:
+    if not is_local(settings.supabase_url):
         raise SystemExit(
             "sage sign-in only runs on local Supabase: `make sign-in` points it there"
         )

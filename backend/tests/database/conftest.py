@@ -6,7 +6,6 @@ import string
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from typing import Any
-from urllib.parse import urlsplit
 from uuid import UUID, uuid4
 
 import pytest
@@ -15,7 +14,7 @@ from supabase import Client, create_client
 
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
-from sage.cli import LOCAL_HOSTS
+from sage.config import is_local
 from sage.services.seed import Seed, load_seed, seed
 
 
@@ -29,7 +28,7 @@ class Account:
 @pytest.fixture(scope="session")
 def url() -> str:
     url = os.environ["SAGE_TEST_SUPABASE_URL"]
-    if urlsplit(url).hostname not in LOCAL_HOSTS:
+    if not is_local(url):
         pytest.exit(f"Integration tests only run against local Supabase, not {url}", 1)
     return url
 

@@ -1,7 +1,7 @@
 # Checks Supabase access tokens with supabase-auth's get_claims. It checks the signature against the
 # project's published keys (JWKS), cached for ten minutes, or for an HS256 token, such as local
-# Supabase may issue, asks the Auth server. It doesn't check who a token is for, so this does.
-# sign_in_token makes the one-time sign-in that `sage sign-in` prints.
+# Supabase may issue, asks the Auth server. It doesn't check who a token is for, or which provider
+# signed it in, so this does. sign_in_token makes the one-time sign-in that `sage sign-in` prints.
 from uuid import UUID
 
 from jwt import PyJWTError
@@ -10,14 +10,17 @@ from supabase import Client
 from supabase_auth.errors import AuthApiError, AuthInvalidJwtError
 
 from sage.domain.accounts import Identity
-from sage.domain.errors import NotSignedIn
+from sage.domain.errors import NotSignedIn, UctAccountRequired
 
 
 class SupabaseTokenVerifier:
-    def __init__(self, client: Client) -> None:
+    def __init__(self, client: Client, *, accept_email: bool) -> None:
         # Only ever reads tokens. Signing in on this shared client would put a student's session in
         # place of the secret key on every request after it.
         self._auth = client.auth
+        # Students sign in with Microsoft. An email-provider account, such as make sign-in's,
+        # counts only where the settings accept one.
+        self._providers = {"azure", "email"} if accept_email else {"azure"}
 
     def verify(self, token: str) -> Identity:
         # A JWT is three dot-separated parts of ASCII. Anything else is refused here, because
@@ -39,6 +42,9 @@ class SupabaseTokenVerifier:
             raise NotSignedIn() from error
         if claims.get("aud") != "authenticated" or not claims.get("sub"):
             raise NotSignedIn()
+        # A second line of defence: the hosted project's Email provider is off as well
+        if (claims.get("app_metadata") or {}).get("provider") not in self._providers:
+            raise UctAccountRequired()
         return Identity(id=claims["sub"], email=claims.get("email"))
 
 

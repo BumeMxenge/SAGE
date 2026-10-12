@@ -1,4 +1,5 @@
 # App factory: builds the FastAPI app, adds middleware and mounts routers
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from importlib.metadata import version
@@ -28,6 +29,8 @@ from sage.services.rulebook import Rulebook
 from sage.services.seed import SEED_FILE
 from sage.services.stubs import FixedAdvisor, InterimEligibility, SeededPlanGenerator
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -40,13 +43,21 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             "Set SUPABASE_URL and SUPABASE_SECRET_KEY. make dev takes them from local Supabase, "
             "and the deploy sets them on Azure."
         )
+    # Said at every start, so a test window's setting is never left on unnoticed
+    if settings.accept_email_sign_in:
+        logger.warning(
+            "ACCEPT_EMAIL_SIGN_IN is on, so email-provider accounts can sign in. "
+            "Switch it off when the test window ends."
+        )
     # The plan stand-in reads its seed file now, so a wrong path in the image fails the deploy's
     # health check rather than the first onboarding
     app.state.plan_generator = SeededPlanGenerator(SEED_FILE)
     app.state.eligibility_checker = InterimEligibility()
     app.state.advisor = FixedAdvisor()
     client = connect(settings.supabase_url, settings.supabase_secret_key)
-    app.state.verifier = SupabaseTokenVerifier(client)
+    app.state.verifier = SupabaseTokenVerifier(
+        client, accept_email=settings.email_sign_in
+    )
     app.state.rulebook = Rulebook(SupabaseRuleRepository(client))
     app.state.students = SupabaseStudentRepository(client)
     yield
