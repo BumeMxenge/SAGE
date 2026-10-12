@@ -1,6 +1,9 @@
 # Checks the transcript upload: her own record comes back as lines to review with the curricula her
-# programme could be, and anything else is refused with its own problem
+# programme could be, the route's own refusals, and one of the reader's reaching her as its problem.
+# The reader's other refusals are in its own tests.
 import pytest
+
+from sage.ingestion.transcript import read_lines
 
 END = "– – – – – End of Academic Record – – – – –"
 
@@ -28,18 +31,11 @@ def test_her_transcript_comes_back_to_review(upload, transcript_pages):
     )
     assert [row["code"] for row in transcript["curriculum_options"]] == ["EB011EEE05"]
     assert transcript["issued_on"] == "2026-02-05"
-    assert len(transcript["lines"]) == 34
-    assert transcript["lines"][0].keys() == {
-        "academic_year",
-        "term",
-        "course_code",
-        "course_name",
-        "credits",
-        "nqf_level",
-        "result",
-        "mark",
-        "unverified",
-    }
+    # Every line as the reader reads it, in order
+    read = read_lines(transcript_pages, "DLMMBA999").lines
+    assert transcript["lines"] == [
+        line.model_dump(mode="json", exclude={"result_printed"}) for line in read
+    ]
     assert transcript["warnings"] == []
 
 
@@ -80,22 +76,6 @@ def test_a_file_over_10_mb_is_refused(signed_in):
     )
     assert response.status_code == 413
     assert response.json()["code"] == "file_too_large"
-
-
-def test_staff_cant_upload_a_transcript(upload, transcript_pages):
-    assert upload(transcript_pages, token="staff").json()["code"] == "students_only"
-
-
-def test_a_record_with_no_courses_says_why(upload, transcript_pages):
-    # Everything after the Beginning line on page 1, and every year on page 2
-    page1, page2 = transcript_pages[0], transcript_pages[1]
-    del page1[page1.index("2023") :]
-    del page2[page2.index("Course Description NQF NQF Result") : page2.index(END)]
-    problem = upload(transcript_pages).json()
-    assert problem["code"] == "no_course_history"
-    assert problem["detail"].startswith(
-        "Your academic record has no courses on it yet."
-    )
 
 
 def test_a_missing_last_year_is_a_warning_not_an_error(upload, transcript_pages):

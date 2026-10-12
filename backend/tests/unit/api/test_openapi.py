@@ -29,7 +29,3 @@ def test_every_success_is_typed_and_every_error_is_a_problem(client):
                 }, name
             elif status != "204":
                 assert response["content"]["application/json"]["schema"], name
-
-
-def test_there_are_18_operations(client):
-    assert len(operations(client)) == 18

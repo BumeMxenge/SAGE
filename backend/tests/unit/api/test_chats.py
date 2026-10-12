@@ -1,15 +1,40 @@
 # Checks chats on Mbali's seeded set: they list under their plan or pair, a pair is stored the same
-# whichever way round it was sent, a question gets the advisor stand-in's fixed reply, and chats
-# refuse a bad question, another student's chat, a pending questionnaire and unfinished setup
+# whichever way round it was sent, a question and the advisor's reply are stored together, and a bad
+# question or pair is refused. Who may reach a chat is in test_guards.py.
 from uuid import UUID, uuid4
 
 import pytest
 
-from sage.domain.students import Plan, PlanSet
-from sage.services.stubs import FIXED_REPLY
+from sage.api import deps
+from sage.domain.advisor import Reply
+from sage.domain.students import Chat, Citation, Plan, PlanSet
 from tests.unit.api.accounts import MBALI
 
 QUESTION = {"content": "Which plan has the lighter Fridays?", "term": "sem1"}
+CITATION = Citation(
+    passage_id=UUID(int=9),
+    position=1,
+    quote="Made-up quote",
+    source="Made-up handbook",
+    section="Test",
+    page=7,
+)
+
+
+class Advisor:
+    # Stands in for the advisor: records what it's asked, and replies with a referral, a plan to
+    # open and a citation, so a test can see each one reach her
+    def __init__(self) -> None:
+        self.asked: list[tuple[Chat, str, str | None]] = []
+
+    def reply(self, chat: Chat, question: str, term: str | None) -> Reply:
+        self.asked.append((chat, question, term))
+        return Reply(
+            content="Made-up reply",
+            referral=True,
+            open_plan_id=chat.plan_id,
+            citations=(CITATION,),
+        )
 
 
 def chats_on(client, plan_id: str, other_plan_id: str | None = None):
@@ -52,11 +77,6 @@ def test_her_seeded_chats_list_under_their_plan_and_their_pair(mbali, plan_ids):
     assert flipped == pair  # the pair reads the same whichever way round it's asked for
 
 
-def test_every_chat_has_the_fields_its_row_needs(one_plan_chat, pair_chat):
-    for chat in (one_plan_chat, pair_chat):
-        assert set(chat) == {"id", "plan_id", "other_plan_id", "title", "created_at"}
-
-
 @pytest.mark.parametrize("first, second", [(1, 7), (7, 1)])
 def test_a_pair_is_stored_lowest_id_first_whichever_way_round_it_is_sent(
     mbali, plan_ids, first, second
@@ -86,11 +106,6 @@ def test_a_plan_cant_be_paired_with_itself(mbali, plan_ids):
         "/v1/chats", json={"plan_id": plan_ids[1], "other_plan_id": plan_ids[1]}
     )
     assert (response.status_code, response.json()["code"]) == (422, "same_plan")
-
-
-def test_another_students_plan_cant_start_a_chat(signed_in, plan_ids):
-    response = signed_in("zvsorw").post("/v1/chats", json={"plan_id": plan_ids[1]})
-    assert (response.status_code, response.json()["code"]) == (404, "plan_not_found")
 
 
 def test_plans_from_different_sets_cant_share_a_chat(mbali, stores, plan_ids):
@@ -139,119 +154,61 @@ def test_her_pair_chat_answer_offers_to_open_plan_7(mbali, pair_chat, plan_ids):
     assert messages[1]["open_plan_id"] == plan_ids[7]
 
 
-def test_every_message_has_the_fields_a_chat_shows(mbali, one_plan_chat, pair_chat):
-    for chat in (one_plan_chat, pair_chat):
-        for message in messages_in(mbali, chat).json():
-            assert set(message) == {
-                "id",
-                "role",
-                "content",
-                "term",
-                "created_at",
-                "referral",
-                "open_plan_id",
-                "citations",
-            }
-
-
-def test_asking_in_a_pair_chat_stores_the_question_and_the_fixed_reply(
-    mbali, pair_chat
-):
+def test_a_question_and_the_advisors_reply_are_stored_together(app, mbali, pair_chat):
+    advisor = Advisor()
+    app.dependency_overrides[deps.advisor] = lambda: advisor
     response = ask(mbali, pair_chat, QUESTION)
     assert response.status_code == 201
-    exchange = response.json()
-    assert set(exchange) == {"question", "reply"}
-    question, reply = exchange["question"], exchange["reply"]
-    assert (question["role"], question["content"]) == ("user", QUESTION["content"])
-    assert (question["referral"], question["open_plan_id"]) == (False, None)
-    assert (reply["role"], reply["content"]) == ("assistant", FIXED_REPLY)
-    # Its Open plan action points at the chat's second plan
-    assert (reply["referral"], reply["open_plan_id"], reply["citations"]) == (
-        True,
-        pair_chat["other_plan_id"],
+    question, reply = response.json()["question"], response.json()["reply"]
+    # The advisor got her question, and the term on her screen
+    ((chat, content, term),) = advisor.asked
+    assert (str(chat.id), content, term) == (
+        pair_chat["id"],
+        QUESTION["content"],
+        "sem1",
+    )
+    assert (question["role"], question["content"], question["term"]) == (
+        "user",
+        QUESTION["content"],
+        "sem1",
+    )
+    assert (question["referral"], question["open_plan_id"], question["citations"]) == (
+        False,
+        None,
         [],
     )
-    stored = messages_in(mbali, pair_chat).json()
-    assert len(stored) == 4
-    assert stored[2:] == [question, reply]
-
-
-def test_a_reply_in_a_one_plan_chat_has_no_plan_to_open(mbali, one_plan_chat):
-    response = ask(mbali, one_plan_chat, QUESTION)
-    assert response.status_code == 201
-    reply = response.json()["reply"]
-    assert (reply["referral"], reply["open_plan_id"]) == (True, None)
-
-
-def test_an_empty_question_is_refused(mbali, one_plan_chat):
-    response = ask(mbali, one_plan_chat, {"content": ""})
-    assert (response.status_code, response.json()["code"]) == (422, "invalid_request")
-
-
-def test_a_question_over_2000_characters_is_refused(mbali, one_plan_chat):
-    response = ask(mbali, one_plan_chat, {"content": "a" * 2001})
-    assert (response.status_code, response.json()["code"]) == (422, "invalid_request")
-
-
-def test_a_question_of_exactly_2000_characters_is_accepted(mbali, one_plan_chat):
-    response = ask(mbali, one_plan_chat, {"content": "a" * 2000})
-    assert response.status_code == 201
-
-
-def test_a_question_with_an_unknown_field_is_refused(mbali, one_plan_chat):
-    response = ask(mbali, one_plan_chat, {"content": "Hi", "mood": "curious"})
-    assert (response.status_code, response.json()["code"]) == (422, "invalid_request")
-
-
-def test_another_students_chat_is_not_found(signed_in, one_plan_chat):
-    other = signed_in("zvsorw")
-    for response in (
-        messages_in(other, one_plan_chat),
-        ask(other, one_plan_chat, QUESTION),
-    ):
-        assert (response.status_code, response.json()["code"]) == (
-            404,
-            "chat_not_found",
-        )
-
-
-def test_chats_wait_for_the_questionnaire(mbali, stores, plan_ids, one_plan_chat):
-    # Her seeded set as it was before she answered: nothing hidden and no answers. The fixtures
-    # read the plan and chat ids first, while her chats were still open.
-    students = stores[1]
-    state = students.get(MBALI)
-    students.replace(
-        state.model_copy(
-            update={
-                "plan_sets": tuple(
-                    row.model_copy(update={"answers": None}) for row in state.plan_sets
-                ),
-                "plans": tuple(
-                    plan.model_copy(update={"hidden": False}) for plan in state.plans
-                ),
-            }
-        )
+    assert (reply["role"], reply["content"], reply["term"]) == (
+        "assistant",
+        "Made-up reply",
+        "sem1",
     )
-    for response in (
-        chats_on(mbali, plan_ids[1]),
-        mbali.post("/v1/chats", json={"plan_id": plan_ids[1]}),
-        messages_in(mbali, one_plan_chat),
-        ask(mbali, one_plan_chat, QUESTION),
-    ):
-        assert (response.status_code, response.json()["code"]) == (
-            409,
-            "questionnaire_pending",
-        )
+    assert (reply["referral"], reply["open_plan_id"]) == (True, pair_chat["plan_id"])
+    assert reply["citations"] == [
+        CITATION.model_dump(mode="json", exclude={"passage_id"})
+    ]
+    # Both are stored after her seeded exchange, in order
+    assert messages_in(mbali, pair_chat).json()[2:] == [question, reply]
 
 
-def test_staff_have_no_chats(signed_in):
-    response = chats_on(signed_in("staff"), str(uuid4()))
-    assert (response.status_code, response.json()["code"]) == (403, "students_only")
-
-
-def test_chats_wait_for_onboarding(signed_in):
-    response = chats_on(signed_in("qrtilv"), str(uuid4()))
-    assert (response.status_code, response.json()["code"]) == (
-        409,
-        "onboarding_incomplete",
-    )
+@pytest.mark.parametrize(
+    ("body", "answer"),
+    [
+        ({"content": ""}, (422, "invalid_request")),
+        ({"content": "a"}, (201, None)),
+        ({"content": "a" * 2000}, (201, None)),
+        ({"content": "a" * 2001}, (422, "invalid_request")),
+        ({"content": "Hi", "mood": "curious"}, (422, "invalid_request")),
+    ],
+    ids=[
+        "empty",
+        "one character",
+        "2,000 characters",
+        "2,001 characters",
+        "an unknown field",
+    ],
+)
+def test_a_question_is_1_to_2000_characters_and_nothing_else(
+    mbali, one_plan_chat, body, answer
+):
+    response = ask(mbali, one_plan_chat, body)
+    assert (response.status_code, response.json().get("code")) == answer

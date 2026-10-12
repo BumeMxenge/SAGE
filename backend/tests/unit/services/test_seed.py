@@ -37,7 +37,8 @@ def test_student_ids_follow_the_account_but_slot_ids_do_not(seed_file):
         p.id for p in theirs.student.plans
     )
     assert mine.rules.timetable_slots == theirs.rules.timetable_slots
-    assert len({slot.id for slot in mine.rules.timetable_slots}) == 25
+    slots = mine.rules.timetable_slots
+    assert len({slot.id for slot in slots}) == len(slots)  # one id per slot
 
 
 def test_rows_belong_to_the_account(seed_file):

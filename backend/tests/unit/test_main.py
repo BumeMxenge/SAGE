@@ -22,6 +22,7 @@ def test_missing_supabase_settings_stop_startup(no_supabase):
         pass
 
 
+@pytest.mark.stub("engine")
 def test_a_wrong_seed_path_stops_startup(monkeypatch, tmp_path):
     # As on Azure, if the image left out mbali.json: the app never starts, so the deploy's health
     # check fails rather than a student's first onboarding

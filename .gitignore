@@ -11,6 +11,11 @@ node_modules/
 dist/
 private_data/
 .DS_Store
+# Test reports: coverage's data, and make mutation's working copy, its link to data/ and its score
+.coverage
+backend/mutants/
+backend/data
+backend/mutation-score.txt
 # The Supabase CLI's local state: which project this laptop is linked to
 supabase/.temp/
 supabase/.branches/

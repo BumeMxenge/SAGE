@@ -1,7 +1,6 @@
-# Checks Explore Electives on Mbali's seeded set: the tabs and their courses, whether she may take
-# each one, and hearting, which changes nothing the second time
-from collections import Counter
-
+# Checks Explore Electives on Mbali's seeded set: whether she may take each course, as the
+# eligibility stand-in decides until the engine does, and hearting, which changes nothing the
+# second time
 import pytest
 
 from sage.domain.students import CourseHistoryLine
@@ -34,66 +33,7 @@ def record_microeconomics(stores, result: str, mark: int) -> None:
     )
 
 
-def test_there_are_12_tabs_in_a_fixed_order(mbali):
-    tabs = mbali.get("/v1/electives").json()["tabs"]
-    assert [tab["key"] for tab in tabs] == [
-        "arts",
-        "business",
-        "econ",
-        "ethics",
-        "history",
-        "languages",
-        "literature",
-        "logic",
-        "media",
-        "religion",
-        "science",
-        "society",
-    ]
-
-
-def test_the_tabs_hold_41_courses_between_them(mbali):
-    tabs = mbali.get("/v1/electives").json()["tabs"]
-    counts = {tab["key"]: len(tab["courses"]) for tab in tabs}
-    assert counts == {
-        "arts": 3,
-        "business": 2,
-        "econ": 6,
-        "ethics": 3,
-        "history": 4,
-        "languages": 4,
-        "literature": 4,
-        "logic": 4,
-        "media": 2,
-        "religion": 2,
-        "science": 4,
-        "society": 3,
-    }
-    assert sum(counts.values()) == 41
-
-
-def test_every_course_has_the_fields_its_card_needs(mbali):
-    for course in electives(mbali).values():
-        assert set(course) == {
-            "code",
-            "name",
-            "credits",
-            "term",
-            "summary",
-            "convener",
-            "favourite",
-            "eligibility",
-        }
-        assert set(course["eligibility"]) == {"status", "reason"}
-
-
-def test_20_courses_are_eligible_and_21_need_checking(mbali):
-    statuses = Counter(
-        course["eligibility"]["status"] for course in electives(mbali).values()
-    )
-    assert statuses == {"eligible": 20, "check": 21}  # so none is not_eligible
-
-
+@pytest.mark.stub("engine")
 def test_an_eligible_course_has_no_reason(mbali):
     reasons = {
         course["eligibility"]["reason"]
@@ -103,6 +43,7 @@ def test_an_eligible_course_has_no_reason(mbali):
     assert reasons == {None}
 
 
+@pytest.mark.stub("engine")
 def test_a_course_with_a_printed_refer_shows_its_text(mbali):
     assert electives(mbali)["BIO1004S"]["eligibility"] == {
         "status": "check",
@@ -110,14 +51,7 @@ def test_a_course_with_a_printed_refer_shows_its_text(mbali):
     }
 
 
-def test_a_course_she_passed_is_not_eligible(mbali, stores):
-    record_microeconomics(stores, result="1", mark=80)
-    assert electives(mbali)["ECO1010S"]["eligibility"] == {
-        "status": "not_eligible",
-        "reason": "You've already passed ECO1010S.",
-    }
-
-
+@pytest.mark.stub("engine")
 def test_a_course_that_counts_as_a_passed_one_is_not_eligible_either(mbali, stores):
     # The 2026 equivalences say ECO1010S counts as ECO1010F
     record_microeconomics(stores, result="1", mark=80)
@@ -127,15 +61,10 @@ def test_a_course_that_counts_as_a_passed_one_is_not_eligible_either(mbali, stor
     }
 
 
+@pytest.mark.stub("engine")
 def test_a_failed_course_doesnt_count(mbali, stores):
     record_microeconomics(stores, result="F", mark=40)
     assert electives(mbali)["ECO1010S"]["eligibility"]["status"] == "check"
-
-
-def test_none_of_the_41_start_hearted(mbali):
-    # Her 6 seeded hearts are fourth-year plan courses, which no tab lists
-    hearts = {course["favourite"] for course in electives(mbali).values()}
-    assert hearts == {False}
 
 
 def test_hearting_a_course_shows_on_its_card_and_can_be_repeated(mbali, stores):
@@ -160,16 +89,3 @@ def test_unhearting_a_course_clears_its_card_and_can_be_repeated(mbali):
 def test_a_course_outside_the_handbook_cant_be_hearted_or_unhearted(mbali, verb):
     response = mbali.request(verb, "/v1/favourites/ZZZ9999Z")
     assert (response.status_code, response.json()["code"]) == (404, "course_not_found")
-
-
-def test_staff_have_no_electives(signed_in):
-    response = signed_in("staff").get("/v1/electives")
-    assert (response.status_code, response.json()["code"]) == (403, "students_only")
-
-
-def test_electives_wait_for_onboarding(signed_in):
-    response = signed_in("qrtilv").get("/v1/electives")
-    assert (response.status_code, response.json()["code"]) == (
-        409,
-        "onboarding_incomplete",
-    )

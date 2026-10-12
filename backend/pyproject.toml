@@ -23,7 +23,13 @@ dev = [
     "httpx>=0.28", # the token tests serve Supabase's replies through it
     "httpx2>=2.13.1", # FastAPI's TestClient uses it to call the app in tests
     "pytest>=8.0",
+    "pytest-cov>=7.1", # make test's coverage report
     "ruff>=0.6",
+]
+# make mutation's tools. Not in dev, so CI and the image never install them.
+mutation = [
+    "mutmut==3.7.0", # pinned, as another version plants different mutants and scores wouldn't compare
+    "libcst<1.9", # mutmut 3.8 needs libcst 1.9, which has no Intel Mac wheel for Python 3.12
 ]
 
 [build-system]
@@ -35,8 +41,30 @@ packages = ["src/sage"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = ["--import-mode=importlib"]
-markers = ["integration: needs local Supabase (make test-integration)"]
+addopts = ["--import-mode=importlib", "--strict-markers"]
+markers = [
+    "integration: needs local Supabase (make test-integration)",
+    "stub(component): tests a stand-in in services/stubs.py, so it goes when that component lands",
+]
+
+# make test's coverage report: each file's lines that no unit test runs
+[tool.coverage.run]
+source = ["sage"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+# make mutation: the code mutmut plants faults in, and the tests that must catch them
+[tool.mutmut]
+source_paths = ["src"]
+only_mutate = [
+    "src/sage/api/*",
+    "src/sage/domain/*",
+    "src/sage/ingestion/*",
+    "src/sage/services/*",
+]
+pytest_add_cli_args_test_selection = ["-m", "not integration"]
 
 [tool.ruff.lint]
 extend-select = ["I", "B", "UP"] # import order, likely bugs, outdated syntax
