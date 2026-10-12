@@ -6,6 +6,7 @@ from enum import StrEnum
 from typing import ClassVar
 
 
+# The type of a problem's code in the OpenAPI schema, so the frontend's generated types list every code
 class Code(StrEnum):
     NOT_FOUND = "not_found"
     METHOD_NOT_ALLOWED = "method_not_allowed"

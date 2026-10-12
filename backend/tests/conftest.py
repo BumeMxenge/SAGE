@@ -24,7 +24,9 @@ def seed_file() -> Path:
 
 @pytest.fixture(scope="session")
 def result_symbols() -> tuple[ResultSymbol, ...]:
-    # UCT's 26 symbols, as the rule-tables migration stores them, for the in-memory rulebook
+    # UCT's 26 symbols, as the rule-tables migration stores them, for the in-memory rulebook. A copy,
+    # as the unit tests have no database, and test_the_symbols_are_ucts_26 compares it with the
+    # migration's rows on every make check-db, so the two can't drift apart.
     path = Path(__file__).parent / "fixtures" / "result_symbols.json"
     rows = json.loads(path.read_text(encoding="utf-8"))
     return tuple(ResultSymbol.model_validate(row) for row in rows)
