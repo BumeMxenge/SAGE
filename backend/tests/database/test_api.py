@@ -38,7 +38,6 @@ def api(url, student) -> Iterator[TestClient]:
 def test_me(api, student):
     assert api.get("/v1/me").json() == {
         "email": student.email,
-        "name": None,
         "account": "student",
         "student_number": student.email[:9].upper(),
         "onboarding_complete": True,

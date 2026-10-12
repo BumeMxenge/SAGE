@@ -89,7 +89,7 @@ def run_sign_in(port: int) -> None:
         )
     client = connect(settings.supabase_url, settings.supabase_secret_key)
     fake_account = json.loads(SEED_FILE.read_text(encoding="utf-8"))["fake_account"]
-    account, token = sign_in_token(client, fake_account["email"], fake_account["name"])
+    account, token = sign_in_token(client, fake_account["email"])
     students = SupabaseStudentRepository(client)
     # Her seed goes on once, so changes made while trying the app survive the next sign-in
     if students.profile(account) is None:

@@ -55,18 +55,13 @@ def stores(secret) -> tuple[SupabaseRuleRepository, SupabaseStudentRepository]:
 def new_account(url, secret) -> Iterator[Callable[..., Account]]:
     made = []
 
-    def make(*, student: bool = False, name: str | None = None) -> Account:
+    def make(*, student: bool = False) -> Account:
         # A student's address is six random letters and 999, so it can't be a real student's
         letters = "".join(random.choices(string.ascii_lowercase, k=6))
         email = f"{letters}999@myuct.ac.za" if student else f"{uuid4().hex}@example.com"
         password = uuid4().hex
         user = secret.auth.admin.create_user(
-            {
-                "email": email,
-                "password": password,
-                "email_confirm": True,
-                "user_metadata": {"full_name": name} if name else {},
-            }
+            {"email": email, "password": password, "email_confirm": True}
         ).user
         made.append(user.id)
         browser = create_client(url, os.environ["SAGE_TEST_PUBLISHABLE_KEY"])

@@ -17,9 +17,9 @@ def token(account) -> str:
 
 
 def test_a_real_session_token_is_accepted(secret, new_account):
-    account = new_account(name="Orwen Zvasko")
+    account = new_account()
     identity = SupabaseTokenVerifier(secret).verify(token(account))
-    assert identity == Identity(id=account.id, email=account.email, name="Orwen Zvasko")
+    assert identity == Identity(id=account.id, email=account.email)
 
 
 def test_a_token_with_a_changed_claim_is_refused(secret, new_account):

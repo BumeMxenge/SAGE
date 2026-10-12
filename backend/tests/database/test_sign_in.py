@@ -46,7 +46,6 @@ def test_the_link_signs_mbali_in_as_a_student(
     with TestClient(create_app(), headers=headers) as api:
         assert api.get("/v1/me").json() == {
             "email": fake_account["email"],
-            "name": fake_account["name"],
             "account": "student",
             "student_number": "DLMMBA999",  # her address before the @, in capitals
             "onboarding_complete": True,  # her seeded profile says so

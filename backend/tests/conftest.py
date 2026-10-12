@@ -34,7 +34,7 @@ def result_symbols() -> tuple[ResultSymbol, ...]:
 
 @pytest.fixture(scope="session")
 def fake_account(seed_file) -> dict[str, str]:
-    # Mbali's made-up name and email, which the seed file keeps for the tests
+    # Mbali's made-up email, which the seed file keeps for the tests and sage sign-in
     return json.loads(seed_file.read_text(encoding="utf-8"))["fake_account"]
 
 

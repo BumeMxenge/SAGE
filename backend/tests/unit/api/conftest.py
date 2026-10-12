@@ -36,16 +36,10 @@ def stores(
 @pytest.fixture
 def app(stores, fake_account, seed_file) -> FastAPI:
     identities = {
-        "mbali": Identity(id=MBALI, **fake_account),
-        "zvsorw": Identity(
-            id=ZVSORW, email="zvsorw999@myuct.ac.za", name="Orwen Zvasko"
-        ),
-        "qrtilv": Identity(
-            id=QRTILV, email="qrtilv999@myuct.ac.za", name="Ilvane Qorthu"
-        ),
-        "staff": Identity(
-            id=UUID(int=4), email="test.advisor@uct.ac.za", name="Test Advisor"
-        ),
+        "mbali": Identity(id=MBALI, email=fake_account["email"]),
+        "zvsorw": Identity(id=ZVSORW, email="zvsorw999@myuct.ac.za"),
+        "qrtilv": Identity(id=QRTILV, email="qrtilv999@myuct.ac.za"),
+        "staff": Identity(id=UUID(int=4), email="test.advisor@uct.ac.za"),
         "outsider": Identity(id=UUID(int=5), email="outsider@example.com"),
     }
     app = create_app()

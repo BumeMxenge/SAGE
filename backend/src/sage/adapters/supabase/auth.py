@@ -39,26 +39,15 @@ class SupabaseTokenVerifier:
             raise NotSignedIn() from error
         if claims.get("aud") != "authenticated" or not claims.get("sub"):
             raise NotSignedIn()
-        metadata = claims.get("user_metadata") or {}
-        return Identity(
-            id=claims["sub"],
-            email=claims.get("email"),
-            name=metadata.get("full_name") or metadata.get("name"),
-        )
+        return Identity(id=claims["sub"], email=claims.get("email"))
 
 
-def sign_in_token(client: Client, email: str, name: str) -> tuple[UUID, str]:
+def sign_in_token(client: Client, email: str) -> tuple[UUID, str]:
     # The account's id, and a token that signs it in once, within the hour. The account is made
     # first, confirmed and with no password, because a link for an address with no account would
     # make one with a random password.
     try:
-        client.auth.admin.create_user(
-            {
-                "email": email,
-                "email_confirm": True,
-                "user_metadata": {"full_name": name},
-            }
-        )
+        client.auth.admin.create_user({"email": email, "email_confirm": True})
     except AuthApiError as error:
         if error.code != "email_exists":  # an earlier run made it
             raise
