@@ -17,7 +17,8 @@ class Account(Row):
     id: UUID
     email: str
     kind: Literal["student", "staff"]
-    student_number: str | None = None  # students only, from their email, never stored
+    # Students only, worked out from their email. SAGE's own tables never hold it.
+    student_number: str | None = None
 
 
 class TokenVerifier(Protocol):

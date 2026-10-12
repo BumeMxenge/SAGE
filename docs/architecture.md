@@ -32,9 +32,9 @@ Imports only point inward: `api / cli → services → ingestion / engine / advi
 
 ## Privacy
 
-- SAGE's tables store no name and no email.
-- Supabase Auth holds each account's email, which is the account, and Microsoft's identifiers for it, but no name: SAGE never asks Microsoft for the profile scope, which is what would bring one.
-- A student number is worked out from the email when it's needed, and never stored.
+- SAGE's own tables hold no names, email addresses or student numbers.
+- Supabase Auth keeps each account's UCT email, which contains the student number. SAGE needs it to identify the account and to check that a transcript belongs to the person uploading it. Supabase Auth also keeps Microsoft's identifiers for the account, but no name: SAGE never asks Microsoft for the profile scope, which is what would bring one.
+- SAGE works the student number out from the email when it needs it, and keeps no copy of its own.
 - A student's name comes from Microsoft Graph at sign-in and stays in their browser.
 
 ## System diagram
