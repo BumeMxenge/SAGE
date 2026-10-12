@@ -46,7 +46,8 @@ class SeedResult(Row):
 
 def load_seed(path: Path, account_id: UUID) -> Seed:
     data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
-    # Notes for people, and her made-up identity, which only the tests use: neither is her data
+    # Notes for people, and her made-up identity, which the tests and sage sign-in use: neither is
+    # her data
     data.pop("_readme", None)
     data.pop("fake_account", None)
     rules = _rulebook(data)

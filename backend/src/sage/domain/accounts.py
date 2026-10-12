@@ -7,18 +7,18 @@ from sage.domain.base import Row
 
 
 class Identity(Row):
-    # What a verified sign-in token says about its account
+    # What a verified sign-in token says about its account. Never a name: SAGE neither stores nor
+    # reads one, and the frontend asks Microsoft for it in the student's browser.
     id: UUID
     email: str | None = None
-    name: str | None = None  # from the account's metadata, never stored
 
 
 class Account(Row):
     id: UUID
     email: str
-    name: str | None = None
     kind: Literal["student", "staff"]
-    student_number: str | None = None  # students only, from their email, never stored
+    # Students only, worked out from their email. SAGE's own tables never hold it.
+    student_number: str | None = None
 
 
 class TokenVerifier(Protocol):

@@ -26,7 +26,6 @@ class Health(BaseModel):
 
 class Me(BaseModel):
     email: str
-    name: str | None
     account: Literal["student", "staff"]
     student_number: str | None  # students only
     # False until she finishes setup, and always false for staff

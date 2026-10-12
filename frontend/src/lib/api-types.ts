@@ -485,8 +485,6 @@ export interface components {
         Me: {
             /** Email */
             email: string;
-            /** Name */
-            name: string | null;
             /**
              * Account
              * @enum {string}

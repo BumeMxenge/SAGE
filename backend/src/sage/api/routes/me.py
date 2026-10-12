@@ -25,7 +25,6 @@ def get_me(account: SignedIn, students: Students) -> Me:
 def me(account: Account, *, onboarding_complete: bool) -> Me:
     return Me(
         email=account.email,
-        name=account.name,
         account=account.kind,
         student_number=account.student_number,
         onboarding_complete=onboarding_complete,

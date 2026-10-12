@@ -1,20 +1,26 @@
 # Checks Supabase access tokens with supabase-auth's get_claims. It checks the signature against the
 # project's published keys (JWKS), cached for ten minutes, or for an HS256 token, such as local
-# Supabase may issue, asks the Auth server. It doesn't check who a token is for, so this does.
+# Supabase may issue, asks the Auth server. It doesn't check who a token is for, or which provider
+# signed it in, so this does. sign_in_token makes the one-time sign-in that `sage sign-in` prints.
+from uuid import UUID
+
 from jwt import PyJWTError
 from pydantic import ValidationError
 from supabase import Client
 from supabase_auth.errors import AuthApiError, AuthInvalidJwtError
 
 from sage.domain.accounts import Identity
-from sage.domain.errors import NotSignedIn
+from sage.domain.errors import NotSignedIn, UctAccountRequired
 
 
 class SupabaseTokenVerifier:
-    def __init__(self, client: Client) -> None:
+    def __init__(self, client: Client, *, accept_email: bool) -> None:
         # Only ever reads tokens. Signing in on this shared client would put a student's session in
         # place of the secret key on every request after it.
         self._auth = client.auth
+        # Students sign in with Microsoft. An email-provider account, such as make sign-in's,
+        # counts only where the settings accept one.
+        self._providers = {"azure", "email"} if accept_email else {"azure"}
 
     def verify(self, token: str) -> Identity:
         # A JWT is three dot-separated parts of ASCII. Anything else is refused here, because
@@ -36,9 +42,20 @@ class SupabaseTokenVerifier:
             raise NotSignedIn() from error
         if claims.get("aud") != "authenticated" or not claims.get("sub"):
             raise NotSignedIn()
-        metadata = claims.get("user_metadata") or {}
-        return Identity(
-            id=claims["sub"],
-            email=claims.get("email"),
-            name=metadata.get("full_name") or metadata.get("name"),
-        )
+        # A second line of defence: the hosted project's Email provider is off as well
+        if (claims.get("app_metadata") or {}).get("provider") not in self._providers:
+            raise UctAccountRequired()
+        return Identity(id=claims["sub"], email=claims.get("email"))
+
+
+def sign_in_token(client: Client, email: str) -> tuple[UUID, str]:
+    # The account's id, and a token that signs it in once, within the hour. The account is made
+    # first, confirmed and with no password, because a link for an address with no account would
+    # make one with a random password.
+    try:
+        client.auth.admin.create_user({"email": email, "email_confirm": True})
+    except AuthApiError as error:
+        if error.code != "email_exists":  # an earlier run made it
+            raise
+    link = client.auth.admin.generate_link({"type": "magiclink", "email": email})
+    return UUID(link.user.id), link.properties.hashed_token

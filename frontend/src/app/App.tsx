@@ -1,5 +1,6 @@
 // The starter shell. It proves two things: the browser can reach the backend (VITE_API_URL and CORS),
-// and a student can sign in with their UCT Microsoft account through Supabase.
+// and a student can sign in with their UCT Microsoft account through Supabase. Their name, when
+// Microsoft gives one, comes from Graph and stays in the browser.
 import { useEffect, useState } from 'react'
 import { useAuth } from '../features/auth/useAuth.ts'
 import { getHealth, type Health } from '../lib/api.ts'
@@ -53,6 +54,7 @@ function App() {
           <>
             <p>
               Signed in as <strong>{auth.session.user.email}</strong>
+              {auth.name && ` (${auth.name.givenName} ${auth.name.surname})`}
             </p>
             <button type="button" className="secondary" onClick={() => void auth.signOut()}>
               Sign out

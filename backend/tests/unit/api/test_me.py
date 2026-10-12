@@ -4,7 +4,6 @@
 def test_mbali_is_a_student_who_has_finished_setup(signed_in, fake_account):
     assert signed_in("mbali").get("/v1/me").json() == {
         "email": fake_account["email"],
-        "name": fake_account["name"],
         "account": "student",
         "student_number": "DLMMBA999",
         "onboarding_complete": True,

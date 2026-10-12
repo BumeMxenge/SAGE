@@ -1,5 +1,6 @@
-# Checks `sage seed` asks before writing anywhere but this laptop. The database is replaced by the
-# in-memory fakes, so these tests never reach a real project.
+# Checks `sage seed` asks before writing anywhere but this laptop, and `sage sign-in` refuses to run
+# anywhere else. The database is replaced by the in-memory fakes, so these tests never reach a real
+# project.
 from uuid import UUID
 
 import pytest
@@ -71,4 +72,11 @@ def test_missing_settings_stop_it_before_anything_else(opened, database):
     database("")
     with pytest.raises(SystemExit, match="SUPABASE_URL"):
         sage.cli.run_seed(ACCOUNT, yes=True)
+    assert opened == []
+
+
+def test_sign_in_refuses_a_hosted_project(opened, database):
+    database("https://example.supabase.co")
+    with pytest.raises(SystemExit, match="only runs on local Supabase"):
+        sage.cli.run_sign_in(3000)
     assert opened == []
