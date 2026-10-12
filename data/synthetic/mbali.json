@@ -2,7 +2,7 @@
   "_readme": [
     "Mbali's seed for 2026. Each key is a table and each row uses the table's column names.",
     "Rows carry no uuids or student_id. sage seed fills student_id from the signed-in account and makes the uuids.",
-    "fake_account is Mbali's made-up identity, for the tests' fake sign-in and transcript only. sage seed never writes it: a real account brings its own name and email.",
+    "fake_account is Mbali's made-up identity: the tests' fake sign-in and transcript use it, and sage sign-in makes her local account from it. sage seed never writes it: a real account brings its own name and email.",
     "Rows that point at other seed rows use local keys: plan_set, plan, other_plan, chat, open_plan. sage seed swaps them for uuids.",
     "chats.plan and other_plan must be stored with plan_id < other_plan_id, so sage seed orders each pair after making the uuids.",
     "course_history is my own 2023-2025 record, used for Mbali by my choice. The planner prototype already shows it.",

@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed mutation planted-faults
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed sign-in mutation planted-faults
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -102,3 +102,12 @@ seed:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
 		uv run sage seed --user "$(USER_ID)"
+
+# Prints a one-time link that signs Mbali in on the local frontend, with no password and no
+# Microsoft. On a fresh local database it first makes her account and loads her seed. PORT=3001 or
+# 3002 points the link at a worktree's frontend. Only the link goes to stdout, for scripts to read.
+sign-in:
+	@$(LOCAL_SUPABASE) && cd backend && \
+		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
+		uv run sage sign-in $(if $(PORT),--port $(PORT)) && \
+		echo "Open that link in your browser to sign in as Mbali. It works once, within an hour." >&2
