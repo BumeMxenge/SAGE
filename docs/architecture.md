@@ -33,7 +33,7 @@ Imports only point inward: `api / cli → services → ingestion / engine / advi
 ## Privacy
 
 - SAGE's tables store no name and no email.
-- Supabase Auth holds each account's email, because the email is the account.
+- Supabase Auth holds each account's email, which is the account, and Microsoft's identifiers for it, but no name: SAGE never asks Microsoft for the profile scope, which is what would bring one.
 - A student number is worked out from the email when it's needed, and never stored.
 - A student's name comes from Microsoft Graph at sign-in and stays in their browser.
 
