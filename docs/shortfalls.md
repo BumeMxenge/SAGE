@@ -54,25 +54,4 @@ Defects caught before acceptance testing, for Section 5.2.
 | 12 Oct | mutmut leaves code outside functions alone | mutmut 3 mutates function bodies only | None | Limitation: the transcript reader's patterns and constants such as the lunch hour aren't mutated |
 | 12 Oct | The guard sweep can't read the app's route table | FastAPI 0.142 wraps each included router, so `app.routes` lists no operations | The sweep lists them from the app's OpenAPI schema | A route left out of the schema would escape the sweep |
 | 12 Oct | `make check-db` once failed waiting for the local storage container | It took about 50 seconds to restart after the reset, longer than the Supabase CLI waits | Ran it again, and it passed | If it recurs, skip storage with `SUPABASE_START_FLAGS`, as CI does |
-
-## Mutants the unit tests don't catch
-
-On 12 Oct, after the test-strength work, 157 of 1,699 mutants survived `make mutation`. 79 of them only change wording a student or developer reads (a prompt, a label, a refusal's detail, a log line) or the text inside a made-up id or cache key, which no test should pin. 16 are equivalent: no realistic input tells them apart from the code, such as reading the seed file with the platform's default encoding. Every survivor in the code the thesis's claims rest on (the transcript reader's statuses, the averages, questionnaire narrowing and student isolation) was closed with a test. The other 62:
-
-| Where | What no unit test checks | Mutants |
-| --- | --- | --- |
-| Seed loader | A seed file that leaves out a table or a key | 24 |
-| Seed loader | A table it doesn't know | 2 |
-| Seed loader | Message citations, as the seed has none | 2 |
-| Seed loader | Rows given the same id, which only the database's keys refuse | 2 |
-| Seed read-back | Key order in stored JSON, which only the database changes | 3 |
-| Seed read-back | A stored row that differs from the file | 4 |
-| Questionnaire | Hearted courses listed first among the course options | 3 |
-| Plans | The order of a course's meetings: unknown days and times last, alternatives in order | 5 |
-| Plan view | Her curriculum deciding which meetings a plan shows | 1 |
-| Plan view | A reason's course code, and the handbook passage it cites | 6 |
-| Onboarding | Which curricula a transcript's programme matches, and their order | 4 |
-| Problems | The dotted path of a nested invalid field | 1 |
-| Accounts | An address with two @ signs | 1 |
-| Rulebook cache | A second year in the cache, and a test clock that doesn't start at zero | 2 |
-| Eligibility stand-in | A credited result counting as passed | 2 |
+| 12 Oct | 157 of 1,699 mutants survive the unit tests | 79 only change wording or a made-up id, 16 are equivalent, and 62 are gaps outside the code the thesis's claims rest on | Every survivor in that code was closed with a test | The 62 are future work, named in `docs/testing.md` |
