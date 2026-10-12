@@ -30,6 +30,13 @@ Imports only point inward: `api / cli → services → ingestion / engine / advi
 - Only `adapters/` imports SDKs for outside services (Supabase, model providers). Only `engine/` imports clingo.
 - Year and department are data, not code. Nothing in the code tree is named after a programme.
 
+## Privacy
+
+- SAGE's tables store no name and no email.
+- Supabase Auth holds each account's email, because the email is the account.
+- A student number is worked out from the email when it's needed, and never stored.
+- A student's name comes from Microsoft Graph at sign-in and stays in their browser.
+
 ## System diagram
 
 To add: the black-box architecture diagram from Chapter 3.
