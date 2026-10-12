@@ -3,7 +3,7 @@
 <!-- PROJECT HEADER -->
 <div align="center">
   <a href="#about-the-project">
-    <img src="assets/brand/sage-readme-banner.gif" alt="SAGE logo reveal: Student Advisor for Guided Enrolment" width="900">
+    <img src="assets/brand/sage-readme-banner.webp" alt="SAGE logo reveal: Student Advisor for Guided Enrolment" width="900">
   </a>
 
   <p align="center">
