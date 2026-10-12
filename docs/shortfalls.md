@@ -15,6 +15,19 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 | 11 Oct | No frontend tests | No test script, and the M3 screens aren't built yet | None yet | Needed for ATP-4 |
 | 11 Oct | No ATP harness or load scripts | `tests/` holds only a README | None yet | Build before 14 Oct |
 | 11 Oct | The design experiments aren't in the repo | `experiments/` holds only a README | None yet | Add them, or say where they live |
+| 12 Oct | ATP-5's load test can't sign its test accounts in on the hosted project | The hosted Email provider is off, the backend counts only Microsoft sign-ins there, and Microsoft's sign-in page can't be automated | `ACCEPT_EMAIL_SIGN_IN` lets the backend count email-provider accounts during a test window | Follow the ATP-5 checklist below, then switch everything back |
+
+**ATP-5 test window checklist.** Before the load test:
+
+1. In the Supabase dashboard (Authentication → Sign In / Providers), turn off **Allow new users to sign up**, then turn on the **Email** provider. Closing sign-ups also stops new students joining through Microsoft until step 6.
+2. Make the test accounts with the admin API and the secret key, never through sign-up.
+3. Switch the setting on: `az containerapp update --resource-group rg-sage --name ca-sage-api --set-env-vars ACCEPT_EMAIL_SIGN_IN=true`. The backend's log then shows a warning at every start.
+
+After the load test:
+
+4. Switch the setting off: `az containerapp update --resource-group rg-sage --name ca-sage-api --remove-env-vars ACCEPT_EMAIL_SIGN_IN`. Deploys never touch it, so it stays on until removed.
+5. Delete the test accounts, then turn the **Email** provider off.
+6. Turn **Allow new users to sign up** back on.
 
 ## Found and fixed during development
 
@@ -32,6 +45,7 @@ Defects caught before acceptance testing, for Section 5.2.
 | 11 Oct | A record with no "Beginning of Undergraduate Record" line read as having no courses, so it showed the first-year message | The reader decided "no course history" from that line | `transcript_unreadable` instead, with "no course history" decided by the rows (c224040, cf57593) | None |
 | 11 Oct | Six of the 24 planted faults survived the tests | Missing boundaries, a seed with no curriculum-only meetings, and a stand-in that returns identical plans | A test for each rule, on rows built for it: 24 of 24 caught | None |
 | 12 Oct | Mutation testing found rules no test checked, though the code was right: a record with no student number or page numbers, a printed Term GPA of 0.00, and which meetings count towards the week options | The seed has no such records, alternatives or curriculum-only meetings | A test for each | None |
+| 12 Oct | Supabase Auth held my name for my hosted account, in `full_name` and `preferred_username` | My first hosted sign-in, on 3 Oct, came before the frontend and asked Microsoft for more than the email, and Supabase Auth keeps metadata keys that later sign-ins don't send | Removed both keys on 12 Oct. A fresh hosted sign-in stored no name, as SAGE asks Microsoft only for the email and `User.Read` | None |
 
 ## Lasting: for the thesis
 
@@ -57,3 +71,4 @@ Defects caught before acceptance testing, for Section 5.2.
 | 12 Oct | Clones still download the old brand files | Git keeps every committed version, and the 3.9 MB banner GIF and the logo sources were committed before they were replaced or moved out | The banner is a 418 KB WebP now, and the sources sit outside the repo | Only rewriting history would shrink clones, which isn't worth the risk |
 | 12 Oct | 157 of 1,699 mutants survive the unit tests | 79 only change wording or a made-up id, 16 are equivalent, and 62 are gaps outside the code the thesis's claims rest on | Every survivor in that code was closed with a test | The 62 are future work, named in `docs/testing.md` |
 | 12 Oct | Automated checks can't sign in through Microsoft | Microsoft's sign-in page can't be automated, and the frontend's PKCE sign-in refuses the magic link Supabase's admin API makes | `make sign-in` prints a one-time link for Mbali's made-up account, whose token the frontend swaps for a session on local Supabase | Limitation: automated checks never go through Microsoft, so that path is checked by hand |
+| 12 Oct | Microsoft's consent screen shows SAGE as "unverified" | Only Microsoft publisher verification removes the label, and SAGE's app registration isn't verified | Explained in the user-study briefing | Limitation, for the user study |
