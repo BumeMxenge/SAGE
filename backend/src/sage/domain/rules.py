@@ -1,6 +1,5 @@
 # The rulebook as types: one per table row, named after its columns. The database enforces every
-# rule on these rows except the elective tab, which only the backend checks. Passage embeddings
-# arrive with the advisor, so they aren't here yet.
+# rule on these rows except the elective tab and the delta flag, which only the backend checks.
 from datetime import time
 from typing import Any, Literal
 from uuid import UUID
@@ -124,7 +123,25 @@ class Passage(Row):
     source: str
     section: str
     page: int
+    position: int  # its order in its source
     content: str
+
+
+# Why a person had to review a change; a change accepted automatically has none. Like the elective
+# tabs, the list lives only here, so a cause changes here, never in a migration.
+DeltaFlag = Literal[
+    # The grammar refused the printed requirement, so a model drafted its tree. Named by the cause.
+    "refused_mixed_and_or",
+    "refused_free_text",
+    "refused_mark_threshold",
+    "refused_semicolon",
+    "refused_other",
+    "model_written",  # a model wrote it: an elective's summary or category
+    "removed",  # in last year's approved rules, gone from this year's
+    "not_printed",  # an equivalence no handbook prints
+    "no_entry",  # a course a curriculum lists but the handbook never describes
+    "check_failed",  # a check across the sources failed on it
+]
 
 
 class HandbookDelta(Row):
@@ -135,6 +152,7 @@ class HandbookDelta(Row):
     new_value: JsonValue = None
     corrected_value: JsonValue = None
     approved: bool | None = None
+    flag: DeltaFlag | None = None
 
 
 class ResultSymbol(Row):

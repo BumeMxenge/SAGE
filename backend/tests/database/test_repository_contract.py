@@ -241,6 +241,7 @@ def test_a_cited_reply_reads_back_with_its_passage(
         source="Test handbook",
         section="Test",
         page=7,
+        position=1,
         content="Test",
     )
     rules.add_missing(
