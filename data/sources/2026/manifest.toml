@@ -1,0 +1,93 @@
+# The 2026 handbook year's sources: every file ingestion reads, with its SHA-256. A file whose
+# fingerprint no longer matches stops the run, so a changed source never goes unnoticed. Pages are
+# the printed page numbers.
+
+year = 2026
+# The department whose curricula are in scope, by its printed heading
+department = "Electrical Engineering"
+
+[handbook]
+file = "EBE_2026.pdf"
+format = "pdf"
+# As the complementary workbook names it, so both readers give the book one name
+title = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"
+# UCT's published copy, byte for byte, so anyone can check the fingerprint
+url = "https://onlinecourses.uct.ac.za/sites/default/files/media/documents/2026-ebe-handbook-7a-final-web.pdf"
+sha256 = "796ffd0b5754995b8c875e2cc8912fdda818077fb8c035f2f8d1fb42a26e2e9f"
+
+# The prose cut into passages, besides every course entry and curriculum table in scope: each
+# section by its printed heading and pages. The department's staff list isn't among them.
+[[handbook.passages]]
+section = "Term dates"
+pages = [10, 10]
+
+[[handbook.passages]]
+section = "Lecture periods"
+pages = [10, 10]
+
+[[handbook.passages]]
+section = "Lecture timetable"
+pages = [10, 10]
+
+[[handbook.passages]]
+section = "Course Codes"
+pages = [10, 11]
+
+[[handbook.passages]]
+section = "Course Codes – Explanatory Notes"
+pages = [11, 12]
+
+[[handbook.passages]]
+section = "Courses: Guide To Terminology"
+pages = [12, 12]
+
+[[handbook.passages]]
+section = "Credit System"
+pages = [12, 12]
+
+# One passage per rule clause, such as FB8.10
+[[handbook.passages]]
+section = "Rules for Undergraduate Degrees"
+pages = [13, 21]
+
+# The department's programmes: each curriculum's introduction and notes, and the transferee access
+[[handbook.passages]]
+section = "Electrical Engineering"
+pages = [48, 61]
+
+[[handbook.passages]]
+section = "The ASPECT Programme"
+pages = [70, 70]
+
+[timetable]
+file = "2026_timetable.xlsx"
+format = "xlsx"
+title = "2026 EEE Timetables"
+sha256 = "45de2ef0621f93b6974b06775f73d99d69ea8cec999c1d412c563b589a27181a"
+
+# The sheets read, each with the curricula it shows. Labs holds meetings for everyone on a course,
+# so it names none. The MEC and SCI sheets show other departments' programmes and aren't read.
+[timetable.sheets]
+EB009 = ["EB009EEE01"]
+EB011 = ["EB011EEE05"]
+EB022 = ["EB022EEE02"]
+EB809 = ["EB809EEE01"]
+EB811 = ["EB811EEE05"]
+EB822 = ["EB822EEE02"]
+Labs = []
+
+[complementary]
+file = "2026_Complementary_Studies_Course_Details.xlsx"
+format = "xlsx"
+title = "2026 Complementary Studies Course Details"
+sha256 = "85a1df054b9246b7c01dcb6b16bf587d78d46abda844c73a2612be96d97e829f"
+# Notes is for people, so it isn't read
+sheets = ["Courses", "Language options", "Meetings"]
+
+# Drafted from the 2026 handbook and the 2023 to 2026 replacements. No handbook says "counts as"
+# outright, so every row is flagged not_printed for review.
+[equivalences]
+file = "equivalences.csv"
+format = "csv"
+title = "Equivalences drafted from the 2023 and 2026 handbooks"
+sha256 = "addd3752f00a114b7f8e6f4f7ec5911ab6edcb91133db90c9a8443efcad087c8"

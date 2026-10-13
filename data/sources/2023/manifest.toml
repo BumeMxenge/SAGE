@@ -1,0 +1,66 @@
+# The 2023 handbook year's sources: every file ingestion reads, with its SHA-256. A file whose
+# fingerprint no longer matches stops the run, so a changed source never goes unnoticed. Pages are
+# the printed page numbers. 2023 has no timetable or complementary workbook.
+
+year = 2023
+# The department whose curricula are in scope, by its printed heading
+department = "Electrical Engineering"
+
+[handbook]
+file = "EBE_2023.pdf"
+format = "pdf"
+# 2026's wording; the 2023 book prints no book number
+title = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2023"
+sha256 = "b4a0319c792122434f081bad6f7784d72940ed5250d11a0e600a9721babe7914"
+
+# The prose cut into passages, besides every course entry and curriculum table in scope: each
+# section by its printed heading and pages. The department's staff list isn't among them.
+[[handbook.passages]]
+section = "Term dates"
+pages = [11, 11]
+
+[[handbook.passages]]
+section = "Lecture periods"
+pages = [11, 11]
+
+[[handbook.passages]]
+section = "Lecture timetable"
+pages = [11, 11]
+
+[[handbook.passages]]
+section = "Course Codes"
+pages = [11, 12]
+
+[[handbook.passages]]
+section = "Course Codes – Explanatory Notes"
+pages = [12, 13]
+
+[[handbook.passages]]
+section = "Courses: Guide To Terminology"
+pages = [13, 13]
+
+[[handbook.passages]]
+section = "Credit System"
+pages = [13, 13]
+
+# One passage per rule clause, such as FB8.2
+[[handbook.passages]]
+section = "Rules for Undergraduate Degrees"
+pages = [14, 18]
+
+# The department's programmes: each curriculum's introduction and notes, and the transferee access
+[[handbook.passages]]
+section = "Electrical Engineering"
+pages = [46, 59]
+
+[[handbook.passages]]
+section = "The ASPECT Programme"
+pages = [67, 67]
+
+# Drafted from the 2023 handbook alone. No handbook says "counts as" outright, so every row is
+# flagged not_printed for review.
+[equivalences]
+file = "equivalences.csv"
+format = "csv"
+title = "Equivalences drafted from the 2023 handbook"
+sha256 = "a579c7888cee6575d16416fbdd6657e934a31d3eb3470b4c585b67b1dcb75f15"
