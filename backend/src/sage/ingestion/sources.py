@@ -9,6 +9,7 @@ from pathlib import Path
 from uuid import NAMESPACE_URL, UUID, uuid5
 
 from sage.domain.base import Row
+from sage.domain.rules import DeltaFlag
 
 # Rows that need an id get one made from what they hold, so a row read again gets the same id
 ROW_IDS = uuid5(NAMESPACE_URL, "https://github.com/BumeMxenge/SAGE/ingestion")
@@ -18,6 +19,16 @@ class SourceError(Exception):
     # A source doesn't fit its reading. The run stops, and the message names the file and the place,
     # so a person can look at the print.
     pass
+
+
+class Reading(Row):
+    # Where a row was printed and the words it was read from, so every rule traces back to print, and
+    # why a person must look at it. A reading with no flag was accepted automatically.
+    entity: str  # its table, as handbook_deltas.entity names it
+    key: str  # its key without the year, parts joined by "/", as handbook_deltas.entity_key is
+    place: str  # where it's printed, such as "p. 138" or "2026: 48, 50"
+    printed: str
+    flag: DeltaFlag | None = None
 
 
 class SourceFile(Row):
