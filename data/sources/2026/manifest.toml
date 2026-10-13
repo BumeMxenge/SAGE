@@ -90,4 +90,4 @@ sheets = ["Courses", "Language options", "Meetings"]
 file = "equivalences.csv"
 format = "csv"
 title = "Equivalences drafted from the 2023 and 2026 handbooks"
-sha256 = "addd3752f00a114b7f8e6f4f7ec5911ab6edcb91133db90c9a8443efcad087c8"
+sha256 = "eca2ae3bc961ec5f1f789937662ca9bd84f5290eacf3a796b7df630df5c75a06"

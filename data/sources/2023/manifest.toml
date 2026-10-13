@@ -65,4 +65,4 @@ pages = [67, 67]
 file = "equivalences.csv"
 format = "csv"
 title = "Equivalences drafted from the 2023 handbook"
-sha256 = "a579c7888cee6575d16416fbdd6657e934a31d3eb3470b4c585b67b1dcb75f15"
+sha256 = "480bb245f3d0a85ad54a8a5200f9790b2e4813c721821daf5fec2518f04dde92"
