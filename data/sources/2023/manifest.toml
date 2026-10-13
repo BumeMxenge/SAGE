@@ -11,7 +11,9 @@ file = "EBE_2023.pdf"
 format = "pdf"
 # 2026's wording; the 2023 book prints no book number
 title = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2023"
-sha256 = "b4a0319c792122434f081bad6f7784d72940ed5250d11a0e600a9721babe7914"
+# UCT's published copy, byte for byte, so anyone can check the fingerprint
+url = "https://uct.ac.za/sites/default/files/media/documents/uct_ac_za/49/2023_EBE_UG_Handbook.pdf"
+sha256 = "caf79a53f82b5657e8022febc9f903c66ab56955b2a1f2bf9ced2412499a969f"
 
 # The prose cut into passages, besides every course entry and curriculum table in scope: each
 # section by its printed heading and pages. The department's staff list isn't among them.
