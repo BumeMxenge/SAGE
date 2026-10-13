@@ -54,7 +54,10 @@ class TimetableFile(SourceFile):
 
 
 class ComplementaryFile(SourceFile):
-    sheets: tuple[str, ...]
+    # Each sheet read, by what it holds
+    courses: str
+    languages: str
+    meetings: str
 
 
 class Manifest(Row):

@@ -95,8 +95,10 @@ file = "2026_Complementary_Studies_Course_Details.xlsx"
 format = "xlsx"
 title = "2026 Complementary Studies Course Details"
 sha256 = "85a1df054b9246b7c01dcb6b16bf587d78d46abda844c73a2612be96d97e829f"
-# Notes is for people, so it isn't read
-sheets = ["Courses", "Language options", "Meetings"]
+# Each sheet read, by what it holds. Notes is for people, so it isn't read.
+courses = "Courses"
+languages = "Language options"
+meetings = "Meetings"
 
 # Drafted from the 2026 handbook and the 2023 to 2026 replacements. No handbook says "counts as"
 # outright, so every row is flagged not_printed for review.
