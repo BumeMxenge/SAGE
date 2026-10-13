@@ -12,6 +12,7 @@ ENTRY_RULE = TypeAdapter(EntryRule)
     "tree",
     [
         {"courses": "EEE3091F", "need": "pass"},  # a misspelt key
+        {"any": ["EEE3091F", "EEE3092F"]},  # codes where leaves should be
         {"course": "EEE3091F", "need": "dp"},  # a need outside the set
         {"course": "EEE3091F", "need": "pass", "refer": "Or"},  # an extra key
         {"course": "CSC2001F", "need": "mark"},  # a mark leaf without its mark

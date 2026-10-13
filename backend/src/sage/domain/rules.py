@@ -69,8 +69,9 @@ NODE_KEYS = (
 
 
 def _node_key(node: Any) -> str | None:
-    # A node's distinctive key, whether it arrives as JSON or as a built node
-    keys = node if isinstance(node, dict) else type(node).model_fields
+    # A node's distinctive key, whether it arrives as JSON or as a built node. Anything else, such
+    # as a bare course code where a leaf should be, has none, so the union refuses it.
+    keys = node if isinstance(node, dict) else getattr(type(node), "model_fields", ())
     return next((key for key in NODE_KEYS if key in keys), None)
 
 
