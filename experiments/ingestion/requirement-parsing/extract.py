@@ -1,7 +1,8 @@
 # Reads the requirement fields printed in course entries, "Course entry requirements" and
 # "Co-requisites", with each course's code and printed page, and writes E2's data: the development
-# fields the grammar was written from. Only the page ranges below are read, and none of them shares
-# a page with Chemical Engineering or Construction Economics, ATP-1's held-out departments.
+# fields the grammar was written from, and the label sheet holding every validation string. Only
+# the page ranges below are read, and none of them shares a page with Chemical Engineering or
+# Construction Economics, ATP-1's held-out departments.
 import csv
 import re
 from collections.abc import Callable
@@ -49,6 +50,18 @@ LISTED = {
     )
 }
 
+# The three departments E2 is validated on, by their printed pages in the 2026 contents. Each starts
+# at its first course entry, after its introduction and staff list, so Civil's opening page, shared
+# with Chemical Engineering, is never read. Each ends the page before the next department starts.
+VALIDATION_PAGES = {
+    "Architecture, Planning and Geomatics": (73, 89),
+    "Civil Engineering": (105, 113),
+    "Mechanical Engineering": (144, 156),
+}
+LABELS = HERE / "data" / "labels.csv"
+# The fields in the order an entry prints them
+FIELDS = ("Course entry requirements", "Co-requisites")
+
 # The running header sits above 38 pt and the body starts below 57 pt on every page of both books
 BODY_TOP = 45
 # An entry's heading: its code, any other terms it runs in (MAM2084F/S) and its title. Curriculum
@@ -62,6 +75,11 @@ LABEL = re.compile(r"^[A-Z][A-Za-z’' ]{1,40}:")
 def development_course(year: int, code: str) -> bool:
     # A course the curricula list that year, or a third-year Computer Science course
     return (year, code) in LISTED or code.startswith("CSC3")
+
+
+def validation_course(code: str) -> bool:
+    # Any course outside the development set
+    return not (development_course(2023, code) or development_course(2026, code))
 
 
 def fields(
@@ -117,6 +135,31 @@ def development() -> dict[tuple[str, str], list[str]]:
     return printed_by
 
 
+def validation(development: dict) -> dict[tuple[str, str], list[tuple[str, int]]]:
+    # The distinct fields the three departments print, with the courses printing each, less any
+    # field the grammar was written from, compared as the grammar reads them: without a closing
+    # full stop
+    seen = {(name, text.removesuffix(".")) for name, text in development}
+    printed_by: dict[tuple[str, str], list[tuple[str, int]]] = {}
+    with pdfplumber.open(SOURCES / "2026" / "EBE_2026.pdf") as pdf:
+        for first, last in VALIDATION_PAGES.values():
+            for code, name, page, text in fields(pdf, first, last, validation_course):
+                if (name, text.removesuffix(".")) not in seen:
+                    printed_by.setdefault((name, text), []).append((code, page))
+    return printed_by
+
+
+def labels() -> list[dict[str, str]]:
+    # The label sheet's rows, as Excel or Numbers saved them, with or without a byte-order mark
+    with LABELS.open(encoding="utf-8-sig", newline="") as file:
+        return list(csv.DictReader(file))
+
+
+def wording(row: dict[str, str]) -> str:
+    # What the arms read: the text as printed where the sheet gives it, otherwise as extracted
+    return " ".join((row["printed"] or row["extracted"]).split())
+
+
 if __name__ == "__main__":
     printed_by = development()
     rows = [
@@ -130,3 +173,36 @@ if __name__ == "__main__":
             [["field", "text", "printed_by"], *rows]
         )
     print(f"Development: {len(printed_by)} distinct fields")
+
+    strings = validation(printed_by)
+    sheet = [
+        [
+            " ".join(c for c, _ in courses),
+            name,
+            " ".join(str(p) for _, p in courses),
+            text,
+        ]
+        for (name, text), courses in sorted(
+            strings.items(),
+            key=lambda item: (item[1][0][1], item[1][0][0], FIELDS.index(item[0][0])),
+        )
+    ]
+    if LABELS.exists():
+        # Never overwrite labels: check instead that the sheet still holds what the handbook prints
+        saved = [
+            [row[column] for column in ("code", "field", "page", "extracted")]
+            for row in labels()
+        ]
+        if saved != sheet:
+            raise SystemExit(
+                f"{LABELS.name} no longer matches the strings the handbook prints"
+            )
+        print(f"Validation: {len(sheet)} strings, matching {LABELS.name}")
+    else:
+        # A byte-order mark, so Excel opens the sheet as UTF-8 and keeps its curly quotes and dashes
+        with LABELS.open("w", encoding="utf-8-sig", newline="") as file:
+            csv.writer(file, lineterminator="\n").writerows(
+                [["code", "field", "page", "extracted", "printed", "tree"]]
+                + [row + ["", ""] for row in sheet]
+            )
+        print(f"Validation: {len(sheet)} strings written to {LABELS.name}")

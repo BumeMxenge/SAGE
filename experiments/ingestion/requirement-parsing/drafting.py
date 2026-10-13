@@ -11,6 +11,8 @@ from pathlib import Path
 import anthropic
 import openai
 
+from extract import labels, wording
+
 HERE = Path(__file__).parent
 REPLIES = HERE.parent / "results" / "replies"
 # Everything after the opening note for people
@@ -18,6 +20,7 @@ PROMPT = (HERE / "prompt.md").read_text(encoding="utf-8").split("\n---\n", 1)[1]
 
 HAIKU = "claude-haiku-5-5"
 LUNA = "gpt-6-luna"
+RUNS = 3
 # Haiku's structured output refuses a recursive schema, so its tree is unrolled to this many
 # levels. The label check refuses a label this deep, so no printed tree reaches the limit.
 DEPTH = 7
@@ -143,3 +146,16 @@ def reply(
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(entry, indent=1) + "\n", encoding="utf-8")
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+if __name__ == "__main__":
+    # Fills the cache for every string on the label sheet, three runs on each model. The labels
+    # come first, so it won't start while any row is still empty.
+    rows = labels()
+    if any(not row["tree"].strip() for row in rows):
+        raise SystemExit("Label every row of labels.csv before drafting")
+    for number, row in enumerate(rows, start=1):
+        for model in (HAIKU, LUNA):
+            for run in range(1, RUNS + 1):
+                reply(model, row["field"], wording(row), run)
+        print(f"{number} of {len(rows)} strings drafted")
