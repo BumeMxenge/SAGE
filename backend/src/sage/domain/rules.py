@@ -258,21 +258,32 @@ class Passage(Row):
     content: str
 
 
+# Why the requirement grammar refused printed wording, so a model drafted its tree instead
+RefusalCause = Literal[
+    "refused_school_result",  # such as NSC Mathematics
+    "refused_programme",  # a programme or degree the student must be on
+    "refused_year_of_study",
+    "refused_mark_threshold",  # such as "At least 45% for CSC2001F"
+    "refused_or_equivalent",
+    "refused_code_without_term",  # such as MAM1020, which doesn't say which term's course
+    "refused_free_text",  # other words, such as a condition in prose
+    "refused_punctuation",  # a semicolon or full stop that joins parts
+    "refused_mixed_and_or",  # "and" and "or" with no brackets to group them
+    "refused_other",  # codes and joins that don't form a requirement, such as an unclosed bracket
+]
+
 # Why a person had to review a change; a change accepted automatically has none. Like the elective
 # tabs, the list lives only here, so a cause changes here, never in a migration.
-DeltaFlag = Literal[
-    # The grammar refused the printed requirement, so a model drafted its tree. Named by the cause.
-    "refused_mixed_and_or",
-    "refused_free_text",
-    "refused_mark_threshold",
-    "refused_semicolon",
-    "refused_other",
-    "model_written",  # a model wrote it: an elective's summary or category
-    "removed",  # in last year's approved rules, gone from this year's
-    "not_printed",  # an equivalence no handbook prints
-    "no_entry",  # a course a curriculum lists but the handbook never describes
-    "check_failed",  # a check across the sources failed on it
-]
+DeltaFlag = (
+    RefusalCause
+    | Literal[
+        "model_written",  # a model wrote it: an elective's summary or category
+        "removed",  # in last year's approved rules, gone from this year's
+        "not_printed",  # an equivalence no handbook prints
+        "no_entry",  # a course a curriculum lists but the handbook never describes
+        "check_failed",  # a check across the sources failed on it
+    ]
+)
 
 
 class HandbookDelta(Row):

@@ -10,7 +10,7 @@ Folders marked (planned) don't exist yet; each arrives with its first code.
 | `backend/src/sage/api` | HTTP routes, request and response schemas, auth dependencies |
 | `backend/src/sage/cli.py` | The `sage` command, such as `sage seed`, which loads the made-up student |
 | `backend/src/sage/services` | Use cases that join the components: onboarding, plans and the questionnaire, electives, history and chats |
-| `backend/src/sage/ingestion` | Turns sources into data: a student's transcript into her course history, and (planned) a year's handbook, timetable and electives workbook into an approved rulebook, through readers, the requirement grammar, checks across the sources and a review of what changed since the year before |
+| `backend/src/sage/ingestion` | Turns sources into data: a student's transcript into her course history, a printed requirement into a rule tree (the grammar), and (planned) a year's handbook, timetable and electives workbook into an approved rulebook, through readers, checks across the sources and a review of what changed since the year before |
 | `backend/src/sage/engine` (planned) | Validates plans and generates every valid plan (clingo) |
 | `backend/src/sage/advisor` (planned) | Conversational agent: engine tools, scoped context (the handbook passages for her courses, with no embeddings or search), guardrails, prompts |
 | `backend/src/sage/domain` | Shared models (plan, course, rule model, student) and interfaces |
