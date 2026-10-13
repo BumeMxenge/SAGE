@@ -76,6 +76,16 @@ def transcript_pages() -> list[list[str]]:
     return [page.strip("\n").split("\n") for page in text.split("\f")]
 
 
+@pytest.fixture
+def handbook_pages() -> list[list[str]]:
+    # Five pages of the 2026 handbook as printed, each opening with its running header, with a blank
+    # line for each break. Long outlines are shortened. A fresh copy each time, so a test can edit it.
+    text = (Path(__file__).parent / "fixtures" / "handbook.txt").read_text(
+        encoding="utf-8"
+    )
+    return [page.strip("\n").split("\n") for page in text.split("\f")]
+
+
 @pytest.fixture(scope="session")
 def pdf_of() -> Callable[[list[list[str]]], bytes]:
     # Prints pages of lines into a PDF, one line per row. Windows-1252 lets the built-in font print
