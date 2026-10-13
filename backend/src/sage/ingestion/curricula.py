@@ -58,6 +58,7 @@ COMPLEMENTARY = "complementary"
 class Listed(Row):
     # A course row as a curriculum table prints it, to check against the course's entry
     curriculum: str
+    year: int
     code: str
     credits: int
     nqf_level: int
@@ -187,6 +188,7 @@ class _Reader:
             self.listed.append(
                 Listed(
                     curriculum=self.code,
+                    year=self.year,
                     code=code,
                     credits=credits,
                     nqf_level=int(found[3]),

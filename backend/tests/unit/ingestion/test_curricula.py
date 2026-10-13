@@ -140,7 +140,12 @@ def test_a_curriculum_reads_as_printed(handbook):
     )
     assert (
         Listed(
-            curriculum="EB009EEE01", code="EEE3000X", credits=0, nqf_level=7, page=49
+            curriculum="EB009EEE01",
+            year=3,
+            code="EEE3000X",
+            credits=0,
+            nqf_level=7,
+            page=49,
         )
         in curricula.listed
     )
