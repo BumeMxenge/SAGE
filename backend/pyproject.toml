@@ -12,6 +12,7 @@ dependencies = [
     "postgrest>=2.0", # imported directly, not only through supabase
     "pyjwt>=2.0", # imported directly, not only through supabase
     "pdfplumber>=0.11.10",
+    "openpyxl>=3.1.5",
 ]
 
 [project.scripts]
