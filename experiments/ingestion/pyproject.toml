@@ -7,10 +7,16 @@ requires-python = ">=3.12"
 dependencies = [
     "sage-backend",
     "pdfplumber>=0.11.10", # imported directly, not only through sage-backend
+    "anthropic>=1.13.0",
+    "openai>=3.29.0",
 ]
 
 [dependency-groups]
-dev = ["ruff>=0.6"]
+dev = [
+    "jsonschema>=4.23",
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
 
 [tool.uv]
 package = false
@@ -23,3 +29,8 @@ src = ["requirement-parsing"]
 
 [tool.ruff.lint]
 extend-select = ["I", "B", "UP"] # import order, likely bugs, outdated syntax, as in the backend
+
+[tool.pytest.ini_options]
+testpaths = ["requirement-parsing/tests"]
+pythonpath = ["requirement-parsing"]
+addopts = ["--import-mode=importlib", "--strict-markers"]
