@@ -1,5 +1,6 @@
 # Checks ATP-1's label sheets before each is committed: every cell I fill holds a value of the right
-# kind, and every tree is one EntryRule accepts. Trees are read with EntryRule alone, never SAGE's
+# kind, and every tree is one EntryRule accepts, in the shape E2's prompt.md asks of every label
+# (experiments/ingestion/requirement-parsing/). Trees are read with EntryRule alone, never SAGE's
 # grammar or readers, so nothing SAGE produces stands between a printed page and its label. It also
 # holds each sheet's layout, which make_sheets.py builds from and the harness will read by.
 # From the repo root:
@@ -41,7 +42,7 @@ CHOICES = {
 }
 # What make_sheets.py writes in Note for a course a curriculum lists but the book never describes
 NO_ENTRY = "no entry printed"
-ENTRY_RULE = TypeAdapter(EntryRule)
+ENTRY_RULE = TypeAdapter(EntryRule | None)
 
 
 def required(row: Row, *columns: str) -> Iterator[str]:
@@ -95,16 +96,25 @@ def times(row: Row) -> Iterator[str]:
         yield "End isn't after Start"
 
 
-def leaf_codes(node: dict[str, Any]) -> Iterator[str]:
-    if "course" in node:
-        yield node["course"]
-    for child in [*node.get("all", []), *node.get("any", [])]:
-        yield from leaf_codes(child)
+def node_problems(node: dict[str, Any]) -> Iterator[str]:
+    # What EntryRule lets through but would later count against SAGE: a course leaf whose code
+    # isn't whole, such as EEE3089, and the shapes prompt.md's rule 10 forbids
+    if "course" in node and not CODE.fullmatch(node["course"]):
+        yield f"names {node['course']}, which isn't a full course code"
+    for kind in ("all", "any"):
+        children = node.get(kind, [])
+        if kind in node and len(children) < 2:
+            yield f"has an {kind} with one child"
+        if any(kind in child for child in children):
+            yield f"has an {kind} directly inside an {kind}"
+        for child in children:
+            yield from node_problems(child)
 
 
 def tree_problems(tree: Any) -> Iterator[str]:
+    # null is the rule of a field that holds no requirement, as in prompt.md
     try:
-        ENTRY_RULE.validate_json(str(tree))
+        rule = ENTRY_RULE.validate_json(str(tree))
     except ValidationError as error:
         found = (
             f"{'.'.join(map(str, problem['loc'])) or 'tree'}: {problem['msg']}"
@@ -112,22 +122,20 @@ def tree_problems(tree: Any) -> Iterator[str]:
         )
         yield f"isn't one EntryRule accepts ({'; '.join(found)})"
         return
-    # EntryRule takes any text as a course, so a typo such as EEE3089 would pass it
-    for code in leaf_codes(json.loads(str(tree))):
-        if not CODE.fullmatch(code):
-            yield f"names {code}, which isn't a full course code"
+    if rule is not None:
+        yield from node_problems(json.loads(str(tree)))
 
 
 def requirement(row: Row, column: str, required: bool) -> Iterator[str]:
-    # A printed requirement and its tree: the tree is needed unless nothing is printed
+    # A printed requirement and its tree, which is needed unless nothing is printed
     printed, tree = row[column], row[f"{column} tree"]
     if printed is None and required:
         yield f"{column} is empty: write None when nothing is printed"
     if printed is None or str(printed).rstrip(".").lower() == "none":
-        if tree is not None:
-            yield f"{column} tree must be blank when nothing is printed"
+        if tree is not None and str(tree) != "null":
+            yield f"{column} tree must be blank or null when nothing is printed"
     elif tree is None:
-        yield f"{column} tree is empty"
+        yield f"{column} tree is empty: write null if the print holds no requirement"
     else:
         yield from (f"{column} tree {problem}" for problem in tree_problems(tree))
 

@@ -26,7 +26,7 @@ Each sheet's About tab says how its rows were found, in which file (with its SHA
 - **Title, Credits, NQF level:** from the entry's heading and its "NQF credits at NQF level" line. Copy the title as printed, capitals included, and join a title that wraps with a space.
 - **Term:** the term the code's last letter gives by the book's key (2026 p. 11, 2023 p. 12): F sem1, S sem2, H and W full_year, A to D q1 to q4, L winter, U, J and P summer, and M, X and Z other.
 - **Requirement:** what follows "Course entry requirements:", as printed, or None when the entry prints none. **Co-requisite:** what follows "Co-requisites:", or blank.
-- **Requirement tree, Co-requisite tree:** each one's tree (see Trees), left blank when its text is None or blank.
+- **Requirement tree, Co-requisite tree:** each one's tree (see Trees), or null where the print holds no requirement. Leave it blank when its text is None or blank.
 - A row with no page is a course a curriculum lists but the book never describes. It holds "no entry printed" in Note, and the rest stays blank.
 
 ### timetable.xlsx
@@ -61,7 +61,7 @@ Trees follow the labelling conventions in `experiments/ingestion/requirement-par
 git show experiment/compare-requirement-parsing:experiments/ingestion/requirement-parsing/prompt.md
 ```
 
-Each tree is JSON in the seed's shape, which `EntryRule` in `backend/src/sage/domain/rules.py` defines. One example of each leaf, with made-up codes:
+A cell holds the tree itself, not the `{"rule": ...}` the models answer with, and null stands for a rule of null. Each tree is JSON in the seed's shape, which `EntryRule` in `backend/src/sage/domain/rules.py` defines. One example of each leaf, with made-up codes:
 
 | Leaf | Tree |
 | --- | --- |
@@ -82,7 +82,7 @@ From the repo root, name the sheets to check:
 uv run --project backend python tests/acceptance/atp1/labels/check_labels.py tests/acceptance/atp1/labels/courses_2026.xlsx
 ```
 
-It lists every row whose labels are missing or malformed, and passes only when there are none. It checks each tree with `EntryRule` alone, never the grammar, and refuses a course leaf that isn't a full code.
+It lists every row whose labels are missing or malformed, and passes only when there are none. It checks each tree with `EntryRule` alone, never the grammar. It also refuses what `EntryRule` lets through but would later count against SAGE: a course leaf that isn't a full code, and the shapes rule 10 of `prompt.md` forbids.
 
 ## How the rows were found
 
