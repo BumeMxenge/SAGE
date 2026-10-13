@@ -83,6 +83,13 @@ EB811 = ["EB811EEE05"]
 EB822 = ["EB822EEE02"]
 Labs = []
 
+# Meetings printed side by side of which a student attends one, by their cells in the order of their
+# choice letters. EEE3096S's Wednesday lab is an alternative to its Friday one.
+[[timetable.alternatives]]
+course = "EEE3096S"
+group = "lab"
+cells = ["Labs!O11:O14", "Labs!M11:M14"]
+
 [complementary]
 file = "2026_Complementary_Studies_Course_Details.xlsx"
 format = "xlsx"

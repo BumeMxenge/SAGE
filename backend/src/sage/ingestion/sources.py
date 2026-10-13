@@ -40,8 +40,17 @@ class HandbookFile(SourceFile):
     passages: tuple[Section, ...]
 
 
+class Alternatives(Row):
+    # Meetings a sheet prints side by side, of which a student attends one, by their cells in the
+    # order of their choice letters
+    course: str
+    group: str
+    cells: tuple[str, ...]  # such as "Labs!O11:O14"
+
+
 class TimetableFile(SourceFile):
     sheets: dict[str, tuple[str, ...]]  # each sheet read, with the curricula it shows
+    alternatives: tuple[Alternatives, ...] = ()
 
 
 class ComplementaryFile(SourceFile):
