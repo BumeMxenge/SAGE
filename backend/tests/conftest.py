@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 from fpdf import FPDF
 
 from sage.domain.rules import ResultSymbol
+from sage.ingestion.handbook import Handbook, Page
 from sage.main import create_app
 from sage.services.seed import SEED_FILE
 
@@ -78,12 +79,25 @@ def transcript_pages() -> list[list[str]]:
 
 @pytest.fixture
 def handbook_pages() -> list[list[str]]:
-    # Five pages of the 2026 handbook as printed, each opening with its running header, with a blank
-    # line for each break. Long outlines are shortened. A fresh copy each time, so a test can edit it.
+    # Seven pages of the 2026 handbook as printed: the start of the Electrical Engineering section and
+    # four course entries. Each opens with its running header, a blank line marks each break, and long
+    # passages are shortened. A fresh copy each time, so a test can edit it.
     text = (Path(__file__).parent / "fixtures" / "handbook.txt").read_text(
         encoding="utf-8"
     )
     return [page.strip("\n").split("\n") for page in text.split("\f")]
+
+
+@pytest.fixture
+def handbook(handbook_pages) -> Handbook:
+    # The typed pages as the PDF layer reads them: the number each running header ends with, and the
+    # body below it
+    return Handbook(
+        [
+            Page(number=int(header.split()[-1]), lines=tuple(body))
+            for header, *body in handbook_pages
+        ]
+    )
 
 
 @pytest.fixture(scope="session")

@@ -50,10 +50,17 @@ pages = [13, 13]
 section = "Rules for Undergraduate Degrees"
 pages = [14, 18]
 
-# The department's programmes: each curriculum's introduction and notes, and the transferee access
+# The department's programmes: each curriculum's introduction and tables, then the access route
+# for transferees. Each ends partway down its last page, at the heading named by until.
 [[handbook.passages]]
 section = "Electrical Engineering"
 pages = [46, 59]
+until = "Access for University of Technology Transferees"
+
+[[handbook.passages]]
+section = "Access for University of Technology Transferees"
+pages = [59, 59]
+until = "Mechanical Engineering"
 
 [[handbook.passages]]
 section = "The ASPECT Programme"

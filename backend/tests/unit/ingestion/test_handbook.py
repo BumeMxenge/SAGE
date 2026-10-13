@@ -8,7 +8,7 @@ from sage.ingestion.handbook import Handbook, Page, pages
 from sage.ingestion.sources import SourceError
 
 # The fixture's pages, as their running headers print them
-NUMBERS = (132, 138, 164, 188, 189)
+NUMBERS = (48, 49, 132, 138, 164, 188, 189)
 
 
 def printed(tmp_path, typed):
@@ -34,16 +34,6 @@ def printed(tmp_path, typed):
     path = tmp_path / "handbook.pdf"
     pdf.output(str(path))
     return path
-
-
-@pytest.fixture
-def handbook(handbook_pages):
-    return Handbook(
-        [
-            Page(number=number, lines=tuple(body))
-            for number, (_, *body) in zip(NUMBERS, handbook_pages, strict=True)
-        ]
-    )
 
 
 def test_a_printed_page_reads_back_below_its_running_header(tmp_path, handbook_pages):

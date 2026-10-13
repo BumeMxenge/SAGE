@@ -22,9 +22,11 @@ class SourceFile(Row):
 
 
 class Section(Row):
-    # Printed prose cut into passages, by its heading and its first and last pages
+    # Printed prose cut into passages, by its heading and its first and last pages. A section that
+    # ends partway down its last page names the heading that follows it.
     section: str
     pages: tuple[int, int]
+    until: str | None = None
 
 
 class HandbookFile(SourceFile):

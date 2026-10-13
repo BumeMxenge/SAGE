@@ -10,7 +10,7 @@ import pdfplumber
 from sage.domain.base import Row
 from sage.domain.rules import TermCode
 from sage.ingestion.names import title_case
-from sage.ingestion.sources import SourceError
+from sage.ingestion.sources import Section, SourceError
 
 # Points from the top of a page. Every running header in both books ends above it (at 37.6) and every
 # body starts below it (at 57.3), so cropping here drops the header and nothing else.
@@ -41,6 +41,17 @@ LABELS = (
 class Page(Row):
     number: int  # as printed in the running header
     lines: tuple[str, ...]  # the body below the header, with "" for each break
+
+
+class Unit(Row):
+    # One printed unit, which becomes a passage: a rule clause, a course entry, a curriculum table or
+    # a section the manifest lists
+    section: str  # its label, such as "FB8.10" or "First Year Core Courses (EE)"
+    page: int
+    line: int  # where it starts among the book's lines, which orders the passages
+    content: str
+    curriculum_code: str | None = None
+    course_code: str | None = None
 
 
 class Entry(Row):
@@ -152,11 +163,31 @@ class Handbook:
             requirement=_field(fields, "Course entry requirements:"),
             corequisite=_field(fields, "Co-requisites:"),
             page=page,
-            content="\n".join(line for _, line in self.lines[starts[0] : end]).strip(),
+            content=self.text(range(starts[0], end)),
         )
 
     def _next_heading(self, at: int) -> int:
         return next((h for h in self.headings if h > at), len(self.lines))
+
+    def section(self, section: Section) -> range:
+        # A listed section's lines: from its printed heading on its first page to the heading named
+        # by until, or to the end of its last page
+        first, last = section.pages
+        start = self._find(section.section, first, first, 0)
+        if section.until is not None:
+            return range(start, self._find(section.until, first, last, start))
+        ends = [at for at, (page, _) in enumerate(self.lines) if page == last]
+        return range(start, ends[-1] + 1)
+
+    def _find(self, heading: str, first: int, last: int, after: int) -> int:
+        for at in range(after, len(self.lines)):
+            page, line = self.lines[at]
+            if first <= page <= last and line.casefold() == heading.casefold():
+                return at
+        raise SourceError(f"No heading {heading!r} between pages {first} and {last}")
+
+    def text(self, lines: range) -> str:
+        return "\n".join(self.lines[at][1] for at in lines).strip()
 
 
 def _codes(printed: str) -> tuple[str, ...]:
