@@ -1,0 +1,68 @@
+# The 2023 handbook year's sources: every file ingestion reads, with its SHA-256. A file whose
+# fingerprint no longer matches stops the run, so a changed source never goes unnoticed. Pages are
+# the printed page numbers. 2023 has no timetable or complementary workbook.
+
+year = 2023
+# The department whose curricula are in scope, by its printed heading
+department = "Electrical Engineering"
+
+[handbook]
+file = "EBE_2023.pdf"
+format = "pdf"
+# 2026's wording; the 2023 book prints no book number
+title = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2023"
+# UCT's published copy, byte for byte, so anyone can check the fingerprint
+url = "https://uct.ac.za/sites/default/files/media/documents/uct_ac_za/49/2023_EBE_UG_Handbook.pdf"
+sha256 = "caf79a53f82b5657e8022febc9f903c66ab56955b2a1f2bf9ced2412499a969f"
+
+# The prose cut into passages, besides every course entry and curriculum table in scope: each
+# section by its printed heading and pages. The department's staff list isn't among them.
+[[handbook.passages]]
+section = "Term dates"
+pages = [11, 11]
+
+[[handbook.passages]]
+section = "Lecture periods"
+pages = [11, 11]
+
+[[handbook.passages]]
+section = "Lecture timetable"
+pages = [11, 11]
+
+[[handbook.passages]]
+section = "Course Codes"
+pages = [11, 12]
+
+[[handbook.passages]]
+section = "Course Codes – Explanatory Notes"
+pages = [12, 13]
+
+[[handbook.passages]]
+section = "Courses: Guide To Terminology"
+pages = [13, 13]
+
+[[handbook.passages]]
+section = "Credit System"
+pages = [13, 13]
+
+# One passage per rule clause, such as FB8.2
+[[handbook.passages]]
+section = "Rules for Undergraduate Degrees"
+pages = [14, 18]
+
+# The department's programmes: each curriculum's introduction and notes, and the transferee access
+[[handbook.passages]]
+section = "Electrical Engineering"
+pages = [46, 59]
+
+[[handbook.passages]]
+section = "The ASPECT Programme"
+pages = [67, 67]
+
+# Drafted from the 2023 handbook alone. No handbook says "counts as" outright, so every row is
+# flagged not_printed for review.
+[equivalences]
+file = "equivalences.csv"
+format = "csv"
+title = "Equivalences drafted from the 2023 handbook"
+sha256 = "480bb245f3d0a85ad54a8a5200f9790b2e4813c721821daf5fec2518f04dde92"

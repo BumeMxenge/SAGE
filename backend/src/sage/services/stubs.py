@@ -6,7 +6,7 @@ from uuid import UUID
 
 from sage.domain.advisor import Reply
 from sage.domain.planning import Eligibility
-from sage.domain.rules import Course, ResultSymbol, RuleSet
+from sage.domain.rules import Course, Refer, ResultSymbol, RuleSet
 from sage.domain.students import Chat, CourseHistoryLine, PlanSetRows, Student
 from sage.services.seed import load_seed
 
@@ -73,8 +73,8 @@ class InterimEligibility:
             )
         if course.entry_rule is None:
             return Eligibility(status="eligible")
-        if course.entry_rule.keys() == {"refer"}:
-            return Eligibility(status="check", reason=course.entry_rule["refer"])
+        if isinstance(course.entry_rule, Refer):
+            return Eligibility(status="check", reason=course.entry_rule.refer)
         return Eligibility(status="check", reason=UNCHECKED)
 
 

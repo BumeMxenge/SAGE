@@ -64,7 +64,7 @@ These are the technologies SAGE is built with. The backend, its database and sig
 
 **Knowledge store**
 
-[![Supabase][Supabase]][Supabase-url] [![PostgreSQL][PostgreSQL]][PostgreSQL-url] [![pgvector][pgvector]][pgvector-url]
+[![Supabase][Supabase]][Supabase-url] [![PostgreSQL][PostgreSQL]][PostgreSQL-url]
 
 **Development and deployment**
 
@@ -72,7 +72,7 @@ These are the technologies SAGE is built with. The backend, its database and sig
 
 Python runs the plan service and transcript reading, and will run handbook ingestion, deterministic rule evaluation and the advisor's tools. Supabase Postgres stores the versioned rules and the plans, and will store the handbook passages. The FastAPI backend runs as a container on Azure Container Apps, the React interface is deployed separately as static files, and Supabase (EU) holds the data and handles sign-in.
 
-pdfplumber reads transcripts and will read the handbooks, and clingo will generate plans. The embedding and search configuration and the language model will be selected through design experiments.
+pdfplumber reads transcripts and will read the handbooks, and clingo will generate plans. The language model will be selected through design experiments.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -110,8 +110,6 @@ The backend API behind every planned screen is built, tested and deployed, worki
 [Supabase-url]: https://supabase.com/
 [PostgreSQL]: https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white
 [PostgreSQL-url]: https://www.postgresql.org/
-[pgvector]: https://img.shields.io/badge/pgvector-336791?style=for-the-badge&logo=postgresql&logoColor=white
-[pgvector-url]: https://github.com/pgvector/pgvector
 [VSCode]: https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white
 [VSCode-url]: https://code.visualstudio.com/
 [GitHubActions]: https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white

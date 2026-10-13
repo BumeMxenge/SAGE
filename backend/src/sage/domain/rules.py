@@ -1,11 +1,18 @@
 # The rulebook as types: one per table row, named after its columns. The database enforces every
-# rule on these rows except the elective tab, which only the backend checks. Passage embeddings
-# arrive with the advisor, so they aren't here yet.
+# rule on these rows except the elective tab, the delta flag and the shape of each rule tree, which
+# only the backend checks.
 from datetime import time
-from typing import Any, Literal
+from typing import Annotated, Any, Literal, Self
 from uuid import UUID
 
-from pydantic import JsonValue
+from pydantic import (
+    AfterValidator,
+    Discriminator,
+    Field,
+    JsonValue,
+    Tag,
+    model_validator,
+)
 
 from sage.domain.base import Row
 from sage.domain.electives import ElectiveTab
@@ -45,6 +52,129 @@ Outcome = Literal[
     "not_counted",
 ]
 
+# A printed rule as a tree, in the seed's JSON shapes. Each node is told apart by its one
+# distinctive key, as in {"any": [...]}, {"course": "EEE3091F", "need": "pass"} or {"refer": "..."}.
+NODE_KEYS = (
+    "all",
+    "any",
+    "course",
+    "student_in",
+    "min_year_of_study",
+    "refer",
+    "all_of_group",
+    "choose",
+    "credits",
+    "total_credits",
+)
+
+
+def _node_key(node: Any) -> str | None:
+    # A node's distinctive key, whether it arrives as JSON or as a built node. Anything else, such
+    # as a bare course code where a leaf should be, has none, so the union refuses it.
+    keys = node if isinstance(node, dict) else getattr(type(node), "model_fields", ())
+    return next((key for key in NODE_KEYS if key in keys), None)
+
+
+def _in_order[T: Row](children: tuple[T, ...]) -> tuple[T, ...]:
+    # all and any don't depend on order, so their children are kept sorted: the same rule printed
+    # in another order is then the same tree, and comparing years finds no change
+    return tuple(sorted(children, key=lambda child: child.model_dump_json()))
+
+
+# Codes or group keys whose printed order means nothing, kept sorted for the same reason
+SortedNames = Annotated[
+    tuple[str, ...], AfterValidator(lambda names: tuple(sorted(names)))
+]
+
+
+class AllOf(Row):
+    all: Annotated[
+        tuple["EntryRule", ...], Field(min_length=1), AfterValidator(_in_order)
+    ]
+
+
+class AnyOf(Row):
+    any: Annotated[
+        tuple["EntryRule", ...], Field(min_length=1), AfterValidator(_in_order)
+    ]
+
+
+class CourseNeed(Row):
+    # A pass in the course, taking it alongside (a co-requisite), or a final mark of at least
+    # min_mark in it, pass or not. "At least 45% for CSC2001F" is a mark leaf, and so is a printed
+    # "pass with at least n%".
+    course: str
+    need: Literal["pass", "concurrent", "mark"]
+    min_mark: int | None = Field(default=None, exclude_if=lambda mark: mark is None)
+
+    @model_validator(mode="after")
+    def min_mark_only_with_a_mark(self) -> Self:
+        # The mark is the whole test of a mark leaf, and means nothing on the others
+        if (self.need == "mark") != (self.min_mark is not None):
+            raise ValueError(
+                "min_mark is required with need 'mark' and refused with any other"
+            )
+        return self
+
+
+class StudentIn(Row):
+    student_in: SortedNames  # curriculum codes
+
+
+class MinYearOfStudy(Row):
+    min_year_of_study: int
+
+
+class Refer(Row):
+    # Printed text only a person can judge: the engine treats it as conditional, never as a fail
+    refer: str
+
+
+# What a student needs before taking a course
+EntryRule = Annotated[
+    Annotated[AllOf, Tag("all")]
+    | Annotated[AnyOf, Tag("any")]
+    | Annotated[CourseNeed, Tag("course")]
+    | Annotated[StudentIn, Tag("student_in")]
+    | Annotated[MinYearOfStudy, Tag("min_year_of_study")]
+    | Annotated[Refer, Tag("refer")],
+    Discriminator(_node_key),
+]
+AllOf.model_rebuild()
+AnyOf.model_rebuild()
+
+
+class AllOfGroup(Row):
+    all_of_group: str
+
+
+class ChooseFromGroup(Row):
+    choose: int
+    from_group: str
+
+
+class CreditsFromGroups(Row):
+    credits: int
+    from_groups: SortedNames
+
+
+class TotalCredits(Row):
+    total_credits: int
+
+
+# One of a curriculum's demands in a year of study
+YearRule = Annotated[
+    Annotated[AllOfGroup, Tag("all_of_group")]
+    | Annotated[ChooseFromGroup, Tag("choose")]
+    | Annotated[CreditsFromGroups, Tag("credits")]
+    | Annotated[TotalCredits, Tag("total_credits")],
+    Discriminator(_node_key),
+]
+
+
+class YearRules(Row):
+    all: Annotated[tuple[YearRule, ...], Field(min_length=1), AfterValidator(_in_order)]
+
 
 class HandbookVersion(Row):
     year: int
@@ -63,7 +193,7 @@ class CurriculumRule(Row):
     handbook_year: int
     curriculum_code: str
     year_of_study: int
-    rule: dict[str, Any]
+    rule: YearRules
 
 
 class Course(Row):
@@ -73,7 +203,7 @@ class Course(Row):
     credits: int
     nqf_level: int
     term: str
-    entry_rule: dict[str, Any] | None = None
+    entry_rule: EntryRule | None = None
     convener: str | None = None
     summary: str | None = None
 
@@ -124,7 +254,36 @@ class Passage(Row):
     source: str
     section: str
     page: int
+    position: int  # its order in its source
     content: str
+
+
+# Why the requirement grammar refused printed wording, so a model drafted its tree instead
+RefusalCause = Literal[
+    "refused_school_result",  # such as NSC Mathematics
+    "refused_programme",  # a programme or degree the student must be on
+    "refused_year_of_study",
+    "refused_mark_threshold",  # such as "At least 45% for CSC2001F"
+    "refused_or_equivalent",
+    "refused_code_without_term",  # such as MAM1020, which doesn't say which term's course
+    "refused_free_text",  # other words, such as a condition in prose
+    "refused_punctuation",  # a semicolon or full stop that joins parts
+    "refused_mixed_and_or",  # "and" and "or" with no brackets to group them
+    "refused_other",  # codes and joins that don't form a requirement, such as an unclosed bracket
+]
+
+# Why a person had to review a change; a change accepted automatically has none. Like the elective
+# tabs, the list lives only here, so a cause changes here, never in a migration.
+DeltaFlag = (
+    RefusalCause
+    | Literal[
+        "model_written",  # a model wrote it: an elective's summary or category
+        "removed",  # in last year's approved rules, gone from this year's
+        "not_printed",  # an equivalence no handbook prints
+        "no_entry",  # a course a curriculum lists but the handbook never describes
+        "check_failed",  # a check across the sources failed on it
+    ]
+)
 
 
 class HandbookDelta(Row):
@@ -135,6 +294,7 @@ class HandbookDelta(Row):
     new_value: JsonValue = None
     corrected_value: JsonValue = None
     approved: bool | None = None
+    flag: DeltaFlag | None = None
 
 
 class ResultSymbol(Row):

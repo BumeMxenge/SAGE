@@ -1,0 +1,6 @@
+code,counts_as,reason,page
+MAM1020F,MAM1023F,"The 5-year curricula list MAM1023F where the 4-year curricula list MAM1020F, both 18 credits. A student who changes to the 5-year curriculum after the first semester's exams holds MAM1020F, and the 5-year curriculum and MAM2085F's requirement name MAM1023.","2023: 46, 48, 188"
+PHY1012F,PHY1014F,"The 5-year curricula list PHY1014F where the 4-year curricula list PHY1012F, both 18 credits. A student who changes to the 5-year curriculum after the first semester's exams holds PHY1012F, and the 5-year curriculum names PHY1014F.","2023: 46, 48"
+MAM1024S,MAM1021S,"The 5-year curricula list MAM1024S where the 4-year curricula list MAM1021S, both 18 credits. MAM2084S's and MEC2047F's requirements name MAM1021F/S, which 5-year students take as MAM1024S.","2023: 46, 48, 148, 188"
+PHY1014F,PHY1012F,"The 5-year Mechatronics curriculum lists PHY1014F where the 4-year one lists PHY1012F, both 18 credits. MEC2047F's requirement names PHY1012F/S, which 5-year Mechatronics students take as PHY1014F.","2023: 55, 57, 148"
+MAM2085F,MAM2083F,"The 5-year curricula list MAM2085F where the 4-year curricula list MAM2083F, both 16 credits. EEE3089F's, EEE3092F's and PHY2010S's requirements name MAM2083F/S, which 5-year students take as MAM2085F.","2023: 46, 48, 132, 134, 193"
