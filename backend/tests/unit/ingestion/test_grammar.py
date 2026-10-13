@@ -140,8 +140,11 @@ def test_a_corequisite_is_taken_alongside():
         ),
         # MEC2045S (2026, page 148)
         ("MEC1009F/S and MEC2023F/S or MEC2047F/S", "refused_mixed_and_or"),
-        # Made up, as nothing printed has one: a bracket that never closes
+        # Made up, as nothing printed has them: a bracket that never closes, codes with
+        # no join between them, and a join with nothing after it
         ("(EEE2045F or EEE2046F", "refused_other"),
+        ("(EEE2045F) EEE2046F", "refused_other"),
+        ("EEE2045F and", "refused_other"),
     ],
 )
 def test_wording_without_one_reading_is_refused_with_its_cause(printed, cause):
