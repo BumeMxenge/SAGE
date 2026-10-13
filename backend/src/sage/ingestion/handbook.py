@@ -8,9 +8,9 @@ from pathlib import Path
 import pdfplumber
 
 from sage.domain.base import Row
-from sage.domain.rules import TermCode
+from sage.domain.rules import Passage, TermCode
 from sage.ingestion.names import title_case
-from sage.ingestion.sources import Section, SourceError
+from sage.ingestion.sources import Section, SourceError, row_id
 
 # Points from the top of a page. Every running header in both books ends above it (at 37.6) and every
 # body starts below it (at 57.3), so cropping here drops the header and nothing else.
@@ -23,6 +23,8 @@ CODE = r"[A-Z]{3}\d{4}[A-Z]"
 # An entry's heading: its code, with any other term it runs in (EEE4022F/S), then its title
 HEADING = re.compile(rf"({CODE}(?:/[A-Z])*)\s+(\S.*)")
 CREDITS = re.compile(r"(\d+) NQF credits at NQF level (\d+)(.*)")
+# A rule clause's number opening a line, such as FB8.10
+CLAUSE = re.compile(r"([A-Z]{2}(\d+(?:\.\d+)*))\s")
 # A term printed after the credits, as in "; First-year, second semester course."
 PRINTED_TERM = re.compile(r"\b(first|second)[ -]semester\b", re.IGNORECASE)
 TERMS: dict[str, TermCode] = {"first": "sem1", "second": "sem2"}
@@ -188,6 +190,63 @@ class Handbook:
 
     def text(self, lines: range) -> str:
         return "\n".join(self.lines[at][1] for at in lines).strip()
+
+    def prose(self, sections: Sequence[Section]) -> list[Unit]:
+        # One unit per listed section, or one per rule clause where a section prints clause
+        # numbers. A section with no until heading ends where the next listed section starts, when
+        # that comes before the end of its last page.
+        spans = [self.section(section) for section in sections]
+        units = []
+        for at, (lines, section) in enumerate(zip(spans, sections, strict=True)):
+            end = lines.stop
+            if at + 1 < len(spans) and lines.start < spans[at + 1].start < end:
+                end = spans[at + 1].start
+            units += self._cut(range(lines.start, end), section.section)
+        return units
+
+    def _cut(self, lines: range, label: str) -> list[Unit]:
+        # A clause runs from the paragraph its number opens, taking in any heading printed above the
+        # number, to the next clause. A page's first line opens a paragraph too, so a heading at the
+        # top of a page stays with the clause below it. Clause numbers only go up, so one that
+        # doesn't, as in "Rule FB3.1 above also applies", refers back rather than opening a clause.
+        starts = [(lines.start, label)]
+        paragraph, clause, number = lines.start, -1, ()
+        for at in lines:
+            page, line = self.lines[at]
+            if not line:
+                paragraph = at + 1
+            elif page != self.lines[at - 1][0]:
+                paragraph = at
+            found = CLAUSE.match(line)
+            if found and (printed := tuple(map(int, found[2].split(".")))) > number:
+                starts.append((paragraph if clause < paragraph else at, found[1]))
+                clause, number = at, printed
+        ends = [start for start, _ in starts[1:]] + [lines.stop]
+        return [
+            Unit(
+                section=name,
+                page=self.lines[start][0],
+                line=start,
+                content=self.text(range(start, end)),
+            )
+            for (start, name), end in zip(starts, ends, strict=True)
+            if start < end
+        ]
+
+
+def passages(units: Sequence[Unit], year: int, source: str) -> tuple[Passage, ...]:
+    # A book's units as passages, numbered in printed order
+    ordered = sorted(units, key=lambda unit: unit.line)
+    rows = []
+    for position, unit in enumerate(ordered, start=1):
+        row = {
+            "handbook_year": year,
+            "source": source,
+            "position": position,
+            **unit.model_dump(exclude={"line"}),
+        }
+        rows.append(Passage(id=row_id(row), **row))
+    return tuple(rows)
 
 
 def _codes(printed: str) -> tuple[str, ...]:

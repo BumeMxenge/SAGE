@@ -18,7 +18,7 @@ sha256 = "796ffd0b5754995b8c875e2cc8912fdda818077fb8c035f2f8d1fb42a26e2e9f"
 # The prose cut into passages, besides every course entry and curriculum table in scope: each
 # section by its printed heading and pages. The department's staff list isn't among them.
 [[handbook.passages]]
-section = "Term dates"
+section = "Term Dates for 2026"
 pages = [10, 10]
 
 [[handbook.passages]]

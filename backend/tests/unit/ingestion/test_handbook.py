@@ -1,11 +1,11 @@
 # Checks the handbook reader on typed pages in the printed layout: each page's running header is
-# cropped off and its number kept, a heading in larger type is a break, and course entries read as
-# printed
+# cropped off and its number kept, a heading in larger type is a break, course entries read as
+# printed, and listed prose becomes passages in printed order, one per rule clause
 import pytest
 from fpdf import FPDF
 
-from sage.ingestion.handbook import Handbook, Page, pages
-from sage.ingestion.sources import SourceError
+from sage.ingestion.handbook import Handbook, Page, pages, passages
+from sage.ingestion.sources import Section, SourceError
 
 # The fixture's pages, as their running headers print them
 NUMBERS = (48, 49, 132, 138, 164, 188, 189)
@@ -183,3 +183,99 @@ def test_a_requirement_line_opening_with_a_code_is_not_an_entry(handbook):
 def test_an_entry_the_reader_cannot_place_is_refused(lines, refusal):
     with pytest.raises(SourceError, match=refusal):
         Handbook([Page(number=138, lines=lines)]).entry("EEE3100S")
+
+
+def test_listed_prose_becomes_passages_one_per_rule_clause_in_printed_order():
+    # The foot of 2026's page 10, where two listed sections share the page; 2023's FB3.2, whose
+    # text ends by naming FB3.1 again; and 2026's FB8.10, whose heading opens a page above its
+    # number, with no break after the page before
+    book = Handbook(
+        [
+            Page(
+                number=10,
+                lines=(
+                    "Lecture timetable",
+                    "The lecture timetables are published separately by the department concerned from where they are",
+                    "obtainable at Registration.",
+                    "",
+                    "Key to Course Abbreviations, Codes and Terminology Guide to the Credit System",
+                    "",
+                    "Course Codes",
+                    "",
+                    "ACC Accounting",
+                ),
+            ),
+            Page(
+                number=14,
+                lines=(
+                    "RULES FOR UNDERGRADUATE DEGREES",
+                    "The rules must be read together with the general rules for degrees and diplomas in Handbook 3 of this",
+                    "series.",
+                    "",
+                    "FB3.2 Candidates must complete approved courses of not less than 576 credits in the case",
+                    "of the degrees which have a minimum duration of 4 years and not less than 432",
+                    "credits in the case of degrees which have a minimum duration of 3 years. Rule",
+                    "FB3.1 above also applies.",
+                ),
+            ),
+            Page(
+                number=18,
+                lines=(
+                    "BSc(Eng) Electrical Engineering, Electrical and Computer Engineering, Mechatronics Engineering",
+                    "candidates (4-year curriculum) (EB009, EB022, EB011)",
+                    "FB8.10 Except by permission of the Senate candidates may not renew their registration if:",
+                ),
+            ),
+        ]
+    )
+    units = book.prose(
+        [
+            Section(section="Lecture timetable", pages=(10, 10)),
+            Section(section="Course Codes", pages=(10, 10)),
+            Section(section="Rules for Undergraduate Degrees", pages=(14, 18)),
+        ]
+    )
+    # Passages are numbered by where they're printed, whatever order they arrive in
+    read = passages(units[::-1], 2026, "A made-up handbook")
+    assert [
+        (
+            p.position,
+            p.section,
+            p.page,
+            p.content.split("\n")[0],
+            p.content.split("\n")[-1],
+        )
+        for p in read
+    ] == [
+        (
+            1,
+            "Lecture timetable",
+            10,
+            "Lecture timetable",
+            "Key to Course Abbreviations, Codes and Terminology Guide to the Credit System",
+        ),
+        (2, "Course Codes", 10, "Course Codes", "ACC Accounting"),
+        (
+            3,
+            "Rules for Undergraduate Degrees",
+            14,
+            "RULES FOR UNDERGRADUATE DEGREES",
+            "series.",
+        ),
+        (
+            4,
+            "FB3.2",
+            14,
+            "FB3.2 Candidates must complete approved courses of not less than 576 credits in the case",
+            "FB3.1 above also applies.",
+        ),
+        (
+            5,
+            "FB8.10",
+            18,
+            "BSc(Eng) Electrical Engineering, Electrical and Computer Engineering, Mechatronics Engineering",
+            "FB8.10 Except by permission of the Senate candidates may not renew their registration if:",
+        ),
+    ]
+    # A passage's id comes from what it holds, so a second read gives the same ids
+    assert passages(units, 2026, "A made-up handbook") == read

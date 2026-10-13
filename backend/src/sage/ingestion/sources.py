@@ -2,10 +2,16 @@
 # SHA-256 before anything reads it, so a changed file stops the run instead of changing a rule
 # unnoticed.
 import hashlib
+import json
 import tomllib
+from collections.abc import Mapping
 from pathlib import Path
+from uuid import NAMESPACE_URL, UUID, uuid5
 
 from sage.domain.base import Row
+
+# Rows that need an id get one made from what they hold, so a row read again gets the same id
+ROW_IDS = uuid5(NAMESPACE_URL, "https://github.com/BumeMxenge/SAGE/ingestion")
 
 
 class SourceError(Exception):
@@ -54,6 +60,10 @@ class Manifest(Row):
 
     def path(self, source: SourceFile) -> Path:
         return self.folder / source.file
+
+
+def row_id(row: Mapping[str, object]) -> UUID:
+    return uuid5(ROW_IDS, json.dumps(row, sort_keys=True, default=str))
 
 
 def load(folder: Path) -> Manifest:
