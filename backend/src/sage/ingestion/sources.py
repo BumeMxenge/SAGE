@@ -1,0 +1,74 @@
+# A year's sources, as data/sources/<year>/manifest.toml names them. Every file is checked against its
+# SHA-256 before anything reads it, so a changed file stops the run instead of changing a rule
+# unnoticed.
+import hashlib
+import tomllib
+from pathlib import Path
+
+from sage.domain.base import Row
+
+
+class SourceError(Exception):
+    # A source doesn't fit its reading. The run stops, and the message names the file and the place,
+    # so a person can look at the print.
+    pass
+
+
+class SourceFile(Row):
+    file: str
+    format: str
+    title: str
+    sha256: str
+
+
+class Section(Row):
+    # Printed prose cut into passages, by its heading and its first and last pages
+    section: str
+    pages: tuple[int, int]
+
+
+class HandbookFile(SourceFile):
+    url: str
+    passages: tuple[Section, ...]
+
+
+class TimetableFile(SourceFile):
+    sheets: dict[str, tuple[str, ...]]  # each sheet read, with the curricula it shows
+
+
+class ComplementaryFile(SourceFile):
+    sheets: tuple[str, ...]
+
+
+class Manifest(Row):
+    folder: Path
+    year: int
+    # The department whose curricula are in scope, by its printed heading
+    department: str
+    handbook: HandbookFile
+    timetable: TimetableFile | None = None
+    complementary: ComplementaryFile | None = None
+    equivalences: SourceFile
+
+    def path(self, source: SourceFile) -> Path:
+        return self.folder / source.file
+
+
+def load(folder: Path) -> Manifest:
+    data = tomllib.loads((folder / "manifest.toml").read_text(encoding="utf-8"))
+    manifest = Manifest.model_validate({"folder": folder, **data})
+    for source in (
+        manifest.handbook,
+        manifest.timetable,
+        manifest.complementary,
+        manifest.equivalences,
+    ):
+        if source is None:
+            continue
+        found = hashlib.sha256(manifest.path(source).read_bytes()).hexdigest()
+        if found != source.sha256:
+            raise SourceError(
+                f"{source.file} has changed: its SHA-256 is {found}, but manifest.toml "
+                f"expects {source.sha256}"
+            )
+    return manifest
