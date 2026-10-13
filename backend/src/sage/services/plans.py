@@ -66,8 +66,8 @@ def credits_by_term(courses: Iterable[Course]) -> dict[TermCode, int]:
 
 
 def group_keys(rules: RuleSet, curriculum: str) -> set[str]:
-    # The course groups her curriculum's rules name, found by walking each rule tree for strings
-    # that are group keys, so no rule shape needs knowing here
+    # The course groups her curriculum's rules name, found by walking each rule tree's JSON for
+    # strings that are group keys, so no rule shape needs knowing here
     keys = {group.group_key for group in rules.course_groups}
     named: set[str] = set()
 
@@ -83,7 +83,7 @@ def group_keys(rules: RuleSet, curriculum: str) -> set[str]:
 
     for rule in rules.curriculum_rules:
         if rule.curriculum_code == curriculum:
-            walk(rule.rule)
+            walk(rule.rule.model_dump(mode="json"))
     return named
 
 
