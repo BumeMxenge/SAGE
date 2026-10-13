@@ -20,6 +20,13 @@ PROMPT = (HERE / "prompt.md").read_text(encoding="utf-8").split("\n---\n", 1)[1]
 
 HAIKU = "claude-haiku-5-5"
 LUNA = "gpt-6-luna"
+# Each model's name in the tables, and its USD price per million tokens in, read from the
+# provider's cache, and out, for prompts this short. From the providers' pricing pages on 13 October
+# 2026: platform.claude.com/docs/en/about-claude/pricing and developers.openai.com/api/docs/pricing.
+MODELS = {
+    HAIKU: ("Claude Haiku 5.5", 0.10, 0.01, 0.50),
+    LUNA: ("GPT-6 Luna", 0.10, 0.01, 0.50),
+}
 RUNS = 3
 # Haiku's structured output refuses a recursive schema, so its tree is unrolled to this many
 # levels. The label check refuses a label this deep, so no printed tree reaches the limit.
@@ -146,6 +153,32 @@ def reply(
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(entry, indent=1) + "\n", encoding="utf-8")
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def answer(model: str, raw: dict) -> str | None:
+    # The text of a reply's answer, or None where it has none, as when the model refuses
+    if model == HAIKU:
+        texts = [block["text"] for block in raw["content"] if block["type"] == "text"]
+    else:
+        texts = [
+            part["text"]
+            for item in raw["output"]
+            if item["type"] == "message"
+            for part in item["content"]
+            if part["type"] == "output_text"
+        ]
+    return "".join(texts) or None
+
+
+def tokens(model: str, raw: dict) -> tuple[int, int, int]:
+    # A reply's tokens: in at the full price, in from the provider's cache, and out, which counts
+    # the model's reasoning. Anthropic counts cache reads apart from the rest, OpenAI within them.
+    usage = raw["usage"]
+    if model == HAIKU:
+        cached = usage["cache_read_input_tokens"] or 0
+        return usage["input_tokens"], cached, usage["output_tokens"]
+    cached = usage["input_tokens_details"]["cached_tokens"]
+    return usage["input_tokens"] - cached, cached, usage["output_tokens"]
 
 
 if __name__ == "__main__":
