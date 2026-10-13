@@ -33,11 +33,12 @@ dev-all:
 test:
 	@cd backend && uv run pytest -m "not integration" --cov
 
+# The backend and the acceptance tests' scripts, both under the backend's ruff settings
 lint:
-	@cd backend && uv run ruff check && uv run ruff format --check
+	@cd backend && uv run ruff check . ../tests && uv run ruff format --check . ../tests
 
 format:
-	@cd backend && uv run ruff check --fix && uv run ruff format
+	@cd backend && uv run ruff check --fix . ../tests && uv run ruff format . ../tests
 
 # Everything CI's backend, frontend and contract jobs check. The database check is separate because
 # it needs Docker.
