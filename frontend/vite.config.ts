@@ -1,4 +1,5 @@
-// Vite settings: React, and port 3000 for both `npm run dev` and `npm run preview`
+// Vite settings: React, the '@/' import alias from tsconfig, and port 3000 for both `npm run dev` and
+// `npm run preview`
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
@@ -10,6 +11,7 @@ const port = { port: 3000, strictPort: true }
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: { tsconfigPaths: true },
   server: port,
   preview: port,
 })

@@ -1,8 +1,41 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
+  "plugins": ["react", "typescript", "oxc", "import", "jsx-a11y"],
+  "options": { "typeAware": true },
+  // Turning a plugin on makes its rules warnings, and warnings don't fail `npm run lint`. So every
+  // rule the design system relies on is an error.
+  "categories": { "correctness": "error" },
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "no-nested-ternary": "error",
+    "typescript/no-explicit-any": "error",
+    // Needless ?. and ?? where the types say the value exists. oxlint lists it as experimental.
+    "typescript/no-unnecessary-condition": "error",
+    "import/no-cycle": "error",
+    "import/no-namespace": "error",
+    "import/no-default-export": "error",
+    // Inline svg only through Icon and Logo, which render files imported with ?react
+    "react/forbid-elements": ["error", { "forbid": [{ "element": "svg", "message": "Use Icon or Logo." }] }],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          { "group": ["lucide", "lucide-*", "@lucide/*"], "message": "Icons come only from Icon (Material Symbols)." },
+          { "regex": "\\.svg\\?react$", "message": "Import SVG files only in Icon and Logo." }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    // These tools read a default export
+    { "files": ["vite.config.ts", "stylelint.config.js"], "rules": { "import/no-default-export": "off" } },
+    { "files": ["src/components/Icon/Icon.tsx", "src/components/Logo/Logo.tsx"], "rules": { "no-restricted-imports": "off" } },
+    // The starter page predates these rules. The shell branch replaces it and removes this exemption.
+    // Each rule listed is one it fails today, and nothing else is exempt.
+    {
+      "files": ["src/app/App.tsx"],
+      "rules": { "no-nested-ternary": "off", "jsx-a11y/prefer-tag-over-role": "off", "import/no-default-export": "off" }
+    }
+  ]
 }
