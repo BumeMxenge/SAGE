@@ -12,6 +12,9 @@ const port = { port: 3000, strictPort: true }
 export default defineConfig({
   plugins: [react()],
   resolve: { tsconfigPaths: true },
+  // light-dark() works natively from these versions. Vite's older default would rewrite it into a
+  // fallback trick that dev builds don't use, and dev and production would differ.
+  build: { cssTarget: ['chrome123', 'edge123', 'firefox120', 'safari17.5'] },
   server: port,
   preview: port,
 })
