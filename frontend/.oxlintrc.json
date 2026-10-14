@@ -30,7 +30,7 @@
   "overrides": [
     // These tools read a default export
     { "files": ["vite.config.ts", "stylelint.config.js"], "rules": { "import/no-default-export": "off" } },
-    { "files": ["src/components/Icon/Icon.tsx", "src/components/Logo/Logo.tsx"], "rules": { "no-restricted-imports": "off" } },
+    { "files": ["src/components/Icon/icons.ts", "src/components/Logo/Logo.tsx"], "rules": { "no-restricted-imports": "off" } },
     // The starter page predates these rules. The shell branch replaces it and removes this exemption.
     // Each rule listed is one it fails today, and nothing else is exempt.
     {

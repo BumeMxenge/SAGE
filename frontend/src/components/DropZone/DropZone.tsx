@@ -32,7 +32,7 @@ export function DropZone({ title, hint, buttonLabel, acceptedFileTypes, onSelect
         <Text slot="label" className={styles.title}>
           {title}
         </Text>
-        {hint && <Text className={styles.hint}>{hint}</Text>}
+        {hint && <span className={styles.hint}>{hint}</span>}
         <FileTrigger acceptedFileTypes={acceptedFileTypes} onSelect={(files) => files && onSelect([...files])}>
           <Button variant="secondary" isDisabled={isDisabled}>
             {buttonLabel}

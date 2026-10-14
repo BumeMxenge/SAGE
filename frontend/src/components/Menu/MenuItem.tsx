@@ -2,7 +2,8 @@
 // chosen, such as Appearance, the chosen item shows a tick.
 import type { ReactNode } from 'react'
 import { MenuItem as AriaMenuItem } from 'react-aria-components'
-import { Icon, type IconName } from '@/components/Icon/Icon.tsx'
+import { Icon } from '@/components/Icon/Icon.tsx'
+import type { IconName } from '@/components/Icon/icons.ts'
 import styles from '@/components/Popover/Popover.module.css'
 
 type MenuItemProps = {
