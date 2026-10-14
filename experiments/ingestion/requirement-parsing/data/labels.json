@@ -1,0 +1,650 @@
+[
+  {
+    "code": "APG1003W",
+    "field": "Co-requisites",
+    "page": "73",
+    "extracted": "APG1020W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG1016H",
+    "field": "Co-requisites",
+    "page": "74",
+    "extracted": "CSC1015F or CSC1017F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG1020W",
+    "field": "Co-requisites",
+    "page": "74",
+    "extracted": "APG1003W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG1021W",
+    "field": "Co-requisites",
+    "page": "74",
+    "extracted": "APG1003W, APG1020W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2014S",
+    "field": "Course entry requirements",
+    "page": "77",
+    "extracted": "CSC1015F or CSC1017F, APG1016F/H",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2014S",
+    "field": "Co-requisites",
+    "page": "77",
+    "extracted": "APG2040F, MAM2084F/S, STA1000S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2015F",
+    "field": "Course entry requirements",
+    "page": "77",
+    "extracted": "BSc Geomatics students: CSC1015F or CSC1017F, APG1016H",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2019X",
+    "field": "Co-requisites",
+    "page": "77",
+    "extracted": "APG2040F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2021F",
+    "field": "Course entry requirements",
+    "page": "78",
+    "extracted": "APG1003W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2021F",
+    "field": "Co-requisites",
+    "page": "78",
+    "extracted": "APG2038W, APG2039W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2026F APG2026S",
+    "field": "Course entry requirements",
+    "page": "78 79",
+    "extracted": "Civil Engineering students: MAM1020F/S or MAM1023F/S. Construction Studies students: MAM1010F/S.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2027X",
+    "field": "Co-requisites",
+    "page": "79",
+    "extracted": "APG2021W, APG2039W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2039F",
+    "field": "Course entry requirements",
+    "page": "79",
+    "extracted": "APG1020W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2039F",
+    "field": "Co-requisites",
+    "page": "79",
+    "extracted": "APG2021W, APG2043F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2040F",
+    "field": "Course entry requirements",
+    "page": "80",
+    "extracted": "MAM1021F/S or (MAM1004F and STA1000S); APG1016H",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2041S",
+    "field": "Course entry requirements",
+    "page": "80",
+    "extracted": "DP for APG2040F and APG2015F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2042Z",
+    "field": "Course entry requirements",
+    "page": "81",
+    "extracted": "APG1021W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2042Z",
+    "field": "Co-requisites",
+    "page": "81",
+    "extracted": "APG2039W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG2043F",
+    "field": "Co-requisites",
+    "page": "81",
+    "extracted": "APG2039W; APG2021W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3012S",
+    "field": "Course entry requirements",
+    "page": "81",
+    "extracted": "MAM1000W or MAM1021F/S, STA1000S, CSC1015F or CSC1017F, APG2014S, APG2015F; APG2016W or APG2040F.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3012S APG3013F",
+    "field": "Co-requisites",
+    "page": "81 82",
+    "extracted": "APG2041S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3013F",
+    "field": "Course entry requirements",
+    "page": "82",
+    "extracted": "MAM2084F/S, APG2014S, APG2016W or APG2040F.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3016C",
+    "field": "Course entry requirements",
+    "page": "82",
+    "extracted": "APG1016H; for BSc Geomatics students APG2016W or (APG2040F and APG2041S) are also prerequisites.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3017D",
+    "field": "Course entry requirements",
+    "page": "83",
+    "extracted": "APG2040F, APG2041S, APG2019X, MAM1021S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3017D",
+    "field": "Co-requisites",
+    "page": "83",
+    "extracted": "APG3016C.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3023W",
+    "field": "Course entry requirements",
+    "page": "83",
+    "extracted": "APG2021W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3023W",
+    "field": "Co-requisites",
+    "page": "83",
+    "extracted": "APG3034W, APG3037W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3027Z",
+    "field": "Course entry requirements",
+    "page": "83",
+    "extracted": "APG2040F, APG2041S, APG2019X.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3027Z",
+    "field": "Co-requisites",
+    "page": "83",
+    "extracted": "CON2033F, APG3033W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3028X APG3041Z",
+    "field": "Co-requisites",
+    "page": "84 87",
+    "extracted": "APG3037W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3033W",
+    "field": "Co-requisites",
+    "page": "84",
+    "extracted": "CON2033F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3034Z",
+    "field": "Course entry requirements",
+    "page": "85",
+    "extracted": "APG2038W / APG2043F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3034Z",
+    "field": "Co-requisites",
+    "page": "85",
+    "extracted": "APG3023W ; APG3037W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3035F",
+    "field": "Course entry requirements",
+    "page": "85",
+    "extracted": "APG2009F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3037W",
+    "field": "Course entry requirements",
+    "page": "86",
+    "extracted": "APG2039W.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3037W",
+    "field": "Co-requisites",
+    "page": "86",
+    "extracted": "APG3023W, APG3034W.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3039B APG3040C",
+    "field": "Course entry requirements",
+    "page": "86 86",
+    "extracted": "MAM1021F/S, STA1000S, CSC1015F or CSC1017F, APG2014S, APG2015F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG3041Z",
+    "field": "Course entry requirements",
+    "page": "87",
+    "extracted": "APG2042Z",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG4001S",
+    "field": "Course entry requirements",
+    "page": "87",
+    "extracted": "APG3013F, APG3016C, APG3017D, MAM2084S, STA1000S, PHY1031F, PHY1032S.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG4002Z",
+    "field": "Course entry requirements",
+    "page": "87",
+    "extracted": "APG3016C",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG4003Z",
+    "field": "Course entry requirements",
+    "page": "88",
+    "extracted": "The candidate must be able to graduate in the year in which the course is taken.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG4005F",
+    "field": "Course entry requirements",
+    "page": "88",
+    "extracted": "APG3013F, APG3017D.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG4010X",
+    "field": "Course entry requirements",
+    "page": "88",
+    "extracted": "APG3012S.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG4011F",
+    "field": "Course entry requirements",
+    "page": "89",
+    "extracted": "APG3012S, MAM2084F/S.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "APG4012S",
+    "field": "Course entry requirements",
+    "page": "89",
+    "extracted": "It is intended that this course is taken by students in the final year of their degree programme. Students on ASPECT may take the course in their programme year of study where timetabling permits.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV1011S",
+    "field": "Course entry requirements",
+    "page": "106",
+    "extracted": "PHY1012F/S (DP), MAM1020F/S (DP)",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV2048S",
+    "field": "Course entry requirements",
+    "page": "109",
+    "extracted": "PHY1012F (DP) and MAM1020F (DP) and CIV1011S (DP)",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV2051S",
+    "field": "Course entry requirements",
+    "page": "110",
+    "extracted": "DP in CIV2044F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV3042F",
+    "field": "Course entry requirements",
+    "page": "110",
+    "extracted": "CIV2039S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV3043F",
+    "field": "Course entry requirements",
+    "page": "110",
+    "extracted": "CIV2040S (DP)",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV3044F",
+    "field": "Course entry requirements",
+    "page": "111",
+    "extracted": "STA1008F/S (DP)",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV3046S CIV4042F",
+    "field": "Course entry requirements",
+    "page": "111 113",
+    "extracted": "CEM1008F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV3047S",
+    "field": "Course entry requirements",
+    "page": "111",
+    "extracted": "APG2026S; CIV3043F (DP) and CIV3044F (DP).",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV3048F",
+    "field": "Course entry requirements",
+    "page": "112",
+    "extracted": "CIV2041S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV3048F CIV3049S",
+    "field": "Co-requisites",
+    "page": "112 112",
+    "extracted": "n/a",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV3049S",
+    "field": "Course entry requirements",
+    "page": "112",
+    "extracted": "CIV3048F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV4035C",
+    "field": "Course entry requirements",
+    "page": "112",
+    "extracted": "All core Civil Engineering design (CIV) courses, including successful completion of their respective pre-requisites, as well as MAM2083F, MAM2084S, CIV2042F, EGS1005F and CIV4041F.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV4041F",
+    "field": "Course entry requirements",
+    "page": "113",
+    "extracted": "Students must be potential qualifiers (i.e. anticipated final year of study).",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "CIV4044F",
+    "field": "Course entry requirements",
+    "page": "113",
+    "extracted": "No simultaneous registration of more than one additional course (besides CIV4035C). Students will not be permitted to undertake a research topic in a field for which they have not successfully completed the relevant core courses.",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC2046F",
+    "field": "Co-requisites",
+    "page": "148",
+    "extracted": "CEM1008F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC2048S",
+    "field": "Course entry requirements",
+    "page": "149",
+    "extracted": "MEC1008S, MEC1005W, MEC2025F or MEC2049F, MEC2042F) or MEC2046F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC2049F",
+    "field": "Course entry requirements",
+    "page": "149",
+    "extracted": "MEC1009F/S, MAM1020F/S (or equivalent)",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC2050S",
+    "field": "Course entry requirements",
+    "page": "150",
+    "extracted": "CEM1008F and MAM1020F and PHY1012F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3074F",
+    "field": "Course entry requirements",
+    "page": "150",
+    "extracted": "EEE2041F, EEE2042S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3075F",
+    "field": "Course entry requirements",
+    "page": "150",
+    "extracted": "CSC1019F or CSC1017F or CSC1015F/S or CSC1010H",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3075F",
+    "field": "Co-requisites",
+    "page": "150",
+    "extracted": "MAM2084F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3076F",
+    "field": "Course entry requirements",
+    "page": "151",
+    "extracted": "MEC2046F or MEC2042F, MEC2025F or MEC2049F, MAM2083F/S (DP), MAM2084F/S (DP)",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3077F",
+    "field": "Course entry requirements",
+    "page": "151",
+    "extracted": "MEC2022S or MEC2050S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3078S",
+    "field": "Course entry requirements",
+    "page": "152",
+    "extracted": "MEC2048S (DP), MEC2047F/S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3079S",
+    "field": "Course entry requirements",
+    "page": "152",
+    "extracted": "(MAM2083F/S or MAM2085F/S) and MAM2084F/S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3080S",
+    "field": "Course entry requirements",
+    "page": "152",
+    "extracted": "MEC3077F (DP)",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3081S",
+    "field": "Course entry requirements",
+    "page": "153",
+    "extracted": "MEC3076F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3082S",
+    "field": "Course entry requirements",
+    "page": "153",
+    "extracted": "MEC2048S, MEC2049F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC3083W",
+    "field": "Course entry requirements",
+    "page": "154",
+    "extracted": "AYOS 3",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC4047F",
+    "field": "Course entry requirements",
+    "page": "154",
+    "extracted": "MEC3078S or MEC3031S and MEC3075F or equivalent",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC4108S",
+    "field": "Co-requisites",
+    "page": "154",
+    "extracted": "MEC4124W or MEC4103F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC4123F",
+    "field": "Course entry requirements",
+    "page": "155",
+    "extracted": "MEC3083W",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC4124W",
+    "field": "Course entry requirements",
+    "page": "155",
+    "extracted": "MEC3072F and MEC3073S or MEC3050W or MEC3082S",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC4125F",
+    "field": "Course entry requirements",
+    "page": "155",
+    "extracted": "MEC3080S (DP)",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC4126F",
+    "field": "Course entry requirements",
+    "page": "156",
+    "extracted": "EEE2046S, MEC3074F",
+    "printed": "",
+    "tree": "unlabelled"
+  },
+  {
+    "code": "MEC4127F",
+    "field": "Course entry requirements",
+    "page": "156",
+    "extracted": "MEC3074F, MEC3079S, EEE2046S",
+    "printed": "",
+    "tree": "unlabelled"
+  }
+]

@@ -11,7 +11,7 @@ from pathlib import Path
 import anthropic
 import openai
 
-from extract import labels, wording
+from extract import UNLABELLED, labels, wording
 
 HERE = Path(__file__).parent
 REPLIES = HERE.parent / "results" / "replies"
@@ -185,8 +185,8 @@ if __name__ == "__main__":
     # Fills the cache for every string on the label sheet, three runs on each model. The labels
     # come first, so it won't start while any row is still empty.
     rows = labels()
-    if any(not row["tree"].strip() for row in rows):
-        raise SystemExit("Label every row of labels.csv before drafting")
+    if any(row["tree"] == UNLABELLED for row in rows):
+        raise SystemExit("Label every row of labels.json before drafting")
     for number, row in enumerate(rows, start=1):
         for model in (HAIKU, LUNA):
             for run in range(1, RUNS + 1):

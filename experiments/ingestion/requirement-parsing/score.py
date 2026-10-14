@@ -148,7 +148,7 @@ def cost(model: str, entry: dict) -> float:
 def score(row: dict[str, str]) -> dict:
     # One string's label, what the grammar made of it, and each model's three runs
     field, text = row["field"], wording(row)
-    label = normal(canonical(json.loads(row["tree"])))
+    label = normal(canonical(row["tree"]))
     start = time.perf_counter()
     try:
         need = "concurrent" if field == "Co-requisites" else "pass"
@@ -437,7 +437,7 @@ def kinds(tree: dict | None) -> list[str]:
 
 def leaves_table(strings: list[dict]) -> tuple[list[str], list[list], list[str]]:
     # Table 3: the node kinds your labels use, Chapter 3's evidence for the representation
-    found = [kinds(canonical(json.loads(s["row"]["tree"]))) for s in strings]
+    found = [kinds(canonical(s["row"]["tree"])) for s in strings]
     nodes = Counter(kind for label in found for kind in label)
     using = Counter(kind for label in found for kind in set(label))
     header = ["Node", "Strings using it", "Nodes in the labels"]

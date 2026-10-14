@@ -1,14 +1,13 @@
-# Checks the label sheet before E2 runs. Every filled tree must be JSON in the seed's shape that fits
-# EntryRule, and shallower than Haiku's unrolled schema. It names each row that fails by its row in
-# the spreadsheet, and lists the rows still empty. It never uses the grammar, which the labels test.
-import json
+# Checks the label sheet before E2 runs. Every tree must be in the seed's shape, fit EntryRule and be
+# shallower than Haiku's unrolled schema. It names each row that fails by its code and its place in
+# the sheet, and lists the rows still unlabelled. It never uses the grammar, which the labels test.
 import sys
 
 from pydantic import TypeAdapter, ValidationError
 from sage.domain.rules import EntryRule
 
 from drafting import DEPTH
-from extract import labels
+from extract import UNLABELLED, labels
 
 TREE = TypeAdapter(EntryRule | None)
 
@@ -19,13 +18,10 @@ def depth(tree: dict) -> int:
     return 1 + max(map(depth, children)) if children else 1
 
 
-def problem(tree_text: str) -> str | None:
-    # What's wrong with a filled tree, or None when it's fine
+def problem(tree: object) -> str | None:
+    # What's wrong with a labelled tree, or None when it's fine
     try:
-        tree = json.loads(tree_text)
         TREE.validate_python(tree)
-    except json.JSONDecodeError as error:
-        return f"not JSON: {error.msg} at character {error.pos + 1}"
     except ValidationError as error:
         first = error.errors()[0]
         return f"doesn't fit EntryRule: {first['msg']} at {'.'.join(map(str, first['loc']))}"
@@ -35,16 +31,16 @@ def problem(tree_text: str) -> str | None:
 
 
 if __name__ == "__main__":
-    # Rows as the spreadsheet numbers them, with the header as row 1
-    rows = list(enumerate(labels(), start=2))
-    empty = [number for number, row in rows if not row["tree"].strip()]
+    # Rows numbered from 1, in the sheet's order
+    rows = list(enumerate(labels(), start=1))
+    empty = [number for number, row in rows if row["tree"] == UNLABELLED]
     failed = [
         f"Row {number} ({row['code']}): {found}"
         for number, row in rows
-        if row["tree"].strip() and (found := problem(row["tree"]))
+        if row["tree"] != UNLABELLED and (found := problem(row["tree"]))
     ]
     print(f"{len(rows) - len(empty)} of {len(rows)} rows labelled")
     if empty:
-        print("Still empty: rows " + ", ".join(map(str, empty)))
-    print("\n".join(failed) or "Every filled tree fits EntryRule")
+        print("Still unlabelled: rows " + ", ".join(map(str, empty)))
+    print("\n".join(failed) or "Every labelled tree fits EntryRule")
     sys.exit(1 if empty or failed else 0)
