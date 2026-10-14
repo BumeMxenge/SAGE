@@ -9,19 +9,6 @@ import pytest
 from sage.ingestion.sources import Alternatives, SourceError
 from sage.ingestion.timetable import read, round_trip, stored
 
-# The handbook's key (p. 10): each period's label and starting hour, on rows 5 to 14 of a block
-KEY = (
-    ("1", 8),
-    ("2", 9),
-    ("3", 10),
-    ("4", 11),
-    ("5", 12),
-    ("M", 13),
-    ("6", 14),
-    ("7", 15),
-    ("8", 16),
-    ("9", 17),
-)
 SHEETS = {"EB009": ("EB009EEE01",), "EB809": ("EB809EEE01",), "Labs": ()}
 TAKING = {
     "EEE2045F": {"EB009EEE01", "EB809EEE01"},
@@ -42,25 +29,6 @@ LAB = Alternatives(
 )
 
 
-def block(sheet, title):
-    # A block at the top of a sheet, laid out as the workbook's are: its title across the grid, each
-    # semester's heading and days, and the period key down each semester's side
-    sheet["A1"] = title
-    sheet.merge_cells("A1:O1")
-    for column, semester in ((1, "Semester 1"), (9, "Semester 2")):
-        sheet.cell(2, column, f"Mainstream EE - {semester}")
-        sheet.cell(3, column, semester)
-        for offset, day in enumerate(
-            ("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY")
-        ):
-            sheet.cell(3, column + 2 + offset, day)
-        sheet.cell(4, column, "Start Time")
-        sheet.cell(4, column + 1, "Period")
-        for row, (period, hour) in enumerate(KEY, start=5):
-            sheet.cell(row, column, time(hour))
-            sheet.cell(row, column + 1, period if period == "M" else int(period))
-
-
 def meeting(sheet, cells, text):
     sheet[cells.split(":")[0]] = text
     if ":" in cells:
@@ -68,7 +36,8 @@ def meeting(sheet, cells, text):
 
 
 @pytest.fixture
-def workbook(tmp_path):
+def workbook(tmp_path, timetable_block):
+    block = timetable_block
     book = openpyxl.Workbook()
     eb009 = book.active
     eb009.title = "EB009"
@@ -158,7 +127,10 @@ def test_the_sheets_read_as_meetings_by_the_period_key(workbook):
         ),
     ],
 )
-def test_a_cell_the_reader_cannot_place_stops_it(tmp_path, change, refusal):
+def test_a_cell_the_reader_cannot_place_stops_it(
+    tmp_path, timetable_block, change, refusal
+):
+    block = timetable_block
     book = openpyxl.Workbook()
     book.active.title = "EB009"
     block(book["EB009"], "2ND YEAR")

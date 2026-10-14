@@ -24,7 +24,7 @@ from sage.domain.rules import (
 )
 from sage.ingestion.curricula import COMPLEMENTARY
 from sage.ingestion.names import title_case
-from sage.ingestion.sources import ComplementaryFile, SourceError, row_id
+from sage.ingestion.sources import ComplementaryFile, Reading, SourceError, row_id
 
 OFFERING_COLUMNS = {
     "Handbook course code": "code",
@@ -185,10 +185,12 @@ def _valid[T: Row](model: type[T], where: str, fields: dict[str, object]) -> T:
         raise SourceError(f"{where}: {field} {problem['msg']}") from error
 
 
-def members(read: Complementary, year: int) -> tuple[CourseGroupMember, ...]:
-    # Every offering joins the complementary group. Language options are the languages category;
-    # the other categories, which a model would pick, wait for M3.
-    return tuple(
+def members(
+    read: Complementary, year: int
+) -> tuple[tuple[CourseGroupMember, ...], tuple[Reading, ...]]:
+    # Every offering joins the complementary group, with the row it's typed in. Language options
+    # are the languages category; the other categories, which a model would pick, wait for M3.
+    rows = tuple(
         CourseGroupMember(
             handbook_year=year,
             group_key=COMPLEMENTARY,
@@ -197,6 +199,16 @@ def members(read: Complementary, year: int) -> tuple[CourseGroupMember, ...]:
         )
         for offering in read.offerings
     )
+    readings = tuple(
+        Reading(
+            entity="course_group_members",
+            key=f"{COMPLEMENTARY}/{offering.code}",
+            place=f"{offering.sheet} row {offering.row}",
+            printed=f"{offering.code} {offering.name}",
+        )
+        for offering in read.offerings
+    )
+    return rows, readings
 
 
 def slots(

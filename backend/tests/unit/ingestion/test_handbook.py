@@ -2,7 +2,6 @@
 # cropped off and its number kept, a heading in larger type is a break, course entries read as
 # printed, and listed prose becomes passages in printed order, one per rule clause
 import pytest
-from fpdf import FPDF
 
 from sage.ingestion.handbook import Handbook, Page, pages, passages
 from sage.ingestion.sources import Section, SourceError
@@ -11,39 +10,18 @@ from sage.ingestion.sources import Section, SourceError
 NUMBERS = (48, 49, 132, 138, 164, 188, 189)
 
 
-def printed(tmp_path, typed):
-    # Sets each typed page as the handbook does: its first line as the running header at the top, the
-    # rest from 60 points down in 8-point type, with a blank line as a gap. A (text, size) pair is set
-    # in that size. A4, so the longest typed line fits.
-    pdf = FPDF(unit="pt", format="A4")
-    pdf.set_auto_page_break(False)
-    for header, *body in typed:
-        pdf.add_page()
-        pdf.set_font("Helvetica", size=8)
-        if header:
-            pdf.set_xy(36, 28)
-            pdf.cell(text=header)
-        pdf.set_y(60)
-        for line in body:
-            text, size = line if isinstance(line, tuple) else (line, 8)
-            pdf.set_font("Helvetica", size=size)
-            if text:
-                pdf.cell(h=size + 1, text=text, new_x="LMARGIN", new_y="NEXT")
-            else:
-                pdf.ln(9)
-    path = tmp_path / "handbook.pdf"
-    pdf.output(str(path))
-    return path
-
-
-def test_a_printed_page_reads_back_below_its_running_header(tmp_path, handbook_pages):
-    assert pages(printed(tmp_path, handbook_pages)) == [
+def test_a_printed_page_reads_back_below_its_running_header(
+    tmp_path, handbook_pages, handbook_pdf
+):
+    assert pages(handbook_pdf(tmp_path / "handbook.pdf", handbook_pages)) == [
         Page(number=number, lines=tuple(body))
         for number, (_, *body) in zip(NUMBERS, handbook_pages, strict=True)
     ]
 
 
-def test_a_heading_in_larger_type_is_a_break_even_at_the_top_of_a_page(tmp_path):
+def test_a_heading_in_larger_type_is_a_break_even_at_the_top_of_a_page(
+    tmp_path, handbook_pdf
+):
     # The end of PHY2010S and the next department's heading, 2023 pages 193 and 194, after a cover,
     # which has no running header and so no page number
     typed = [
@@ -55,7 +33,7 @@ def test_a_heading_in_larger_type_is_a_break_even_at_the_top_of_a_page(tmp_path)
             "Associate Professor and Head of Department:",
         ],
     ]
-    assert pages(printed(tmp_path, typed)) == [
+    assert pages(handbook_pdf(tmp_path / "handbook.pdf", typed)) == [
         Page(number=193, lines=("examination.",)),
         Page(
             number=194,

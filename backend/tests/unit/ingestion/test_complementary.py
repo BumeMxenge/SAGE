@@ -3,12 +3,9 @@
 # the rules the workbook was typed to is refused with its number
 from datetime import time
 
-import openpyxl
 import pytest
 
 from sage.ingestion.complementary import (
-    MEETING_COLUMNS,
-    OFFERING_COLUMNS,
     members,
     passages,
     read,
@@ -92,29 +89,19 @@ ROWS = {
 }
 
 
-def workbook(tmp_path, change=None):
-    book = openpyxl.Workbook()
-    book.remove(book.active)
-    for name, rows in ROWS.items():
-        sheet = book.create_sheet(name)
-        sheet.append([f"The {name} sheet's title"])
-        sheet.append(list(MEETING_COLUMNS if name == "Meetings" else OFFERING_COLUMNS))
-        for row in rows:
-            sheet.append(list(row))
-    if change:
-        sheet, cell, value = change
-        book[sheet][cell] = value
-    path = tmp_path / "complementary.xlsx"
-    book.save(path)
-    return path
-
-
-def test_offerings_become_members_meetings_and_passages(tmp_path):
-    workbook_read = read(workbook(tmp_path), SOURCE)
-    assert [(m.course_code, m.category) for m in members(workbook_read, 2026)] == [
+def test_offerings_become_members_meetings_and_passages(tmp_path, complementary_xlsx):
+    path = complementary_xlsx(tmp_path / "complementary.xlsx", ROWS)
+    workbook_read = read(path, SOURCE)
+    group, readings = members(workbook_read, 2026)
+    assert [(m.course_code, m.category) for m in group] == [
         ("AGE1002S", None),
         ("ECO1007S", None),
         ("SLL1017F", "languages"),
+    ]
+    assert [(r.key, r.place) for r in readings] == [
+        ("complementary/AGE1002S", "Courses row 3"),
+        ("complementary/ECO1007S", "Courses row 4"),
+        ("complementary/SLL1017F", "Language options row 3"),
     ]
     stored, places = slots(workbook_read, 2026)
     assert {
@@ -189,9 +176,12 @@ def test_offerings_become_members_meetings_and_passages(tmp_path):
         (("Meetings", "G5", "A"), "ECO1007S's choice group lecture has one choice"),
     ],
 )
-def test_a_row_that_breaks_a_rule_is_refused_with_its_number(tmp_path, change, refusal):
+def test_a_row_that_breaks_a_rule_is_refused_with_its_number(
+    tmp_path, complementary_xlsx, change, refusal
+):
+    path = complementary_xlsx(tmp_path / "complementary.xlsx", ROWS, change)
     if refusal is None:
-        read(workbook(tmp_path, change), SOURCE)
+        read(path, SOURCE)
     else:
         with pytest.raises(SourceError, match=refusal):
-            read(workbook(tmp_path, change), SOURCE)
+            read(path, SOURCE)

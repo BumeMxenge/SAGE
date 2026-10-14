@@ -18,7 +18,7 @@ from sage.domain.rules import (
     YearRules,
 )
 from sage.ingestion.handbook import CODE, Handbook, Unit
-from sage.ingestion.sources import Section, SourceError
+from sage.ingestion.sources import Reading, Section, SourceError
 
 YEARS = {"First": 1, "Second": 2, "Third": 3, "Fourth": 4, "Fifth": 5}
 COUNTS = {"one": 1, "two": 2}
@@ -87,13 +87,16 @@ class Curricula(Row):
     rules: tuple[CurriculumRule, ...]
     groups: tuple[CourseGroup, ...]
     members: tuple[CourseGroupMember, ...]
-    scope: frozenset[str]  # every code the curricula print, and each wildcard's courses
+    readings: tuple[Reading, ...]
+    # The year of study each curriculum takes each course in
+    taken: dict[tuple[str, str], int]
+    # Every code the curricula print, and each wildcard's courses
+    scope: frozenset[str]
     listed: tuple[Listed, ...]
     notes: tuple[Note, ...]
     subtotals: tuple[Subtotal, ...]
-    expanded: dict[
-        str, tuple[str, ...]
-    ]  # each wildcard, such as CSC3xxx, and its courses
+    # Each wildcard, such as CSC3xxx, and the courses it stands for
+    expanded: dict[str, tuple[str, ...]]
     units: tuple[Unit, ...]
 
 
@@ -105,21 +108,28 @@ def read(book: Handbook, section: Section, year: int, department: str) -> Curric
     return reader.done(lines.stop)
 
 
+class _Group:
+    def __init__(self, label: str, page: int) -> None:
+        self.label, self.page = label, page
+        self.members: list[tuple[str, int, str]] = []  # each code, its page and its row
+
+
 class _Year:
     # What one year's tables print, gathered before they become groups and a rule
     def __init__(self) -> None:
-        self.groups: dict[str, tuple[str, list[str]]] = {}  # each key's label and codes
+        self.groups: dict[str, _Group] = {}
         self.choose: int | None = None
         self.credits: int | None = None
         self.slots: list[int] = []
         self.summed = 0  # the core table's credits so far
         self.total: int | None = None
+        self.pages: set[int] = set()
 
 
 class _Reader:
     def __init__(self, book: Handbook, year: int, department: str) -> None:
         self.book, self.handbook_year, self.department = book, year, department
-        self.curricula: list[Curriculum] = []
+        self.curricula: list[tuple[Curriculum, int]] = []  # each with its page
         self.years: dict[tuple[str, int], _Year] = {}
         self.listed: list[Listed] = []
         self.notes: list[Note] = []
@@ -127,10 +137,10 @@ class _Reader:
         self.units: list[Unit] = []
         self.expanded: dict[str, tuple[str, ...]] = {}
         self.scope: set[str] = set()
+        self.slot: int | None = None  # the page of the first complementary slot
         self.code = ""  # the curriculum being read
-        self.year: int | None = (
-            None  # the table's year of study; None before its first table
-        )
+        # The table's year of study; None before the curriculum's first table
+        self.year: int | None = None
         self.group: str | None = None  # where rows go; None for the optional courses
         self.columns = False  # whether the table's rows have started
         self.instructions: list[str] = []
@@ -149,25 +159,25 @@ class _Reader:
             name = " ".join(text for _, text in self.book.lines[start:at])
             self._open(start, name)
             self.code, self.year, self.group = found[1], None, None
-            self.curricula.append(
-                Curriculum(
-                    handbook_year=self.handbook_year,
-                    code=self.code,
-                    name=name,
-                    department=self.department,
-                )
+            curriculum = Curriculum(
+                handbook_year=self.handbook_year,
+                code=self.code,
+                name=name,
+                department=self.department,
             )
+            self.curricula.append((curriculum, page))
         elif found := TABLE.fullmatch(line):
             self._flush()
             label = line.rstrip("*†")
             self._open(at, label)
             self.year, self.columns, self.instructions = YEARS[found[1]], False, []
             year = self._year()
+            year.pages.add(page)
             if "Elective" not in found[2]:
                 self.group = self._core()
             else:
                 self.group = self._elective(2 if "Further" in found[2] else 1)
-            year.groups.setdefault(self.group, (label, []))
+            year.groups.setdefault(self.group, _Group(label, page))
         elif line == OPTIONAL:
             self._flush()
             self._open(at, line)
@@ -181,7 +191,7 @@ class _Reader:
             self._flush()
             if self.group != self._elective(2):
                 self.group = self._elective(2)
-                self._year().groups[self.group] = (line.rstrip(":"), [])
+                self._year().groups[self.group] = _Group(line.rstrip(":"), page)
         elif found := LISTED.fullmatch(line):
             self._flush()
             code, credits = found[1], int(found[2])
@@ -195,7 +205,7 @@ class _Reader:
                     page=page,
                 )
             )
-            self._add((code,), credits)
+            self._add((code,), credits, page, line)
         elif found := WILDCARD.fullmatch(line):
             self._flush()
             codes = tuple(sorted(c for c in self.book.starts if c.startswith(found[1])))
@@ -204,15 +214,17 @@ class _Reader:
                     f"No entry's code starts with {found[1]} (page {page})"
                 )
             self.expanded[found[1] + "xxx"] = codes
-            self._add(codes, 0)
+            self._add(codes, 0, page, line)
         elif found := SLOT.fullmatch(line):
             self._flush()
             self._year().slots.append(int(found[1]))
-            self._add((), int(found[1]))
+            self.slot = self.slot or page
+            self._add((), int(found[1]), page, line)
         elif found := TOTAL.fullmatch(line):
             self._flush()
             year = self._year()
             year.total = int(found[3])
+            year.pages.add(page)
             if self.group == self._core():
                 self.subtotals.append(
                     Subtotal(
@@ -231,41 +243,92 @@ class _Reader:
     def done(self, end: int) -> Curricula:
         self._flush()
         self._close(end)
-        groups, members, rules = [], [], []
+        handbook_year = self.handbook_year
+        groups, members, rules, readings, taken = [], [], [], [], {}
+        for curriculum, page in self.curricula:
+            readings.append(
+                Reading(
+                    entity="curricula",
+                    key=curriculum.code,
+                    place=f"p. {page}",
+                    printed=curriculum.name,
+                )
+            )
         for (code, number), year in self.years.items():
-            for key, (label, codes) in year.groups.items():
+            for key, group in year.groups.items():
                 groups.append(
                     CourseGroup(
-                        handbook_year=self.handbook_year, group_key=key, label=label
+                        handbook_year=handbook_year, group_key=key, label=group.label
                     )
                 )
-                members += [
-                    CourseGroupMember(
-                        handbook_year=self.handbook_year, group_key=key, course_code=c
+                readings.append(
+                    Reading(
+                        entity="course_groups",
+                        key=key,
+                        place=f"p. {group.page}",
+                        printed=group.label,
                     )
-                    for c in codes
-                ]
+                )
+                for course, page, row in group.members:
+                    members.append(
+                        CourseGroupMember(
+                            handbook_year=handbook_year,
+                            group_key=key,
+                            course_code=course,
+                        )
+                    )
+                    readings.append(
+                        Reading(
+                            entity="course_group_members",
+                            key=f"{key}/{course}",
+                            place=f"p. {page}",
+                            printed=row,
+                        )
+                    )
+                    taken[code, course] = number
+            notes = [
+                n.text for n in self.notes if (n.curriculum, n.year) == (code, number)
+            ]
             rules.append(
                 CurriculumRule(
-                    handbook_year=self.handbook_year,
+                    handbook_year=handbook_year,
                     curriculum_code=code,
                     year_of_study=number,
                     rule=YearRules(all=self._rules(code, number, year)),
                 )
             )
-        if any(year.slots for year in self.years.values()):
+            readings.append(
+                Reading(
+                    entity="curriculum_rules",
+                    key=f"{code}/{number}",
+                    place=_pages(year.pages),
+                    printed=" ".join(notes)
+                    or "; ".join(g.label for g in year.groups.values()),
+                    flag="refused_free_text" if notes else None,
+                )
+            )
+        if self.slot is not None:
+            label = "Approved complementary studies courses"
             groups.append(
                 CourseGroup(
-                    handbook_year=self.handbook_year,
-                    group_key=COMPLEMENTARY,
-                    label="Approved complementary studies courses",
+                    handbook_year=handbook_year, group_key=COMPLEMENTARY, label=label
+                )
+            )
+            readings.append(
+                Reading(
+                    entity="course_groups",
+                    key=COMPLEMENTARY,
+                    place=f"p. {self.slot}",
+                    printed=label,
                 )
             )
         return Curricula(
-            curricula=tuple(self.curricula),
+            curricula=tuple(curriculum for curriculum, _ in self.curricula),
             rules=tuple(rules),
             groups=tuple(groups),
             members=tuple(members),
+            readings=tuple(readings),
+            taken=taken,
             scope=frozenset(self.scope),
             listed=tuple(self.listed),
             notes=tuple(self.notes),
@@ -305,10 +368,13 @@ class _Reader:
     def _elective(self, number: int) -> str:
         return f"{self.code}-y{self.year}-group-{number}"
 
-    def _add(self, codes: tuple[str, ...], credits: int) -> None:
+    def _add(self, codes: tuple[str, ...], credits: int, page: int, row: str) -> None:
         self.scope.update(codes)
+        self._year().pages.add(page)
         if self.group is not None:
-            self._year().groups[self.group][1].extend(codes)
+            self._year().groups[self.group].members += [
+                (code, page, row) for code in codes
+            ]
         if self.group == self._core():
             self._year().summed += credits
 
@@ -339,14 +405,11 @@ class _Reader:
         for paragraph in paragraphs:
             text = " ".join(self.book.lines[at][1] for at in paragraph)
             self.scope.update(re.findall(CODE, text))
+            page = self.book.lines[paragraph[0]][0]
+            self._year().pages.add(page)
             if not text.lstrip("*† ").lower().startswith(KNOWN):
                 self.notes.append(
-                    Note(
-                        curriculum=self.code,
-                        year=self.year,
-                        page=self.book.lines[paragraph[0]][0],
-                        text=text,
-                    )
+                    Note(curriculum=self.code, year=self.year, page=page, text=text)
                 )
 
     def _open(self, start: int, label: str) -> None:
@@ -365,3 +428,8 @@ class _Reader:
                     curriculum_code=self.code,
                 )
             )
+
+
+def _pages(pages: set[int]) -> str:
+    first, last = min(pages), max(pages)
+    return f"p. {first}" if first == last else f"pp. {first}-{last}"
