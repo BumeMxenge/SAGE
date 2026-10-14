@@ -1,7 +1,7 @@
-// Vite settings: React, the '@/' import alias from tsconfig, and port 3000 for both `npm run dev` and
-// `npm run preview`
+// Vite and Vitest settings: React, the '@/' import alias from tsconfig, and port 3000 for both
+// `npm run dev` and `npm run preview`
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 
 // Stop with an error if the port is taken, rather than quietly moving on, so each frontend stays
 // on a port the backend's CORS list allows: 3000, or 3001 or 3002 for a worktree, which picks its
@@ -17,4 +17,6 @@ export default defineConfig({
   build: { cssTarget: ['chrome123', 'edge123', 'firefox120', 'safari17.5'] },
   server: port,
   preview: port,
+  // css: true, because Vitest otherwise turns every stylesheet, even ?raw, into an empty string
+  test: { environment: 'jsdom', css: true, include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts'] },
 })

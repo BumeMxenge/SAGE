@@ -1,4 +1,4 @@
-<!-- How the backend is tested: the rules every test follows, the levels, how to run them, and how strong they are -->
+<!-- How SAGE is tested: the rules every test follows, the levels, how to run them, how strong the backend's tests are, and the frontend's tests -->
 # Testing
 
 A test is worth keeping if it catches a fault. So the backend's suite is kept small, and its strength is measured by the faults it catches, not by how many tests pass.
@@ -21,6 +21,21 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 | Unit | Each rule, on in-memory stores, with no network | `backend/tests/unit`, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every push |
 | Integration | The Supabase adapters, the migrations, row level security and real sign-in tokens, against a rebuilt local database | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every push |
 | Acceptance | The finished system, against held-back cases (the ATPs) | `tests/acceptance` (planned) | Their own workflow, on demand |
+
+## Frontend
+
+The eight rules above apply to the frontend too. Its tests run with Vitest and Testing Library through `npm test` in `frontend/`. `make check` and CI's frontend job already call it, so there is no extra step.
+
+| Test | What it checks | The fault it catches |
+| --- | --- | --- |
+| `src/styles/tokens.test.ts` | Reads `tokens.css`. Every text token reaches 4.5:1 on every surface, white reaches 4.5:1 on the accent and course fills, and the input border and focus ring reach 3:1, in both themes. Decorative borders and disabled text are left out, as WCAG allows | A token changed to a failing value, or a new text token that fails. It also checks the audit's published ratios, so a broken formula can't pass |
+| `src/lib/useAppearance.test.ts` | The choice survives a reload, and falls back to Match System when storage is blocked | The storage key drifting between `public/theme.js` and the hook, or a missing try/catch that breaks the page in a private window |
+| `scripts/check-tsx.test.ts` | The custom lint check rejects `style=` beyond custom properties, re-exports and imports across feature boundaries | The check silently passing everything |
+| `scripts/stylelint-config.test.ts` | stylelint rejects raw colours, gradients and radii in a component, and accepts them in `tokens.css` | `ignoreFunctions` drifting back to its default, which lets `rgb()` and `oklch()` through |
+
+Each test was checked by breaking what it guards: the old secondary grey, the audit's input border, a renamed storage key, a hook without its try/catch, and `ignoreFunctions` turned back on. Each made exactly one test fail.
+
+Not yet built: Playwright with axe, the keyboard walk and the parity screenshots. They need the local stack, so they arrive with app foundations as their own `make` target that CI doesn't run. The same branch adds a route-guard sweep that mirrors the backend's.
 
 ## How strong the tests are
 
