@@ -22,10 +22,11 @@ import { TypeSection } from '@/design-system/TypeSection.tsx'
 import { useResolvedTheme } from '@/design-system/useResolvedTheme.ts'
 import { parseTokens } from '@/lib/tokens.ts'
 import { type Appearance, useAppearance } from '@/lib/useAppearance.ts'
+import themeCss from '@/styles/theme.css?raw'
 import tokensCss from '@/styles/tokens.css?raw'
 import styles from './DesignSystem.module.css'
 
-const tokens = parseTokens(tokensCss)
+const tokens = parseTokens(tokensCss, themeCss)
 const appearances: { id: Appearance; label: string }[] = [
   { id: 'system', label: 'Match System' },
   { id: 'light', label: 'Light' },

@@ -1,0 +1,98 @@
+/* The colours that change with the theme: the light theme first, then the dark one. Every token
+   appears in both blocks, in the same order, so each line can be compared with its partner.
+
+   public/theme.js sets <html data-theme="light|dark"> before the first paint, and keeps it in step
+   with the system while Match System is chosen. Colours that are the same in both themes, and
+   everything else, are in tokens.css. Values come from the prototypes, with the approved differences
+   applied (.claude/m3/SAGE_M3_PROTOTYPE_PARITY.md). Text must reach 4.5:1 on every surface it sits on,
+   and the input border and focus ring 3:1: src/styles/tokens.test.ts checks both themes. */
+
+/* Light */
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --color-surface: #fff; /* page, sidebar, cards, popovers, menus */
+  --color-surface-raised: #fff; /* dialogs */
+  --color-surface-muted: #ececee; /* current and selected items, tracks, table header */
+  --color-surface-field: #fff; /* inside a text field */
+  --color-surface-inverse: #0e1111; /* tooltips and toasts */
+  --color-skeleton-shine: #fff;
+
+  /* Buttons */
+  --color-primary: #333b3f;
+  --color-on-primary: #fff; /* text on primary buttons, tooltips and toasts */
+  --color-disabled: #e9eae7;
+
+  /* Text */
+  --color-text: #333b3f;
+  --color-text-secondary: #636a6e;
+  --color-text-accent: #2a6e5a; /* also teal on hover */
+  --color-text-danger: #b23f30;
+  --color-text-warning: #7a4a2e;
+  --color-text-disabled: #aeb4b6; /* exempt from contrast, as WCAG allows */
+
+  /* Links, always underlined so colour never carries the meaning alone */
+  --color-link: #16345c;
+  --color-link-hover: #2a6e5a;
+  --link-hover-thickness: auto;
+
+  /* Errors */
+  --color-danger-tint: #fdf1ef; /* the tile behind an error icon */
+
+  /* Borders */
+  --color-border: #e6e6e8; /* decorative */
+  --color-border-input: #7b8286; /* fields, checkboxes: 3:1 */
+
+  /* Focus ring */
+  --color-focus: #16345c;
+
+  /* Behind dialogs, and inside the shadows */
+  --color-scrim: rgb(30 36 40 / 32%);
+  --color-shadow: rgb(30 36 40 / 9%);
+}
+
+/* Dark */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --color-surface: #0a0a0b;
+  --color-surface-raised: #141517; /* dark mode lifts dialogs instead of shading them */
+  --color-surface-muted: #1d1e20;
+  --color-surface-field: #2a2b2e;
+  --color-surface-inverse: #e8e9e7;
+  --color-skeleton-shine: #2a2b2e;
+
+  /* Buttons */
+  --color-primary: #fff;
+  --color-on-primary: #0a0a0b;
+  --color-disabled: #3e4044;
+
+  /* Text */
+  --color-text: #e9ece9;
+  --color-text-secondary: #8f979a;
+  --color-text-accent: #4cae94;
+  --color-text-danger: #ff8a80;
+  --color-text-warning: #e6b898;
+  --color-text-disabled: #c2c7cb;
+
+  /* Links: already teal, so hover thickens the underline instead */
+  --color-link: #4cae94;
+  --color-link-hover: #4cae94;
+  --link-hover-thickness: 3px;
+
+  /* Errors */
+  --color-danger-tint: #2a1715;
+
+  /* Borders */
+  --color-border: #161719;
+  --color-border-input: #6e767a;
+
+  /* Focus ring */
+  --color-focus: #4cae94;
+
+  /* Behind dialogs, and inside the shadows (50% black, as measured) */
+  --color-scrim: rgb(0 0 0 / 60%);
+  --color-shadow: rgb(0 0 0 / 50%);
+}

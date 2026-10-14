@@ -1,9 +1,9 @@
 import { DataTable } from '@/components/DataTable/DataTable.tsx'
 import { Section } from '@/design-system/Section.tsx'
-import { tokensWithPrefix } from '@/lib/tokens.ts'
+import { type Tokens, tokensWithPrefix } from '@/lib/tokens.ts'
 import styles from './DesignSystem.module.css'
 
-export function TypeSection({ tokens }: { tokens: Map<string, string> }) {
+export function TypeSection({ tokens }: { tokens: Tokens }) {
   const sizes = tokensWithPrefix(tokens, '--font-size-').map(([name, value]) => ({
     id: name,
     cells: {

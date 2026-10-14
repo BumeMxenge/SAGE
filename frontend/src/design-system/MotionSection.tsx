@@ -1,10 +1,10 @@
 import { Sample } from '@/design-system/Sample.tsx'
 import { Section } from '@/design-system/Section.tsx'
 import { useMediaQuery } from '@/design-system/useMediaQuery.ts'
-import { tokensWithPrefix } from '@/lib/tokens.ts'
+import { type Tokens, tokensWithPrefix } from '@/lib/tokens.ts'
 import styles from './DesignSystem.module.css'
 
-export function MotionSection({ tokens }: { tokens: Map<string, string> }) {
+export function MotionSection({ tokens }: { tokens: Tokens }) {
   const reduced = useMediaQuery('(prefers-reduced-motion: reduce)')
   return (
     <Section
@@ -20,7 +20,7 @@ export function MotionSection({ tokens }: { tokens: Map<string, string> }) {
           </Sample>
         ))}
       </div>
-      <p className={styles.intro}>Easing: {tokens.get('--easing')}</p>
+      <p className={styles.intro}>Easing: {tokens.light.get('--easing')}</p>
     </Section>
   )
 }

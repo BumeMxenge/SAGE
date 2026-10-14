@@ -1,18 +1,18 @@
 import { DataTable } from '@/components/DataTable/DataTable.tsx'
 import { Section } from '@/design-system/Section.tsx'
-import { colourValue, contrastChecks, ratio, type Theme } from '@/lib/tokens.ts'
+import { contrastChecks, ratio, type Theme, type Tokens, tokenValue } from '@/lib/tokens.ts'
 import styles from './DesignSystem.module.css'
 
-export function ColourTokensSection({ tokens, theme }: { tokens: Map<string, string>; theme: Theme }) {
+export function ColourTokensSection({ tokens, theme }: { tokens: Tokens; theme: Theme }) {
   const checks = contrastChecks(tokens)
-  const names = [...tokens.keys()].filter((name) => name.startsWith('--color-') && !name.startsWith('--color-course-'))
+  const names = [...tokens.light.keys()].filter((name) => name.startsWith('--color-') && !name.startsWith('--color-course-'))
   const rows = names.map((name) => ({
     id: name,
     cells: {
       token: <code>{name}</code>,
       swatch: <span className={styles.swatch} style={{ '--sample': `var(${name})` }} />,
-      light: colourValue(tokens, name, 'light'),
-      dark: colourValue(tokens, name, 'dark'),
+      light: tokenValue(tokens, name, 'light'),
+      dark: tokenValue(tokens, name, 'dark'),
       contrast: (
         <ul className={styles.list}>
           {checks
@@ -34,7 +34,7 @@ export function ColourTokensSection({ tokens, theme }: { tokens: Map<string, str
   return (
     <Section
       title="Colour Tokens"
-      intro="Each colour with its light and dark value, and its contrast against every surface it sits on, in the theme now on screen. Text needs 4.5:1, and the input border and focus ring need 3:1. Colours with no ratio are surfaces, fills or decoration."
+      intro="Each colour with its light value (theme.css, first block) and dark value (second block), or one value from tokens.css when both themes share it, and its contrast against every surface it sits on, in the theme now on screen. Text needs 4.5:1, and the input border and focus ring need 3:1. Colours with no ratio are surfaces, fills or decoration."
     >
       <DataTable
         caption={`Colour tokens, ratios in the ${theme} theme`}

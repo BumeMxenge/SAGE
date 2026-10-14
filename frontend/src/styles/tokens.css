@@ -1,59 +1,18 @@
-/* Design tokens: every colour, size, space, radius, shadow, duration, easing and z-index.
-   This is the only stylesheet that may write a raw value. Everything else asks for one through var().
-   Colours are light-dark(light, dark), so each token states both themes side by side. A colour written
-   once is the same in both. Values come from the prototypes, with the approved differences applied
-   (.claude/m3/SAGE_M3_PROTOTYPE_PARITY.md). */
+/* Design tokens shared by both themes: the colours that never change, and every size, space, radius,
+   shadow, duration, easing and z-index. The colours that change with the theme are in theme.css.
+   These two files are the only stylesheets that may write a raw value. Everything else asks for one
+   through var(). */
 
 :root {
-  /* Match System by default. The explicit choices are set below, from data-theme on <html>. */
-  color-scheme: light dark;
-
-  /* Surfaces */
-  --color-surface: light-dark(#fff, #0a0a0b);
-  --color-surface-raised: light-dark(#fff, #141517); /* dialogs: dark mode lifts them instead of shading */
-  --color-surface-muted: light-dark(#ececee, #1d1e20);
-  --color-surface-field: light-dark(#fff, #2a2b2e);
-  --color-surface-inverse: light-dark(#0e1111, #e8e9e7); /* tooltips and toasts */
-  --color-skeleton-shine: light-dark(#fff, #2a2b2e);
-
-  /* Buttons and the hover overlay */
-  --color-primary: light-dark(#333b3f, #fff);
-  --color-on-primary: light-dark(#fff, #0a0a0b);
-  --color-sign-in-hover: light-dark(#22282b, #e6e6e8);
-  --color-hover: rgb(130 132 136 / 14%); /* the one overlay for every quiet hover, in both themes */
-  --color-disabled: light-dark(#e9eae7, #1d1e20);
-
-  /* Text. Each must reach 4.5:1 on the surfaces it sits on: src/styles/tokens.test.ts checks it. */
-  --color-text: light-dark(#333b3f, #e9ece9);
-  --color-text-secondary: light-dark(#636a6e, #8f979a);
-  --color-text-accent: light-dark(#2a6e5a, #4cae94);
-  --color-text-danger: light-dark(#b23f30, #ff8a80);
-  --color-text-warning: light-dark(#7a4a2e, #e6b898);
-  --color-text-disabled: light-dark(#aeb4b6, #6e767a); /* exempt from contrast, as WCAG allows */
-  --color-on-fill: #fff; /* text on the accent and course fills */
-
-  /* Links are always underlined, so colour never carries the meaning alone */
-  --color-link: light-dark(#16345c, #4cae94);
-  --color-link-hover: light-dark(#2a6e5a, #4cae94);
-  --link-hover-thickness: auto;
-
-  /* Fills */
-  --color-accent-fill: #2a6e5a;
+  /* Colours the same in both themes */
+  --color-hover: rgb(130 132 136 / 14%); /* the one overlay for every quiet hover */
+  --color-on-fill: #fff; /* text on the accent, sign-in and course fills */
+  --color-accent-fill: #2a6e5a; /* the avatar */
   --color-danger: #ea5b4c; /* error icons, never text */
-  --color-danger-tint: light-dark(#fdf1ef, #2a1715);
 
-  /* Borders. Input borders must reach 3:1 on every surface a field sits on. */
-  --color-border: light-dark(#e6e6e8, #161719);
-  --color-border-input: light-dark(#7b8286, #6e767a);
-
-  /* One focus ring for every control */
-  --color-focus: light-dark(#16345c, #4cae94);
-  --focus-ring-width: 2px;
-  --focus-ring-offset: 2px;
-
-  /* Behind dialogs, and inside the shadows (dark stays 50% black, as measured) */
-  --color-scrim: light-dark(rgb(30 36 40 / 32%), rgb(0 0 0 / 60%));
-  --color-shadow: light-dark(rgb(30 36 40 / 9%), rgb(0 0 0 / 50%));
+  /* The sign-in button. Onboarding is designed in light only, so it has no dark version. */
+  --color-sign-in: #333b3f;
+  --color-sign-in-hover: #22282b;
 
   /* Course colours, in the order the timetable gives them out. White text on each reaches 4.5:1. */
   --color-course-teal: #1e846a;
@@ -64,6 +23,10 @@
   --color-course-ochre: #9d6b1d;
   --color-course-purple: #7e4aa6;
   --color-course-dark-teal: #14615a;
+
+  /* One focus ring for every control. Its colour is in theme.css. */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
 
   /* Type */
   --font-family: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -102,7 +65,7 @@
   --radius-xl: 16px;
   --radius-full: 999px;
 
-  /* Three elevations */
+  /* Three elevations. The shadow colour is in theme.css. */
   --shadow-raised: 0 4px 12px var(--color-shadow);
   --shadow-overlay: 0 12px 34px var(--color-shadow);
   --shadow-dialog: 0 18px 40px var(--color-shadow);
@@ -119,6 +82,7 @@
   --size-logo-compact: 26px;
   --size-logo-mark: 28px;
   --size-logo-microsoft: 21px;
+  --width-form: 392px; /* the sign-in form */
   --width-reading: 760px;
   --width-wide: 860px;
   --width-full: 1080px;
@@ -126,12 +90,12 @@
   --width-menu: 240px;
   --width-tooltip: 240px;
 
-  /* Motion: two durations and one easing, plus the measured periods of the looping animations */
+  /* Motion: two durations and one easing, plus the measured periods of the two looping animations */
   --duration-fast: 150ms;
   --duration-slow: 300ms;
   --easing: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-loop: 1600ms; /* shimmer, typing dots, progress bar, spinner */
-  --duration-loop-slow: 2200ms; /* leaf */
+  --duration-loop: 1600ms; /* skeleton shimmer */
+  --duration-loop-slow: 2200ms; /* leaf pulse */
 
   /* The moving highlight on a loading skeleton. Reduced motion makes it a flat block. */
   --gradient-shimmer: linear-gradient(
@@ -147,27 +111,9 @@
   --z-toast: 200;
 }
 
-/* An explicit choice, set by public/theme.js and src/lib/useAppearance.ts */
-:root[data-theme='light'] {
-  color-scheme: light;
-}
-
-:root[data-theme='dark'] {
-  color-scheme: dark;
-
-  --link-hover-thickness: 3px; /* dark links already use the hover colour, so hover thickens the line */
-}
-
-/* Match System, when the system is dark */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light'], [data-theme='dark']) {
-    --link-hover-thickness: 3px;
-  }
-}
-
 /* Reduced motion: every duration becomes 0. An animation with no duration leaves its element in its
    resting style, which is each animation's fallback: a plain block, a still leaf beside its status
-   text, still dots beside "SAGE is replying", and overlays that simply appear. */
+   text, and overlays that simply appear. */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration-fast: 0ms;

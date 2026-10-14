@@ -1,5 +1,5 @@
-// Style rules: tokens.css is the only place a raw colour, radius, shadow, z-index or duration may be
-// written. Every other stylesheet asks it for one through var().
+// Style rules: tokens.css and theme.css are the only places a raw colour, radius, shadow, z-index or
+// duration may be written. Every other stylesheet asks for one through var().
 const tokenProperties = [
   '/color$/',
   'fill',
@@ -33,7 +33,7 @@ export default {
   },
   overrides: [
     {
-      files: ['src/styles/tokens.css'],
+      files: ['src/styles/tokens.css', 'src/styles/theme.css'],
       rules: {
         'color-no-hex': null,
         'function-disallowed-list': null,

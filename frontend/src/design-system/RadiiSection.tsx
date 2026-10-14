@@ -1,9 +1,9 @@
 import { Sample } from '@/design-system/Sample.tsx'
 import { Section } from '@/design-system/Section.tsx'
-import { tokensWithPrefix } from '@/lib/tokens.ts'
+import { type Tokens, tokensWithPrefix } from '@/lib/tokens.ts'
 import styles from './DesignSystem.module.css'
 
-export function RadiiSection({ tokens }: { tokens: Map<string, string> }) {
+export function RadiiSection({ tokens }: { tokens: Tokens }) {
   return (
     <Section title="Corner Radii" intro="Four corner sizes and a full pill.">
       <div className={styles.samples}>

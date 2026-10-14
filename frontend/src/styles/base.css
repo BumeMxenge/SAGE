@@ -1,7 +1,8 @@
-/* Base styles for every entry point: the font, the tokens and the element defaults. Import this once
-   per entry, before anything else. */
+/* Base styles for every entry point: the font, the tokens, the theme and the element defaults.
+   Import this once per entry, before anything else. */
 @import url('@fontsource-variable/inter');
 @import url('./tokens.css');
+@import url('./theme.css');
 
 *,
 *::before,

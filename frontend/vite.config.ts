@@ -17,10 +17,8 @@ export default defineConfig({
   plugins: [svgr({ svgrOptions: { dimensions: false, titleProp: true, runtimeConfig: false } }), react()],
   // dedupe: the generated SVG components import react, which can't be found from ../assets/brand
   resolve: { tsconfigPaths: true, dedupe: ['react'] },
-  // light-dark() works natively from these versions. Vite's older default would rewrite it into a
-  // fallback trick that dev builds don't use, and dev and production would differ.
+  // CSS Module classes are kebab-case in the stylesheet and camelCase in TypeScript: styles.iconButton
   css: { modules: { localsConvention: 'camelCaseOnly' } },
-  build: { cssTarget: ['chrome123', 'edge123', 'firefox120', 'safari17.5'] },
   // The logos live in ../assets/brand, so the README and the app share one copy. The dev server only
   // serves SVG imports from allowed folders, and the default is this one.
   server: { ...port, fs: { allow: [searchForWorkspaceRoot(import.meta.dirname), '../assets/brand'] } },

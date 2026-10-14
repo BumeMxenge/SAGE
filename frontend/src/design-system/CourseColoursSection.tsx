@@ -1,8 +1,8 @@
 import { Section } from '@/design-system/Section.tsx'
-import { colourValue, ratio, tokensWithPrefix, type Theme } from '@/lib/tokens.ts'
+import { ratio, type Theme, type Tokens, tokensWithPrefix, tokenValue } from '@/lib/tokens.ts'
 import styles from './DesignSystem.module.css'
 
-export function CourseColoursSection({ tokens, theme }: { tokens: Map<string, string>; theme: Theme }) {
+export function CourseColoursSection({ tokens, theme }: { tokens: Tokens; theme: Theme }) {
   return (
     <Section
       title="Course Colours"
@@ -16,7 +16,7 @@ export function CourseColoursSection({ tokens, theme }: { tokens: Map<string, st
               <span className={styles.courseCode}>Course code</span>
               <span>Start and end time</span>
               <span>
-                {colourValue(tokens, name, theme)}, white on it {value.toFixed(2)}:1 ({value >= 4.5 ? 'Pass' : 'Fail'})
+                {tokenValue(tokens, name, theme)}, white on it {value.toFixed(2)}:1 ({value >= 4.5 ? 'Pass' : 'Fail'})
               </span>
             </div>
           )

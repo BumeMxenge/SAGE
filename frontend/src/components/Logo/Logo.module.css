@@ -20,7 +20,7 @@
   height: var(--size-logo-microsoft);
 }
 
-/* Light file by default, dark file in the dark theme, or in Match System when the system is dark */
+/* The light file, or the dark one when the dark theme is on screen */
 .dark {
   display: none;
 }
@@ -31,14 +31,4 @@
 
 :root[data-theme='dark'] .dark {
   display: block;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light'], [data-theme='dark']) .light {
-    display: none;
-  }
-
-  :root:not([data-theme='light'], [data-theme='dark']) .dark {
-    display: block;
-  }
 }

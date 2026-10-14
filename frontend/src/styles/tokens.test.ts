@@ -1,11 +1,13 @@
-// Reads tokens.css and checks WCAG 2.2 AA in both themes (the checks are in lib/tokens.ts, which the
-// review page shows too). Decorative borders and disabled text are left out, as WCAG allows.
+// Reads tokens.css and theme.css and checks WCAG 2.2 AA in both themes (the checks are in
+// lib/tokens.ts, which the review page shows too). Decorative borders and disabled text are left out,
+// as WCAG allows.
 import { describe, expect, it } from 'vitest'
 import { contrast } from '@/lib/contrast.ts'
 import { contrastChecks, parseTokens, ratio, tokensWithPrefix } from '@/lib/tokens.ts'
+import themeCss from './theme.css?raw'
 import tokensCss from './tokens.css?raw'
 
-const tokens = parseTokens(tokensCss)
+const tokens = parseTokens(tokensCss, themeCss)
 const checks = contrastChecks(tokens)
 
 describe.each(['light', 'dark'] as const)('%s theme', (theme) => {
@@ -16,10 +18,15 @@ describe.each(['light', 'dark'] as const)('%s theme', (theme) => {
   })
 })
 
+// A colour added to the light block only would stay light in the dark theme
+it('defines the same tokens in both themes', () => {
+  expect([...tokens.dark.keys()].sort()).toEqual([...tokens.light.keys()].sort())
+})
+
 it('checks all eight course colours', () => {
   const white = checks.find((check) => check.token === '--color-on-fill')
   expect(tokensWithPrefix(tokens, '--color-course-')).toHaveLength(8)
-  expect(white?.against).toHaveLength(9) // the accent fill and the eight course colours
+  expect(white?.against).toHaveLength(10) // the sign-in button, the accent fill and the eight course colours
 })
 
 // The audit's published ratios (SAGE_M3_DESIGN_AUDIT.md section 2), so a broken formula can't pass

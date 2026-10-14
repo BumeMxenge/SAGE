@@ -1,9 +1,9 @@
 import { Sample } from '@/design-system/Sample.tsx'
 import { Section } from '@/design-system/Section.tsx'
-import { tokensWithPrefix } from '@/lib/tokens.ts'
+import { type Tokens, tokensWithPrefix } from '@/lib/tokens.ts'
 import styles from './DesignSystem.module.css'
 
-export function SpacingSection({ tokens }: { tokens: Map<string, string> }) {
+export function SpacingSection({ tokens }: { tokens: Tokens }) {
   return (
     <Section title="Spacing" intro="A 4 px scale. Every gap, padding and margin is one of these.">
       <div className={styles.samples}>

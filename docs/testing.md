@@ -28,12 +28,12 @@ The eight rules above apply to the frontend too. Its tests run with Vitest and T
 
 | Test | What it checks | The fault it catches |
 | --- | --- | --- |
-| `src/styles/tokens.test.ts` | Reads `tokens.css`. Every text token reaches 4.5:1 on every surface, white reaches 4.5:1 on the accent and course fills, and the input border and focus ring reach 3:1, in both themes. Decorative borders and disabled text are left out, as WCAG allows | A token changed to a failing value, or a new text token that fails. It also checks the audit's published ratios, so a broken formula can't pass |
-| `src/lib/useAppearance.test.ts` | The choice survives a reload, and falls back to Match System when storage is blocked | The storage key drifting between `public/theme.js` and the hook, or a missing try/catch that breaks the page in a private window |
+| `src/styles/tokens.test.ts` | Reads `tokens.css` and `theme.css`. Every text token reaches 4.5:1 on every surface, white reaches 4.5:1 on the sign-in, accent and course fills, and the input border and focus ring reach 3:1, in both themes. Decorative borders and disabled text are left out, as WCAG allows. Both themes define the same tokens | A token changed to a failing value, a new text token that fails, or a colour given a light value only, which would stay light in the dark theme. It also checks the audit's published ratios, so a broken formula can't pass |
+| `src/lib/useAppearance.test.ts` | The choice survives a reload, Match System follows the system, and the page falls back to Match System when storage is blocked | The storage key drifting between `public/theme.js` and the hook, the system's setting being ignored, or a missing try/catch that breaks the page in a private window |
 | `scripts/check-tsx.test.ts` | The custom lint check rejects `style=` beyond custom properties, re-exports and imports across feature boundaries | The check silently passing everything |
 | `scripts/stylelint-config.test.ts` | stylelint rejects raw colours, gradients and radii in a component, and accepts them in `tokens.css` | `ignoreFunctions` drifting back to its default, which lets `rgb()` and `oklch()` through |
 
-Each test was checked by breaking what it guards: the old secondary grey, the audit's input border, a renamed storage key, a hook without its try/catch, and `ignoreFunctions` turned back on. Each made exactly one test fail.
+Each test was checked by breaking what it guards: the old secondary grey, the audit's input border, a dark value left out, a renamed storage key, a script that ignores the system's setting or stops watching the choice, a hook without its try/catch, and `ignoreFunctions` turned back on. Each made a test fail.
 
 Not yet built: Playwright with axe, the keyboard walk and the parity screenshots. They need the local stack, so they arrive with app foundations as their own `make` target that CI doesn't run. The same branch adds a route-guard sweep that mirrors the backend's.
 
