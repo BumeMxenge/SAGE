@@ -19,6 +19,7 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 | 12 Oct | The privacy page and the privacy note don't say where chat questions go | The advisor is a stand-in, `FixedAdvisor`, which sends nothing anywhere | None yet | When the real advisor replaces it, update `frontend/public/privacy.html` and the privacy note in `docs/architecture.md` to say that chat questions, and the evidence sent with them, go to the chosen model provider, and where it processes them |
 | 13 Oct | A mark leaf has no rule yet for a pending supplementary exam | A supplementary can change the final mark a mark leaf tests, as in CSC2002S's "At least 45% for CSC2001F" | None yet | The engine milestone decides how a pending supplementary meets a mark leaf |
 | 14 Oct | The starter page fails the new frontend guards | `App.tsx` has a nested ternary and a `role="status"` that should be `output`, and it default-exports because `main.tsx` imports it that way. `global.css` has raw colours | `.oxlintrc.json` and `stylelint.config.js` exempt those two files from only those rules, each with a comment | The shell branch replaces the starter page and removes the exemptions |
+| 14 Oct | The old leaf, `frontend/public/sage-symbol.svg`, is still in the app | The starter page in `App.tsx` shows it. The favicon and the logo set are the new SVGs | Kept, so the starter page still works | The shell branch deletes it with the starter page |
 
 **ATP-5 test window checklist.** Before the load test:
 

@@ -4,7 +4,7 @@
     "target": "es2023",
     "lib": ["ES2023", "DOM"],
     "module": "esnext",
-    "types": ["vite/client"],
+    "types": ["vite/client", "vite-plugin-svgr/client"],
     "skipLibCheck": true,
 
     /* Bundler mode */
@@ -15,8 +15,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* '@/' points at src/. paths, not baseUrl, because type-aware oxlint rejects baseUrl */
-    "paths": { "@/*": ["./src/*"] },
+    /* '@/' points at src/ and '@brand/' at the logo files. paths, not baseUrl, because type-aware oxlint rejects baseUrl */
+    "paths": { "@/*": ["./src/*"], "@brand/*": ["../assets/brand/*"] },
 
     /* Linting */
     "noUnusedLocals": true,

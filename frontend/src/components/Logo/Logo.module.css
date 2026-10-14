@@ -1,0 +1,44 @@
+/* One fixed height per variant. The width follows the drawing. */
+.logo {
+  display: block;
+  width: auto;
+}
+
+.full {
+  height: var(--size-logo-full);
+}
+
+.compact {
+  height: var(--size-logo-compact);
+}
+
+.mark {
+  height: var(--size-logo-mark);
+}
+
+.microsoft {
+  height: var(--size-logo-microsoft);
+}
+
+/* Light file by default, dark file in the dark theme, or in Match System when the system is dark */
+.dark {
+  display: none;
+}
+
+:root[data-theme='dark'] .light {
+  display: none;
+}
+
+:root[data-theme='dark'] .dark {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light'], [data-theme='dark']) .light {
+    display: none;
+  }
+
+  :root:not([data-theme='light'], [data-theme='dark']) .dark {
+    display: block;
+  }
+}
