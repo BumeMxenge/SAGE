@@ -1,0 +1,64 @@
+.field {
+  display: flex;
+}
+
+.button {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+/* The track is its own border when off: 3:1 against the page */
+.track {
+  display: flex;
+  flex: none;
+  align-items: center;
+  width: var(--space-10);
+  height: var(--size-target-min);
+  padding: var(--space-1);
+  border: 2px solid var(--color-border-input);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-field);
+  transition: background var(--duration-fast) var(--easing);
+}
+
+.handle {
+  width: var(--space-3);
+  height: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-border-input);
+  transition: transform var(--duration-fast) var(--easing);
+}
+
+.button[data-selected] .track {
+  background: var(--color-accent-fill);
+  border-color: var(--color-accent-fill);
+}
+
+.button[data-selected] .handle {
+  background: var(--color-on-fill);
+  transform: translateX(var(--space-4));
+}
+
+.button[data-focus-visible] .track {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.button[data-disabled] {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.button[data-disabled] .track {
+  background: var(--color-disabled);
+  border-color: var(--color-disabled);
+}
+
+.button[data-disabled] .handle {
+  background: var(--color-text-disabled);
+}

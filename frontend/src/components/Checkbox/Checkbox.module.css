@@ -1,0 +1,75 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.button {
+  --icon-size: var(--size-icon-sm);
+
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+/* The box is its own border: 3:1 against the page, so an empty box can still be seen */
+.box {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-target-min);
+  height: var(--size-target-min);
+  border: 2px solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  color: var(--color-on-primary);
+  background: var(--color-surface-field);
+}
+
+.box svg {
+  visibility: hidden;
+}
+
+.button[data-selected] .box {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.button[data-selected] .box svg {
+  visibility: visible;
+}
+
+.button[data-invalid] .box {
+  border-color: var(--color-text-danger);
+}
+
+.button[data-focus-visible] .box {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.button[data-disabled] {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.button[data-disabled] .box {
+  background: var(--color-disabled);
+  border-color: var(--color-disabled);
+}
+
+.text {
+  padding-left: calc(var(--size-target-min) + var(--space-3));
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.error {
+  padding-left: calc(var(--size-target-min) + var(--space-3));
+  font-size: var(--font-size-md);
+  color: var(--color-text-danger);
+}
