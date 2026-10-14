@@ -1,15 +1,3 @@
-.select {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.label {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text);
-}
-
 .trigger {
   --icon-size: var(--size-icon-sm);
 
@@ -40,28 +28,7 @@
   outline-offset: var(--focus-ring-offset);
 }
 
-.trigger[data-disabled] {
-  color: var(--color-text-disabled);
-  background: var(--color-disabled);
-  border-color: transparent;
-  cursor: not-allowed;
-}
-
-.select[data-invalid] .trigger {
-  border-color: var(--color-text-danger);
-}
-
 .value[data-placeholder] {
   font-weight: var(--font-weight-regular);
   color: var(--color-text-secondary);
-}
-
-.description {
-  font-size: var(--font-size-md);
-  color: var(--color-text-secondary);
-}
-
-.error {
-  font-size: var(--font-size-md);
-  color: var(--color-text-danger);
 }

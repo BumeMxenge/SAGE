@@ -30,10 +30,6 @@
   outline-offset: var(--focus-ring-offset);
 }
 
-.zone[data-disabled] {
-  color: var(--color-text-disabled);
-}
-
 .error {
   border-color: var(--color-danger);
 }

@@ -13,15 +13,13 @@ type DropZoneProps = {
   acceptedFileTypes: string[]
   onSelect: (files: File[]) => void
   errorMessage?: string
-  isDisabled?: boolean
 }
 
-export function DropZone({ title, hint, buttonLabel, acceptedFileTypes, onSelect, errorMessage, isDisabled }: DropZoneProps) {
+export function DropZone({ title, hint, buttonLabel, acceptedFileTypes, onSelect, errorMessage }: DropZoneProps) {
   return (
     <div className={styles.wrapper}>
       <AriaDropZone
         className={`${styles.zone} ${errorMessage ? styles.error : ''}`}
-        isDisabled={isDisabled}
         getDropOperation={(types) => (acceptedFileTypes.some((type) => types.has(type)) ? 'copy' : 'cancel')}
         onDrop={async (event) => {
           const files = await Promise.all(event.items.filter(isFileDropItem).map((item) => item.getFile()))
@@ -34,7 +32,7 @@ export function DropZone({ title, hint, buttonLabel, acceptedFileTypes, onSelect
         </Text>
         {hint && <span className={styles.hint}>{hint}</span>}
         <FileTrigger acceptedFileTypes={acceptedFileTypes} onSelect={(files) => files && onSelect([...files])}>
-          <Button variant="secondary" isDisabled={isDisabled}>
+          <Button variant="secondary">
             {buttonLabel}
           </Button>
         </FileTrigger>

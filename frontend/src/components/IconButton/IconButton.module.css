@@ -22,8 +22,3 @@
   outline-offset: var(--focus-ring-offset);
 }
 
-.icon-button[data-disabled] {
-  color: var(--color-text-disabled);
-  background: transparent;
-  cursor: not-allowed;
-}

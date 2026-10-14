@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Button } from '@/components/Button/Button.tsx'
 import { Dialog } from '@/components/Dialog/Dialog.tsx'
+import { IconButton } from '@/components/IconButton/IconButton.tsx'
 import { Menu } from '@/components/Menu/Menu.tsx'
 import { MenuItem } from '@/components/Menu/MenuItem.tsx'
 import { MenuSection } from '@/components/Menu/MenuSection.tsx'
 import { Select } from '@/components/Select/Select.tsx'
 import { SelectItem } from '@/components/Select/SelectItem.tsx'
-import { SelectSection } from '@/components/Select/SelectSection.tsx'
 import { Sample } from '@/design-system/Sample.tsx'
 import { Section } from '@/design-system/Section.tsx'
 import { toastQueue } from '@/lib/toastQueue.ts'
@@ -21,8 +21,12 @@ export function OverlaysSection() {
       intro="Selects, menus, a dialog and toasts. Open each one: hover an option for the overlay, use the arrow keys, and press Escape to close."
     >
       <div className={styles.samples}>
-        <Sample label="Select: with a placeholder, with a value, grouped, disabled, error">
-          <Select label="Plan" placeholder="Choose a plan">
+        <Sample label="Select: with a placeholder, as an unset outcome, and with a value, as the plan switcher">
+          <Select label="Outcome" placeholder="Choose an outcome">
+            <SelectItem id="pass">Pass</SelectItem>
+            <SelectItem id="fail">Fail</SelectItem>
+          </Select>
+          <Select label="Plan" defaultSelectedKey="a">
             <SelectItem id="a" description="ABC1001F, ABC1002F">
               Alpha and Beta
             </SelectItem>
@@ -30,26 +34,8 @@ export function OverlaysSection() {
               Alpha and Gamma
             </SelectItem>
           </Select>
-          <Select label="Plan" defaultSelectedKey="a">
-            <SelectSection title="Shown">
-              <SelectItem id="a" description="ABC1001F, ABC1002F">
-                Alpha and Beta
-              </SelectItem>
-            </SelectSection>
-            <SelectSection title="Hidden by Your Answers">
-              <SelectItem id="b" description="ABC1001F, ABC1003F">
-                Alpha and Gamma
-              </SelectItem>
-            </SelectSection>
-          </Select>
-          <Select label="Plan" isDisabled placeholder="Choose a plan">
-            <SelectItem id="a">Alpha and Beta</SelectItem>
-          </Select>
-          <Select label="Plan" isInvalid errorMessage="Choose a plan to go on" placeholder="Choose a plan">
-            <SelectItem id="a">Alpha and Beta</SelectItem>
-          </Select>
         </Sample>
-        <Sample label="Menu: a choice with a tick, and a destructive action">
+        <Sample label="Menus: the account menu, with a choice and a destructive action, and chat history, with icons">
           <Menu label="Account" trigger={<Button variant="secondary">Account</Button>}>
             <MenuSection
               title="Appearance"
@@ -60,19 +46,23 @@ export function OverlaysSection() {
                 setAppearance(String(key))
               }}
             >
-              <MenuItem id="system" icon="contrast">
-                Match System
-              </MenuItem>
-              <MenuItem id="light" icon="light_mode">
-                Light
-              </MenuItem>
-              <MenuItem id="dark" icon="dark_mode">
-                Dark
-              </MenuItem>
+              <MenuItem id="system">Match System</MenuItem>
+              <MenuItem id="light">Light</MenuItem>
+              <MenuItem id="dark">Dark</MenuItem>
             </MenuSection>
-            <MenuItem id="sign-out" icon="logout" isDestructive>
+            <MenuItem id="sign-out" isDestructive>
               Sign Out
             </MenuItem>
+          </Menu>
+          <Menu label="Chat History" trigger={<IconButton label="Chat History" icon="history" />}>
+            <MenuSection title="Chats in This View">
+              <MenuItem id="chat-1" icon="chat_bubble">
+                Can I swap an elective?
+              </MenuItem>
+              <MenuItem id="chat-2" icon="chat_bubble">
+                Is this plan clash-free?
+              </MenuItem>
+            </MenuSection>
           </Menu>
         </Sample>
         <Sample label="Dialog">

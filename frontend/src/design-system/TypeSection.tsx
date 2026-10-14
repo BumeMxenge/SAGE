@@ -35,8 +35,8 @@ export function TypeSection({ tokens }: { tokens: Tokens }) {
   ]
   return (
     <Section title="Type" intro="Inter Variable in seven sizes, from 12 px, the smallest text allowed, to 30 px, and three weights.">
-      <DataTable caption="Type sizes" columns={columns} rows={sizes} emptyMessage="No sizes." />
-      <DataTable caption="Type weights" columns={columns} rows={weights} emptyMessage="No weights." />
+      <DataTable caption="Type sizes" columns={columns} rows={sizes} />
+      <DataTable caption="Type weights" columns={columns} rows={weights} />
     </Section>
   )
 }

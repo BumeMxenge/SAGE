@@ -1,6 +1,7 @@
-// Every Material Symbols Rounded icon the app uses. Only the icons imported here reach the bundle.
-import LeftPanelClose from '@material-symbols/svg-400/rounded/left_panel_close.svg?react'
-import LeftPanelOpen from '@material-symbols/svg-400/rounded/left_panel_open.svg?react'
+// Every icon the prototypes draw, as its closest Material Symbols Rounded icon (from Google, through
+// the @material-symbols/svg-400 package). Only the icons imported here reach the bundle.
+// dock_to_right is the empty panel: it collapses the open sidebar, and opens it again from the logo.
+import DockToRight from '@material-symbols/svg-400/rounded/dock_to_right.svg?react'
 import CalendarToday from '@material-symbols/svg-400/rounded/calendar_today.svg?react'
 import Explore from '@material-symbols/svg-400/rounded/explore.svg?react'
 import Schedule from '@material-symbols/svg-400/rounded/schedule.svg?react'
@@ -18,7 +19,7 @@ import FormatListBulleted from '@material-symbols/svg-400/rounded/format_list_bu
 import Close from '@material-symbols/svg-400/rounded/close.svg?react'
 import Check from '@material-symbols/svg-400/rounded/check.svg?react'
 import Search from '@material-symbols/svg-400/rounded/search.svg?react'
-import Error from '@material-symbols/svg-400/rounded/error.svg?react'
+import ErrorCircle from '@material-symbols/svg-400/rounded/error.svg?react'
 import Refresh from '@material-symbols/svg-400/rounded/refresh.svg?react'
 import Person from '@material-symbols/svg-400/rounded/person.svg?react'
 import ScanDelete from '@material-symbols/svg-400/rounded/scan_delete.svg?react'
@@ -28,17 +29,10 @@ import WifiOff from '@material-symbols/svg-400/rounded/wifi_off.svg?react'
 import Lock from '@material-symbols/svg-400/rounded/lock.svg?react'
 import LightMode from '@material-symbols/svg-400/rounded/light_mode.svg?react'
 import DarkMode from '@material-symbols/svg-400/rounded/dark_mode.svg?react'
-import Contrast from '@material-symbols/svg-400/rounded/contrast.svg?react'
 import ArrowDownward from '@material-symbols/svg-400/rounded/arrow_downward.svg?react'
-import Logout from '@material-symbols/svg-400/rounded/logout.svg?react'
-import ProgressActivity from '@material-symbols/svg-400/rounded/progress_activity.svg?react'
-import CheckCircle from '@material-symbols/svg-400/rounded/check_circle.svg?react'
-import Help from '@material-symbols/svg-400/rounded/help.svg?react'
-import Block from '@material-symbols/svg-400/rounded/block.svg?react'
 import FavoriteFilled from '@material-symbols/svg-400/rounded/favorite-fill.svg?react'
 export const icons = {
-  left_panel_close: LeftPanelClose,
-  left_panel_open: LeftPanelOpen,
+  dock_to_right: DockToRight,
   calendar_today: CalendarToday,
   explore: Explore,
   schedule: Schedule,
@@ -56,7 +50,7 @@ export const icons = {
   close: Close,
   check: Check,
   search: Search,
-  error: Error,
+  error: ErrorCircle,
   refresh: Refresh,
   person: Person,
   scan_delete: ScanDelete,
@@ -66,13 +60,7 @@ export const icons = {
   lock: Lock,
   light_mode: LightMode,
   dark_mode: DarkMode,
-  contrast: Contrast,
   arrow_downward: ArrowDownward,
-  logout: Logout,
-  progress_activity: ProgressActivity,
-  check_circle: CheckCircle,
-  help: Help,
-  block: Block,
 }
 
 export type IconName = keyof typeof icons

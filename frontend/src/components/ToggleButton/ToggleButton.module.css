@@ -1,3 +1,4 @@
+/* The heart takes the text colour, on or off. On shows it filled, so colour never tells the two apart. */
 .toggle-button {
   display: inline-flex;
   flex: none;
@@ -8,7 +9,7 @@
   padding: 0;
   border: 0;
   border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-text);
   background: transparent;
   cursor: pointer;
 }
@@ -17,17 +18,7 @@
   background: var(--color-hover);
 }
 
-.toggle-button[data-selected] {
-  color: var(--color-text-danger);
-}
-
 .toggle-button[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
-}
-
-.toggle-button[data-disabled] {
-  color: var(--color-text-disabled);
-  background: transparent;
-  cursor: not-allowed;
 }

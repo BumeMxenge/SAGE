@@ -17,7 +17,7 @@ import { OverlaysSection } from '@/design-system/OverlaysSection.tsx'
 import { RadiiSection } from '@/design-system/RadiiSection.tsx'
 import { ShadowsSection } from '@/design-system/ShadowsSection.tsx'
 import { SpacingSection } from '@/design-system/SpacingSection.tsx'
-import { TextFieldsSection } from '@/design-system/TextFieldsSection.tsx'
+import { FieldsSection } from '@/design-system/FieldsSection.tsx'
 import { TypeSection } from '@/design-system/TypeSection.tsx'
 import { useResolvedTheme } from '@/design-system/useResolvedTheme.ts'
 import { parseTokens } from '@/lib/tokens.ts'
@@ -41,7 +41,7 @@ export function DesignSystem() {
       <main className={styles.page}>
         <PageHeader
           title="SAGE Design System"
-          subtitle="Every token and shared component, in each state. Change the appearance to check both themes."
+          subtitle="Every token and shared component, in each state the prototypes draw. Change the appearance to check both themes. Onboarding is designed in light only."
           actions={
             <SegmentedControl
               label="Appearance"
@@ -70,7 +70,7 @@ export function DesignSystem() {
         <LogosSection />
         <ButtonsSection />
         <ChoicesSection />
-        <TextFieldsSection />
+        <FieldsSection />
         <OverlaysSection />
         <LoadingSection />
         <ContentSection />

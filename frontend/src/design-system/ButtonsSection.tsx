@@ -11,59 +11,64 @@ import styles from './DesignSystem.module.css'
 
 export function ButtonsSection() {
   const [term, setTerm] = useState('sem-1')
+  const [view, setView] = useState('calendar')
   return (
     <Section
       title="Buttons"
-      intro="Hover and focus are live: hover a button, then press Tab to see the focus ring. Primary fades slightly, secondary turns teal, quiet and icon buttons get a soft overlay. A pending button shows a spinner and announces Loading."
+      intro="Hover and focus are live: hover a button, then press Tab to see the focus ring. Primary fades slightly, secondary turns teal, quiet and icon buttons get a soft overlay, and the sign-in button darkens."
     >
       <div className={styles.samples}>
-        <Sample label="Primary: rest, disabled, pending">
+        <Sample label="Primary: rest, and disabled as Continue is before a transcript is read">
           <Button>Create Registration Plan</Button>
           <Button isDisabled>Continue</Button>
-          <Button isPending>Show My Plans</Button>
         </Sample>
-        <Sample label="Secondary: rest, disabled, pending">
+        <Sample label="Secondary">
           <Button variant="secondary">Compare</Button>
-          <Button variant="secondary" isDisabled>
-            Compare
-          </Button>
-          <Button variant="secondary" isPending>
-            Compare
-          </Button>
         </Sample>
-        <Sample label="Quiet: rest, disabled">
+        <Sample label="Quiet">
           <Button variant="quiet">Back</Button>
-          <Button variant="quiet" isDisabled>
-            Back
-          </Button>
         </Sample>
-        <Sample label="Sign-in: rest">
-          <div className={styles.narrow}>
-            <Button variant="sign-in">
-              <Logo variant="microsoft" />
-              Continue with UCT Email
-            </Button>
-          </div>
+        <Sample label="Icon buttons. Hover or focus for the tooltip">
+          <IconButton label="Collapse Panel" icon="dock_to_right" />
+          <IconButton label="New Chat" icon="border_color" />
+          <IconButton label="Chat History" icon="history" />
         </Sample>
-        <Sample label="Icon button: rest, disabled. Hover or focus for the tooltip">
-          <IconButton label="Collapse Panel" icon="left_panel_close" />
-          <IconButton label="Open Assistant" icon="chat_bubble" isDisabled />
-        </Sample>
-        <Sample label="Favourite toggle: off, on, disabled">
+        <Sample label="Favourite: off and on">
           <ToggleButton label="Favourite ABC1001F" />
           <ToggleButton label="Favourite ABC1002F" defaultSelected />
-          <ToggleButton label="Favourite ABC1003F" isDisabled />
         </Sample>
-        <Sample label="Segmented control: one chosen, and disabled">
+      </div>
+      <div className={styles.wide}>
+        <Sample label="Sign-in: as long as the sign-in form, light only">
+          <Button variant="sign-in">
+            <Logo variant="microsoft" />
+            Continue with UCT Email
+          </Button>
+        </Sample>
+      </div>
+      <div className={styles.samples}>
+        <Sample label="Segmented control: the terms">
           <SegmentedControl label="Term" selectedKey={term} onChange={setTerm}>
             <Segment id="sem-1">Sem 1</Segment>
             <Segment id="sem-2">Sem 2</Segment>
             <Segment id="winter">Winter</Segment>
             <Segment id="summer">Summer</Segment>
           </SegmentedControl>
-          <SegmentedControl label="View" selectedKey="calendar" onChange={setTerm} isDisabled>
+        </Sample>
+        <Sample label="The view, in words">
+          <SegmentedControl label="View" selectedKey={view} onChange={setView}>
             <Segment id="calendar">Calendar</Segment>
             <Segment id="list">Course List</Segment>
+          </SegmentedControl>
+        </Sample>
+        <Sample label="The view as icons, when the sidebar and the assistant are both open">
+          <SegmentedControl label="View" selectedKey={view} onChange={setView}>
+            <Segment id="calendar" icon="calendar_today">
+              Calendar
+            </Segment>
+            <Segment id="list" icon="format_list_bulleted">
+              Course List
+            </Segment>
           </SegmentedControl>
         </Sample>
       </div>

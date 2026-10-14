@@ -1,4 +1,3 @@
-import { Badge } from '@/components/Badge/Badge.tsx'
 import { Button } from '@/components/Button/Button.tsx'
 import { Card } from '@/components/Card/Card.tsx'
 import { DataTable } from '@/components/DataTable/DataTable.tsx'
@@ -19,10 +18,10 @@ export function ContentSection() {
   return (
     <Section
       title="Content"
-      intro="Tables, cards, badges and the states a region shows when it is empty or has failed. The page header is the one at the top of this page: it is the only way a page gets its h1."
+      intro="Tables, cards and the states a region shows when it is empty or has failed. The page header is the one at the top of this page: it is the only way a page gets its h1."
     >
       <div className={styles.samples}>
-        <Sample label="Data table: with rows, and empty">
+        <Sample label="Data table: a year of course history">
           <div className={styles.wide}>
             <DataTable
               caption="2025 · Example Year"
@@ -31,26 +30,15 @@ export function ContentSection() {
                 { id: 'a', cells: { code: 'ABC1001F', name: 'Example Course One', credits: '16' } },
                 { id: 'b', cells: { code: 'ABC1002S', name: 'Example Course Two', credits: '24' } },
               ]}
-              emptyMessage="No courses yet."
             />
-          </div>
-          <div className={styles.wide}>
-            <DataTable caption="2026 · Example Year" columns={columns} rows={[]} emptyMessage="No courses yet." />
           </div>
         </Sample>
         <Sample label="Card: with an action">
           <div className={styles.narrow}>
             <Card title="Example Elective" actions={<ToggleButton label="Favourite ABC1001F" />}>
-              <Badge tone="accent">Eligible</Badge>
               <p>One or two sentences about the course, from its summary.</p>
             </Card>
           </div>
-        </Sample>
-        <Sample label="Badges: neutral, accent, warning, danger">
-          <Badge>ABC1001F</Badge>
-          <Badge tone="accent">Eligible</Badge>
-          <Badge tone="warning">Check With Your Advisor</Badge>
-          <Badge tone="danger">Not Eligible</Badge>
         </Sample>
         <Sample label="Empty state">
           <EmptyState

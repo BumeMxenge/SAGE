@@ -27,19 +27,3 @@
   transition: width var(--duration-fast) linear;
 }
 
-/* No value: a short bar slides across. With no duration it rests at the start. */
-.progress-bar[data-indeterminate] .fill {
-  width: 40%;
-  transition: none;
-  animation: bar var(--duration-loop) var(--easing) infinite;
-}
-
-@keyframes bar {
-  from {
-    transform: translateX(-100%);
-  }
-
-  to {
-    transform: translateX(250%);
-  }
-}

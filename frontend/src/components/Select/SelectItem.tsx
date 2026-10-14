@@ -2,11 +2,11 @@
 import { ListBoxItem, Text } from 'react-aria-components'
 import styles from '@/components/Popover/Popover.module.css'
 
-type SelectItemProps = { id: string; description?: string; isDisabled?: boolean; children: string }
+type SelectItemProps = { id: string; description?: string; children: string }
 
-export function SelectItem({ id, description, isDisabled, children }: SelectItemProps) {
+export function SelectItem({ id, description, children }: SelectItemProps) {
   return (
-    <ListBoxItem id={id} textValue={children} isDisabled={isDisabled} className={styles.item}>
+    <ListBoxItem id={id} textValue={children} className={styles.item}>
       <span className={styles.text}>
         <Text slot="label" className={styles.label}>
           {children}

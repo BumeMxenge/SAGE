@@ -1,16 +1,36 @@
 .search-field {
-  --input-inset-start: calc(var(--space-4) + var(--size-icon-md) + var(--space-3));
-  --input-inset-end: calc(var(--space-2) + var(--size-control-sm) + var(--space-2));
-}
-
-.box {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.box input {
+/* While SAGE is busy the search waits, faded as in the prototype */
+.search-field[data-disabled] {
+  opacity: 0.55;
+}
+
+/* The border is the field's edge: 3:1 against every surface it sits on */
+.input {
+  width: 100%;
+  min-height: var(--size-control-lg);
+  padding: 0 calc(var(--space-2) + var(--size-control-sm) + var(--space-2)) 0
+    calc(var(--space-4) + var(--size-icon-md) + var(--space-3));
+  border: 1px solid var(--color-border-input);
   border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  background: var(--color-surface-field);
+}
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.input[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .icon {

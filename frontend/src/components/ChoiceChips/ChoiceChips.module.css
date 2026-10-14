@@ -22,7 +22,8 @@
   gap: var(--space-3);
 }
 
-/* No hover change: the parity file leaves chips as they are */
+/* No hover change: the parity file leaves chips as they are. A chip that clashes with an answer
+   already chosen is disabled, and fades as in the prototype. */
 .chip {
   --icon-size: var(--size-icon-sm);
 
@@ -53,7 +54,6 @@
 }
 
 .chip[data-disabled] {
-  color: var(--color-text-disabled);
-  border-color: var(--color-border);
+  opacity: 0.38;
   cursor: not-allowed;
 }

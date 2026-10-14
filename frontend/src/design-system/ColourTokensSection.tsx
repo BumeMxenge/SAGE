@@ -46,7 +46,6 @@ export function ColourTokensSection({ tokens, theme }: { tokens: Tokens; theme: 
           { key: 'contrast', header: 'Contrast' },
         ]}
         rows={rows}
-        emptyMessage="No colour tokens found."
       />
     </Section>
   )

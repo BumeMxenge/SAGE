@@ -8,11 +8,10 @@ type SegmentedControlProps = {
   label: string
   selectedKey: string
   onChange: (key: string) => void
-  isDisabled?: boolean
   children: ReactNode
 }
 
-export function SegmentedControl({ label, selectedKey, onChange, isDisabled, children }: SegmentedControlProps) {
+export function SegmentedControl({ label, selectedKey, onChange, children }: SegmentedControlProps) {
   return (
     <ToggleButtonGroup
       aria-label={label}
@@ -24,7 +23,6 @@ export function SegmentedControl({ label, selectedKey, onChange, isDisabled, chi
         const [key] = keys // single selection, so never 'all'
         onChange(String(key))
       }}
-      isDisabled={isDisabled}
     >
       {children}
     </ToggleButtonGroup>

@@ -5,7 +5,7 @@ import type { IconName } from '@/components/Icon/icons.ts'
 import { Tooltip } from '@/components/Tooltip/Tooltip.tsx'
 import styles from './IconButton.module.css'
 
-type IconButtonProps = Omit<AriaButtonProps, 'className' | 'style' | 'children' | 'aria-label'> & {
+type IconButtonProps = Omit<AriaButtonProps, 'className' | 'style' | 'children' | 'aria-label' | 'isDisabled'> & {
   label: string
   icon: Exclude<IconName, 'favorite'>
 }

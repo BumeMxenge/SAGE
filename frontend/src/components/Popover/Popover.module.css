@@ -51,11 +51,6 @@
   outline-offset: calc(var(--focus-ring-width) * -1);
 }
 
-.item[data-disabled] {
-  color: var(--color-text-disabled);
-  cursor: not-allowed;
-}
-
 .destructive {
   color: var(--color-text-danger);
 }

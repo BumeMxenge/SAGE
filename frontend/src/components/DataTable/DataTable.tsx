@@ -11,10 +11,9 @@ type DataTableProps = {
   caption: string
   columns: DataTableColumn[]
   rows: DataTableRow[]
-  emptyMessage: string
 }
 
-export function DataTable({ caption, columns, rows, emptyMessage }: DataTableProps) {
+export function DataTable({ caption, columns, rows }: DataTableProps) {
   return (
     <div className={styles.frame}>
       <table className={styles.table}>
@@ -38,13 +37,6 @@ export function DataTable({ caption, columns, rows, emptyMessage }: DataTablePro
               ))}
             </tr>
           ))}
-          {rows.length === 0 && (
-            <tr>
-              <td colSpan={columns.length} className={styles.empty}>
-                {emptyMessage}
-              </td>
-            </tr>
-          )}
         </tbody>
       </table>
     </div>

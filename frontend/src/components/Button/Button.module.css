@@ -18,8 +18,7 @@
   outline-offset: var(--focus-ring-offset);
 }
 
-.primary,
-.sign-in {
+.primary {
   min-height: var(--size-control-lg);
   padding: 0 var(--space-6);
   border-radius: var(--radius-lg);
@@ -33,11 +32,27 @@
   opacity: 0.92;
 }
 
-/* The sign-in button is its own variant: a smaller radius, and a hover that darkens */
+/* Only a primary button is ever disabled, as Continue is until a transcript is read */
+.primary[data-disabled] {
+  color: var(--color-text-disabled);
+  background: var(--color-disabled);
+  box-shadow: none;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* The sign-in button is as long as the sign-in form. Onboarding is light only, so its colours
+   don't change with the theme, and its hover darkens instead of fading. */
 .sign-in {
   width: 100%;
+  max-width: var(--width-form);
+  min-height: var(--size-control-lg);
+  padding: 0 var(--space-5);
   border-radius: var(--radius-md);
   font-size: var(--font-size-lg);
+  color: var(--color-on-fill);
+  background: var(--color-sign-in);
+  box-shadow: var(--shadow-raised);
 }
 
 .sign-in[data-hovered] {
@@ -70,33 +85,4 @@
 
 .quiet[data-hovered] {
   background: var(--color-hover);
-}
-
-/* Disabled looks the same for every variant, and shows no hover */
-.button[data-disabled] {
-  color: var(--color-text-disabled);
-  background: var(--color-disabled);
-  border-color: transparent;
-  box-shadow: none;
-  opacity: 1;
-  cursor: not-allowed;
-}
-
-.quiet[data-disabled] {
-  background: transparent;
-}
-
-.button[data-pending] {
-  cursor: progress;
-}
-
-.spinner {
-  display: inline-flex;
-  animation: spin var(--duration-loop) linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
