@@ -1,0 +1,29 @@
+.icon-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+}
+
+.icon-button[data-hovered] {
+  background: var(--color-hover);
+}
+
+.icon-button[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.icon-button[data-disabled] {
+  color: var(--color-text-disabled);
+  background: transparent;
+  cursor: not-allowed;
+}
