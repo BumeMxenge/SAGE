@@ -27,8 +27,6 @@ import CloudUpload from '@material-symbols/svg-400/rounded/cloud_upload.svg?reac
 import CloudOff from '@material-symbols/svg-400/rounded/cloud_off.svg?react'
 import WifiOff from '@material-symbols/svg-400/rounded/wifi_off.svg?react'
 import Lock from '@material-symbols/svg-400/rounded/lock.svg?react'
-import LightMode from '@material-symbols/svg-400/rounded/light_mode.svg?react'
-import DarkMode from '@material-symbols/svg-400/rounded/dark_mode.svg?react'
 import ArrowDownward from '@material-symbols/svg-400/rounded/arrow_downward.svg?react'
 import FavoriteFilled from '@material-symbols/svg-400/rounded/favorite-fill.svg?react'
 export const icons = {
@@ -58,8 +56,6 @@ export const icons = {
   cloud_off: CloudOff,
   wifi_off: WifiOff,
   lock: Lock,
-  light_mode: LightMode,
-  dark_mode: DarkMode,
   arrow_downward: ArrowDownward,
 }
 
