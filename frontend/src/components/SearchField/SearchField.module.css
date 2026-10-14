@@ -1,0 +1,54 @@
+.search-field {
+  --input-inset-start: calc(var(--space-4) + var(--size-icon-md) + var(--space-3));
+  --input-inset-end: calc(var(--space-2) + var(--size-control-sm) + var(--space-2));
+}
+
+.box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.box input {
+  border-radius: var(--radius-lg);
+}
+
+.icon {
+  position: absolute;
+  left: var(--space-4);
+  display: flex;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.clear {
+  --icon-size: var(--size-icon-sm);
+
+  position: absolute;
+  right: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+}
+
+.clear[data-hovered] {
+  background: var(--color-hover);
+}
+
+.clear[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Nothing typed, nothing to clear. React Aria sets data-empty on the field. */
+.search-field[data-empty] .clear {
+  display: none;
+}

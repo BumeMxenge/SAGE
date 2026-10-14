@@ -1,0 +1,61 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* No hover change: the parity file leaves the drop zone as it is */
+.zone {
+  --icon-size: var(--size-icon-lg);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-12) var(--space-6);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  color: var(--color-text-secondary);
+  text-align: center;
+  background: var(--color-surface);
+}
+
+.zone[data-drop-target] {
+  background: var(--color-surface-muted);
+  border-color: var(--color-focus);
+}
+
+.zone[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.zone[data-disabled] {
+  color: var(--color-text-disabled);
+}
+
+.error {
+  border-color: var(--color-danger);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.hint {
+  font-size: var(--font-size-md);
+}
+
+.message {
+  --icon-size: var(--size-icon-sm);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-danger);
+}
