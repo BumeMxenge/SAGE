@@ -1,0 +1,45 @@
+.leaf-pulse {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.leaf {
+  display: flex;
+}
+
+.leaf path {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: leaf var(--duration-loop-slow) ease-in-out infinite;
+}
+
+/* The petals pulse in turn, a tenth and a fifth of a cycle apart */
+.leaf path:nth-of-type(2) {
+  animation-delay: calc(var(--duration-loop-slow) * 0.1);
+}
+
+.leaf path:nth-of-type(3) {
+  animation-delay: calc(var(--duration-loop-slow) * 0.2);
+}
+
+@keyframes leaf {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: translateY(0) scale(0.97);
+  }
+
+  42% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.025);
+  }
+
+  62% {
+    opacity: 0.78;
+    transform: translateY(-1px) scale(1);
+  }
+}

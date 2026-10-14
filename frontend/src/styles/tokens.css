@@ -14,6 +14,7 @@
   --color-surface-muted: light-dark(#ececee, #1d1e20);
   --color-surface-field: light-dark(#fff, #2a2b2e);
   --color-surface-inverse: light-dark(#0e1111, #e8e9e7); /* tooltips and toasts */
+  --color-skeleton-shine: light-dark(#fff, #2a2b2e);
 
   /* Buttons and the hover overlay */
   --color-primary: light-dark(#333b3f, #fff);
@@ -132,6 +133,14 @@
   --duration-loop: 1600ms; /* shimmer, typing dots, progress bar, spinner */
   --duration-loop-slow: 2200ms; /* leaf */
 
+  /* The moving highlight on a loading skeleton. Reduced motion makes it a flat block. */
+  --gradient-shimmer: linear-gradient(
+    90deg,
+    var(--color-surface-muted) 25%,
+    var(--color-skeleton-shine) 50%,
+    var(--color-surface-muted) 75%
+  );
+
   /* Layers. React Aria lifts popovers and tooltips above these itself. */
   --z-sticky: 10;
   --z-overlay: 100;
@@ -165,5 +174,6 @@
     --duration-slow: 0ms;
     --duration-loop: 0ms;
     --duration-loop-slow: 0ms;
+    --gradient-shimmer: none;
   }
 }

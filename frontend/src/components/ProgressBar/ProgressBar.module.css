@@ -1,0 +1,45 @@
+.progress-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.text {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.track {
+  height: var(--space-1);
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-muted);
+}
+
+.fill {
+  width: var(--progress);
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-focus);
+  transition: width var(--duration-fast) linear;
+}
+
+/* No value: a short bar slides across. With no duration it rests at the start. */
+.progress-bar[data-indeterminate] .fill {
+  width: 40%;
+  transition: none;
+  animation: bar var(--duration-loop) var(--easing) infinite;
+}
+
+@keyframes bar {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}
