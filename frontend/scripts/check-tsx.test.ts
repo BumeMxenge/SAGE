@@ -39,10 +39,8 @@ describe('boundaries', () => {
     expect(messages('features/a/A.ts', "import { c } from '@/components/C/C.tsx'")).toEqual([])
   })
 
-  it('lets the app frame import features, and rejects imports of the review page code', () => {
+  it('lets the app frame import features', () => {
     expect(messages('app/App.tsx', "import { x } from '../features/auth/x.ts'")).toEqual([])
-    expect(messages('components/A/A.tsx', "import { x } from '@/design-system/x.tsx'")).toHaveLength(1)
-    expect(messages('design-system/main.tsx', "import { x } from './x.tsx'")).toEqual([])
   })
 
   it('ignores packages', () => {

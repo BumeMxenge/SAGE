@@ -1,8 +1,8 @@
 // The checks oxlint can't make on its own, run by `npm run lint`:
 //   1. style= may only pass custom properties ('--name'), so every size and colour comes from a token
 //   2. no re-exports (`export … from`), so every import names the file that defines the thing
-//   3. no import crosses a boundary: shared code never imports a feature, features never import each
-//      other, and nothing imports the review page's code
+//   3. no import crosses a boundary: shared code never imports a feature, and features never import
+//      each other
 import { readdirSync, readFileSync } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import ts from 'typescript'
@@ -21,7 +21,6 @@ function target(specifier: string, file: string, srcRoot: string): string | unde
 function boundaryMessage(from: string, to: string): string | undefined {
   const [fromTop, fromFeature] = from.split('/')
   const [toTop, toFeature] = to.split('/')
-  if (toTop === 'design-system' && fromTop !== 'design-system') return 'nothing imports the review page code'
   if (toTop !== 'features') return undefined
   if (sharedFolders.includes(fromTop)) return 'shared code must not import a feature'
   if (fromTop === 'features' && fromFeature !== toFeature) return 'a feature must not import another feature'

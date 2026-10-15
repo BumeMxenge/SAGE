@@ -17,13 +17,12 @@ Folders marked (planned) don't exist yet; each arrives with its first code.
 | `backend/src/sage/adapters` | Supabase and (planned) model-provider implementations of those interfaces, and in-memory fakes for tests |
 | `backend/tests` | Unit and integration tests. [testing.md](testing.md) has their rules and how to run them |
 | `backend/scripts` | Measures the tests: the planted faults, and the line `make mutation` writes |
-| `frontend/` | React and TypeScript interface, deployed as static files. Its code is in `frontend/src`, in the six folders below |
+| `frontend/` | React and TypeScript interface, deployed as static files. Its code is in `frontend/src`, in the five folders below |
 | `frontend/src/app` | The app's frame: providers, the router and the shell. Until M3's shell branch it holds only the starter page, `App.tsx` |
 | `frontend/src/features/<feature>` | Everything one feature owns: its page, routes, own components, hooks, API calls, copy and tests. Deleting the folder removes the feature. `auth` exists. M3 adds (planned) onboarding, history, electives, questionnaire, plan and assistant |
 | `frontend/src/components/<Name>` | Shared components, one folder each with `Name.tsx`, `Name.module.css` and any test. They are built on React Aria Components and styled from the tokens. A component is shared only if the design system lists it or two features use it |
-| `frontend/src/lib` | Shared code with no markup: the appearance hook, the contrast and token helpers and the toast queue, and later the API client and query keys |
+| `frontend/src/lib` | Shared code with no markup: the API client and its generated types, the settings, the Supabase client, the appearance hook and the toast queue, and later the query keys |
 | `frontend/src/styles` | `tokens.css` (values shared by both themes) and `theme.css` (a light block and a dark block of colours), the only places a raw colour, size, radius, shadow or duration is written, `base.css`, and `outline.module.css`, the outlined look that secondary buttons and the Select share |
-| `frontend/src/design-system` | The code of the development-only review page, `frontend/design-system.html`. Nothing imports from it, and `vite build` leaves it out |
 | `supabase/` | Database migrations |
 | `data/` | `sources/<year>/`: each year's handbook, workbooks and equivalences, with `manifest.toml` holding each file's fingerprint. `rules/<year>/` (planned): the cached model drafts (`drafts.json`), the review sheet (`review.csv`) and the approved snapshot (`rulebook.json`). `synthetic/`: the made-up student |
 
@@ -40,7 +39,7 @@ Imports only point inward: `api / cli → services → ingestion / engine / advi
 
 Imports run one way, and `frontend/scripts/check-tsx.ts` (run by `npm run lint`) enforces it.
 
-- Features use `components/`, `lib/` and `styles/`. Shared code never imports a feature, features never import each other, and nothing imports `design-system/`. When two features need the same thing, it moves to shared.
+- Features use `components/`, `lib/` and `styles/`. Shared code never imports a feature, and features never import each other. When two features need the same thing, it moves to shared.
 - A feature's specialised component is built from the shared base through its props, never by copying the base's markup or styles.
 - Every import names what it uses, from the file that defines it: `import { Button } from '@/components/Button/Button.tsx'`. There are no index files that re-export a folder, no `import * as`, and no default exports except where a tool needs one.
 - `@/` points at `src/`. Imports within one folder use `./`.

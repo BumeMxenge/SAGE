@@ -96,8 +96,5 @@ export const icons = {
 
 export type IconName = keyof typeof icons
 
-// For the review page, which shows every icon
-export const iconNames = Object.keys(icons) as IconName[]
-
 // Only the heart has a filled version: a favourite that is on, in the planner
 export const filledFavorite = FavoriteFilled
