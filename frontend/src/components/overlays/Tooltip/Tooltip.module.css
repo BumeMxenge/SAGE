@@ -1,0 +1,19 @@
+.tooltip {
+  max-width: var(--width-tooltip);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body);
+  color: var(--color-on-primary);
+  background: var(--color-surface-inverse);
+  box-shadow: var(--shadow-raised);
+  opacity: 1;
+  transition: opacity var(--duration-fast) var(--easing);
+}
+
+/* React Aria sets these while the tooltip appears and disappears */
+.tooltip[data-entering],
+.tooltip[data-exiting] {
+  opacity: 0;
+}

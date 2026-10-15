@@ -1,0 +1,128 @@
+/* Design tokens shared by both themes: the colours that never change, and every size, space, radius,
+   shadow, duration, easing and z-index. The colours that change with the theme are in theme.css.
+   These two files are the only stylesheets that may write a raw value. Everything else asks for one
+   through var(). */
+
+:root {
+  /* Colours the same in both themes */
+  --color-hover: rgb(130 132 136 / 14%); /* the one overlay for every quiet hover */
+  --color-on-fill: #fff; /* text on the accent, sign-in and course fills */
+  --color-accent-fill: #2a6e5a; /* the avatar */
+  --color-danger: #ea5b4c; /* error icons, never text */
+
+  /* The sign-in button. Onboarding is designed in light only, so it has no dark version. */
+  --color-sign-in: #333b3f;
+  --color-sign-in-hover: #22282b;
+
+  /* Course colours, in the order the timetable gives them out. White text on each reaches 4.5:1. */
+  --color-course-teal: #1e846a;
+  --color-course-orange: #c6531f;
+  --color-course-navy: #1e3a6e;
+  --color-course-pink: #c0407a;
+  --color-course-blue: #2f5c93;
+  --color-course-ochre: #9d6b1d;
+  --color-course-purple: #7e4aa6;
+  --color-course-dark-teal: #14615a;
+
+  /* One focus ring for every control. Its colour is in theme.css. */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* Type */
+  --font-family: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --line-height-tight: 1;
+  --line-height-heading: 1.2;
+  --line-height-body: 1.5;
+  --tracking-heading: -0.02em;
+  --tracking-title: -0.03em;
+
+  /* Space, on a 4 px scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Corners */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+
+  /* Three elevations. The shadow colour is in theme.css. */
+  --shadow-raised: 0 4px 12px var(--color-shadow);
+  --shadow-overlay: 0 12px 34px var(--color-shadow);
+  --shadow-dialog: 0 18px 40px var(--color-shadow);
+
+  /* Sizes */
+  --size-icon-sm: 16px;
+  --size-icon-md: 20px;
+  --size-icon-lg: 32px;
+  --size-control-sm: 32px;
+  --size-control-md: 36px;
+  --size-control-lg: 48px;
+  --size-target-min: 24px; /* WCAG 2.2 target size */
+  --size-tile: 40px; /* the icon tile on an error state */
+  --size-logo-full: 96px; /* tall enough for the tagline to read */
+  --size-logo-compact: 26px;
+  --size-logo-mark: 28px;
+  --size-logo-microsoft: 21px;
+  --width-form: 392px; /* the sign-in form, and a blocking error page */
+  --width-message: 320px; /* an error state's text, inside a region */
+  --width-reading: 760px;
+  --width-wide: 860px;
+  --width-full: 1080px;
+  --width-dialog: 480px;
+  --width-menu: 240px;
+  --width-popover: 320px; /* the plan switcher's list */
+  --width-tooltip: 240px;
+
+  /* Motion. Hover changes are instant, as in the prototypes; these time everything that moves. */
+  --duration-fast: 150ms; /* tooltips, menus and the Select list fading; a progress bar moving on */
+  --duration-slow: 300ms; /* a dialog rising over its dimmed backdrop; panels opening and closing */
+  --easing: cubic-bezier(0.4, 0, 0.2, 1); /* starts briskly, settles gently */
+  --duration-loop: 1600ms; /* one sweep of the skeleton shimmer */
+  --duration-loop-slow: 2200ms; /* one breath of the leaf pulse */
+
+  /* The moving highlight on a loading skeleton. Reduced motion makes it a flat block. */
+  --gradient-shimmer: linear-gradient(
+    90deg,
+    var(--color-surface-muted) 25%,
+    var(--color-skeleton-shine) 50%,
+    var(--color-surface-muted) 75%
+  );
+
+  /* Layers. React Aria lifts popovers and tooltips above these itself. */
+  --z-sticky: 10;
+  --z-overlay: 100;
+  --z-toast: 200;
+}
+
+/* Reduced motion: every duration becomes 0. An animation with no duration leaves its element in its
+   resting style, which is each animation's fallback: a plain block, a still leaf beside its status
+   text, and overlays that simply appear. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-slow: 0ms;
+    --duration-loop: 0ms;
+    --duration-loop-slow: 0ms;
+    --gradient-shimmer: none;
+  }
+}

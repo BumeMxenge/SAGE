@@ -1,0 +1,94 @@
+.button {
+  --icon-size: var(--size-icon-sm);
+
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  min-width: var(--size-target-min);
+  font-family: inherit;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  cursor: pointer;
+}
+
+.button[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Borderless variants keep a clear border, so every button is the same height as an outlined one */
+.primary,
+.sign-in,
+.quiet {
+  border: 1px solid transparent;
+}
+
+.primary {
+  min-height: var(--size-control-lg);
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-md);
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  box-shadow: var(--shadow-raised);
+}
+
+.primary[data-hovered] {
+  opacity: 0.92;
+}
+
+/* Only a primary button is ever disabled, as Continue is until a transcript is read */
+.primary[data-disabled] {
+  color: var(--color-text-disabled);
+  background: var(--color-disabled);
+  box-shadow: none;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* The sign-in button is as long as the sign-in form. Onboarding is light only, so its colours
+   don't change with the theme, and its hover darkens instead of fading. */
+.sign-in {
+  width: 100%;
+  max-width: var(--width-form);
+  min-height: var(--size-control-lg);
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-lg);
+  color: var(--color-on-fill);
+  background: var(--color-sign-in);
+  box-shadow: var(--shadow-raised);
+}
+
+.sign-in[data-hovered] {
+  background: var(--color-sign-in-hover);
+}
+
+.secondary {
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+/* The outline and its teal hover come from styles/outline.module.css */
+
+.quiet {
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: transparent;
+}
+
+.quiet[data-hovered] {
+  background: var(--color-hover);
+}
+
+/* Only the icon shows, so the button is square */
+.icon-only {
+  width: var(--size-control-md);
+  padding: 0;
+}
