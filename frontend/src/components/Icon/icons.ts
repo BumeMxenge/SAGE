@@ -1,6 +1,7 @@
 // Every icon the prototypes draw, as its closest Material Symbols Rounded icon (from Google, through
-// the @material-symbols/svg-400 package). Only the icons imported here reach the bundle.
-// dock_to_right is the empty panel: it collapses the open sidebar, and opens it again from the logo.
+// the @material-symbols/svg-400 package). Only the icons imported here reach the bundle. Each entry
+// says where the prototypes use it (planner, onboarding, error sheet, loading sheet), so an icon with
+// no use there doesn't belong here.
 import DockToRight from '@material-symbols/svg-400/rounded/dock_to_right.svg?react'
 import CalendarToday from '@material-symbols/svg-400/rounded/calendar_today.svg?react'
 import Explore from '@material-symbols/svg-400/rounded/explore.svg?react'
@@ -27,36 +28,69 @@ import CloudUpload from '@material-symbols/svg-400/rounded/cloud_upload.svg?reac
 import CloudOff from '@material-symbols/svg-400/rounded/cloud_off.svg?react'
 import WifiOff from '@material-symbols/svg-400/rounded/wifi_off.svg?react'
 import Lock from '@material-symbols/svg-400/rounded/lock.svg?react'
-import ArrowDownward from '@material-symbols/svg-400/rounded/arrow_downward.svg?react'
 import FavoriteFilled from '@material-symbols/svg-400/rounded/favorite-fill.svg?react'
 export const icons = {
+  // Planner: Collapse Panel on the open sidebar, and Open Sidebar on the logo of the collapsed one
   dock_to_right: DockToRight,
+  // Planner: the Plan nav item and rail button, Calendar in the view toggle, and the empty term
+  // ("No courses this term") in the plan and compare views. Error and loading sheets: the same nav.
   calendar_today: CalendarToday,
+  // Planner: the Explore Electives nav item and rail button. Error sheet: the same nav.
   explore: Explore,
+  // Planner: the Course History nav item and rail button. Error sheet: the same nav, and the tile of
+  // "Electives catalogue busy".
   schedule: Schedule,
+  // Planner: the assistant's header, Open Assistant on its rail, and each row of Chat History.
+  // Error and loading sheets: the same header and rail.
   chat_bubble: ChatBubble,
+  // Planner: New Chat in the assistant's header
   border_color: BorderColor,
+  // Planner: Chat History in the assistant's header
   history: History,
+  // Planner: Back beside the questionnaire's title
   chevron_left: ChevronLeft,
+  // Planner: Collapse Assistant
   chevron_right: ChevronRight,
+  // Planner: the plan switcher. Error sheet: the switcher in "Offline".
   keyboard_arrow_down: KeyboardArrowDown,
+  // Planner: Send in the chat box. Error sheet: the same, idle.
   arrow_upward: ArrowUpward,
+  // Planner: Favourite on each elective card. Error sheet: the card in "Favourite didn't save".
   favorite: Favorite,
+  // Planner: Create Registration Plan on the empty plan. Onboarding: Add a Course in the review step.
   add: Add,
+  // Planner: Compare. Error sheet: Compare in "Offline".
   view_column_2: ViewColumn2,
+  // Planner: Course List in the view toggle, and the empty term in list view and compare.
+  // Loading sheet: the view toggle.
   format_list_bulleted: FormatListBulleted,
+  // Planner: Done Comparing. Onboarding: Remove File, Remove Course, the course picker's Close and
+  // Clear Search. Error sheet: a failed step, and the toast's close.
   close: Close,
+  // Planner: a chosen questionnaire chip. Onboarding: the review step's checkbox tick (drawn in CSS
+  // there; approved difference 38). Error sheet: a done step.
   check: Check,
+  // Planner: the electives search. Error sheet: the search in "Electives catalogue busy".
+  // Loading sheet: the electives search.
   search: Search,
+  // Error sheet: "Sign-in didn't complete", "Course history didn't save", "Saved plan won't load"
+  // and "Assistant reply failed"
   error: ErrorCircle,
+  // Error sheet: Retry in "Upload interrupted" and "Assistant reply failed", and Refresh in
+  // "Course history out of date"
   refresh: Refresh,
+  // Error sheet: the tile of "Account can't use SAGE"
   person: Person,
+  // Error sheet: the tile of "Transcript belongs to someone else"
   scan_delete: ScanDelete,
+  // Onboarding: the upload drop zone
   cloud_upload: CloudUpload,
+  // Onboarding: the drop zone when the transcript can't be read
   cloud_off: CloudOff,
+  // Error sheet: the "Offline" banner
   wifi_off: WifiOff,
+  // Error sheet: the "Session expired" dialog
   lock: Lock,
-  arrow_downward: ArrowDownward,
 }
 
 export type IconName = keyof typeof icons
@@ -64,5 +98,5 @@ export type IconName = keyof typeof icons
 // For the review page, which shows every icon
 export const iconNames = Object.keys(icons) as IconName[]
 
-// Only the heart has a filled version, for its "on" state
+// Only the heart has a filled version: a favourite that is on, in the planner
 export const filledFavorite = FavoriteFilled
