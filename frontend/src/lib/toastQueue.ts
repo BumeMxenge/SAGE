@@ -5,10 +5,7 @@
 // that name it.
 import { UNSTABLE_ToastQueue as ToastQueue } from 'react-aria-components'
 
-export type ToastContent = {
-  title: string
-  description?: string
-  action?: { label: string; onPress: () => void }
-}
+// A message, and an optional action such as Retry, as the error sheet's toast draws
+export type ToastContent = { title: string; action?: { label: string; onPress: () => void } }
 
 export const toastQueue = new ToastQueue<ToastContent>()

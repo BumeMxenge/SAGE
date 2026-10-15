@@ -6,7 +6,6 @@ import styles from './ChoiceChips.module.css'
 
 type ChoiceChipsProps = {
   label: string
-  labelHidden?: boolean
   description?: string
   value: string | null
   onChange: (value: string) => void
@@ -14,10 +13,10 @@ type ChoiceChipsProps = {
   children: ReactNode
 }
 
-export function ChoiceChips({ label, labelHidden, description, children, ...props }: ChoiceChipsProps) {
+export function ChoiceChips({ label, description, children, ...props }: ChoiceChipsProps) {
   return (
     <RadioGroup {...props} className={styles.group} orientation="horizontal">
-      <Label className={labelHidden ? 'visually-hidden' : styles.label}>{label}</Label>
+      <Label className={styles.label}>{label}</Label>
       {description && (
         <Text slot="description" className={styles.description}>
           {description}

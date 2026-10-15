@@ -15,15 +15,8 @@ export function ToastRegion() {
     <AriaToastRegion queue={toastQueue} className={styles.region}>
       {({ toast }) => (
         <Toast toast={toast} className={styles.toast}>
-          <ToastContent className={styles.content}>
-            <Text slot="title" className={styles.title}>
-              {toast.content.title}
-            </Text>
-            {toast.content.description && (
-              <Text slot="description" className={styles.description}>
-                {toast.content.description}
-              </Text>
-            )}
+          <ToastContent>
+            <Text slot="title">{toast.content.title}</Text>
           </ToastContent>
           {toast.content.action && (
             <Button className={styles.action} onPress={toast.content.action.onPress}>

@@ -1,6 +1,7 @@
 // A read-only table of rows and columns, such as the courses of one year. It is a real table: the
-// caption sits above it as its title, and the column headers form its first row, so a screen reader announces the headers as the student moves between
-// cells. (React Aria's Table is an interactive grid, and these tables have nothing to select or sort.)
+// caption sits above it as its title, and the column headers form its first row, so a screen reader
+// announces the headers as the student moves between cells. (React Aria's Table is an interactive
+// grid, and these tables have nothing to select or sort.)
 import type { ReactNode } from 'react'
 import styles from './DataTable.module.css'
 
