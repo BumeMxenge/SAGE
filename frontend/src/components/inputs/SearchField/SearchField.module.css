@@ -9,13 +9,14 @@
   opacity: 0.55;
 }
 
-/* The border is the field's edge: 3:1 against every surface it sits on */
+/* In light the border is the field's edge, at 3:1. In dark there is none: the shaded fill, the
+   magnifier and the placeholder identify the field. */
 .input {
   width: 100%;
   min-height: var(--size-control-lg);
   padding: 0 calc(var(--space-2) + var(--size-control-sm) + var(--space-2)) 0
     calc(var(--space-4) + var(--size-icon-md) + var(--space-3));
-  border: 1px solid var(--color-border-input);
+  border: 1px solid var(--color-border-field);
   border-radius: var(--radius-lg);
   font-family: inherit;
   font-size: var(--font-size-md);

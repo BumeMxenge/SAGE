@@ -14,7 +14,7 @@
   cursor: pointer;
 }
 
-/* The box is its own border: 3:1 against the page, so an empty box can still be seen */
+/* An empty box is only its border, so the border reaches 3:1 in both themes */
 .box {
   display: flex;
   flex: none;
@@ -22,7 +22,7 @@
   justify-content: center;
   width: var(--size-target-min);
   height: var(--size-target-min);
-  border: 2px solid var(--color-border-input);
+  border: 2px solid var(--color-border-control);
   border-radius: var(--radius-sm);
   color: var(--color-on-primary);
   background: var(--color-surface-field);

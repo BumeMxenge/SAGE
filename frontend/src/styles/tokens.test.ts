@@ -1,6 +1,7 @@
 // Reads tokens.css and theme.css and checks WCAG 2.2 AA in both themes: 4.5:1 for text, and 3:1 for
-// the focus ring and, in light, the field outline. In dark, fields have no outline, only their shaded
-// fill. Decorative borders and disabled text are left out, as WCAG allows.
+// the focus ring, the control border and, in light, the field border. In dark, fields have no border
+// and are identified by their placeholder, icon or label (approved difference 2). Decorative borders
+// and disabled text are left out, as WCAG allows.
 import { describe, expect, it } from 'vitest'
 import themeCss from './theme.css?raw'
 import tokensCss from './tokens.css?raw'
@@ -47,6 +48,8 @@ function value(name: string, theme: Theme): string {
 const surfaces = ['--color-surface', '--color-surface-raised', '--color-surface-muted', '--color-surface-field']
 const courseColours = [...tokens.light.keys()].filter((name) => name.startsWith('--color-course-'))
 
+// Placeholders use --color-text-secondary, so its check on --color-surface-field is the one a dark
+// field relies on to be identified
 const checks: { token: string; against: string[]; minimum: number; theme?: Theme }[] = [
   ...[
     '--color-text',
@@ -60,7 +63,8 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
   { token: '--color-text-danger', against: ['--color-danger-tint'], minimum: 4.5 },
   { token: '--color-on-primary', against: ['--color-primary', '--color-surface-inverse'], minimum: 4.5 },
   { token: '--color-on-fill', against: ['--color-sign-in', '--color-accent-fill', ...courseColours], minimum: 4.5 },
-  { token: '--color-border-input', against: surfaces, minimum: 3, theme: 'light' },
+  { token: '--color-border-field', against: surfaces, minimum: 3, theme: 'light' },
+  { token: '--color-border-control', against: surfaces, minimum: 3 },
   { token: '--color-focus', against: surfaces, minimum: 3 },
 ]
 
