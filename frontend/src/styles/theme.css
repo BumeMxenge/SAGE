@@ -39,8 +39,10 @@
   --color-link-hover: #2a6e5a;
   --link-hover-thickness: auto;
 
-  /* Errors */
+  /* Errors and warnings */
   --color-danger-tint: #fdf1ef; /* the tile behind an error icon */
+  --color-warning: #c07b54; /* warning icons, never text */
+  --color-warning-tint: #f6ebe6; /* the tile behind a warning icon */
 
   /* Borders */
   --color-border: #e6e6e8; /* decorative */
@@ -85,8 +87,10 @@
   --color-link-hover: #4cae94;
   --link-hover-thickness: 3px;
 
-  /* Errors */
+  /* Errors and warnings */
   --color-danger-tint: #2a1715;
+  --color-warning: #d08a60;
+  --color-warning-tint: #33261f;
 
   /* Borders */
   --color-border: #161719;

@@ -21,8 +21,16 @@
   width: var(--size-tile);
   height: var(--size-tile);
   border-radius: var(--radius-lg);
+}
+
+.error-state[data-tone='danger'] .tile {
   color: var(--color-danger);
   background: var(--color-danger-tint);
+}
+
+.error-state[data-tone='warning'] .tile {
+  color: var(--color-warning);
+  background: var(--color-warning-tint);
 }
 
 .error-state[data-variant='page'] .tile {
