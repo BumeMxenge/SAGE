@@ -22,3 +22,7 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+/* The heart takes the text colour, on or off. On shows it filled, so colour never tells the two apart. */
+.toggle {
+  color: var(--color-text);
+}
