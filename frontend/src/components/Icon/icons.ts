@@ -79,7 +79,8 @@ export const icons = {
   // Error sheet: Retry in "Upload interrupted" and "Assistant reply failed", and Refresh in
   // "Course history out of date"
   refresh: Refresh,
-  // Error sheet: the tile of "Account can't use SAGE"
+  // Error sheet: the tile of "Account can't use SAGE". Planner: the avatar when Microsoft gave no name
+  // (approved difference 14).
   person: Person,
   // Error sheet: the tile of "Transcript belongs to someone else"
   scan_delete: ScanDelete,

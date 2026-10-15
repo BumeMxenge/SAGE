@@ -1,5 +1,5 @@
-// The top of every page, and the only way a page gets its h1: a title, an optional subtitle and
-// optional actions, always left-aligned at the reading width.
+// The top of a page in the app, holding its h1: a title, an optional subtitle and optional actions,
+// always left-aligned at the reading width. A blocking error page has none: its ErrorState holds the h1.
 import type { ReactNode } from 'react'
 import styles from './PageHeader.module.css'
 

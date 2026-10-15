@@ -78,11 +78,13 @@
   --size-control-md: 36px;
   --size-control-lg: 48px;
   --size-target-min: 24px; /* WCAG 2.2 target size */
+  --size-tile: 40px; /* the icon tile on an error state */
   --size-logo-full: 96px; /* tall enough for the tagline to read */
   --size-logo-compact: 26px;
   --size-logo-mark: 28px;
   --size-logo-microsoft: 21px;
-  --width-form: 392px; /* the sign-in form */
+  --width-form: 392px; /* the sign-in form, and a blocking error page */
+  --width-message: 320px; /* an error state's text, inside a region */
   --width-reading: 760px;
   --width-wide: 860px;
   --width-full: 1080px;
