@@ -156,6 +156,13 @@
   }
 }
 
+/* Motion samples sit in equal columns, so their explanations wrap evenly */
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--width-tooltip), 1fr));
+  gap: var(--space-6);
+}
+
 /* Icons and logos */
 .icon-grid {
   display: grid;
