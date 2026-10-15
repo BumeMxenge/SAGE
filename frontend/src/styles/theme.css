@@ -5,7 +5,8 @@
    with the system while Match System is chosen. Colours that are the same in both themes, and
    everything else, are in tokens.css. Values come from the prototypes, with the approved differences
    applied (.claude/m3/SAGE_M3_PROTOTYPE_PARITY.md). Text must reach 4.5:1 on every surface it sits on,
-   and the input border and focus ring 3:1: src/styles/tokens.test.ts checks both themes. */
+   and the focus ring 3:1, in both themes. In light, field outlines reach 3:1 too. In dark, fields
+   have no outline and are marked by their shaded fill. src/styles/tokens.test.ts checks all of this. */
 
 /* Light */
 :root {
@@ -87,7 +88,7 @@
 
   /* Borders */
   --color-border: #161719;
-  --color-border-input: #6e767a;
+  --color-border-input: transparent; /* fields are marked by their shaded fill, as in the prototype */
 
   /* Focus ring */
   --color-focus: #4cae94;

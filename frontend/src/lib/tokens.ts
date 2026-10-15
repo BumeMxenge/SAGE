@@ -35,12 +35,14 @@ export function tokenValue(tokens: Tokens, name: string, theme: Theme): string {
   return value
 }
 
-export type ContrastCheck = { token: string; against: string[]; minimum: number }
+// A check with a theme applies to that theme only
+export type ContrastCheck = { token: string; against: string[]; minimum: number; theme?: Theme }
 
 export const surfaces = ['--color-surface', '--color-surface-raised', '--color-surface-muted', '--color-surface-field']
 
-// WCAG 2.2 AA: 4.5:1 for text, 3:1 for the input border and the focus ring. Decorative borders and
-// disabled text are left out, as WCAG allows.
+// WCAG 2.2 AA: 4.5:1 for text, 3:1 for the focus ring and, in light, the field outline. In dark,
+// fields have no outline, only their shaded fill. Decorative borders and disabled text are left out,
+// as WCAG allows.
 export function contrastChecks(tokens: Tokens): ContrastCheck[] {
   const courseColours = [...tokens.light.keys()].filter((name) => name.startsWith('--color-course-'))
   const text = [
@@ -57,9 +59,13 @@ export function contrastChecks(tokens: Tokens): ContrastCheck[] {
     { token: '--color-text-danger', against: ['--color-danger-tint'], minimum: 4.5 },
     { token: '--color-on-primary', against: ['--color-primary', '--color-surface-inverse'], minimum: 4.5 },
     { token: '--color-on-fill', against: ['--color-sign-in', '--color-accent-fill', ...courseColours], minimum: 4.5 },
-    { token: '--color-border-input', against: surfaces, minimum: 3 },
+    { token: '--color-border-input', against: surfaces, minimum: 3, theme: 'light' },
     { token: '--color-focus', against: surfaces, minimum: 3 },
   ]
+}
+
+export function checksFor(tokens: Tokens, theme: Theme): ContrastCheck[] {
+  return contrastChecks(tokens).filter((check) => check.theme === undefined || check.theme === theme)
 }
 
 export function ratio(tokens: Tokens, token: string, against: string, theme: Theme): number {

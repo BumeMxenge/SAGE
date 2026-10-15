@@ -3,7 +3,7 @@
 // as WCAG allows.
 import { describe, expect, it } from 'vitest'
 import { contrast } from '@/lib/contrast.ts'
-import { contrastChecks, parseTokens, ratio, tokensWithPrefix } from '@/lib/tokens.ts'
+import { checksFor, contrastChecks, parseTokens, ratio, tokensWithPrefix } from '@/lib/tokens.ts'
 import themeCss from './theme.css?raw'
 import tokensCss from './tokens.css?raw'
 
@@ -11,7 +11,7 @@ const tokens = parseTokens(tokensCss, themeCss)
 const checks = contrastChecks(tokens)
 
 describe.each(['light', 'dark'] as const)('%s theme', (theme) => {
-  it.each(checks.map((check) => [check.token, check] as const))('%s meets its contrast', (_, check) => {
+  it.each(checksFor(tokens, theme).map((check) => [check.token, check] as const))('%s meets its contrast', (_, check) => {
     for (const against of check.against) {
       expect(ratio(tokens, check.token, against, theme), `${check.token} on ${against}`).toBeGreaterThanOrEqual(check.minimum)
     }
