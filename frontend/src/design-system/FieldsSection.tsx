@@ -1,13 +1,14 @@
 import { useState } from 'react'
+import { ChatBox } from '@/components/ChatBox/ChatBox.tsx'
 import { DropZone } from '@/components/DropZone/DropZone.tsx'
 import { SearchField } from '@/components/SearchField/SearchField.tsx'
-import { TextArea } from '@/components/TextArea/TextArea.tsx'
 import { Sample } from '@/design-system/Sample.tsx'
 import { Section } from '@/design-system/Section.tsx'
 import styles from './DesignSystem.module.css'
 
 export function FieldsSection() {
   const [chosen, setChosen] = useState<string[]>([])
+  const [sent, setSent] = useState('')
   return (
     <Section
       title="Search, Chat and Upload"
@@ -25,9 +26,9 @@ export function FieldsSection() {
             <SearchField label="Search electives" placeholder="Search electives by code, topic or lecturer" isDisabled />
           </div>
         </Sample>
-        <Sample label="Chat box">
-          <div className={styles.narrow}>
-            <TextArea label="Ask about this plan" placeholder="Ask about this plan" />
+        <Sample label={`Chat box: type, and press Enter or Send. Shift+Enter starts a new line. Last sent: ${sent || 'nothing'}`}>
+          <div className={styles.column}>
+            <ChatBox label="Ask about this plan" placeholder="Ask about Alpha and Beta" onSend={setSent} />
           </div>
         </Sample>
         <Sample label={`Transcript upload, light only: rest and error. Last chosen: ${chosen.length ? chosen.join(', ') : 'nothing'}`}>

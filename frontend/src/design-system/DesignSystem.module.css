@@ -58,6 +58,11 @@
   width: var(--width-menu);
 }
 
+.column {
+  width: var(--width-form);
+  max-width: 100%;
+}
+
 .wide {
   width: var(--width-reading);
   max-width: 100%;
