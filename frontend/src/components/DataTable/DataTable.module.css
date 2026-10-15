@@ -1,20 +1,18 @@
-.frame {
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  background: var(--color-surface);
-}
-
+/* The border belongs to the table, so the caption sits above it, outside, as a title */
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  border-spacing: 0;
+  border-collapse: separate;
   font-size: var(--font-size-md);
   line-height: var(--line-height-body);
   color: var(--color-text);
+  background: var(--color-surface);
 }
 
 .caption {
-  padding: var(--space-4);
+  padding-bottom: var(--space-3);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   text-align: start;
@@ -27,6 +25,15 @@
   color: var(--color-text-secondary);
   text-align: start;
   background: var(--color-surface-muted);
+}
+
+/* The header row's fill follows the table's rounded top corners */
+.table th:first-child {
+  border-top-left-radius: var(--radius-xl);
+}
+
+.table th:last-child {
+  border-top-right-radius: var(--radius-xl);
 }
 
 .table td {

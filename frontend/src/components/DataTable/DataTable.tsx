@@ -1,5 +1,5 @@
-// A read-only table of rows and columns, such as the courses of one year. It is a real table with a
-// caption and column headers, so a screen reader announces the headers as the student moves between
+// A read-only table of rows and columns, such as the courses of one year. It is a real table: the
+// caption sits above it as its title, and the column headers form its first row, so a screen reader announces the headers as the student moves between
 // cells. (React Aria's Table is an interactive grid, and these tables have nothing to select or sort.)
 import type { ReactNode } from 'react'
 import styles from './DataTable.module.css'
@@ -15,30 +15,28 @@ type DataTableProps = {
 
 export function DataTable({ caption, columns, rows }: DataTableProps) {
   return (
-    <div className={styles.frame}>
-      <table className={styles.table}>
-        <caption className={styles.caption}>{caption}</caption>
-        <thead>
-          <tr>
+    <table className={styles.table}>
+      <caption className={styles.caption}>{caption}</caption>
+      <thead>
+        <tr>
+          {columns.map((column) => (
+            <th key={column.key} scope="col" className={column.align === 'end' ? styles.end : undefined}>
+              {column.header}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr key={row.id}>
             {columns.map((column) => (
-              <th key={column.key} scope="col" className={column.align === 'end' ? styles.end : undefined}>
-                {column.header}
-              </th>
+              <td key={column.key} className={column.align === 'end' ? styles.end : undefined}>
+                {row.cells[column.key]}
+              </td>
             ))}
           </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.id}>
-              {columns.map((column) => (
-                <td key={column.key} className={column.align === 'end' ? styles.end : undefined}>
-                  {row.cells[column.key]}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   )
 }
