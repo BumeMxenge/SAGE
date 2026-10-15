@@ -88,6 +88,7 @@
   --width-full: 1080px;
   --width-dialog: 480px;
   --width-menu: 240px;
+  --width-popover: 320px; /* the plan switcher's list */
   --width-tooltip: 240px;
 
   /* Motion: two durations and one easing, plus the measured periods of the two looping animations */

@@ -6,7 +6,6 @@
   align-items: center;
   justify-content: center;
   min-width: var(--size-target-min);
-  border: 1px solid transparent;
   font-family: inherit;
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
@@ -16,6 +15,13 @@
 .button[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
+}
+
+/* Borderless variants keep a clear border, so every button is the same height as an outlined one */
+.primary,
+.sign-in,
+.quiet {
+  border: 1px solid transparent;
 }
 
 .primary {
@@ -62,17 +68,11 @@
 .secondary {
   min-height: var(--size-control-md);
   padding: 0 var(--space-4);
-  border-color: var(--color-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
-  color: var(--color-text);
-  background: transparent;
 }
 
-.secondary[data-hovered] {
-  color: var(--color-text-accent);
-  border-color: var(--color-text-accent);
-}
+/* The outline and its teal hover come from styles/outline.module.css */
 
 .quiet {
   min-height: var(--size-control-md);
@@ -85,4 +85,10 @@
 
 .quiet[data-hovered] {
   background: var(--color-hover);
+}
+
+/* Only the icon shows, so the button is square */
+.icon-only {
+  width: var(--size-control-md);
+  padding: 0;
 }

@@ -30,7 +30,7 @@
   align-items: center;
   justify-content: space-between;
   min-height: var(--size-control-md);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-md);
   color: var(--color-text);
@@ -51,6 +51,11 @@
   outline-offset: calc(var(--focus-ring-width) * -1);
 }
 
+.option {
+  align-items: flex-start;
+  padding: var(--space-3);
+}
+
 .destructive {
   color: var(--color-text-danger);
 }
@@ -68,6 +73,13 @@
 
 .description {
   font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.detail {
+  flex: none;
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
   color: var(--color-text-secondary);
 }
 

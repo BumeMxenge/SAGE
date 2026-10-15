@@ -15,15 +15,23 @@ export function ButtonsSection() {
   return (
     <Section
       title="Buttons"
-      intro="Hover and focus are live: hover a button, then press Tab to see the focus ring. Primary fades slightly, secondary turns teal, quiet and icon buttons get a soft overlay, and the sign-in button darkens."
+      intro="Hover and focus are live: hover a button, then press Tab to see the focus ring. Primary fades slightly, outlined buttons turn teal (the same rule as the Select), quiet and icon buttons get a soft overlay, and the sign-in button darkens."
     >
       <div className={styles.samples}>
-        <Sample label="Primary: rest, and disabled as Continue is before a transcript is read">
-          <Button>Create Registration Plan</Button>
+        <Sample label="Primary: with its icon, and disabled as Continue is before a transcript is read">
+          <Button icon="add">Create Registration Plan</Button>
           <Button isDisabled>Continue</Button>
         </Sample>
-        <Sample label="Secondary">
-          <Button variant="secondary">Compare</Button>
+        <Sample label="Secondary: Compare with its icon, Compare as the icon alone (sidebar and assistant both open), and Done Comparing">
+          <Button variant="secondary" icon="view_column_2">
+            Compare
+          </Button>
+          <Button variant="secondary" icon="view_column_2" iconOnly>
+            Compare
+          </Button>
+          <Button variant="secondary" icon="close">
+            Done Comparing
+          </Button>
         </Sample>
         <Sample label="Quiet">
           <Button variant="quiet">Back</Button>

@@ -21,17 +21,20 @@ export function OverlaysSection() {
       intro="Selects, menus, a dialog and toasts. Open each one: hover an option for the overlay, use the arrow keys, and press Escape to close."
     >
       <div className={styles.samples}>
-        <Sample label="Select: with a placeholder, as an unset outcome, and with a value, as the plan switcher">
+        <Sample label="Select: an unset outcome, and the plan switcher. Hover either: it turns teal like an outlined button">
           <Select label="Outcome" placeholder="Choose an outcome">
             <SelectItem id="pass">Pass</SelectItem>
             <SelectItem id="fail">Fail</SelectItem>
           </Select>
           <Select label="Plan" defaultSelectedKey="a">
-            <SelectItem id="a" description="ABC1001F, ABC1002F">
+            <SelectItem id="a" description="ABC1001F · ABC1002F · ABC1003S" detail="144 credits">
               Alpha and Beta
             </SelectItem>
-            <SelectItem id="b" description="ABC1001F, ABC1003F">
+            <SelectItem id="b" description="ABC1001F · ABC1004F · ABC1003S" detail="144 credits">
               Alpha and Gamma
+            </SelectItem>
+            <SelectItem id="c" description="ABC1002F · ABC1004F · ABC1005S" detail="136 credits">
+              Beta and Gamma
             </SelectItem>
           </Select>
         </Sample>

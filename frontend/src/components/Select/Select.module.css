@@ -2,33 +2,35 @@
   --icon-size: var(--size-icon-sm);
 
   display: inline-flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
   align-items: center;
   justify-content: space-between;
   min-height: var(--size-control-md);
   padding: 0 var(--space-3);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: inherit;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
-  color: var(--color-text);
-  background: var(--color-surface);
   cursor: pointer;
 }
 
-.trigger[data-hovered] {
-  color: var(--color-text-accent);
-  border-color: var(--color-text-accent);
-}
+/* The outline and its teal hover come from styles/outline.module.css */
 
 .trigger[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
 }
 
+/* An unset value is quieter, and turns teal with the outline on hover */
 .value[data-placeholder] {
   font-weight: var(--font-weight-regular);
+}
+
+.trigger:not([data-hovered]) .value[data-placeholder] {
   color: var(--color-text-secondary);
+}
+
+.list {
+  min-width: var(--width-popover);
 }
