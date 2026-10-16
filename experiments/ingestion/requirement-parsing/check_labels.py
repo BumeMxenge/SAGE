@@ -1,22 +1,15 @@
 # Checks the label sheet before E2 runs. Every filled tree must be JSON in the seed's shape that fits
-# EntryRule, and shallower than Haiku's unrolled schema. It names each row that fails by its row in
-# the spreadsheet, and lists the rows still empty. It never uses the grammar, which the labels test.
+# EntryRule. It names each row that fails by its row in the spreadsheet, and lists the rows still
+# empty. It never uses the grammar, which the labels test.
 import json
 import sys
 
 from pydantic import TypeAdapter, ValidationError
 from sage.domain.rules import EntryRule
 
-from drafting import DEPTH
 from extract import labels
 
 TREE = TypeAdapter(EntryRule | None)
-
-
-def depth(tree: dict) -> int:
-    # Levels from the root to the deepest leaf, where a leaf is one level
-    children = tree.get("all") or tree.get("any")
-    return 1 + max(map(depth, children)) if children else 1
 
 
 def problem(tree_text: str) -> str | None:
@@ -29,8 +22,6 @@ def problem(tree_text: str) -> str | None:
     except ValidationError as error:
         first = error.errors()[0]
         return f"doesn't fit EntryRule: {first['msg']} at {'.'.join(map(str, first['loc']))}"
-    if tree is not None and depth(tree) >= DEPTH:
-        return f"{depth(tree)} levels deep, and no label may reach Haiku's {DEPTH}"
     return None
 
 

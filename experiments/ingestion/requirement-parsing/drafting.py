@@ -1,9 +1,11 @@
 # Asks a model for the tree a printed requirement means, in the form SAGE would ship: the shared
-# prompt in prompt.md, schema-constrained output and default sampling. Every raw reply is cached in
-# results/replies/, keyed by model, string and run, so a rerun never calls a provider. This is the
-# only code in E2 that calls one.
+# prompt in prompt.md and default sampling, with GPT-6 Luna held to a schema. Claude Haiku 5.5 gets
+# none: its structured output compiles a rule tree only three levels deep, and printed trees go
+# deeper. Every raw reply is cached in results/replies/, keyed by model, string and run, so a rerun
+# never calls a provider. This is the only code in E2 that calls one.
 import hashlib
 import json
+import re
 import time
 from collections.abc import Callable
 from pathlib import Path
@@ -28,15 +30,14 @@ MODELS = {
     LUNA: ("GPT-6 Luna", 0.10, 0.01, 0.50),
 }
 RUNS = 3
-# Haiku's structured output refuses a recursive schema, so its tree is unrolled to this many
-# levels. The label check refuses a label this deep, so no printed tree reaches the limit.
-DEPTH = 7
 # Room for Haiku's thinking, which is on by default, as well as its answer
 MAX_TOKENS = 16_000
+# A code fence around an answer, which Haiku may add without a schema to hold it to plain JSON
+FENCE = re.compile(r"^```(?:json)?\s*(.*?)\s*```$", re.DOTALL)
 
 
 def _object(**properties: dict) -> dict:
-    # An object with exactly these properties, all required, as both providers' strict schemas need
+    # An object with exactly these properties, all required, as Luna's strict schema needs
     return {
         "type": "object",
         "properties": properties,
@@ -45,46 +46,34 @@ def _object(**properties: dict) -> dict:
     }
 
 
-def _node(children: dict | None) -> dict:
-    # A tree node: a leaf, or an all or any of children with the given schema (none at the deepest
-    # level). The course leaf is split in two, so a min_mark comes with a mark leaf and only then.
-    nodes = [
-        _object(course={"type": "string"}, need={"enum": ["pass", "concurrent"]}),
-        _object(
-            course={"type": "string"},
-            need={"enum": ["mark"]},
-            min_mark={"type": "integer"},
-        ),
-        _object(
-            student_in={"type": "array", "items": {"type": "string"}, "minItems": 1}
-        ),
-        _object(min_year_of_study={"type": "integer"}),
-        _object(refer={"type": "string"}),
-    ]
-    if children:
-        branch = {"type": "array", "items": children, "minItems": 1}
-        nodes += [_object(all=branch), _object(any=branch)]
-    return {"anyOf": nodes}
+def _node(children: dict) -> dict:
+    # A tree node: an all or any of children, or a leaf. The course leaf is split in two, so a
+    # min_mark comes with a mark leaf and only then.
+    branch = {"type": "array", "items": children, "minItems": 1}
+    return {
+        "anyOf": [
+            _object(all=branch),
+            _object(any=branch),
+            _object(course={"type": "string"}, need={"enum": ["pass", "concurrent"]}),
+            _object(
+                course={"type": "string"},
+                need={"enum": ["mark"]},
+                min_mark={"type": "integer"},
+            ),
+            _object(
+                student_in={"type": "array", "items": {"type": "string"}, "minItems": 1}
+            ),
+            _object(min_year_of_study={"type": "integer"}),
+            _object(refer={"type": "string"}),
+        ]
+    }
 
 
-def _answer(defs: dict, top: str) -> dict:
-    # {"rule": <tree>}, or {"rule": null} where the field asks for nothing. Luna needs an object at
-    # the top, not a choice of nodes.
-    rule = {"anyOf": [{"$ref": f"#/$defs/{top}"}, {"type": "null"}]}
-    return {**_object(rule=rule), "$defs": defs}
-
-
-SCHEMAS = {
-    LUNA: _answer({"node": _node({"$ref": "#/$defs/node"})}, "node"),
-    HAIKU: _answer(
-        {
-            f"level{level}": _node(
-                {"$ref": f"#/$defs/level{level + 1}"} if level < DEPTH else None
-            )
-            for level in range(1, DEPTH + 1)
-        },
-        "level1",
-    ),
+# Luna's answer: {"rule": <tree>}, or {"rule": null} where the field asks for nothing. The tree is
+# recursive, and Luna needs an object at the top, not a choice of nodes.
+SCHEMA = {
+    **_object(rule={"anyOf": [{"$ref": "#/$defs/node"}, {"type": "null"}]}),
+    "$defs": {"node": _node({"$ref": "#/$defs/node"})},
 }
 
 
@@ -97,9 +86,6 @@ def request(model: str, field: str, text: str) -> dict:
             "max_tokens": MAX_TOKENS,
             "system": PROMPT,
             "messages": [{"role": "user", "content": printed}],
-            "output_config": {
-                "format": {"type": "json_schema", "schema": SCHEMAS[HAIKU]}
-            },
         }
     return {
         "model": LUNA,
@@ -109,7 +95,7 @@ def request(model: str, field: str, text: str) -> dict:
             "format": {
                 "type": "json_schema",
                 "name": "entry_rule",
-                "schema": SCHEMAS[LUNA],
+                "schema": SCHEMA,
                 "strict": True,
             }
         },
@@ -156,7 +142,8 @@ def reply(
 
 
 def answer(model: str, raw: dict) -> str | None:
-    # The text of a reply's answer, or None where it has none, as when the model refuses
+    # The text of a reply's answer, out of any code fence, or None where it has none, as when the
+    # model refuses
     if model == HAIKU:
         texts = [block["text"] for block in raw["content"] if block["type"] == "text"]
     else:
@@ -167,7 +154,9 @@ def answer(model: str, raw: dict) -> str | None:
             for part in item["content"]
             if part["type"] == "output_text"
         ]
-    return "".join(texts) or None
+    text = "".join(texts).strip()
+    fenced = FENCE.match(text)
+    return (fenced[1] if fenced else text) or None
 
 
 def tokens(model: str, raw: dict) -> tuple[int, int, int]:
