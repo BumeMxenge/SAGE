@@ -8,14 +8,14 @@
 A string is a field and its text, as the same words read differently as a co-requisite.
 
 - **Development.** The 58 distinct requirement fields of the courses the six Electrical curricula list in the 2023 and 2026 handbooks, in [data/development.csv](data/development.csv), with the course lists in [data/development-courses.csv](data/development-courses.csv). The grammar was written from them, so they count only as development evidence: E2 reports the grammar's acceptance share on them, and they decide nothing.
-- **Validation.** Every distinct field the Architecture, Planning and Geomatics, Civil and Mechanical entries print in the 2026 handbook, less the development courses and any string identical to a development field: 81 strings, all labelled, in [data/labels.json](data/labels.json). The arms are compared on these.
+- **Validation.** Every distinct field the Architecture, Planning and Geomatics, Civil and Mechanical entries print in the 2026 handbook, less the development courses and any string identical to a development field: 81 strings, all labelled, in [data/labels.csv](data/labels.csv). The arms are compared on these.
 - **Test.** Chemical Engineering and Construction Economics, ATP-1's held-out departments. E2 never reads their pages.
 
 `extract.py` reads only fixed page ranges, taken from the contents pages, and none is shared with a held-out department. The three validation departments are read from their first course entries: printed pages 73 to 89, 105 to 113 and 144 to 156.
 
 ## Labels
 
-Each tree is written from print into the sheet's `tree`, replacing `"unlabelled"`, as JSON in the seed's shape, by the conventions in [prompt.md](prompt.md), which also govern ATP-1's labels. The prompt was committed before any validation string was extracted, and the labels before any model was called. The arms read a string as printed where the sheet gives that, and as extracted otherwise. `check_labels.py` checks every tree against `EntryRule`, never against the grammar.
+Each tree is written from print, as JSON in the seed's shape, by the conventions in [prompt.md](prompt.md), which also govern ATP-1's labels. The prompt was committed before any validation string was extracted, and the labels before any model was called. The arms read a string as printed where the sheet gives that, and as extracted otherwise. `check_labels.py` checks every tree against `EntryRule`, never against the grammar.
 
 ## Arms
 

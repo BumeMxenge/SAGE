@@ -4,7 +4,6 @@
 # the page ranges below are read, and none of them shares a page with Chemical Engineering or
 # Construction Economics, ATP-1's held-out departments.
 import csv
-import json
 import re
 from collections.abc import Callable
 from functools import partial
@@ -59,9 +58,7 @@ VALIDATION_PAGES = {
     "Civil Engineering": (105, 113),
     "Mechanical Engineering": (144, 156),
 }
-LABELS = HERE / "data" / "labels.json"
-# A row's tree until it's labelled, as null is a label: no rule
-UNLABELLED = "unlabelled"
+LABELS = HERE / "data" / "labels.csv"
 # The fields in the order an entry prints them
 FIELDS = ("Course entry requirements", "Co-requisites")
 
@@ -152,9 +149,10 @@ def validation(development: dict) -> dict[tuple[str, str], list[tuple[str, int]]
     return printed_by
 
 
-def labels() -> list[dict]:
-    # The label sheet's rows, each with its tree as JSON
-    return json.loads(LABELS.read_text(encoding="utf-8"))
+def labels() -> list[dict[str, str]]:
+    # The label sheet's rows, as Excel or Numbers saved them, with or without a byte-order mark
+    with LABELS.open(encoding="utf-8-sig", newline="") as file:
+        return list(csv.DictReader(file))
 
 
 def wording(row: dict[str, str]) -> str:
@@ -201,11 +199,10 @@ if __name__ == "__main__":
             )
         print(f"Validation: {len(sheet)} strings, matching {LABELS.name}")
     else:
-        # JSON, so a tree is written as it is, with no quotes to escape
-        columns = ("code", "field", "page", "extracted")
-        rows = [dict(zip(columns, row, strict=True)) for row in sheet]
-        for row in rows:
-            row.update(printed="", tree=UNLABELLED)
-        text = json.dumps(rows, indent=2, ensure_ascii=False)
-        LABELS.write_text(text + "\n", encoding="utf-8")
+        # A byte-order mark, so Excel opens the sheet as UTF-8 and keeps its curly quotes and dashes
+        with LABELS.open("w", encoding="utf-8-sig", newline="") as file:
+            csv.writer(file, lineterminator="\n").writerows(
+                [["code", "field", "page", "extracted", "printed", "tree"]]
+                + [row + ["", ""] for row in sheet]
+            )
         print(f"Validation: {len(sheet)} strings written to {LABELS.name}")
