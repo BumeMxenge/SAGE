@@ -15,7 +15,7 @@ A string is a field and its text, as the same words read differently as a co-req
 
 ## Labels
 
-Each tree is written from print, as JSON in the seed's shape, by the conventions in [prompt.md](prompt.md), which also govern ATP-1's labels. The prompt was committed before any validation string was extracted, and the labels before any model was called. The arms read a string as printed where the sheet gives that, and as extracted otherwise. `check_labels.py` checks every tree against `EntryRule`, never against the grammar.
+Each tree is written from print, as JSON in the seed's shape, by the conventions in [prompt.md](prompt.md), which also govern ATP-1's labels. The prompt was committed before any validation string was extracted, and the labels before any model was called. The arms read a string as printed where the sheet gives that, and as extracted otherwise. `check_labels.py` checks every tree against `EntryRule`, never against the grammar. The finished sheet had a conformance check against print and prompt.md by an AI assistant (Claude), which changed no tree. Every judgement call is mine, and [data/labels-notes.md](data/labels-notes.md) records them.
 
 ## Arms
 
