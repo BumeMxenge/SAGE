@@ -1,0 +1,44 @@
+{
+ "request": "119ee91d1f1c7dab9b50c4b34ed13a4bb0fead391a993914b4bb5d65cc306b50",
+ "seconds": 1.84,
+ "reply": {
+  "id": "msg_011Cg6n5V4RcbEy41Z8SnwHF",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSiQgKEAgSGAI4AUIIdGhpbmtpbmcSDFxLNOeuX+PunE/ikxoMK4nAovtbm8SINVb5IjDGP3acEGqoW+VvhBXLATAC5b0WfWa4mr64oT+68Ern9XL/iUs2n6GY6UxKKL3YpRIqpge/6btDGGrJN7Yq8Prjv1YfpWtH4LKALdvgXqUHQ+2HRg7X5fX5TkUqe928cXCIXiB0aPjhre0583XbEXfVfl0iyIageRPWbCD5+7kUYLJUvPe1gLfi80W71y5V94gDWYurxyPOKITwGDlFm+VxT6AwyoBdkvhCHbT693GuvCa1qBpz7YStbwNBPeaEgBmLQvI69cxOi/+os9HXb3BfgczmepNgDELnBYjnktI9WexyL+i6NqxhkiB8AtDpxdhcP40duY3OSzgT1j+T0s22eSvRBNvoUjlEPlO61/e41wYLD0iKObepVsv045LlOma+Te5tHKgc+sb9EHKn1vXnImG9/twgFDojyO9ewRdFWYCpTdVxLsoglmjuPBp5lgeeauaaAoP/UI2zm4rrG9R/kKx90uPi9vzN5vshIFHwVFqvVpxKzN2TyjOynJ9BVhJrvJyO8xrf6l5gwmy9kh1PQw4uodlZi1edntqQ3yx0TWAEkmIdeDN4ypR7KrRtqpmI/mqeJv7G/sDjGoZ+4vZ0j8c0Yx5SogRik3fKXrArLVB4yi9Oqsh5aums5GFVb8t6iCEqF4NJFwKTWVOz7/G7BfuVOGcvUGaON+XbhXk/wujE/LsKL81TYdBI1w58B1c2YDeHqvBi4qURX/v3QZ2BjWKX63zmPruBySquEqfBwk+8WIrYkz48Jeab9j90OveCuH3xVZrJxg/rbJRNnMBGUqk0TrOfeUQoN2X5tif783Ms6Ma0E0VEF7Dlj0WTseBTOcXTwHJZOHuv/5X8Yrla6INiJ1jRVKXsGcNAGB4ge3ckUGR7asBBIiO7bPlWclPE96EW0ElEOPFjOaSycJ8SJoBSBIJripOrbWVMby7ni/pKfAcHm5zcu1JY4aZ5SP95Nq7G/OvZB/iy+tEt6kMUztle8pGXnXVeXSVXD8aQfwlY3BzSTIw7pgBH1/5Rhzx1rgLJckQX20xDd0S5/wfFc8qte0e9Jtz/9rjLhNh98tsNRhtEJq+yLDsTFfz83OeUpbmcOTAny3rp0g3lxImwG8qLXgOHLGapJFVBhvLirUV+XtxLf+UchnqGdS4KhY8e0mmukGccrhrvEa+CyK6Jao4WCtd7Bkrnxw8e7NVYVH3Q1BMD2QM3I0ICzV1mi2kIkJr5/V9BDCc1Jt+/xzZ/uw331ROHv7s8iGU6pkniuiF7hcF53rehN0zbR3SaGnZ1xoIYSpFyBMJICz57VzMZU1k2tVOS96wzGAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"refer\": \"Students must be potential qualifiers (i.e. anticipated final year of study).\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3232,
+   "output_tokens": 188,
+   "output_tokens_details": {
+    "thinking_tokens": 147
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

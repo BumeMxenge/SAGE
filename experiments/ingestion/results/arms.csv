@@ -1,0 +1,6 @@
+Arm,Stored unseen,Wrong unseen,Needing a person,Leaves to type or fix,Model right first time,Model same on 3 runs,Cost per pass (USD),Time per pass (s)
+Grammar only,48,0 (below 6.1%),33,99,,,0.0000,0.0
+Model only: Claude Haiku 5.5,71,5 (7.0%),21,10,75 of 81,78 of 81,0.0351,142.7
+Model only: GPT-6 Luna,71,11 (15.5%),25,10,66 of 81,73 of 81,0.0077,213.5
+"Grammar first, Claude Haiku 5.5 drafts",48,0 (below 6.1%),33,14,27 of 33,30 of 33,0.0171,78.8
+"Grammar first, GPT-6 Luna drafts",48,0 (below 6.1%),33,21,22 of 33,31 of 33,0.0048,114.0

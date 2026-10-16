@@ -1,0 +1,44 @@
+{
+ "request": "58aaad045f6bf315a49d8db23fc79d8d448ae09c7ddae409f84a54683acb9864",
+ "seconds": 2.19,
+ "reply": {
+  "id": "msg_011Cg6mVTdeny2xdv88P5n15",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS4QgKEAgSGAI4AUIIdGhpbmtpbmcSDHzq1HbE7R8F9gHcrhoM1606LaE/nMm4xWfmIjBz+L5yW+nGp573qfhh/z+rA2OBRIG/jySXK/0kzKu98i1v3zOhpkttUwYBxi9LZH0q/gf0q2tNZzvltkCSL3TB31dK57wi5RME046kV05K+YC2ACVvnT4EMmugXpZeIMl0KoB+rdNavi/7jgMZnqmr7XIjDZIjwUHP6f+wK3K45yqvoDf6AzwA+F2EFluxlxQh1kFnokCawECqPbcfgXi+6gScaMGvZOYyGHGfdVngIhjzyIShGpLV8ORV4Hk0sondVflDzQVhA9DfEKWJvgbRyPB37biQ1Jw2IxYXOfWDDIkftzzYHh9pe3AdMiWi46Ch28q2Gy5vwLz+oDJ4iGJF7MyYXcRjZCq74tYNGEFR+VDqv1XouW6ed8YmfXQRa1QaHssqWuHT1WP+iod8rH0jvGtAe/GhMqAGMO2cVfb8dJ2dfrf4mfXf2YHn54NOFoLIoDF4XoXzu/O/zAVW92P7Yd7KEFJbAV/fUrQbfxIGqJjU+jL8L54DShjyrRmu56yY7hDMZHEF9DwC1m7eLOa/sQLPQX0vBFf5wN/ky9TOGCk86F3phn5URHB2tE9LjVJGVCBzf1YRK7OdCNOdoiyXLEGf3zAE4bygcLbe+NlMI71aidRZuzlxDJqRwwSWqh8YYxRfD6DXnYSmD6oG7npiWZKXXgIKrq2U+5cDSblp2U2NvNYaUUP09V0JIJ0mpJeX+klKDoYAUTR3l+adar7f1Ry4vC/iRFGRAEpiGBQPO8I/0oq6S5vxHWVl+3QgTGwIZinjKgXZCgWqAG7oPYopMo0kUk3DSFeDaGdKY9WtIcKVDXk/7Rhv3XEYseUWwcdiPNr/yfadEyXuOvyo4x5yTq1tM0WVpM7fjaz6jSqlt2jjWXmXSUtDrA8fHVip2SEb9ZPu/aoGZ085v4CPE0x02xlTKOf/+GyU7g30+ObRTH74OZ4Ni3nOnRYI4yS0YUAHVXmKYSUmXsm8jLGO2lE7ze8oBtJNGultjvvBJ3O0Ye/NIjWWbV5USx425jFkPTAvHQwqSKHjbVRnQn6Lx93plMDLy+mrEicOeu1qYosmjjKVUDl7Aab0Hys7g5HZURxLxwIJp22LPqbCojQubh5Yj5okZnyUbFyLVp7ZYK6WVeredigw/wtgroHGOPF89c4ZUW8QluRmr0XgMQLipH2HiWv7z8ajAmqnfXbwwpOwnYF6Kc9Ztt1xha4p50/t6xjYswwLq7sRlxV6zCfHFEh14sby00wxfQSCYCpIRwj0OrfyhniIPAM2GDsOAwU4/CAmgtUw1Z5mCaKZr8H97HQ+CozLEEqb2oEVXZdpq8x3YhEE+e1cngZqbqEaQOSJoRcPpAFDYzeArnlGi1lfhzkegSWwyk6oN0duKUu4PRgr8rzkpv+AN4cBQwUExc/8RuLPhaKERD0cMu2oweIxXwBNeRgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"any\": [{\"course\": \"MAM2084F\", \"need\": \"pass\"}, {\"course\": \"MAM2084S\", \"need\": \"pass\"}]}, {\"course\": \"APG2014S\", \"need\": \"pass\"}, {\"any\": [{\"course\": \"APG2016W\", \"need\": \"pass\"}, {\"course\": \"APG2040F\", \"need\": \"pass\"}]}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3234,
+   "output_tokens": 395,
+   "output_tokens_details": {
+    "thinking_tokens": 265
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "request": "d273c0f2f9b04a8ab75b1b1e9e3fe5ad9c56d9233136639c992ab26b88c3d4d3",
+ "seconds": 2.04,
+ "reply": {
+  "id": "msg_011Cg6mxyw4WUZwKZhz7QTFe",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSjAkKEAgSGAI4AUIIdGhpbmtpbmcSDBeXDeGKfkC0RBmEpBoM/5aVYAt69C+PQKDcIjBnrVhV34ojx5ysNNa+RcYjZDBXObzWwAZnZZq9rT49kn7vhj+nZYou0ANdevFpaLwqqQj2t850zmTnJbC0GGjow+7dfQHtvGQYUNMCSUP9AewOs8w+wiaOrjvAER8txOiz/0Ymb3dxjEJjjxkqqCKBi+xTim/lnmLbWCdFx2/2HGF5D/8PkftXIAQcGITfIKice2zn9VEygGWlaQw75CRtlL9A7ysnJFDW423GIi1qVT098pqZm5RvhgFSFVC1B0ZAdewBeuexMH4qik1Vj/BEhR/8C3sV2y6mWIqWRObcY9Kf6QzMvZyvvH5CxL6xWX+iOHByzCzIEsEF69ICwPbr6b2d6VvCPxEJURX8FGQ5kIpYg5L6yhjevw3YddMSNFxbsCdDivAvwk1mMy1kFcj/0t/xJIb7tFXnfCr1Fvq+4n93V+PHmDDvENLudSCdOLiPwaNKXsKs6HDmBpOG9l3PqOnG3a8h5etq75XDn/dPUGxqI43iSo+SR3Mg1hX+5SfJutDbMn9j9by1q55etNLPPafcWzmipoUDqsBBDWLYEPFTe2w3gFSot3wC56hNgL1vxoPsusf15TlwwceLdCZ32eDBVjoWWxxlNLA7Ooa7tRMq9k3NmqNf3/gMOs8J5AXRup4i4sNR0stWgBKnB+4EY4PuS6yyI5tT9ZW1zd9dWPcxuH4rP1rfdVqPiRCMj9UxtWxp1k/PI4IV51sgS/wh4sWZLQEfu4BO1Q38p/spI6XzhCPHcRs/IgniQAQwFDdX9JTEh9rcboow0vdR2PJA2WGQaYGD3PgKx+0XsJ0gsPyETy6Rs9Wvm9CDh1+MV0To5Q/UA2TFWWyGe8CstS/zKwn9Bw9xEyQEtBx33weObNEts8D/3YhEZcqO5wuh/ynatp6tzKD+uyCGo3f5HsDv/Tx3kFAeCUZPBqEvK9nLB+SOqnp1eI3TJiBZRmy7LboYOZjbYG9E7Bhju3vZFtbDEtWE8F0EqWPKxFa8YaZ1UujVaj8RxIkiJyUBN/rdsCRuZPJHpecX4gNq0+4EBC6gVldRGDRil6JxQFpIYvGyK/tCVmnKOosHNWgEpMWBTUxkM31Gs0bbzXu7CmqPQcF79Duz3c3me/ICaFBOzvo+PhIQKbcPcPRWabDtoegq7JHTN5gKuUWs/c56WdxI6bCRwAfwXHUNSl43YHpGm3Poq0m8SrZXweRYmFjstr9xGsokKhcjTQuBKDhHkRfPW5PnEES3niscxufdjCLcokjuP/DOr++wk2Wlux7bf4SAWV7XKYdxXAfew6KhFSGBtPAKoT0DY2gDB7jGD5KJvQxENv1AZ7uGA5RbohS0+JLm4ryOTvZLT7ask23DmKa1fYHMkRLHuhjoH9jV8UFX8voLVoZGZFBrUvRHI0HSKhxFW5zytbMfow/K2qtPFePkfTqT7oaZzv2QqUS5C49/loI7dN7nDtJxQM+1UgdkTrb5dGEjLxv7Xf1H7ZRt8oYYAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"any\": [{\"course\": \"STA1008F\", \"need\": \"pass\"}, {\"course\": \"STA1008S\", \"need\": \"pass\"}]}, {\"refer\": \"DP\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3218,
+   "output_tokens": 321,
+   "output_tokens_details": {
+    "thinking_tokens": 249
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

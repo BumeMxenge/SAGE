@@ -1,0 +1,44 @@
+{
+ "request": "9317013ac40cd664147e7bc89a40e698049e759d559c2c04d77eee00be9cfe06",
+ "seconds": 1.22,
+ "reply": {
+  "id": "msg_011Cg6mmdXf4z56mXjxKbV2X",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS6AYKEAgSGAI4AUIIdGhpbmtpbmcSDPDKgF+GYIiJmQXurBoMphLqpNXtW3hI1SNkIjDpNyN8MPo7xTU3hLhzH1Vtr74lhhXYejxure6zr8M2NReeIAghVY9nCA5MxrsXDS8qhQaVeH53znH4ClEfw12/ID1WGxAFsZNv4jxkLz6xyvXajC0iriAgIQhLiTgHId5OfbG7W3ikmixzklIMPmTxn6BHjk8AeBGO52jIxkFB2DRnu7xcR34Ee5bfsK5GVJx2QhbbOT0CeIpFrLYOlERpWzFD41dXBa9UjXubMB66gsU7Eu1pHjixPqrDIn/WZRfiO0V/8yG0UxHdY0t/bBZMIqakADtiobbi4FvW1rsybUY9obWGtoEU1HgfWzjmX4yMC0H8/Vs0wd9ElyodKCitwUAAZspDX7upa8XOraWLWkqaairdqPCpYi0i+DyYAYRNlnUqgTnmJGohpIArxS7c1D1berae80s9OFk3IiEhohgMkbRu65zQcN8R0XUPmsLpM7bqU4EEN0aWSxmQF2voAJ1UAAx2pX+M04qVRyDFwCTxnIjqKKS/8wRV9Tfm1Tql4GV0uxhJeBmzqbZwK3fxinkyPaBoYZgbiFPVcBuNp3d8kq/tVGBuFPULcSa2YrS3zzHC9jaXMq5IK5whg4zscpfB8iybbpOTX4k/1YrD499pCWvobhO3ava0azcBAwJbo5ga8zdxLj9SoiP1537vBSi9iZCFXod/5IqY5c9ZKRA4d225WAu+iHA0A5Us45NmRdrRZV7XIq4uMR1GeGVykeQiQuhxvq02GP+JLqT/VQPCaOaC+ANYIZuOkPECFIXlH9opZ7o53BKJy+oY92N5dNsvDn3M8BCnCAjHlqFQiu7KR7Izx6X6Yh05nomYCUe4ad8EVlHonrznestepUCAyYaAeAOv8hZC1mzk3pFkBNz8zYum7Mnas+IQ2l098VESH1mbbe9Fxz1W+0m3Grz6TcCWkIwGAeFt9QhBY90gxE8hPi6Xeb6R7SS1yaaiNfkRFyjES8N0gQJNufUNr/9jbLwYPEsNNiWRHH1yt/nPBSZZBq7mWzXKBVghCQmzs5jW3KwDw0iExQfa5zsWoR0wib10OeiaJWTsd0bCCXkCIgWwO4Vf+ZNUwKri39XhpBg9EcucG7hDMhgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"refer\": \"The candidate must be able to graduate in the year in which the course is taken.\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3229,
+   "output_tokens": 132,
+   "output_tokens_details": {
+    "thinking_tokens": 95
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

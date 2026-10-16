@@ -1,0 +1,44 @@
+{
+ "request": "ad6f96bb3b5f59908dfe6e09107f2e37b88bbb77adf07d9ed14e9ad33dffb2a5",
+ "seconds": 2.93,
+ "reply": {
+  "id": "msg_011Cg6mTrXFmGJkYitYURyt6",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSuwoKEAgSGAI4AUIIdGhpbmtpbmcSDN4pdPmQdEwom7RN2hoMb+qgEb1K45T1v+s6IjBI4qswjpk4vH2PLMafUkRymHZtn9rGu4USgSc3PuvQSv4T0l6OJODxFNW2aJJH/8cq2AkBLMHtdfPHE8Uky4HhVdK4h2B0ts8GjSUSE9EPW9wWkcij9rOkGmfDKOl3h0U5GT5Y9v6HSt37AGhyKfGX519+ORgX2RDtWK0WpugVDScb7mxLIyqBKOGCMNG8/ynJ9BV22WInDalL3eRLPOJZCtij7foHJ/AR7uQkbJBe/1X2YhtOL68J7tjie+5wSFvGFMOHjqPihwouwOCN370Yc4FVbuqi7im3hwGa5Oj0pG9rTNKxPu63DMMBeiLJtpPkK6Liqu6bdXkFQONoq+4tvLS40cWXkGlY34ENqT7ouLbPJIk6QEpHTvz9b4ewbI6x3+QLk2Hbo8wTV1QtR9szgsUVlrVcMjcOJ0mq08aW+AEicEjHlOxBa70fygDDZzTTqNHV+sr1G3rJ0GibVsrCVgNMgtr6uRI+Thkl/y61bGqCtg9oI5Ro8og8vzrusBB3dODptMtsnPBfeQn+k9jd5Gt5YESoZxFwgGJY4AXJoB3VOs9XlNFjV8ILmMmQdOXpIhlfSfWdi62C/XuXcQjXg+qJEpAgtvZqtuPbAmdsWV4/q1Lwi0OJ5javM5okKuc665RZQrLvSMUNnNxnj3NEV7dvwtWobtOSJT+FSEqDhwkEdwkutX2Lwsb0CmZ5/LM8Dwe0TYX3aqoyL7tEj2NejhsoLqhQ7qgCt0Tjg7evAXm6wFIIxnczAq5e1oe5WBljTiO1xFJXRIFYdIABaVjhup2vs9J2dfGx6jShHRrYHGEncN8GPMpou9A4Q3lYSzkQ/BYGFOA5ChB7wzrrs62AZtPQk4qf+P/SdtaiaSRk4/ZQ49KCSRxyMFQEVfQscWXAz8FmSUvRw//lMkGi7J16upCJ+zYkad/RwZadLI3kK7K884Jo2nCivK3t4mryMa+XFJXXJE3qlY01Rl3/9oOsg8nKVG1SI+8wbVpM0WKa+76DDPptm2JPfUsqZSftuMBj/IeB5BiC16kokyBTLxX3Vj1J8fM+TVNkjodp5FvzZTfZp/CZP65c0t2S9T3p4H6Lb7JxzF06QDymCHv/bkaERLkW5yI2s4TJeur8hf5mdYUgE9Xuq2TnK3TFgLMtShwy7pwuXbj6lgtVmTZNzrXKaha5wMsImz0U/RTRUQKi2J3srcq3inz7fxRzAIpuRxbwrI1s+SyG0a+HmwPCwowu+ujfUTs3tdUeiVPCbsL2CPy6TUkgKcPiVxa5w4viQHZtqoCv/jJF5Bgr8d3rBV39fbC1JUOt14+GkmHI5P4o8Qs5W0tUCnook8iUS5uKbtuUk4c9Pj7SYN9dO3KKYv9xn28B26Vqk41bzg71JDZ7iSXqv8nRUvo97qj3DMzLX0NdabaDqUETcIlaqQAyYKKg+Js2e55v4sAAOodwV9GzfmpY/D8TI0fovZla4O4xNsvwIrxW6Cuv2ExRC2m4r4xZ+xp46dtn7eIAdGcUDdM9UASkX+80VS8igzg0OG0lFTOCqnEAuy+t6HPP4+W2DHErcaz71jnCTGDVPkUiBMiV+wmJBzwkdefREawMb6/SqMv0BQNSUpYzeldEN3CWnsIa8k3XuGLHJyHXLe73GRpSAExpSfadz4IX69DAAISzANKnItbPhXcjUux35jZF3Ax7OAyhWZCH4Or5SB9q5BYgwBKJdyuS2GjyiKyyGAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"any\": [{\"course\": \"MAM1000W\", \"need\": \"pass\"}, {\"course\": \"MAM1021F\", \"need\": \"pass\"}, {\"course\": \"MAM1021S\", \"need\": \"pass\"}]}, {\"course\": \"STA1000S\", \"need\": \"pass\"}, {\"any\": [{\"course\": \"CSC1015F\", \"need\": \"pass\"}, {\"course\": \"CSC1017F\", \"need\": \"pass\"}]}, {\"course\": \"APG2014S\", \"need\": \"pass\"}, {\"course\": \"APG2015F\", \"need\": \"pass\"}, {\"any\": [{\"course\": \"APG2016W\", \"need\": \"pass\"}, {\"course\": \"APG2040F\", \"need\": \"pass\"}]}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3267,
+   "output_tokens": 600,
+   "output_tokens_details": {
+    "thinking_tokens": 360
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

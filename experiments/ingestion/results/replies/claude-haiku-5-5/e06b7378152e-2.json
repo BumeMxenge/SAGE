@@ -1,0 +1,44 @@
+{
+ "request": "29d950c80d4206e47f7809ca4ae8df2125f2c212b9560901f1957cbf8700e0ac",
+ "seconds": 2.57,
+ "reply": {
+  "id": "msg_011Cg6mbb2ZeWh6AXQq4CNwt",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSyggKEAgSGAI4AUIIdGhpbmtpbmcSDOnxtnJh3gJMDMItZhoMY7zJ5wH5NJypMkatIjCZ0cbBhJ+kyR2SMvpZEGIOYRONts5YZT6JQfXOVJpczJj0QagJ1GsI3GixkwiYCUYq5wdsHxTEUpmu7QF2DXxg2HJOqmxiHrlxboPydwUA2s1MxpK7dTzqmsUUTTnBJjBwjuhL2I2Dxp3aIaVjLCAEvsLozfJkJ3ctCuaAFKas9J35mAzXBN6oqZeMSVO2682zKpNhW629AFfY0tFRz+EqrrJEbDptda/okas8dAVySpMyQLcB8uEC1yM+s8Y6Us+RcGa3GrkxS/oe4So0FTZ6BzG/7mYYo8OD6eDe1ZbRjHJl58tiWVzxnPXTZ5/OMsf3Vp3nP3uWc7J3rnkByTsC7+BOpirCBd0WFvKdpc9Oo+cvet942w7TOrLM78RsJWVyU8AisWkaKwj4WwMWJLeOSIHnG7sZN5hR4ypVzDCNll09W1xt32zh+wD9FhpoTPMjPeOzMPey+Ek6VB+dgCTtI942VKcefnDSO4thLmWhM64uleI3MBE9Zdh9IzO9A2aY+QMONVJzH3Qzfun8Ab9J1MjgVfziHxaN4GLBbAkMg1TfYDEQdaXW4CxCNxg/h7j1jkI+0+d8smazTF+O0nFrEUDh6vgiSfU7leKWhFC5mKWPdXqVqZGICFDpqzxY+m09zYtWeHwDmDMmIWFPyRWcdxOnecmTPfq01Cx11rQoAjQARIO7S33XHaoAmuk3MfIEP1FLYvH9XHZ7oxOHicPzLzM9mozYPoe9g/yK2GHVawiDHPzO+URVCUH9QLCAasEctqxqF2QL2BbEedPg2iYYYbhVdLdh/ByECDI7xQYIYD/cdk9CvVF+RKSoKGW3pMZ9nVh4C7y1Yz17oKNt+4YfeGA0bbGHAl8tAnjxTVd0Snu6AKIZtlG9hI293/su2NMtR1hzB3REB4fSFV98H06twPhRB6Y+CK6LOnnxuCIK7U7KzXvdLD8qZe04ZT5KeevW9lVmiMa9J7zX1j9gd3kYwW8bYduZtW9iF9qqtejJliXl5IurSTYn0QlY7aBUEoBFA5Hzxf+XCflPzmsNgutAh9chVhsRambsv7X+4qPSYnUYy+7rbsUPqro4MkKmmlDxGJYsNHlXJA9MyxVW+lrVKXvukSgelz9k4+3mmwPQH2RePYdLerQFNBSyroX6O0Aisa25zMZwwJ5GgRM4lUPXjHKsGPhY72DQUQTRlq/kPfVd5skNrVfGbpLaHVC5XDLGyxYsjYZ4GMDS/vzd4qczC0kwjXeIvoI9YSKwETjQ/r65J2586MWjq7i1UtuLrg0fUpVA8v9Vzt57GIRhxJkMLrQYu4W4bSgjTvIWhA9TBYZFZEnCZKyZSU9EdAReyepFEGpN10hqQ0tKqk/ahVhCgYZHVZL3eFpArUXNqi8NsWRtbvfHW6RV2bIYAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG2040F\", \"need\": \"pass\"}, {\"course\": \"APG2041S\", \"need\": \"pass\"}, {\"course\": \"APG2019X\", \"need\": \"pass\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3225,
+   "output_tokens": 244,
+   "output_tokens_details": {
+    "thinking_tokens": 170
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

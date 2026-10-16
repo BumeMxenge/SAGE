@@ -1,0 +1,44 @@
+{
+ "request": "a6f0da4321ce5b3823b7818a5484c98124115244b1b8fbc695634c4ab13b48b1",
+ "seconds": 2.04,
+ "reply": {
+  "id": "msg_011Cg6n9y2nKgxdNR5c4oBik",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS7ggKEAgSGAI4AUIIdGhpbmtpbmcSDCymJmY1oVI/xwDSwxoMJDN6HRB4fETt+MzZIjDwUwW8gmCvvk9/MzLFtWR3yqNFlLZvyOAN521+/wOROhD/Mx2hpGysMIqPHicyHs4qiwi9TpRpoFC9cWVk4BKzSsOyKKNKAOnnxA0xi4HxvvCRKoV/s1gLFjsRnVuHXwHnNt5yKzPda0nuQobQu251kDg+sZGFKZRtYSdreyZt1H33XZRrFSziZL+ag+v9Zl3Ad0C+whk5ysHFoifRHd7c1Mun4ZwEcdwB5bbgeYPWqHSJPHFwPmITTzvBoxrfJpgvcqts8wVojdD2/P/tdMdM9hURceDOjI/8BQGBAzcE9gzxwT3VecjqCr8SVWwQfdNcChHd+OwiWt+/rpNCzQHmu1vka4/gJQp/k0l0DVDp4fh18phPY7NoO0kmbV3q43jJgcvpolb05QA5rIvUX4qINfUG11SLUUtwf1jlL91HyGrC8Z7Vp1w7K0XjhVf8p0TV9InGBCl5ETiOx9Nzo7g/67aO3fk1Sq0gVJGcJ5azLTHFOn1AO3Y8nITJwi3OmRN3D9P3Lnu4jxkaokWbwJRiyByRls+cTvZ46eimMDNH3GbNdnM/ZWSvbzTCxtTbLRxn09FSfpqIhAJDHeMAWIIkua3jPX5SYhL42SR1E9J5SbdF+fsUqoKwNuOSZEQSybUtNxUJfpbu82RAvg4AD35iga1c3ClQdOzkqXy7AskA44drXzWzg0EztaNaN1Kdyo/5qmhpEmAm+qHC4P721yLVk5QTgctaHCt0ow1uJkhGHE52w1KxJM6P+Q+0LiGNrGohHCZo+pA7N9N+P3BSs+1bnBW8qyOjaAPhR3M9PRx74OaqlVxb7r3Y81sdoDYTSH337BQycUfggLPZUP6Yo3LTuuX0ZvtiymahaWIntyAWa7GozLmIn0KA4uIAmuYrpcfMt7IjgvRVk/3MzdeUIqAE+nS1aAW3FX+AacHgdkTk0/abwhO3U9vizj2FVZ4DiPtApVxAtqvTSgSqitRaXfASgbZwCv6oyH6SAJg023VbHkv3KlfrKW85wpz51S1F4ej/SXqsLDzQcnLp+XjphH/nQZU9v2qPYzzUuFkrfKK1U/AqhX/pEqqdQMCNoaOaWQ0sGk0WdFjGmH1Leg03gGHI6eo5+xpU7kWVCMfYHhYPrSF3BFl48qLnJkaWi0P6CT0btM5yamPXgfy/ovJxA3bPE1x/pA526o6P1jL4R/6cmLIak8mSdPS7j+xfV4tBpk91KWIACf3fC0I9CwCTe4zFnD9S2xJzZLn8AKW0empIJ6UMuicDlVnSZoMqU0DF+wSP8Ucz7pO/dfEcr7pbLVXiZMNh/Ll/iaVe+Dg+dfCh4k9GFpcG/WXJE6wLf7p8EAmuk49OHZpjYtZu7DkjzWxQ4LnyJ52gbwMPw/soZUPv+ZQNkGvGH+R1R604ywhVBbW9w2NuTNict+LfJ1uZ7ez/b/yE4Iph8Gq0b8x/hoAYAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"any\": [{\"course\": \"MEC1009F\", \"need\": \"pass\"}, {\"course\": \"MEC1009S\", \"need\": \"pass\"}]}, {\"any\": [{\"course\": \"MAM1020F\", \"need\": \"pass\"}, {\"course\": \"MAM1020S\", \"need\": \"pass\"}, {\"refer\": \"or equivalent\"}]}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3231,
+   "output_tokens": 393,
+   "output_tokens_details": {
+    "thinking_tokens": 267
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

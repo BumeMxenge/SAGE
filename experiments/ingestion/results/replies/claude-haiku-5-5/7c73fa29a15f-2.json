@@ -1,0 +1,39 @@
+{
+ "request": "d82a06475cbeb0a39ace35bc99a0892228b887f286a0acdc31d45efb50066a9d",
+ "seconds": 1.31,
+ "reply": {
+  "id": "msg_011Cg6mdhcWJYz5bRiaSFeDA",
+  "container": null,
+  "content": [
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"course\": \"CON2033F\", \"need\": \"concurrent\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3211,
+   "output_tokens": 29,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

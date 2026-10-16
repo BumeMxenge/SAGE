@@ -1,0 +1,12 @@
+Cause,Development (of 58),Validation (of 81),Claude Haiku 5.5 drafts right,GPT-6 Luna drafts right
+refused_school_result,2,0,0,0
+refused_programme,2,0,0,0
+refused_year_of_study,1,2,1,2
+refused_mark_threshold,3,0,0,0
+refused_or_equivalent,7,2,2,2
+refused_code_without_term,1,0,0,0
+refused_free_text,1,20,16,11
+refused_punctuation,1,4,4,4
+refused_mixed_and_or,1,5,4,3
+refused_other,0,0,0,0
+All refusals,19,33,27,22
