@@ -341,7 +341,7 @@ def drafting_verdict(strings: list[dict]) -> list[str]:
     name = {model: MODELS[model][0] for model in MODELS}
     ranked = sorted(MODELS, key=lambda m: (-right[m], fix[m]))
     if (right[HAIKU], fix[HAIKU]) == (right[LUNA], fix[LUNA]):
-        pick = "a tie on both, so it goes to the account you keep"
+        pick = "a tie on both, so it goes to the account I keep"
     else:
         pick = name[ranked[0]]
     lines = [
@@ -436,7 +436,7 @@ def kinds(tree: dict | None) -> list[str]:
 
 
 def leaves_table(strings: list[dict]) -> tuple[list[str], list[list], list[str]]:
-    # Table 3: the node kinds your labels use, Chapter 3's evidence for the representation
+    # Table 3: the node kinds the labels use, Chapter 3's evidence for the representation
     found = [kinds(canonical(json.loads(s["row"]["tree"]))) for s in strings]
     nodes = Counter(kind for label in found for kind in label)
     using = Counter(kind for label in found for kind in set(label))
