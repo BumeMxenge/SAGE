@@ -1,0 +1,44 @@
+{
+ "request": "a89d0b8e8ef177e770658b936ab7eb0562176276d18ec3176d076c61e586fa2c",
+ "seconds": 2.73,
+ "reply": {
+  "id": "msg_011Cg6mQ5YEBgKqhRMkPjxRe",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS6QkKEAgSGAI4AUIIdGhpbmtpbmcSDOiDLXUyuC3y6OiCMxoMhPE/6MTHi3beFvyKIjDagXNOJE3SIRYKsPjJfHTqEQ3cDdxoWOYYcQdwz7WtEHd+XTdFQYwxRr4Wlp+EOXkqhgn6AHS8t0a67ZZkOXSslDWcEBUpy05SNRgZ2HwYaDa6kA16uo5lglZ1VRFMwkFHlZkSFMvXSJ5CsgpwYBaMjYEI+mUpF+wTgKhMSuskaW9hvvqDKPTB+bDlEA8QcIPLNqVdkIHQiVZLo8ibiKGx39FWk954zeY4W/5nmj7oMcgiPRuPIgfYxo64rxwoFN9se+QJFx1VzjD8J+MW5q8oyiXn5XSlJE4wCOaQLGm2VqvEXj3s25nAysybnB7kav7jZFZVQLTucFN2FYHT1oMarUci/HVu6IWXfE5Xj//GF377WqFUQ5PKf1kcpGDOP11YFJJhyx4H/2Cwzkn2DHuMqHMiO0FfYRXsckDvnIac8EID5Wy+0TsApdPRV0RkoEZ0/pwX1fkDXScdyKG2/OLIE/rbVV/Yk3gmZBAYC1A8xNh3fZQKIlW5OmP3Rt1sXlK4RoAgvXDckSOBdMjFJA80oBwDuG17puKRFlSp0NBPFxFm/8C8I76n4StDdm4b9favnhc+BVYtSPR05zlCOr2bHcnZh7TPaaF1O0PBx77AVXOw6caYDKrSPRb2WFi2vjt7QKXBkK3v77ppUqNY5OTtNop+RbOhMm74H6XXX8po0g+Gtp1xv5DrqFu3rY0SvzT0X87O5RBCd+BZj3hWPm/X1IKvicgxNL9rUGIlohR7AjLOBa+WmS4+UTfrs2NwaRr48Ur+V8yihJfMsLBfuvvRq26GpnAQiu19r9/iiqBNi1gak4JqX6EAeIbkbHBsDMG+Mkwm3iD5TY//Ob8HOpdJnvzbMxGO3HtdZAwtT9mwQ0pcRLHLuI6uyUrSy/gieT9Tbl6TQ/vAz5gvT2ojTPc3+QZ8LOLh+6zLmKJJ2lGuiEEd7xPKkvh75CyNXtIf8eWVGEYmJzH6rgZZ9w7/TNEWz51Jb1jQDYq8g0inbEBPamyiUq98/RKYdHN6tpOgaFnaOFfJ+wA5zQwJMJ2HGAzoWSH9Aehz1Zj1PHx6HYv+X9KlmTCcWEIN45P8OsRkJJFTsaaa5nCNOzG60/SH/Ra302zAgCidvdYXVEJ2maNvAcp71jP4VMeU4TlTydHSKkn3yIAPf4fCiy273OyoCn7JQmJbdJ920yxRmTqrYEhmKbDlfeTIyWK1CPARkHeGpz9dRzq19WDlFK/gkpOq+tojh4qjTRaweUv43xsh5tkFTZq6OkB7f4Cr/Yi7pkSP03e/PbtxUqdDzJ2WDqnrFVn62zKvQtIKkQDE5KtYEjZjJMNFi55rEY2qwOONSGiMHbsmtbYA/CytURxoQW7INcimIoN81vHFhiP74tCRYajE4YUcWnV/sMpm1PUYxSqIKORldpcXBbWuUQBjWRK64YV2bwk3Rc4L8oAaUdI6EDWzipMGsNJ+wVV682oeFqYZaVRXCnZwHbwc4BgjDIwCx1LAMkw0my+I5EDFartbKDawjLrAa4Ghr3CWaHt+Bd9gSk6nb0n3p/y/03mCSx6OFPwEmHpTabiioCd6gIOzUzZPo6sm0oduWkC+x10FqRiVDmShTqWyHzYsCMoYAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"refer\": \"DP for APG2040F and APG2015F\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3221,
+   "output_tokens": 275,
+   "output_tokens_details": {
+    "thinking_tokens": 245
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

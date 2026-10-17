@@ -1,0 +1,44 @@
+{
+ "request": "119ee91d1f1c7dab9b50c4b34ed13a4bb0fead391a993914b4bb5d65cc306b50",
+ "seconds": 1.7,
+ "reply": {
+  "id": "msg_011Cg6n5FJSyUJZpYAKmcHo5",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS9QgKEAgSGAI4AUIIdGhpbmtpbmcSDMpBRARpnauKgvoYeRoMkwZ3kWapDRew0vmDIjBFHCRTFXmh6jjQ918778N0AtkW+dDap408xFBB0OC9thsX3GEbflOPq/eDZDVbMNkqkggnUsp/2bTYuvq9lN6+8Yn7PJR05LrBAMyRhCIVrCm7j49g4WEug9NnzzVa0WA7eMjIvpG6+O8sMgnW6RUBTJHD1EqPd/QaQbO37EsMergNIcV652SO0bqZS8dPa62OcqfIoiHQbVnquaYHveFQtDWaXNKVYdG9BPvNgPuM9PudIKjG+9AhmWJ3DhYyOdLxMOrRQ1ThJMbfzrVCvQLVg08f5mSFIM15ZLtWqFKL62vn1/CFQlvh8m3x4zmBaDi/U5xP8lM9ULOFLen4fuz9OaAuP+W7DePIgyksKaAaiWUZqSQ/WHRbUeQoTrriN+eEwOgHGFunvfLS/asVRaQUunSllNmkx7BGsJH6t+O2PaL++sT/9tX4gzZNUiRg4lOPLHj2uqzjowSYwfjAEhzcaYGWeeGo/TF0UEyPDWXCuB3tYb2ThS4Mf7T946DYClj7qxHdKLgeHKjdPYbCSdbcWdZhDyiD/e84huNzGCY6/HRoLTE+hiiabr4VMoora7EEs18KUEQXzzqd8KyJyJPZkcyzIhmVJRT2MF+lQPP15adUVDIuJDq/i57FqQQWFi72zRAd671xxAwZhYzFH2B6mUpv0fpSgi1b5QsqAD4ERxlbOSTJQa23IvrozMyi0KTiJKwT6KDgOS7KpSM8QUwdVfOB+0uSZfKu5VkQhca4y2UtE3WsYnlXsOXtIzq54Okxt6TD0Y6MU+2utqUK8/KYW0WeujWujdQhF8Fh24VOOv09AQzw/u3XOQYz2GOOwl4w6hKbe3BPxeYNU4aTRZV5EzCZ7areIdVVegVrLXNfWhrak7HZ4rHrXTi+HfjH3zwu1k/VvxJpR+ODrmx9KgmVlZz79Pk+j+YTsv54ofa1uYow7eN2pYle/NdaGojGlOywBSrMlgPwSgifM9cE/4wjcrLrYA0J1hpThLBgPdwaoz/z6zfcegSZ0zj7dMqai0ivZ/ISaY4fqZ1xUjqBI/PV+B45jwFscQXuin1oR7eIj3hM0uCZ8iOoOymrTKnRcnD/Q0XCPlHVR6QdLi7wXxJgy2wX6HIcBb4IK1PKkK6xNomqq0QtKOg9LrDGCHytcz8lTdBfvSm6Q3tBOL6dAarVNAL7WYHDBSZ83ZarA8iUsFCxzXUPG3ky04yn2/IUuJ1Vj0gQFgAnvu7sictYP8WqkLzMYsea3UNAsl5kbGBqcQXfrJ/bReqcRtE0MzdcPxO1yNPpT1sBw7Zy4fzZVK8IYyQW931Oqi1cVN5TfbJxOe+Q/cqpV+SKypfLT3ZyeSa1e5IxiZ6U9LFjC3Mqs+UWKQvbccwQ8zRBMsPACxU05imxYJBl1efTTGBVXg6jRWcnHskpL5JfRwbiHjxhJlwhEwXLjaE8IOwVnD7tuojZk1GMlBQTGAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"refer\": \"Students must be potential qualifiers (i.e. anticipated final year of study).\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3232,
+   "output_tokens": 228,
+   "output_tokens_details": {
+    "thinking_tokens": 187
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

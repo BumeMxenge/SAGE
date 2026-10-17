@@ -1,0 +1,253 @@
+{
+ "request": "666f2d3e0e4a3a2ee2f23763658fad0a30562ee0f7f5fd0d2b7a83d5b276907f",
+ "seconds": 3.29,
+ "reply": {
+  "id": "resp_0d0a5c0412c96619006ad2b150549887d2a6a1842ed681738d",
+  "access_programs": null,
+  "created_at": 1792192848.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": "You turn one printed course requirement from the University of Cape Town's Engineering & the Built Environment undergraduate handbook into a rule tree that a planning tool can check.\n\nYou get the field's name and its text, as printed:\n- \"Course entry requirements\": what a student needs before taking the course.\n- \"Co-requisites\": courses the student must take alongside it, or have passed before.\n\nAnswer with {\"rule\": <tree>}, or {\"rule\": null} where the field prints \"None\" or holds no requirement.\n\n## The tree\n\nA tree is one node, and each node is one of these:\n- {\"all\": [<node>, ...]}: every child must hold.\n- {\"any\": [<node>, ...]}: at least one child must hold.\n- {\"course\": \"EEE3091F\", \"need\": \"pass\"}: a pass in the course.\n- {\"course\": \"MAM2084F\", \"need\": \"concurrent\"}: the course taken alongside, or passed before.\n- {\"course\": \"CSC2001F\", \"need\": \"mark\", \"min_mark\": 45}: a final mark of at least min_mark in the course, pass or not.\n- {\"student_in\": [\"EB009EEE01\", ...]}: the student is on one of these curricula.\n- {\"min_year_of_study\": 3}: the student is in this year of study or a later one.\n- {\"refer\": \"<printed words>\"}: a condition only a person can judge, holding the printed words for that part.\n\n## How to read the print\n\n1. In \"Course entry requirements\", course leaves need \"pass\". In \"Co-requisites\", they need \"concurrent\". Wherever else the print asks for a course taken alongside, its leaf needs \"concurrent\" too.\n2. A course code is three letters, four digits and a term letter, such as EEE3091F. A code followed by other term letters, such as MAM1021F/S or MAM1024S/F, means the course in any of those terms: an any of each term's code.\n3. \"and\", commas and semicolons join parts into an all, and \"or\" joins them into an any. Brackets group. Where \"and\" and \"or\" are mixed with no brackets, choose the reading the handbook means.\n4. A final-mark threshold, such as \"at least 45% for CSC2001F\", is a mark leaf, and so is a pass with at least a given mark.\n5. A year of study, such as \"fourth year of study\", is min_year_of_study.\n6. A condition on the student's programme is student_in only when it names programmes among the six curricula below, listing every curriculum it names. Any other programme condition is a refer leaf.\n7. \"or equivalent\" is an any of the named course and a refer leaf holding \"or equivalent\".\n8. Anything else the nodes can't express, such as a school result (NSC, A-level), a DP (duly performed certificate), permission, a condition in prose, or a code printed without its term letter, is a refer leaf for that part, beside the parts that can be checked.\n9. Words that only describe the course, give advice or state a preference aren't a requirement, so leave them out. If nothing is left, the rule is null.\n10. Don't put an all directly inside an all, or an any directly inside an any: join them. Don't give an all or an any only one child.\n\nThe six curricula:\n\n| Code | Curriculum |\n| --- | --- |\n| EB009EEE01 | BSc(Eng) Electrical Engineering, 4-year |\n| EB809EEE01 | BSc(Eng) Electrical Engineering, 5-year |\n| EB022EEE02 | BSc(Eng) Electrical and Computer Engineering, 4-year |\n| EB822EEE02 | BSc(Eng) Electrical and Computer Engineering, 5-year |\n| EB011EEE05 | BSc(Eng) Mechatronics, 4-year |\n| EB811EEE05 | BSc(Eng) Mechatronics, 5-year |\n\n## Examples\n\nCourse entry requirements: EEE3092F or EEE3094S\n{\"rule\": {\"any\": [{\"course\": \"EEE3092F\", \"need\": \"pass\"}, {\"course\": \"EEE3094S\", \"need\": \"pass\"}]}}\n\nCourse entry requirements: MAM1021F/S, PHY1012F/S and MEC1009F/S\n{\"rule\": {\"all\": [{\"any\": [{\"course\": \"MAM1021F\", \"need\": \"pass\"}, {\"course\": \"MAM1021S\", \"need\": \"pass\"}]}, {\"any\": [{\"course\": \"PHY1012F\", \"need\": \"pass\"}, {\"course\": \"PHY1012S\", \"need\": \"pass\"}]}, {\"any\": [{\"course\": \"MEC1009F\", \"need\": \"pass\"}, {\"course\": \"MEC1009S\", \"need\": \"pass\"}]}]}}\n\nCourse entry requirements: (CSC1015F/S and CSC1016S) or (CSC1010H and CSC1011H)\n{\"rule\": {\"any\": [{\"all\": [{\"any\": [{\"course\": \"CSC1015F\", \"need\": \"pass\"}, {\"course\": \"CSC1015S\", \"need\": \"pass\"}]}, {\"course\": \"CSC1016S\", \"need\": \"pass\"}]}, {\"all\": [{\"course\": \"CSC1010H\", \"need\": \"pass\"}, {\"course\": \"CSC1011H\", \"need\": \"pass\"}]}]}}\n\nCourse entry requirements: PHY1012F/S and PHY1013F/S; or PHY1014F/S and PHY1015F/S. MAM2083F/S.\n{\"rule\": {\"all\": [{\"any\": [{\"all\": [{\"any\": [{\"course\": \"PHY1012F\", \"need\": \"pass\"}, {\"course\": \"PHY1012S\", \"need\": \"pass\"}]}, {\"any\": [{\"course\": \"PHY1013F\", \"need\": \"pass\"}, {\"course\": \"PHY1013S\", \"need\": \"pass\"}]}]}, {\"all\": [{\"any\": [{\"course\": \"PHY1014F\", \"need\": \"pass\"}, {\"course\": \"PHY1014S\", \"need\": \"pass\"}]}, {\"any\": [{\"course\": \"PHY1015F\", \"need\": \"pass\"}, {\"course\": \"PHY1015S\", \"need\": \"pass\"}]}]}]}, {\"any\": [{\"course\": \"MAM2083F\", \"need\": \"pass\"}, {\"course\": \"MAM2083S\", \"need\": \"pass\"}]}]}}\n\nCourse entry requirements: MEC1009F/S and MEC2023F/S or MEC2047F/S\n{\"rule\": {\"all\": [{\"any\": [{\"course\": \"MEC1009F\", \"need\": \"pass\"}, {\"course\": \"MEC1009S\", \"need\": \"pass\"}]}, {\"any\": [{\"course\": \"MEC2023F\", \"need\": \"pass\"}, {\"course\": \"MEC2023S\", \"need\": \"pass\"}, {\"course\": \"MEC2047F\", \"need\": \"pass\"}, {\"course\": \"MEC2047S\", \"need\": \"pass\"}]}]}}\n\nCo-requisites: MAM2084F/S.\n{\"rule\": {\"any\": [{\"course\": \"MAM2084F\", \"need\": \"concurrent\"}, {\"course\": \"MAM2084S\", \"need\": \"concurrent\"}]}}\n\nCo-requisites: MAM1020F (or equivalent)\n{\"rule\": {\"any\": [{\"course\": \"MAM1020F\", \"need\": \"concurrent\"}, {\"refer\": \"or equivalent\"}]}}\n\nCourse entry requirements: CSC2001F (At least 45% for CSC2001F)\n{\"rule\": {\"course\": \"CSC2001F\", \"need\": \"mark\", \"min_mark\": 45}}\n\nCourse entry requirements: CSC1015F (or at least 60% for CSC1017S)\n{\"rule\": {\"any\": [{\"course\": \"CSC1015F\", \"need\": \"pass\"}, {\"course\": \"CSC1017S\", \"need\": \"mark\", \"min_mark\": 60}]}}\n\nCourse entry requirements: Students must be in their fourth year of study.\n{\"rule\": {\"min_year_of_study\": 4}}\n\nCourse entry requirements: This course is only available to BSc(Eng) Electrical Engineering; BSc(Eng) Electrical and Computer Engineering and BSc(Eng) Mechatronics students.\n{\"rule\": {\"student_in\": [\"EB009EEE01\", \"EB809EEE01\", \"EB022EEE02\", \"EB822EEE02\", \"EB011EEE05\", \"EB811EEE05\"]}}\n\nCourse entry requirements: This course is for non-Humanities students only and does not count towards Humanities degrees.\n{\"rule\": {\"refer\": \"This course is for non-Humanities students only\"}}\n\nCourse entry requirements: A pass in NSC Mathematics with at least 70%, or at least a D symbol at A-level.\n{\"rule\": {\"refer\": \"A pass in NSC Mathematics with at least 70%, or at least a D symbol at A-level.\"}}\n\nCourse entry requirements: At least 70% for NSC Mathematics. Students registered for this course will be assessed in week 5; if it is judged that they are not coping with the level and pace of the course, and would benefit from an opportunity to strengthen foundational concepts and learn new material at a slower pace, they will be required to transfer to CSC1010H from week 7.\n{\"rule\": {\"refer\": \"At least 70% for NSC Mathematics.\"}}\n\nCourse entry requirements: CSC2001F, CSC2002S. CSC2004Z is required if CSC2002S was passed after 2017.\n{\"rule\": {\"all\": [{\"course\": \"CSC2001F\", \"need\": \"pass\"}, {\"course\": \"CSC2002S\", \"need\": \"pass\"}, {\"refer\": \"CSC2004Z is required if CSC2002S was passed after 2017.\"}]}}\n\nCourse entry requirements: MAM1023 and MAM1024\n{\"rule\": {\"refer\": \"MAM1023 and MAM1024\"}}\n\nCo-requisites: None\n{\"rule\": null}",
+  "metadata": {},
+  "model": "gpt-6-luna",
+  "object": "response",
+  "output": [
+   {
+    "id": "rs_0d0a5c0412c96619006ad2b150c17887d29789bb3f45fd9e4b",
+    "summary": [],
+    "type": "reasoning",
+    "content": [],
+    "encrypted_content": "gAAAAABq0rFTRdE3eHYdy8tTbRYl6IMMo_QP0aZpH3za4Qvi2jCon5_rUlYc4GGSZstRFsuD6cX7Ta5oy_NT7bXiwHqkV9ttlF-sBgG2afCo1vTXbf83DQCoswN0io--go1jfv1JrJxAqY0wYVy1EWsjSEl6Xx440SFQOjuzsXeNUSjwkUAaQ_TC4f5oHw473XAjfd-UjOegUMxwvHTOqo-ykAyxMDygtqrjccWwGVKEqTzou_xYIvXOTNXIzlcAKY7vEgJiVvtZz5I8quM7sQ6rpQU7Z2y4dh2WK654FuiLembu-MIRkPc1qh0GYjGo_BGhtn1LXFMeuwtWUij-IGBqL7jyyckKEOZGd61zD-XTQBIPka3XTIjp22F5L7LfdennQIMdJwJt7adw61GNr_WyKc709RkV5SjHHsuHv2c5K5ukuPVFEVNByoI0eFx9wLvvEs8p97GZLgm6q11XLeNMoKl9faLOdK7oYlWTdaEChanv4rGAwWTf366eUzKr_CJuE1WIqgM9siCWVMISqRwiD5g4GHo3Zsb7uuQjkQBu-_1NwcTYCbztZHYDZ32_xnUSog3NLPGOEN8zmXEhZRc7gDSmJ_RQAXkaWLgcLYluqoOs-NU0aiPMj6MXwpmkkFVTojmpjRMTg393E_PQezMoqu8BezRJZqezeP3s6ROoVWv_4HYAMKDNxAaRAGBnfBMntaYqNzF92zF6ZENVHkBKQv6srF4Fjfn2Dh6-Q13aHc8YkgxgsKzCyVaC9ZLkqWcHeH0BWxBokkJTTEkwMdiVkqE9_lJh8w-PJ1umQshKnFcqRDCnMNeDPNcGqkDN4cPdLdbO9Ug4890Gnza5WOvHdivBjpbXgm7REweK_zK7u60aXGsuRVcWyNKVhXrCXYAvC1N0p-3YrxlduMKAIWNriWK4ciHDz5TpTMRkJOIw37QCJhlKXZmgfAwWomyu_U0kIFOftEoaPybXjx-OKSs3qs70ra_eqwt86fuNoyyP0uO6uwBs6y2eS9x-dWv-yPKfOY04KeHiAisxnmfwlFa7brHt3A6j3__GFaR_WPVQ6uE7eUwdUSPuA0js5XFKhmUA-lDW67NbSnCrbUb1rSJVdQJKfBh_nwWTiGZG4aD3egOZZCgDYzX5U5bKADCzYyQnZAy4japu1DiRawVRyAcCD_YKhthQ8rybxmd1wEiL49Iji4zpAlpg3QxcVt5vZpg38rV-UdMR1QsUtZ52GaawEN1G6LbrZP354ULlv_Zs4sf98thEvzYDc7f67v4uoGCs6Eg3P8Vl5RPlWU2AoOJbeMw4v9d5ZiMYhlAW3bGyyER87tgocpSH28wv5pnqX2f4eKB7JvAvrpOB1CSDLu-hshaBEXGthnIGoR5u2hsalRayBc1Nerqg8U3x6g5Vdmdr2FYnlsflLWAFx1wTITwJ-yn9jx_1qB_gMqqpWKanbTQVMkw6hTPp3lmlAvpDJD-lsWxgqRjtLIDceBr3W9GjWgnrXCDE4Sxik1vcvx6oL4CQJr02OgUQbIr2vzxdNQnLHYafjPOhoAsE_8uuxc_EGmFt4eLkJ7xrA3n91mqxJkleXvrLXAbjiK0k2WDrA9pCqhRu_vM9AcPD_nz9ursGaCAYHoIWMsaoro4kD49bgXPVJjjhcTpng07061KhJSbiFT-dLADucZY6AbxJPr2MOBGWRiia6rlpAmZpJE4G78Og6MNlFRs_fHL-5DQYNq4m6CaDhMlvUevE3FVhCqd8JKNYZk6jJBes2_iVUYIB_HLD_VVdDht2L-Op_G9Lw033-p0ZTrmjD-sdzWfQkQEEEZccKlizNzx46O4VRTYVXH3Efn9EGUzCm8xj6qsrtCU2BXnOQeb7AJrVjSJq3r0aBDCO86AaqmXiTDzn8rBG-Q0tXRZaexyWtbMlx8pujDkoYCQgxvssGjIG9JzqiabNmHTQdkt10iEQBYpsifLdr1gP3R_ZaG5-O1sqoAoS2IYqcBQCg98R9lcw23z67cqbqKCx6h_R7JqdYg3F_YvkxHTmY9VSb7FVe_bCL9BOSsLDp8lINAc_5WsPvLoe9Ut0QL4lsjrUZunaW6mxc0Fz3O8ZXBScYxhXQbiAk_LsBTdSdDtMCG4SCiyC7TK6VWyL09xLNpkVLbtGSMKMqFBtTsVYrmh4whghFNcVusuf5gbon-mbtR5-t1mGcJYrrYY45vbQhFUY4ZR6wY-e-D4N_nk9bN2uIdOeLUWxPtrHbxldvf26DEG-39GxKpnnoA6E6tb2VnncFl93gmO-bniKGboNBNkiAwSeCFq4L7cu0MdiTI8ISnhlMQDHcEEvCYC15da9NWC8i_2V9CEtKfO_7Yu7fqI-HHCq5Yq7ooYC__5Z74KP4be0UCu7rEGyoemk64-pyrZhBjkrFpFzpIvXh4GlikbrOzwRPaCCNmik4HNQ6t8WBDHpw-pLs2fngUdT0slTezoMTKLjXEunzOJv8dpqXPvriMmQpAoZRj12kYyuKHQfnIJDiWMvm5eeVkX_i6Y9u5UgyTZWlnUKyxlowJxAMN7kRXm3DcB1uMM2Ge-5U2lymmCd2MKuYcdIESSfadc4dXdrWIjU1CD0KWXlbjEp_h4xnHfevZojaHXgbwT2AqEglQyn518F8tvMO2nTynAJjoIQreax8bad86n1aQzppVxfiuhMQOpi4xX2Dn9NX2Wx_bJzdLduVytrqoItApFtRa_UFv2YqTBcHHBA2sTVvBx1Vkz5ubp_WGpwE6cxq8ldb9SKO2C_4FhF3kahzMir9cLSg7LlTYm-jcv8ZzBbB4n2Wsya7ZwfHv7Cu9obGGByUTfnSwgcuJwfO4ggEK-OMA3UkMKirV3megvAZ0iP9Fgb9A64K22rESsoZrb2lYyDwAxGvj0de-8wiPqfqnMhDcPNN2mPc_ZxPlvMTPXLGyp4wdnERcX7PxOhD951YxoxNLUgJ2p-Q7dsfWBi6Kw8ap9yoxVGG8sm-_Wed1DUIeZSQ4bVpk8WKBPrSCOTq70JY1UhwXuJa-q7zCYxClR4zu-tTr-6QZBQ3d990dDX5g7YN-RNdSI-V80rz2QyxnjDzWYOmorCgoDRDxAhKrQbk6Yi0CmjyOZjX9dlv0CWwq0t2oOS2oT1PO8XTVB6GU1m-py6g256Hbvbqtx08p2UB-ne95fZ_32RGu-GzYe1oMTqgonMJiel6lVHB2kSVDXMMWOl2mlshrlWZnylwXuh1iwzX1a5RZ1uh1ZVXSS4Y_0u_XomfhXCWbqlaje-myWcD6bSvj2UJSskWZvfp-vQ2NEA7ebquJNwnCLXxMPfRehxVe8QqqYHCF05KeYuF6yG1JjjXMjwFclANU0vQwQBrkIBXwEWGjA_MYgE4kcwG4nHcOlzXP3cPvCrI2dwJjilM4m9gZ06CB87EtwznXabnUT7E5nJRhzPQSnM8y4nCehVUqpvlGASbEHWEYINUv6SvnTJ18ChSteQysLiLbuiNZqww7JWcIWtGuMRh177YfKVGvj1_b0V9Cqtfi2bxWSmUfmfFGn0l_blKR7WJTqleV6S11bQFCJx5dXF4tupVCNljAgHDjndrCdMg75_uKoPG21SPv2z6MpF9JaRJnHTGDkM1BBfaz7s40tZf0ToC5IMWy4SJif9-fzQ18mQOe534EXYD_K0CzKK5_c_IpC3X7y5fgl5BLz6HlILdXSk5f-4P9B7np0vtsW4mJSfCz_bJx3G8YO6JwUV6gA8TY2th3BXGcCnM2Rf4cNqXuWMYb19K9p885PebrPrR-C1moxe1oN9wZsI5jlgN7_D1vq4EMMLnQczs-ou5IBJj0Evvfm0gOX2XWhZg54r1KU3cpwoiD6NSdp4v_TQNR9szvQv7wUVtBZfNf8JgGKyaL9Ib2HJ6SxxZpbzelFQ9K184o5RyQSamvRUuBsXF6ydwi7ezBlYu5uuDcJWcXYEmeTgGOUT4zpm2fmByvReOASd8gzsMTVTVyh6OxAPrISdZycPkq2ZQ8c7h4_q8i2IitrTCd9LoKHElkLmQ2btIMgxCbUDkjlEl4x_MlVbYy0RZiZZVehZlp03RCrD6dqRpJ3qqzKeYGmTLZ6-0vIZU6Z0pr3J3ji_fQsa3XRi6rzuvjRS8FmQJ-ipne4aN9WNt1HaopL4_uV6aDb89SuVzBgY4nU9-tPv0Rq7EJPB7_FIHpTHoGe8OiflOhzmFolpMqXj6V5QnICozc6Lrtl-f387-E80shzinr4gKlV_tvk97-7KQXQczlBtx2BXmIGrK1wwmGTohN-VmU5yO9ogpoghMjxtuoqbKpzl3q8z4ZIgooZ_BL1fLTqeSUFK7ahlzNqRvy-Oh-b8fijmnnQFky4tB3ToqwTUDTSRg0YAwmBT6Jt2hgdQuwQF_NwLHiBQt_PsjmXHhHogdndLv5w0zetKekVpABOmeS3bgZKOiu0zyTdFbeKF_yf4IyB-dYHJoj9nJ1r1vlCaWrnSg0qP8rtT-zIJBiJXxLQR--KeKCztStWNzPgGkR87opi0q3LgpXCbps0UAWK65p4sXKJa_8Os_aSKdAjWXgkz4zK3YCcbMiURvzLQjMi6tyrpfDyGx2ohutT7UCwhyZaCjSYFMtKOMSJITplSXSJuhqV7hk-Ga_HQaiAoCw==",
+    "status": null
+   },
+   {
+    "id": "msg_0d0a5c0412c96619006ad2b152d76087d2a9b029ea3fce7c33",
+    "content": [
+     {
+      "annotations": [],
+      "text": "{\"rule\": null}",
+      "type": "output_text",
+      "logprobs": []
+     }
+    ],
+    "role": "assistant",
+    "status": "completed",
+    "type": "message",
+    "phase": "final_answer"
+   }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [],
+  "top_p": 0.98,
+  "background": false,
+  "completed_at": 1792192850.0,
+  "conversation": null,
+  "max_output_tokens": null,
+  "max_tool_calls": null,
+  "moderation": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "prompt_cache_diagnostics": null,
+  "prompt_cache_key": null,
+  "prompt_cache_options": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+   "context": "all_turns",
+   "effort": "medium",
+   "generate_summary": null,
+   "mode": "standard",
+   "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+   "format": {
+    "name": "entry_rule",
+    "schema_": {
+     "type": "object",
+     "properties": {
+      "rule": {
+       "anyOf": [
+        {
+         "$ref": "#/$defs/node"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      }
+     },
+     "required": [
+      "rule"
+     ],
+     "additionalProperties": false,
+     "$defs": {
+      "node": {
+       "anyOf": [
+        {
+         "type": "object",
+         "properties": {
+          "all": {
+           "type": "array",
+           "items": {
+            "$ref": "#/$defs/node"
+           },
+           "minItems": 1
+          }
+         },
+         "required": [
+          "all"
+         ],
+         "additionalProperties": false
+        },
+        {
+         "type": "object",
+         "properties": {
+          "any": {
+           "type": "array",
+           "items": {
+            "$ref": "#/$defs/node"
+           },
+           "minItems": 1
+          }
+         },
+         "required": [
+          "any"
+         ],
+         "additionalProperties": false
+        },
+        {
+         "type": "object",
+         "properties": {
+          "course": {
+           "type": "string"
+          },
+          "need": {
+           "enum": [
+            "pass",
+            "concurrent"
+           ]
+          }
+         },
+         "required": [
+          "course",
+          "need"
+         ],
+         "additionalProperties": false
+        },
+        {
+         "type": "object",
+         "properties": {
+          "course": {
+           "type": "string"
+          },
+          "need": {
+           "enum": [
+            "mark"
+           ]
+          },
+          "min_mark": {
+           "type": "integer"
+          }
+         },
+         "required": [
+          "course",
+          "need",
+          "min_mark"
+         ],
+         "additionalProperties": false
+        },
+        {
+         "type": "object",
+         "properties": {
+          "student_in": {
+           "type": "array",
+           "items": {
+            "type": "string"
+           },
+           "minItems": 1
+          }
+         },
+         "required": [
+          "student_in"
+         ],
+         "additionalProperties": false
+        },
+        {
+         "type": "object",
+         "properties": {
+          "min_year_of_study": {
+           "type": "integer"
+          }
+         },
+         "required": [
+          "min_year_of_study"
+         ],
+         "additionalProperties": false
+        },
+        {
+         "type": "object",
+         "properties": {
+          "refer": {
+           "type": "string"
+          }
+         },
+         "required": [
+          "refer"
+         ],
+         "additionalProperties": false
+        }
+       ]
+      }
+     }
+    },
+    "type": "json_schema",
+    "description": null,
+    "strict": true
+   },
+   "verbosity": "medium"
+  },
+  "top_logprobs": 0,
+  "truncation": "disabled",
+  "usage": {
+   "input_tokens": 2444,
+   "input_tokens_details": {
+    "cache_write_tokens": 0,
+    "cached_tokens": 2441
+   },
+   "output_tokens": 255,
+   "output_tokens_details": {
+    "reasoning_tokens": 240
+   },
+   "total_tokens": 2699
+  },
+  "user": null,
+  "billing": {
+   "payer": "developer"
+  },
+  "frequency_penalty": 0.0,
+  "presence_penalty": 0.0,
+  "store": true,
+  "tool_usage": {
+   "image_gen": {
+    "input_tokens": 0,
+    "input_tokens_details": {
+     "image_tokens": 0,
+     "text_tokens": 0
+    },
+    "output_tokens": 0,
+    "output_tokens_details": {
+     "image_tokens": 0,
+     "text_tokens": 0
+    },
+    "total_tokens": 0
+   },
+   "web_search": {
+    "num_requests": 0
+   }
+  }
+ }
+}

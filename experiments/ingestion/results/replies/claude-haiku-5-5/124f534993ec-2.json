@@ -1,0 +1,44 @@
+{
+ "request": "b991dbc0d6608bad0a66363f00911b3a61eeddf263f8f3bce884426fe4a3bb51",
+ "seconds": 2.14,
+ "reply": {
+  "id": "msg_011Cg6n4Dk9oTEHBTLLjpscF",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQShAkKEAgSGAI4AUIIdGhpbmtpbmcSDB41fZ5sETDsLZ8jPhoMxNKQLp4szoguxQjNIjAtA/kurQw1K2OPQG4b4TLl+UuNNENPu3u3TiMJFleFOoArV7FQvSxyE5AyvhpLL0sqoQiC9EGLy9Pan9Fdq8lAfH13FJDjzhilau8j58Mkb1yqOsJ4PEVT4AR/F2VuEzEYJo3i4Mhk3NzQq3qICFqIta6lbSkdkrk+E/siFyQz5tIB1TZCFkm03yv/PRuKhjJENK3xWIWoTRqQWl3Z9Q7VYSelBjNEAwM/t4lURyNtWRwE5iBVxYPavNrDj8zETr0tO8tvTNoepTxWh33cepFz3GIdDBQ8yQfCODfNZAl39U/RprOkfKdbeVEysFigUrAiP0YBaVzabjv1BF8ampKyy5hpk1d0avn/wQxkp35pL8zt0EaDDpCJSKwRqSFjoXbPvSvWZt3g7YllUom6sMLDnRy+UTN8LqNfSnsTJQl914xmZhzvpl19x7c837rKVJ41ZJ7Qq6nYaMc413Pnsy7GW5MTRAuKPcdvBxFFn/1pVLH3J/+qprpPRdYZx9GpVK5MMsEsxTh25fsx0dpqqQsPg/Lt+8IcU2ugm0JfiLVFS4nAD0+hvsB7f+TtPESxV8EI8p4nv6V14reBg+ozNd1/MECSX0ygfeppZ8jjOd4BBDq6aZt/l17B0BMBFebFXbFEGwifgBrEoSEayI9EtBocAQXgs8G+FHAYBz5zY4DKAl0Q9KPyAvJCFw+xAIsUg036kt+LUqWRMjSBduUjtNzIPfwbJQcKjRXot8yIIT33Q0StxlDzCFjE8MVfktlkxsyDSELHxeazbmiuK7gDj2ezcF2TkGXQ3BpORscftjsFr1q9jjEPx+aIUDbRrV36SaBT6H3c8x6qM9GNhBuEYwJsfIcVk+vEFj0ICcRI7AzLCcL7pYyEMnKC3YHwGkLMImdTQuplfjpXMYEG+nVbu7D3x1Q2RJpSgDt0672TwhI2LJRKr/CEk9rJZdb+GwhoU/yxgMX/v0I3TAIuZz1XhlX+Jd99hRVja3vuEcAaxDpuPOb91kY51KuHhsyV+UZs3+KW9yiOgaz0pvpHyU9WGWKFbV0XUVwD+dUAt6TEpeR8tqwikEuIU2vu1dbQwleGwnRUPycrNwgM7KshbOHT9JZB9cd6kKlZewEBbM1tfxl+kbpIjdi542ik56Uf3rZo69H2PW4Scds8QG7YkoKDpUtHYF9eZSdIPYQ25wnzosW2uE/Kr4wbP5jxPQUoR4enWASBDlpVp+kvCAT2+UxR8GB9JK40C46HCZHLh66j6fXRDh9e4G11sR3tJg2yQTmlAqelZst9C6BdUBB3nwTm6gRVASNvxBERb/0RWUupE8XB5zgBJyRW9TdocB5IWQpo6OkYDBJKDZls7mmF61cIeWRqSve/4jr+kx4zSEJj22zEHJeqri1dFkn9ZYI4jsbgaIw+p2dCfgRZ42jdvgrS2J+k6SzpAOlrrMgCTSVjwIfMrBE1+5xVJKcWkQF6irBMOgMdYzPqGAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"refer\": \"All core Civil Engineering design (CIV) courses, including successful completion of their respective pre-requisites\"}, {\"course\": \"MAM2083F\", \"need\": \"pass\"}, {\"course\": \"MAM2084S\", \"need\": \"pass\"}, {\"course\": \"CIV2042F\", \"need\": \"pass\"}, {\"course\": \"EGS1005F\", \"need\": \"pass\"}, {\"course\": \"CIV4041F\", \"need\": \"pass\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3279,
+   "output_tokens": 390,
+   "output_tokens_details": {
+    "thinking_tokens": 229
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

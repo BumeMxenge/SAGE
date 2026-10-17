@@ -1,0 +1,59 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  color: var(--color-text);
+}
+
+.description {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* No hover change: the parity file leaves chips as they are. A chip that clashes with an answer
+   already chosen is disabled, and fades as in the prototype. */
+.chip {
+  --icon-size: var(--size-icon-sm);
+
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+}
+
+.chip[data-selected] {
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  border-color: var(--color-text);
+}
+
+.chip[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.chip[data-disabled] {
+  opacity: 0.38;
+  cursor: not-allowed;
+}

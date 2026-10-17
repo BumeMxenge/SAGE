@@ -1,0 +1,44 @@
+{
+ "request": "c7987341046daf4ebf0fb829ae568ccf95aeb9b102866827d02802ff80402978",
+ "seconds": 2.68,
+ "reply": {
+  "id": "msg_011Cg6n6HerFJGQ6uPbgWjEj",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"refer\": \"No simultaneous registration of more than one additional course (besides CIV4035C).\"}, {\"refer\": \"Students will not be permitted to undertake a research topic in a field for which they have not successfully completed the relevant core courses.\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3269,
+   "output_tokens": 411,
+   "output_tokens_details": {
+    "thinking_tokens": 318
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

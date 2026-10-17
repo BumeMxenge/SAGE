@@ -1,0 +1,34 @@
+/* One fixed height per variant. The width follows the drawing. */
+.logo {
+  display: block;
+  width: auto;
+}
+
+.full {
+  height: var(--size-logo-full);
+}
+
+.compact {
+  height: var(--size-logo-compact);
+}
+
+.mark {
+  height: var(--size-logo-mark);
+}
+
+.microsoft {
+  height: var(--size-logo-microsoft);
+}
+
+/* The light file, or the dark one when the dark theme is on screen */
+.dark {
+  display: none;
+}
+
+:root[data-theme='dark'] .light {
+  display: none;
+}
+
+:root[data-theme='dark'] .dark {
+  display: block;
+}

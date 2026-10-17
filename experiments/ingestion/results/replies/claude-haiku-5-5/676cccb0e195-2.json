@@ -1,0 +1,44 @@
+{
+ "request": "ad6f96bb3b5f59908dfe6e09107f2e37b88bbb77adf07d9ed14e9ad33dffb2a5",
+ "seconds": 1.94,
+ "reply": {
+  "id": "msg_011Cg6mTiL8SQknkySAwcJqY",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS9AYKEAgSGAI4AUIIdGhpbmtpbmcSDIs9LUD4q6SyIkIl8hoM8LU7d+gJUVH99Y6KIjC7tdOr9bEdLm0HAm4wu954uBUc2GGvGWimPvHzJQ90U26lwPKVvwLWmuB3IAgDKfIqkQaRe3veX+dmFufBuCkSR96lw1d+JXnaqzrLqnKoEdEL8EXAd4KWHKjKn1r6k13zxURL1kJKVKj7VHZDzifSCjdf6IH/KJFJ78SNNW6oXffuuBQZ2zMGkwXZ3q+twCtZTPqcyC5iC1idyjgoz/ahNfIM+9oXonGFHsQYxaeI0GT2p/+CvsQj/1cJL7gKhhzL/gCSy6iBc84hrt8UgBOiiQFTK7830Dd1qqlv/aaANn0d8HbPg2PIZz3/x6wzkvAK+D6+MYhHFHFgP3TpcYltur4SAMqfgxS5L9J03Ub1NJMcwTOf4HRwJ4LqrtZ80ZYzDdL8D+t+JrRhM7CAsH5cYMp1upfjYeX/Z/w5CAaNwF8YQ1AR9EJZXyQZpuDVlOGG0LgdsAxZo3lzRk/w0PdOQwZosy3siG5YQsXONp+DNX8YtAs8unW5v6KI0M1YqXiI0wdCIJwVJVmdjczjs2O7TdHB2DLiPaX9wh+uc6hx8U/y0AnkzQZd4yYjgjBZ+NDoEQI69MqGHd2334MZsbt0BiVdLT+MPmDtiYJjaJvHJDRIdPA5AKlR1eeTS/P/VQ0V5XS1eAfZUHasRpowEl1QLFbv5ra0UCxKe7FR9epocGZGRWhWAvVgNwOJ6fCjbMXh5B7ZNQHPfPR6XReukF+tg/RPR4Sf05pFv8gH/ZFPpapZRSbiabaYZhqAKdO80mcjvk0HM/TN0jLKPFM9TCyNGNzHJzdZn/uLj7+EkZ+ntK9Pz9g7FlGUw/luV2XQBTuU0OnTKWxW1O70b1Q390v+CsgAXBoeYcGfQ0N/9ZImvp+TfPrYJGeS850rq7one266qKeVRn3Pa2xDnUP5dV/8lbRAtQtd1+meCopBY3CE10t3c9niUYRly14o+tJMEvThilomu72HIG4LsKJdMl/jYfURJTkYHA0CK2zG2wHdP1jRbXDOEyD3/rvdvP021jAvkJctY+jRg9lijmmV0dMfp351SrbSL4zj+WQ4qyd6HV1eChDqCzkSPIKwHY4yQHyuVzeQhiEIEZfXTNyY0hMcyCUDmhgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"any\": [{\"course\": \"MAM1000W\", \"need\": \"pass\"}, {\"course\": \"MAM1021F\", \"need\": \"pass\"}, {\"course\": \"MAM1021S\", \"need\": \"pass\"}]}, {\"course\": \"STA1000S\", \"need\": \"pass\"}, {\"any\": [{\"course\": \"CSC1015F\", \"need\": \"pass\"}, {\"course\": \"CSC1017F\", \"need\": \"pass\"}]}, {\"course\": \"APG2014S\", \"need\": \"pass\"}, {\"course\": \"APG2015F\", \"need\": \"pass\"}, {\"any\": [{\"course\": \"APG2016W\", \"need\": \"pass\"}, {\"course\": \"APG2040F\", \"need\": \"pass\"}]}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3267,
+   "output_tokens": 412,
+   "output_tokens_details": {
+    "thinking_tokens": 172
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "request": "63c3c7e93bc868c2e4f6437aa03c0f565c435d20a9590773687cd83efefb23e9",
+ "seconds": 2.37,
+ "reply": {
+  "id": "msg_011Cg6nTHK75xQ6b12uqzk3n",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSwwoKEAgSGAI4AUIIdGhpbmtpbmcSDC/yrOa2bGMACacqJRoMae+QY3eM4YdFkwRiIjCYURgl0inZidq+7kl/d58BkvvYDUv7R9nBCbsU+BFMwxsJHakibdjlSQkU6L76k3Uq4AkQiQqS1islxV2USwuaASzP5ZezLyUgA2ZAw55pL8uRqCIVfrI1RDNXRKQ0La19xTWDCGMBuP4EbVDkJF84b0sulqplBwxYqcOpWNTc5POpyQFXv8RpJmo4iE+m02q96htEjCvi/wkzUIpd6ZQDApjudmtj+K22NMNjsP4ZIRiQY6b2Ux2FP2eEpkogvM9Z7Fe12aK8gaNprRpIY9yfJa8zSShBfj4E+LLnQt8/mQVRBLxWgeJNMpxDV6S3q3f0pt7+DyPT/QOklAQAXMa8wSReZFCo+r+RJPIwcmpXcTBmwuZmQe7zcn/thJUREmNriXEvFyCsp6KsV6zvME5kYjPC6yZVHmG3rWeiaeyiLyYyYBaHDcczqTjN5nvBOYbMCpHK6V0Nw6PLHgyUgWWI9bWfoZ0dYZNNFHURSDF0Gl8NsL90fnE4by4O5ETmXxFOUznwyJiQs0cA2NGbr+IVf1qNTaFP3fjWUOQwact5b93S0y3q/rMhAhSjJw+yAF7V/I1qJYlLUO/oV8N+MH8lSjp6TRuv39BsOjdTRS9WNIFckLB/wLNDFvKeZqKnx2ypluJSAgGPwra24qq0E0sczWfog2MgKKHr7NX97gF6SXhn0p4E1D2GAtglA8AwDeW+POv+fGFbliYLUdMKrbylSAiBc9o5rBZOn7F6xOK4+7Wj7olvMpEKobtNUu6tPIMlox4VygfEH/046c2vTuD5V9GNr3ZGcvCgYukk4Yz7FgvpQFva7P6En1Kw7xDj8ZvRIS9pO7xIJrq160uVFLK7kkeilC6MiaHyyKpkyn7fcmiikoFW4upi7MqejEry5dMGaWUL5uR3NPyh1k9LCpqEb6azDcom6eaywkib34y5Lq7b005ocwovrXjKMyw0fyWH0HjLPcHAhmggpb/X9qIugKyC3YtE0Uy/K3a463JOKJkukacrJ1IwHZvHId2WWKj7dbEE3/5PDAgDfYr/jwTDO1I0H8GnN3olqDewjkeAq11po6epszjCHNIrVO2LNf7Jg2XaC5Uso6yq2rZsctB5VB+fH6kcNNRVODo7v9ekqaOSbObKx1fv726YMk6IXf5Y8F42v4S3myH2YIcw1j9E7RHJGhpGmtWWghxx7H9LATzQnWDjWfU0YbNz1nQWvgtYehGPX11QPxv0HMDLf3TsTUVsghXZ1HwZF1TkOSjCbdqqe3chVHiBH8stDG99m9thq7rO/CL3wZvX2GXmaeANkEaLie2fvMEfVYiOXefSOv3vlnnLemQo1r6/36oGQX7oJBFAedvy5e9NRczeWjmeLpi5n87azGjsHCFHMCoiYNwnUFFza2NMIDfKByRX3KkYqG13gzVpmkf3cIfTRkLIlEDYzUiXsFKiJMzV8ZWEfgH1yRzlUGqZID57mj8vD0kSt9EnKUOM3R4hm/juzfq138cdPnNkTe+dczlMjJrsNwjG2e/uKJMmfBbvrwq69Pnb1l6eAp89IB3+UWnudVmKPSxXXzzWL+tig7iR4Z2FTS0OHD0FALJLpXiVDnir9TiH6C6rdFO4U8ANfc946PCNdLtUlFQeMGcAnSYxqzWuWRpouPCo4yI3l2pJB/yV6gFWa6YpoO8GRamVX3x9eTw3RP4uzZf3/WL8GXwRdF+hnNaBJIZFCj4z0qen98cRRXfMEpsYAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"refer\": \"MEC3080S (DP)\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3217,
+   "output_tokens": 333,
+   "output_tokens_details": {
+    "thinking_tokens": 307
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,7 @@
+/* The icon is as big as --icon-size says, so a button sets its own icon size without a prop */
+.icon {
+  flex: none;
+  width: var(--icon-size, var(--size-icon-md));
+  height: var(--icon-size, var(--size-icon-md));
+  fill: currentcolor;
+}

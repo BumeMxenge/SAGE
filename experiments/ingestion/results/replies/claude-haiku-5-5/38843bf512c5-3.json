@@ -1,0 +1,44 @@
+{
+ "request": "64ee965ccb5768e77ce19b935c50123eb62656687fffd1c1c64c598797313c3f",
+ "seconds": 1.57,
+ "reply": {
+  "id": "msg_011Cg6mfBy78j26ZwxXDEqb2",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSmgYKEAgSGAI4AUIIdGhpbmtpbmcSDBoen+OTTL/JLIzkjhoM/DtotcNKzULdUVRjIjDRO8s0L3+isXgX20Wf+d8iFp+yIPZOnsNM94hcUBfyBeHpqzyy++5L57JVA4VCEFMqtwXuHKHuL11LLj4OVfL9N5EFmwpk7m1ErFtDoUzn2BajCLmEMTv6tGD1K4c56GYiA4ycdyiRTXjCm51kicdKRmF1QBx5R2klhoWquDc1r6ia1YnSxE3BbrxoW+zGbybX+5i9NLYWn6tRWslvkTV4jwtHg371VVIJSmKWA6ukRBpD1sekFiXnOxA0dlkxfOTBY9KzMdzHYnKCHo5LAX1iUGCzXl4RSwCThp/jU7QmniYzXQcC4CYzxaWLyMuTwsnNYoJQlK1RRpNXYrwi1VKNvRg65RVDcUP/4PsFDrkBm+5jrp1eR0CTCnNtu3loGoIIGpYXz3U93DJPi6ZYmCOCCcGtMa96894eb5eqENodiHg4CAXvQ912GurhFEZMHLj8sYPVk0OJXmx0ynrjJBJFO1Y4upJPWWYU4ZMwDat5f3hOH4whXP5QEG7FNI31VLE2P982V+lDFjiNQYF30tevXAkHVl5jAMJsCRcxoBo3V6uJChQbKYI1JluRlEtqgZ3kuGkO1yrC9/83g4Rs6SzG6D3rqDO2YWRE8yeBFNGf+IFFlzgmJqRJ6XOOSl+TxHBGzK/OrjTWkk+J2KfdBLf3XVlfJOJOfBPyEYE4tZknRMCOwILIlnvAUbfMG6AIlVSFTFxxP2OXriK1fKXSZ+ouOmy2M+w13WIhhNe5NVo0FwY5+ezJuVItrvXZZ2ko5Nk4gJE/N+Wiwvedj9hTSkq+u2ouVRqkUxUe93iT766f+HaiinTvp/8TIVYGyuk+IcnZrTT2d/owlB0XTOOVz4oCslX0a3yer545qadUz67pjww9XgrLFNdeayKpwDvG9jSI7hqtAsWbJvGVew0yfpDMM0SCiS1wOfMyZnishrtzAzgmnMPKfcDoD9tiXmSgE7/5GkXidGXXEqPPAv1U4SN4RQI3LU/ixkxQKhgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG3023W\", \"need\": \"concurrent\"}, {\"course\": \"APG3037W\", \"need\": \"concurrent\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3218,
+   "output_tokens": 138,
+   "output_tokens_details": {
+    "thinking_tokens": 80
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

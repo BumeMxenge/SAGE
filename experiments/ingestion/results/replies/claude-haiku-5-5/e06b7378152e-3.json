@@ -1,0 +1,44 @@
+{
+ "request": "29d950c80d4206e47f7809ca4ae8df2125f2c212b9560901f1957cbf8700e0ac",
+ "seconds": 2.03,
+ "reply": {
+  "id": "msg_011Cg6mbn4qATnquHQ8CC3Zy",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSnQkKEAgSGAI4AUIIdGhpbmtpbmcSDJ12y6lkNndyVCpC7RoMfExUGSib6YwjH0gMIjDnKC7j1KpmASK6xf8Fp3sNyNA+B+NYWC0WewvMKMff5sUvLC5A0t2gc2KvqLbudXMqugh0TLTtvkUiKXgj733lv4YiJzMjmqx2SjN+CH0KgT42QbrMUQkEdKYmUdoDI/ua3dqp/KVFFUOOXFuDD3jS7C67w4yxg8R022jc+HClVaOYjmZn439Up+lc1G9COHtbRqzBbeZVpireWnwyxVCm45sstYKsvWRfAbuscNiWJneHUtkM3GUsF9B4eEJxH2/o63g5Or4yNVAnt+ruR1YbGPN9v+Vu/yMSJfKrO81TI850qIsVamOo3nbnvc+FbhpUe027Y8ZXUxGrxnNflKHhYUifIcr7OvtwOHw7fGzwZ69LVUOaRGXe2GPHuLsrm2DtraITfMHI4uYiO2KajsnB6JeB9jwWdbgYObt54USZEsp13dJKm0KrTbhUAtiz9Ecb+FhGdc08/uQyEUF50UCZ2ZpZgzn5IeA45PPJb2V1GmlFuPTtakDL3CW8UayE1j4P54RSpFXrpy0RPEbC647gxTh48BL/OldEvnZKF4ifRWUNxyS71wItwZ/Ymj3MM8Y3LsvX1SGyfVRi/lmj2rGJG2YC7jSqp22KtdoX2/lCqzuXzZol5l8rL5c/eViNCy6yECiX+XJXIZgXIysHue3B+L0FcUTuqBsRsusCf8S326t+lRDaC7BVyaGBAPOURM+jnAEWC08o8Eg8Ew9fw+tYQC24aQGvMMoil19I61hMeV7JyVgTYneXgoqGJSM/751CUuHE1rQb0mIT1gB6/x4ILXHzNYmSriyWT+u7HY9AE9lzm0ZAeQBht479CRcpqZWdjP0qXCq/wOsYP3PVHeHtd+OL8Lh4jsrP5egvjHwz3fIEeeftGFI6/E1QBqmSRTSHHOIsf3ec6M6eTYiLPh2RQgAlveEITDKKnEZeKtdH9rPr7LOK68ep43UHeFP3NmBTtxFSvfSA60iRTaBSUV4KR+4msM/YDiHtoUAsFvjNS2W8gtrBBYgf8URwpOE74HSwMZzcdEJYcnoCUQ0N0v9nz/SgML3OFf/v6PKZE6X1SCiD6BvHE85wPaEFVEr1NLF6xto6j/8y4XU3HHWOPve/HPsbyfIGCN6e1ImdKTmSiz1w4g8nbYRVcWpmBTrj4xxgAIrhiVcRkADM/z/5bhCUz0CzunoI9GXjkZSyP6qZbMiSeBnLv3SVPJKnR18vPPBUskaBVsCBWkppfllQFY9SB8yleGxG2oKn6PoB1X+pyCoYAc96znFTTk9jkblKs3T206hfhb+r5H+GBR+AM56QoRruXYhIU11d9kvU0gVVyqTnQX5iNwvHneJMh6yTf2rHqAaIi9/xEzgbey4qIFN7WNFpFGc5i8V08zOMEg55EClrOhRd8DQtG33ERSRY6h5+GO7PGXyJRM0CYxpu2P2Hj7qaAoiDW+t4ZHG72ZBV0VteMqo1mKyrL4WNoUToYxt4SQgFf4ASdIVYBeEpd4H5hgynL+86iSAWPFjFIhgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG2040F\", \"need\": \"pass\"}, {\"course\": \"APG2041S\", \"need\": \"pass\"}, {\"course\": \"APG2019X\", \"need\": \"pass\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3225,
+   "output_tokens": 309,
+   "output_tokens_details": {
+    "thinking_tokens": 235
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

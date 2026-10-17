@@ -1,0 +1,5 @@
+/* A menu is never narrower than this, even when it opens from a small icon button, as chat history
+   does */
+.list {
+  min-width: var(--width-menu);
+}

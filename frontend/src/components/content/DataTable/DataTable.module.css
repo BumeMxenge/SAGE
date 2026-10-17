@@ -1,0 +1,47 @@
+/* The border belongs to the table, so the caption sits above it, outside, as a title */
+.table {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  border-spacing: 0;
+  border-collapse: separate;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.caption {
+  padding-bottom: var(--space-3);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  text-align: start;
+}
+
+/* No hover change: the parity file leaves table rows as they are */
+.table th {
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+  text-align: start;
+  background: var(--color-surface-muted);
+}
+
+/* The header row's fill follows the table's rounded top corners */
+.table th:first-child {
+  border-top-left-radius: var(--radius-xl);
+}
+
+.table th:last-child {
+  border-top-right-radius: var(--radius-xl);
+}
+
+.table td {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  overflow-wrap: anywhere;
+}
+
+.table .end {
+  text-align: end;
+}
