@@ -8,9 +8,9 @@ Folders marked (planned) don't exist yet; each arrives with its first code.
 | Folder | What it does |
 | --- | --- |
 | `backend/src/sage/api` | HTTP routes, request and response schemas, auth dependencies |
-| `backend/src/sage/cli.py` | The `sage` command, such as `sage seed`, which loads the made-up student, and `sage ingest --year <year> --dry-run`, which reads a handbook year's sources and reports on them, with `--draft` to have a model draft what the grammar can't read |
+| `backend/src/sage/cli.py` | The `sage` command, such as `sage seed`, which loads the made-up student, and `sage ingest --year <year>`, which reads a handbook year's sources, compares them with the latest approved year and writes what needs a person to `data/rules/<year>/review.json`, with `--draft` to have a model draft what the grammar can't read |
 | `backend/src/sage/services` | Use cases that join the components: onboarding, plans and the questionnaire, electives, history and chats |
-| `backend/src/sage/ingestion` | Turns sources into data: a student's transcript into her course history, a printed requirement into a rule tree (the grammar, with a model's draft where it refuses), and a year's handbook, timetable, complementary workbook and equivalences into a candidate rulebook, through one reader per source and checks across the sources. (Planned) the review of what changed since the year before, and the approved rulebook |
+| `backend/src/sage/ingestion` | Turns sources into data: a student's transcript into her course history, a printed requirement into a rule tree (the grammar, with a model's draft where it refuses), and a year's handbook, timetable, complementary workbook and equivalences into a candidate rulebook, through one reader per source and checks across the sources. `review.py` reviews that rulebook by exception against the latest approved year, as one row per printed thing a person must decide. (Planned) approving a year into its snapshot |
 | `backend/src/sage/engine` (planned) | Validates plans and generates every valid plan (clingo) |
 | `backend/src/sage/advisor` (planned) | Conversational agent: engine tools, scoped context (the handbook passages for her courses, with no embeddings or search), guardrails, prompts |
 | `backend/src/sage/domain` | Shared models (plan, course, rule model, student) and interfaces |
@@ -24,7 +24,7 @@ Folders marked (planned) don't exist yet; each arrives with its first code.
 | `frontend/src/lib` | Shared code with no markup: the API client and its generated types, the settings, the Supabase client, the appearance hook and the toast queue, and later the query keys |
 | `frontend/src/styles` | `tokens.css` (values shared by both themes) and `theme.css` (a light block and a dark block of colours), the only places a raw colour, size, radius, shadow or duration is written, `base.css`, and `outline.module.css`, the outlined look that secondary buttons and the Select share |
 | `supabase/` | Database migrations |
-| `data/` | `sources/<year>/`: each year's handbook, workbooks and equivalences, with `manifest.toml` holding each file's fingerprint. `rules/<year>/`: the cached model drafts (`drafts.json`), and (planned) the review sheet (`review.csv`) and the approved snapshot (`rulebook.json`). `synthetic/`: the made-up student |
+| `data/` | `sources/<year>/`: each year's handbook, workbooks and equivalences, with `manifest.toml` holding each file's fingerprint. `rules/<year>/`: the cached model drafts (`drafts.json`), the rows a person must decide (`review.json`) and (planned) the approved snapshot (`rulebook.json`). `synthetic/`: the made-up student |
 
 ## Dependency rule
 

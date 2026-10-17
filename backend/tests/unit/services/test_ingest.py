@@ -1,6 +1,6 @@
 # Checks a year ingests end to end from small sources built here: the handbook's own entries win over
 # the workbook's copies, requirements are translated grammar first, a check's failure flags the row
-# it names, a dry run writes nothing and asks no model, drafting takes earlier years' drafts, and
+# it names, ingesting writes nothing and asks no model, drafting takes earlier years' drafts, and
 # wording the previous approved year printed keeps the rule it approved
 import hashlib
 import json

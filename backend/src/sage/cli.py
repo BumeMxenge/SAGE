@@ -2,6 +2,7 @@
 import argparse
 import json
 from collections import Counter, defaultdict
+from typing import get_args
 from urllib.parse import urlencode, urlsplit
 from uuid import UUID
 
@@ -12,8 +13,10 @@ from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import LOCAL_HOSTS, get_settings, is_local
 from sage.domain.repositories import AccountNotFound
+from sage.domain.rules import DeltaTable
+from sage.ingestion.review import Review
 from sage.ingestion.sources import SourceError
-from sage.services.ingest import DryRun, ingest
+from sage.services.ingest import Candidate, review_year
 from sage.services.seed import SEED_FILE, SeedResult, load_seed, seed
 
 
@@ -40,16 +43,12 @@ def main(argv: list[str] | None = None) -> None:
     )
 
     ingest_command = commands.add_parser(
-        "ingest", help="Read a handbook year's sources into a candidate rulebook"
+        "ingest",
+        help="Read a handbook year's sources, compare them with the latest approved year and "
+        "write what needs a person to data/rules/<year>/review.json",
     )
     ingest_command.add_argument(
         "--year", type=int, required=True, help="the handbook year, such as 2026"
-    )
-    ingest_command.add_argument(
-        "--dry-run",
-        action="store_true",
-        required=True,
-        help="print the report and write nothing to any database",
     )
     ingest_command.add_argument(
         "--draft",
@@ -135,10 +134,11 @@ def run_ingest(year: int, *, draft: bool) -> None:
             raise SystemExit("Add ANTHROPIC_API_KEY to backend/.env first")
         drafter = ClaudeDrafter(settings.anthropic_api_key, settings.drafting_model)
     try:
-        run = ingest(year, drafter)
+        run, review = review_year(year, drafter)
     except SourceError as error:
         raise SystemExit(f"Stopped: {error}") from None
     print(report(run))
+    print(review_report(review))
     if drafter is not None:
         tokens = drafter.tokens
         print(
@@ -148,9 +148,9 @@ def run_ingest(year: int, *, draft: bool) -> None:
         )
 
 
-def report(run: DryRun) -> str:
+def report(run: Candidate) -> str:
     lines = [
-        f"sage ingest {run.year}, a dry run: nothing is written to any database",
+        f"sage ingest {run.year}: nothing is written to any database",
         "",
         "Rows per table and source",
     ]
@@ -218,4 +218,42 @@ def report(run: DryRun) -> str:
         lines += [
             f"      {f.place}: {f.what}, reported as settled" for f in check.reported
         ]
+    return "\n".join(lines)
+
+
+def review_report(review: Review) -> str:
+    if review.compared_with is None:
+        lines = ["", f"No approved year before {review.year}, so every row is new"]
+    else:
+        lines = [
+            "",
+            f"Compared with the approved {review.compared_with}: {review.carried} rows "
+            + "carried over unchanged",
+        ]
+    lines.append("Rows added, changed and removed, and how many of each are for review")
+    changes: dict[str, Counter] = defaultdict(Counter)
+    for delta in review.deltas:
+        change = (
+            "added"
+            if delta.old_value is None
+            else "removed"
+            if delta.new_value is None
+            else "changed"
+        )
+        changes[delta.entity][change] += 1
+        changes[delta.entity][f"{change} for review"] += bool(delta.flag)
+    for table in get_args(DeltaTable):
+        counts = changes[table]
+        parts = [
+            f"{change} {counts[change]}"
+            + (f" ({n} for review)" if (n := counts[f"{change} for review"]) else "")
+            for change in ("added", "changed", "removed")
+        ]
+        lines.append(f"  {table:<26} {', '.join(parts)}")
+    causes = Counter(cause for row in review.rows for cause in row.causes)
+    lines += [
+        "",
+        f"data/rules/{review.year}/review.json: {len(review.rows)} rows for you, by cause:",
+    ]
+    lines += [f"  {cause:<26} {count}" for cause, count in causes.most_common()]
     return "\n".join(lines)

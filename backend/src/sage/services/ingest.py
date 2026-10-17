@@ -1,8 +1,9 @@
 # Ingests one handbook year into a candidate rulebook, writing nothing to any database. It checks the
 # year's sources against their manifest, reads each, translates the printed requirements, grammar
 # first, and checks the sources against each other. A requirement printed in the words the latest
-# approved year before it printed keeps that year's approved rule. Every row C2 reviews keeps where
-# it was printed and why a person must look at it.
+# approved year before it printed keeps that year's approved rule. Every row keeps where it was
+# printed and why a person must look at it, and review_year writes the rows a person must decide.
+import json
 from collections import defaultdict
 from pathlib import Path
 
@@ -28,14 +29,14 @@ from sage.ingestion import (
     translate,
 )
 from sage.ingestion.names import title_case
-from sage.ingestion.review import Snapshot
+from sage.ingestion.review import Review, Snapshot, compare
 
 # Four folders up from this file: the repo root, as for the seed file
 DATA = Path(__file__).resolve().parents[4] / "data"
 WORKBOOK = "complementary workbook"
 
 
-class DryRun(Row):
+class Candidate(Row):
     year: int
     rules: RuleSet
     readings: tuple[sources.Reading, ...]
@@ -56,7 +57,7 @@ class DryRun(Row):
     carried: tuple[str, ...]
 
 
-def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryRun:
+def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Candidate:
     manifest = sources.load(data / "sources" / str(year))
     previous = _latest_approved(year, data)
     book = handbook.Handbook(handbook.pages(manifest.path(manifest.handbook)))
@@ -270,7 +271,7 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
         timetable_slot_curricula=tuple(links),
         passages=(*printed_passages, *typed_passages),
     )
-    return DryRun(
+    return Candidate(
         year=year,
         rules=rules,
         readings=tuple(readings),
@@ -310,6 +311,29 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
         previous=previous,
         carried=tuple(carried),
     )
+
+
+def review_year(
+    year: int, drafter: Drafter | None = None, data: Path = DATA
+) -> tuple[Candidate, Review]:
+    # Ingests the year, compares it with the latest approved year before it, and writes the rows a
+    # person must decide to data/rules/<year>/review.json
+    candidate = ingest(year, drafter, data)
+    review = compare(
+        year,
+        candidate.rules,
+        candidate.readings,
+        candidate.checks,
+        candidate.left_out,
+        candidate.previous,
+    )
+    path = data / "rules" / str(year) / "review.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    rows = [row.model_dump(mode="json") for row in review.rows]
+    path.write_text(
+        json.dumps(rows, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    return candidate, review
 
 
 def _latest_approved(year: int, data: Path) -> Snapshot | None:
