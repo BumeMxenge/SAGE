@@ -1,15 +1,19 @@
 # Command-line entry point: `uv run sage <command>`, e.g. `uv run sage seed --user <account id>`
 import argparse
 import json
+from collections import Counter, defaultdict
 from urllib.parse import urlencode, urlsplit
 from uuid import UUID
 
+from sage.adapters.anthropic import ClaudeDrafter
 from sage.adapters.supabase import connect
 from sage.adapters.supabase.auth import sign_in_token
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import LOCAL_HOSTS, get_settings, is_local
 from sage.domain.repositories import AccountNotFound
+from sage.ingestion.sources import SourceError
+from sage.services.ingest import DryRun, ingest
 from sage.services.seed import SEED_FILE, SeedResult, load_seed, seed
 
 
@@ -35,11 +39,31 @@ def main(argv: list[str] | None = None) -> None:
         "--port", type=int, default=3000, help="the local frontend's port"
     )
 
+    ingest_command = commands.add_parser(
+        "ingest", help="Read a handbook year's sources into a candidate rulebook"
+    )
+    ingest_command.add_argument(
+        "--year", type=int, required=True, help="the handbook year, such as 2026"
+    )
+    ingest_command.add_argument(
+        "--dry-run",
+        action="store_true",
+        required=True,
+        help="print the report and write nothing to any database",
+    )
+    ingest_command.add_argument(
+        "--draft",
+        action="store_true",
+        help="ask the drafting model for refused wording with no draft yet, and cache its drafts",
+    )
+
     args = parser.parse_args(argv)
     if args.command == "seed":
         run_seed(args.user, yes=args.yes)
     elif args.command == "sign-in":
         run_sign_in(args.port)
+    elif args.command == "ingest":
+        run_ingest(args.year, draft=args.draft)
 
 
 def run_seed(account: UUID, *, yes: bool) -> None:
@@ -101,3 +125,91 @@ def check_read_back(result: SeedResult) -> None:
     if result.student_differences:
         problems = "; ".join(result.student_differences)
         raise SystemExit(f"Her data didn't read back as written: {problems}")
+
+
+def run_ingest(year: int, *, draft: bool) -> None:
+    drafter = None
+    if draft:
+        settings = get_settings()
+        if not settings.anthropic_api_key:
+            raise SystemExit("Add ANTHROPIC_API_KEY to backend/.env first")
+        drafter = ClaudeDrafter(settings.anthropic_api_key, settings.drafting_model)
+    try:
+        run = ingest(year, drafter)
+    except SourceError as error:
+        raise SystemExit(f"Stopped: {error}") from None
+    print(report(run))
+    if drafter is not None:
+        tokens = drafter.tokens
+        print(
+            f"\nDrafting with {drafter.model}: {tokens['input']:,} tokens in, "
+            + f"{tokens['cached']:,} read from the provider's cache and "
+            + f"{tokens['output']:,} out, USD {drafter.cost:.4f}"
+        )
+
+
+def report(run: DryRun) -> str:
+    lines = [
+        f"sage ingest {run.year}, a dry run: nothing is written to any database",
+        "",
+        "Rows per table and source",
+    ]
+    for table, counts in run.rows.items():
+        sources = ", ".join(f"{source} {count}" for source, count in counts.items())
+        sources = sources or "none, as the year has no such source"
+        lines.append(f"  {table:<26} {sources}")
+    lines += ["", "Accepted automatically, and flagged by cause"]
+    flags: dict[str, Counter] = defaultdict(Counter)
+    for reading in run.readings:
+        flags[reading.entity][reading.flag or "accepted"] += 1
+    for table, counts in flags.items():
+        causes = ", ".join(
+            f"{cause} {count}" for cause, count in sorted(counts.items())
+        )
+        lines.append(f"  {table:<26} {causes}")
+    translations = run.translations.translations
+    refused = [t for t in translations if t.cause]
+    read = len(translations) - len(refused)
+    lines += [
+        "",
+        f"Requirements: {len(translations)} distinct printed strings. "
+        + f"The grammar read {read} and refused {len(refused)}:",
+    ]
+    for cause, count in Counter(t.cause for t in refused).most_common():
+        drafted = sum(t.drafted for t in refused if t.cause == cause)
+        lines.append(
+            f"  {cause:<26} {count}: {drafted} drafted, {count - drafted} awaiting a draft"
+        )
+    lines.append(
+        f"  Model calls in this run: {run.translations.calls}. "
+        + f"Drafts copied from an earlier year: {run.translations.reused}"
+    )
+    lines += [
+        f"  Not kept, as it isn't a rule tree: {p}" for p in run.translations.refused
+    ]
+    lines.append("")
+    lines += [
+        f"{wildcard} stands for {', '.join(codes)}, an assumption"
+        for wildcard, codes in run.expanded.items()
+    ]
+    if run.left_out:
+        lines.append(f"Left out, as only notes name them: {', '.join(run.left_out)}")
+    lines.append(
+        "Entries that print no requirement line, read as needing nothing beyond any "
+        + f"co-requisite: {', '.join(run.unprinted)}"
+    )
+    notes: dict[str, list[str]] = defaultdict(list)
+    for note in run.notes:
+        notes[note.text].append(f"{note.sheet}!{note.cell}")
+    lines += [
+        f"Timetable note at {', '.join(cells)}: {text}" for text, cells in notes.items()
+    ]
+    lines += ["", "Checks"]
+    for check in run.checks:
+        state = f"{len(check.failures)} failed" if check.failures else "passed"
+        lines.append(f"  {state}: {check.name}")
+        lines += [f"      {f.place}: {f.what}" for f in check.failures]
+        lines += [
+            f"      {f.place}: {f.what}, reported as settled" for f in check.reported
+        ]
+    return "\n".join(lines)
