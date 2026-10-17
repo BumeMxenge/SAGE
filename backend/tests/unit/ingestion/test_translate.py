@@ -93,6 +93,28 @@ def test_wording_an_earlier_year_drafted_keeps_that_draft_without_asking(tmp_pat
     }
 
 
+def test_a_draft_of_no_requirement_is_kept_as_no_rule(tmp_path):
+    # Wording that only describes a course, which E2's prompt answers with a null rule
+    cache = tmp_path / "drafts.json"
+    printed = "None. This is a course designed for beginners."
+    read = translate([(printed, "pass")], cache, Fake(None))
+    assert read.translations == (
+        Translation(
+            printed=printed,
+            need="pass",
+            tree=None,
+            cause="refused_free_text",
+            drafted=True,
+        ),
+    )
+    # Cached, so a second run asks the model nothing
+    again = Fake(MARK)
+    assert translate([(printed, "pass")], cache, again) == read.model_copy(
+        update={"calls": 0}
+    )
+    assert again.calls == []
+
+
 def test_without_a_model_a_refused_string_stands_as_a_refer_leaf(tmp_path):
     cache = tmp_path / "drafts.json"
     # Even where an earlier year drafted it, as only a run that drafts copies a draft
