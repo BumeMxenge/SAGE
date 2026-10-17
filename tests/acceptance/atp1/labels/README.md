@@ -55,11 +55,7 @@ Each sheet's About tab says how its rows were found, in which file (with its SHA
 
 ## Trees
 
-Trees follow the labelling conventions in `experiments/ingestion/requirement-parsing/prompt.md` on the branch `experiment/compare-requirement-parsing`, so E2's labels and ATP-1's follow one set of rules:
-
-```
-git show experiment/compare-requirement-parsing:experiments/ingestion/requirement-parsing/prompt.md
-```
+Trees follow the labelling conventions in E2's [prompt.md](../../../../experiments/ingestion/requirement-parsing/prompt.md), so E2's labels and ATP-1's follow one set of rules.
 
 A cell holds the tree itself, not the `{"rule": ...}` the models answer with, and null stands for a rule of null. Each tree is JSON in the seed's shape, which `EntryRule` in `backend/src/sage/domain/rules.py` defines. One example of each leaf, with made-up codes:
 
