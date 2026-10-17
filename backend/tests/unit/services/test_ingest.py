@@ -7,7 +7,7 @@ from datetime import time
 
 import openpyxl
 
-from sage.domain.rules import AllOf, AnyOf, CourseNeed, Refer
+from sage.domain.rules import AllOf, AnyOf, CourseNeed, HandbookVersion, Refer
 from sage.services.ingest import ingest
 
 EBE = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"
@@ -206,13 +206,16 @@ def test_a_year_ingests_into_a_candidate_rulebook(
 ):
     sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
     run = ingest(2026, data=tmp_path)
-    courses = {c.code: (c.name, c.term, c.entry_rule) for c in run.rules.courses}
+    courses = {
+        c.code: (c.name, c.term, c.entry_rule, c.convener) for c in run.rules.courses
+    }
     assert courses == {
         # The grammar reads EEE3100S's requirement
         "EEE3100S": (
             "Energy Systems and Grids I",
             "sem2",
             CourseNeed(course="PHY1013S", need="pass"),
+            "Associate Professor D Oyedokun",
         ),
         # The grammar refuses the co-requisite, which stands as a refer leaf until it's drafted
         "PHY1013S": (
@@ -224,17 +227,38 @@ def test_a_year_ingests_into_a_candidate_rulebook(
                     Refer(refer="MAM1020F (or equivalent)"),
                 )
             ),
+            "D R Geduld",
         ),
         # Read from the handbook, which prints its entry, rather than the workbook's copy
-        "ECO1007S": ("Economics for Engineers", "sem2", None),
+        "ECO1007S": ("Economics for Engineers", "sem2", None, "C Mlatsheni"),
         # Not stated in its entry, which doesn't mean there's no requirement
         "AGE1002S": (
             "The Human Planet: Prehistory to Present",
             "sem2",
             Refer(refer=NOT_STATED),
+            "Dr V J Hare",
         ),
-        "SLL1017F": ("Swahili Communication 1A", "sem1", Refer(refer=BEGINNERS)),
+        "SLL1017F": (
+            "Swahili Communication 1A",
+            "sem1",
+            Refer(refer=BEGINNERS),
+            "Dr E Mahenge",
+        ),
     }
+    # What a reviewer reads for a course and where to find it: its printed requirement with any
+    # co-requisite, or the workbook's words
+    readings = {
+        r.key: (r.place, r.printed) for r in run.readings if r.entity == "courses"
+    }
+    assert readings["PHY1013S"] == (
+        "p. 188",
+        "EEE1006F Co-requisites: MAM1020F (or equivalent)",
+    )
+    assert readings["ECO1007S"] == ("p. 138", "No requirement printed")
+    assert readings["SLL1017F"] == (
+        f"{HUMANITIES}, p. 244 (Language options row 3)",
+        BEGINNERS,
+    )
     flags = {(r.entity, r.key): r.flag for r in run.readings if r.flag}
     assert flags == {
         ("courses", "PHY1013S"): "refused_or_equivalent",
@@ -249,22 +273,44 @@ def test_a_year_ingests_into_a_candidate_rulebook(
     }
     assert run.left_out == ("CON2026S",)
     assert run.unprinted == ("ECO1007S",)
-    assert run.rows["courses"] == {"handbook": 3, "complementary workbook": 2}
-    assert run.rows["timetable_slots"] == {"timetable": 1, "complementary workbook": 2}
-    # The handbook's passages in printed order, then the workbook's own, less ECO1007S's
-    assert [(p.source, p.position, p.section) for p in run.rules.passages] == [
+    # Rows per table and source, counted from the sources above: one curriculum printing years 1
+    # and 3, their core groups and the complementary group, PHY1013S and EEE3100S in the core
+    # groups, and all three workbook offerings in the complementary group. PHY1013S meets on the
+    # sheet of the one curriculum taking it, so its meeting needs no link.
+    assert run.rows == {
+        "curricula": {"handbook": 1},
+        "curriculum_rules": {"handbook": 2},
+        "courses": {"handbook": 3, "complementary workbook": 2},
+        "course_groups": {"handbook": 3},
+        "course_group_members": {"handbook": 2, "complementary workbook": 3},
+        "equivalences": {"equivalences": 1},
+        "timetable_slots": {"timetable": 1, "complementary workbook": 2},
+        "timetable_slot_curricula": {"timetable": 0},
+        "passages": {"handbook": 6, "complementary workbook": 2},
+    }
+    # The candidate rulebook holds exactly the rows the report counts
+    assert run.rules.handbook_versions == (HandbookVersion(year=2026),)
+    assert {table: len(getattr(run.rules, table)) for table in run.rows} == {
+        table: sum(counts.values()) for table, counts in run.rows.items()
+    }
+    # The handbook's passages in printed order, then the workbook's own, less ECO1007S's, each
+    # entry's linked to its course
+    assert [
+        (p.source, p.position, p.section, p.course_code) for p in run.rules.passages
+    ] == [
         (
             EBE,
             1,
             "Bachelor of Science in Engineering in Electrical Engineering 4-year curriculum",
+            None,
         ),
-        (EBE, 2, "First Year Core Courses (EE)"),
-        (EBE, 3, "Third Year Core Courses (EE)"),
-        (EBE, 4, "EEE3100S Energy Systems and Grids I"),
-        (EBE, 5, "ECO1007S Economics for Engineers"),
-        (EBE, 6, "PHY1013S Physics B for Engineers"),
-        (SCIENCE, 1, "AGE1002S The Human Planet: Prehistory to Present"),
-        (HUMANITIES, 1, "SLL1017F Swahili Communication 1A"),
+        (EBE, 2, "First Year Core Courses (EE)", None),
+        (EBE, 3, "Third Year Core Courses (EE)", None),
+        (EBE, 4, "EEE3100S Energy Systems and Grids I", "EEE3100S"),
+        (EBE, 5, "ECO1007S Economics for Engineers", "ECO1007S"),
+        (EBE, 6, "PHY1013S Physics B for Engineers", "PHY1013S"),
+        (SCIENCE, 1, "AGE1002S The Human Planet: Prehistory to Present", "AGE1002S"),
+        (HUMANITIES, 1, "SLL1017F Swahili Communication 1A", "SLL1017F"),
     ]
     # Nothing is written and no model is asked
     assert run.translations.calls == 0

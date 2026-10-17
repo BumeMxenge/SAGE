@@ -280,5 +280,36 @@ def test_listed_prose_becomes_passages_one_per_rule_clause_in_printed_order():
             "FB8.10 Except by permission of the Senate candidates may not renew their registration if:",
         ),
     ]
-    # A passage's id comes from what it holds, so a second read gives the same ids
+    # A passage's id comes from what it holds, so a second read gives the same ids, and each is its
+    # own
     assert passages(units, 2026, "A made-up handbook") == read
+    assert len({p.id for p in read}) == len(read)
+
+
+def test_a_section_ends_at_the_heading_its_manifest_names():
+    # 2026's page 61, shortened, where the department's programmes end partway down the page, at
+    # the access route for transferees
+    book = Handbook(
+        [
+            Page(
+                number=61,
+                lines=(
+                    "graduates of the Mechanical Engineering programme.",
+                    "",
+                    "Electrical Engineering",
+                    "The last line of the department's programmes.",
+                    "",
+                    "Access for University of Technology Transferees",
+                    "Transferees may be admitted to the second year.",
+                ),
+            )
+        ]
+    )
+    until = "Access for University of Technology Transferees"
+    section = Section(section="Electrical Engineering", pages=(61, 61), until=until)
+    assert book.text(book.section(section)) == (
+        "Electrical Engineering\nThe last line of the department's programmes."
+    )
+    # A heading the page doesn't print stops the run
+    with pytest.raises(SourceError, match="No heading 'Civil Engineering' between"):
+        book.section(Section(section="Civil Engineering", pages=(61, 61)))

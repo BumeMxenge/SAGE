@@ -49,6 +49,7 @@ def workbook(tmp_path, timetable_block):
         eb009, "C11:C14", "MEC1009F\n(5234, 5287 or 5797)"
     )  # Monday, periods 6 to 9
     eb009["K16"] = "Note: Students also take EEE4124C, but this is purely online (5552)"
+    eb009["E14"] = "   "  # only spaces, which print nothing, as in EB009!H47
     eb809 = book.create_sheet("EB809")
     block(eb809, "2ND YEAR")
     meeting(eb809, "C7:C8", "EEE2045F\n(5068)")
@@ -110,6 +111,15 @@ def test_the_sheets_read_as_meetings_by_the_period_key(workbook):
     )
 
 
+def test_an_alternative_must_name_a_meeting_of_its_course(workbook):
+    # Labs!G11:G14 prints EEE3090F, so it can't be one of EEE3096S's labs
+    lab = Alternatives(
+        course="EEE3096S", group="lab", cells=("Labs!O11:O14", "Labs!G11:G14")
+    )
+    with pytest.raises(SourceError, match="Labs!G11:G14 prints no meeting of EEE3096S"):
+        stored(workbook, SHEETS, TAKING, (lab,), 2026, KNOWN)
+
+
 @pytest.mark.parametrize(
     ("change", "refusal"),
     [
@@ -124,6 +134,31 @@ def test_the_sheets_read_as_meetings_by_the_period_key(workbook):
         (
             lambda book: setattr(book["Labs"], "sheet_state", "hidden"),
             "The Labs sheet is hidden",
+        ),
+        # A block titled with no year of study
+        (
+            lambda book: book["EB009"].cell(1, 1, "SECOND YEAR"),
+            "EB009!A1 isn't a year of study",
+        ),
+        # A period whose start isn't the handbook's key
+        (
+            lambda book: book["EB009"].cell(7, 1, time(10, 30)),
+            "EB009!B7: period 3 doesn't start at 10:30",
+        ),
+        # Values in a semester's time and period columns that are neither
+        (
+            lambda book: book["EB009"].cell(20, 1, "staff only"),
+            "EB009!A20 fits no reading",
+        ),
+        (lambda book: book["EB009"].cell(20, 2, "TBC"), "EB009!B20 fits no reading"),
+        # A block over two days, and one past the last period
+        (
+            lambda book: meeting(book["EB009"], "C7:D8", "EEE2045F"),
+            "EB009!C7:D8 isn't one day's periods",
+        ),
+        (
+            lambda book: meeting(book["EB009"], "C14:C15", "EEE2045F"),
+            "EB009!C14:C15 isn't one day's periods",
         ),
     ],
 )

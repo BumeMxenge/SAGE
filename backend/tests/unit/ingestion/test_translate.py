@@ -4,7 +4,7 @@
 # no test calls one.
 import json
 
-from sage.domain.rules import CourseNeed, Refer
+from sage.domain.rules import AnyOf, CourseNeed, Refer
 from sage.ingestion.translate import Translation, translate
 
 # CSC2002S's requirement (2026, page 170), which the grammar refuses for its mark, and the tree a
@@ -33,10 +33,12 @@ def earlier_draft(tmp_path):
 
 
 def test_a_refused_string_is_drafted_once_and_cached(tmp_path):
-    cache = tmp_path / "drafts.json"
+    # In a year's folder that doesn't exist yet, as on the first run that drafts
+    cache = tmp_path / "rules" / "2026" / "drafts.json"
     fake = Fake(MARK)
-    # EEE4117F's requirement (2026, page 139), which the grammar reads, never reaches the model
-    strings = [("EEE3091F", "pass"), (REFUSED, "pass")]
+    # EEE4117F's requirement (2026, page 139) and a co-requisite, which the grammar reads, never
+    # reach the model. The co-requisite's courses are needed alongside, as E2's prompt reads it.
+    strings = [("EEE3091F", "pass"), ("MAM2084F/S.", "concurrent"), (REFUSED, "pass")]
     first = translate(strings, cache, fake)
     assert first.translations == (
         Translation(
@@ -53,8 +55,20 @@ def test_a_refused_string_is_drafted_once_and_cached(tmp_path):
             cause=None,
             drafted=False,
         ),
+        Translation(
+            printed="MAM2084F/S.",
+            need="concurrent",
+            tree=AnyOf(
+                any=(
+                    CourseNeed(course="MAM2084F", need="concurrent"),
+                    CourseNeed(course="MAM2084S", need="concurrent"),
+                )
+            ),
+            cause=None,
+            drafted=False,
+        ),
     )
-    assert fake.calls == [(REFUSED, "pass")]
+    assert (fake.calls, first.calls) == ([(REFUSED, "pass")], 1)
     assert json.loads(cache.read_text(encoding="utf-8")) == {
         "pass": {REFUSED: {"model": "a made-up model", "tree": MARK}}
     }

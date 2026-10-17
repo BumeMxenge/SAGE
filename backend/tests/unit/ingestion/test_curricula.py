@@ -117,11 +117,20 @@ def test_a_curriculum_reads_as_printed(handbook):
         "EB009EEE01-y4-group-1": ["EEE4126F", "EEE4118F", "EEE4121F"],
         "EB009EEE01-y4-group-2": ["EEE4114F", "EEE4117F", "HUB4049F"],
     }
-    # Only the footnote about the 576-credit curriculum needs a person, on year 2's rule: the
-    # complementary list and the timetable warning hold no rule
-    assert [(r.key, r.printed) for r in curricula.readings if r.flag] == [
+    # Each reading names its table as handbook_deltas allows it
+    assert {r.entity for r in curricula.readings} == {
+        "curricula",
+        "curriculum_rules",
+        "course_groups",
+        "course_group_members",
+    }
+    # Only the footnote about the 576-credit curriculum needs a person, on year 2's rule, whose
+    # table runs onto the footnote's page: the complementary list and the timetable warning hold no
+    # rule
+    assert [(r.key, r.place, r.printed) for r in curricula.readings if r.flag] == [
         (
             "EB009EEE01/2",
+            "pp. 48-49",
             (
                 "*CON2026S is a core course in the 576 cr. curriculum and students should "
                 "register for an approved Complementary Studies course of at least 8 credits "
@@ -163,6 +172,8 @@ def test_a_curriculum_reads_as_printed(handbook):
         ("Fourth Year Core Courses (EE)", 49),
         ("Fourth Year Elective Core Courses (EE)", 49),
     ]
+    assert {unit.curriculum_code for unit in curricula.units} == {"EB009EEE01"}
+    assert curricula.units[1].content.startswith("Second Year Core Courses (EE)")
     assert curricula.units[1].content.endswith(
         "requirements if CON2026S is outstanding."
     )

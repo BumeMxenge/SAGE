@@ -98,10 +98,10 @@ def test_offerings_become_members_meetings_and_passages(tmp_path, complementary_
         ("ECO1007S", None),
         ("SLL1017F", "languages"),
     ]
-    assert [(r.key, r.place) for r in readings] == [
-        ("complementary/AGE1002S", "Courses row 3"),
-        ("complementary/ECO1007S", "Courses row 4"),
-        ("complementary/SLL1017F", "Language options row 3"),
+    assert [(r.entity, r.key, r.place) for r in readings] == [
+        ("course_group_members", "complementary/AGE1002S", "Courses row 3"),
+        ("course_group_members", "complementary/ECO1007S", "Courses row 4"),
+        ("course_group_members", "complementary/SLL1017F", "Language options row 3"),
     ]
     stored = slots(workbook_read, 2026)
     assert {
@@ -138,6 +138,7 @@ def test_offerings_become_members_meetings_and_passages(tmp_path, complementary_
         ),
         ("SLL1017F", HUMANITIES, "SLL1017F Swahili Communication 1A", 244, 1),
     ]
+    assert len({p.id for p in read_passages}) == len(read_passages)
     assert read_passages[0].content.splitlines() == [
         "Course outline: This aim of this course is to introduce the study of archaeology.",
         "Entry requirements: None",
@@ -160,6 +161,8 @@ def test_identical_meeting_rows_stay_two_meetings(tmp_path, complementary_xlsx):
 @pytest.mark.parametrize(
     ("change", "refusal"),
     [
+        (("Courses", "O2", "Extra"), "Courses's columns aren't the workbook's"),
+        (("Courses", "O3", "stray"), "Courses row 3 has a value past its columns"),
         (("Courses", "A3", "AGE1002"), "Courses row 3: code"),
         (("Courses", "A4", "AGE1002S"), "Courses row 4: AGE1002S is listed twice"),
         (("Courses", "D3", -1), "Courses row 3: credits"),
