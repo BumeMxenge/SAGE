@@ -48,6 +48,8 @@ class Candidate(Row):
     expanded: dict[str, tuple[str, ...]]
     # Codes only a curriculum's notes name, with no entry to read
     left_out: tuple[str, ...]
+    # Every code the handbook prints an entry for, in any department
+    entries: frozenset[str]
     # Entries that print no requirement line, read like a printed "None"
     unprinted: tuple[str, ...]
     notes: tuple[timetable.Note, ...]
@@ -304,6 +306,7 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Cand
         checks=tuple(found_checks),
         expanded=read.expanded,
         left_out=tuple(sorted(read.scope - entries.keys() - listed)),
+        entries=frozenset(book.starts),
         unprinted=tuple(
             code for code, entry in entries.items() if not entry.requirement
         ),
@@ -317,17 +320,23 @@ def review_year(
     year: int, drafter: Drafter | None = None, data: Path = DATA
 ) -> tuple[Candidate, Review]:
     # Ingests the year, compares it with the latest approved year before it, and writes the rows a
-    # person must decide to data/rules/<year>/review.json
+    # person must decide to data/rules/<year>/review.json, with each decision there that still holds
+    path = data / "rules" / str(year) / "review.json"
+    try:
+        decided = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    except json.JSONDecodeError as error:
+        raise sources.SourceError(f"{path.name} isn't valid JSON: {error}") from None
     candidate = ingest(year, drafter, data)
     review = compare(
         year,
         candidate.rules,
         candidate.readings,
         candidate.checks,
-        candidate.left_out,
-        candidate.previous,
+        left_out=candidate.left_out,
+        entries=candidate.entries,
+        previous=candidate.previous,
+        decided=decided,
     )
-    path = data / "rules" / str(year) / "review.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     rows = [row.model_dump(mode="json") for row in review.rows]
     path.write_text(

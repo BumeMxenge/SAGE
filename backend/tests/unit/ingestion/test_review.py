@@ -463,3 +463,240 @@ def test_a_failed_check_is_always_a_reason_to_look():
             (f"p. 148: {unknown.format('MEC2045S', 'MEC2023F')}",),
         ),
     ]
+
+
+def test_a_decision_holds_only_for_the_reading_it_was_made_on():
+    # Two drafted requirements are accepted, beside a decision on a row no longer read. Then one
+    # is drafted again, with a tree no one has seen.
+    def reviewed(redrafted, decided=()):
+        rules = RuleSet(
+            courses=(
+                course("PHI2012F", MinYearOfStudy(min_year_of_study=2)),
+                course("REL2040F", redrafted),
+            )
+        )
+        readings = (
+            reading(
+                "courses",
+                "PHI2012F",
+                "At least second year status.",
+                "refused_year_of_study",
+            ),
+            reading(
+                "courses", "REL2040F", "Second-year status.", "refused_year_of_study"
+            ),
+        )
+        return compare(2026, rules, readings, (), decided=decided)
+
+    first = reviewed(MinYearOfStudy(min_year_of_study=2))
+    decided = [
+        {**row.model_dump(mode="json"), "decision": "accept"} for row in first.rows
+    ]
+    decided.append(
+        {"id": "requirement/GON9999F", "fingerprint": "0", "decision": "accept"}
+    )
+    again = reviewed(MinYearOfStudy(min_year_of_study=2), decided)
+    assert (again.pending, again.returned) == ((), ("requirement/GON9999F",))
+    changed = reviewed(MinYearOfStudy(min_year_of_study=3), decided)
+    assert [(row.id, row.decision) for row in changed.rows] == [
+        ("requirement/PHI2012F", "accept"),
+        ("requirement/REL2040F", None),
+    ]
+    assert changed.pending == ("requirement/REL2040F",)
+    assert changed.returned == ("requirement/GON9999F", "requirement/REL2040F")
+
+
+def test_a_decision_is_checked_before_it_counts():
+    # 2023 approved EEE2004F's rule. In 2026 each course prints new words, refused by the grammar,
+    # and is decided as its comment says. EEE2010F's rule, read with certainty, names EEE1006F,
+    # known only through an equivalence, which is rejected.
+    previous = Snapshot(
+        rules=approved_2023(
+            courses=(
+                course("EEE2004F", CourseNeed(course="EEE2001F", need="pass"), 2023),
+            )
+        ),
+        readings=(reading("courses", "EEE2004F", "EEE2001F"),),
+    )
+    unknown = "p. 1: {}'s rule names {}, which isn't loaded, printed or equivalent"
+    decisions = {
+        # a corrected leaf with no need
+        "EEE2001F": ("correct", {"course": "EEE2008F"}, None),
+        # a correction with no tree
+        "EEE2002F": ("correct", None, None),
+        # a new course, so rejecting would leave it needing nothing
+        "EEE2003F": ("reject", None, None),
+        # 2023's rule kept
+        "EEE2004F": ("reject", None, None),
+        # a tree beside accept
+        "EEE2005F": ("accept", {"course": "EEE2008F", "need": "pass"}, None),
+        # its draft names a code the year doesn't hold, and no note says why
+        "EEE2006F": ("accept", None, None),
+        # a correction naming a mistyped code, and no note says why
+        "EEE2007F": ("correct", {"course": "EEE2O08F", "need": "pass"}, None),
+        # a correction the year holds
+        "EEE2008F": ("correct", {"course": "EEE2001F", "need": "pass"}, None),
+        "EEE2009F": ("acept", None, None),
+    }
+    courses = [course(code, Refer(refer=code)) for code in decisions]
+    courses[5] = course("EEE2006F", CourseNeed(course="EEE9998F", need="pass"))
+    known = CourseNeed(course="EEE1006F", need="pass")
+    rules = RuleSet(
+        courses=(*courses, course("EEE2010F", known)),
+        equivalences=tuple(
+            Equivalence(handbook_year=2026, course_code=a, counts_as=b)
+            for a, b in (("EEE1006F", "EEE1008F"), ("MAM1020F", "MAM1023F"))
+        ),
+    )
+    readings = (
+        *(
+            reading("courses", code, f"{code} in new words", "refused_free_text")
+            for code in decisions
+        ),
+        reading("courses", "EEE2010F", "EEE1006F"),
+        reading("equivalences", "EEE1006F/EEE1008F", "A reason.", "not_printed"),
+        reading("equivalences", "MAM1020F/MAM1023F", "A reason.", "not_printed"),
+    )
+    failed = Failure(
+        place="p. 1",
+        what=unknown.format("EEE2006F", "EEE9998F").removeprefix("p. 1: "),
+        flags=("courses", "EEE2006F"),
+    )
+    checks = (Check(name=TREE_CODES, failures=(failed,)),)
+    first = compare(2026, rules, readings, checks, previous=previous)
+    decided = [row.model_dump(mode="json") for row in first.rows]
+    for row in decided:
+        name = row["id"].split("/", 1)[1]
+        if name in decisions:
+            row["decision"], row["corrected"], row["note"] = decisions[name]
+    by_id = {row["id"]: row for row in decided}
+    by_id["equivalence/EEE1006F/EEE1008F"]["decision"] = "reject"
+    by_id["equivalence/MAM1020F/MAM1023F"]["decision"] = "correct"
+    by_id["equivalence/MAM1020F/MAM1023F"]["corrected"] = {"made": "up"}
+    review = compare(2026, rules, readings, checks, previous=previous, decided=decided)
+    assert {(problem.row, problem.note) for problem in review.problems} == {
+        ("requirement/EEE2001F", False),
+        ("requirement/EEE2002F", False),
+        ("requirement/EEE2003F", False),
+        ("requirement/EEE2005F", False),
+        ("requirement/EEE2006F", True),
+        ("requirement/EEE2007F", True),
+        ("requirement/EEE2009F", False),
+        ("equivalence/MAM1020F/MAM1023F", False),
+        (None, False),
+    }
+    # The mistyped code is named, and so is the rule the rejected equivalence leaves unmet
+    texts = {problem.row: problem.text for problem in review.problems}
+    assert unknown.format("EEE2007F", "EEE2O08F") in texts["requirement/EEE2007F"]
+    assert [problem.text for problem in review.problems if problem.row is None] == [
+        unknown.format("EEE2010F", "EEE1006F")
+    ]
+    # The decisions that stand, EEE2004F's, EEE2008F's and the rejected equivalence's, aren't pending,
+    # and a change waits for its decision to be usable
+    assert set(review.pending) == {problem.row for problem in review.problems} - {None}
+    approved = {d.entity_key: d.approved for d in review.deltas}
+    assert (approved["EEE2006F"], approved["EEE2008F"]) == (None, True)
+
+
+def test_each_decision_sets_the_year_and_is_recorded_with_its_change():
+    # 2023 approved five courses. In 2026 three print new words, refused by the grammar, two are
+    # gone, and two courses and an equivalence are new. Every code named is printed somewhere.
+    def needs(code):
+        return CourseNeed(course=code, need="pass")
+
+    previous = Snapshot(
+        rules=approved_2023(
+            courses=tuple(
+                course(code, needs(f"EEE200{n}F"), 2023)
+                for n, code in enumerate(
+                    ("EEE3001F", "EEE3002F", "EEE3003F", "EEE3004F", "EEE3005F"), 1
+                )
+            )
+        ),
+        readings=tuple(
+            reading("courses", f"EEE300{n}F", f"EEE200{n}F", place=f"p. {n}")
+            for n in range(1, 6)
+        ),
+    )
+    draft = AnyOf(any=(needs("EEE2009F"), Refer(refer="or permission")))
+    rules = RuleSet(
+        courses=(
+            course("EEE3001F", draft),
+            course("EEE3002F", draft, convener="Dr B Made-Up"),
+            course("EEE3003F", draft),
+            course("EEE3006F", draft),
+            course("EEE3007F", draft),
+        ),
+        equivalences=(
+            Equivalence(
+                handbook_year=2026, course_code="EEE1006F", counts_as="EEE1008F"
+            ),
+        ),
+    )
+    readings = (
+        *(
+            reading("courses", code, f"{code}'s new words", "refused_free_text")
+            for code in ("EEE3001F", "EEE3002F", "EEE3003F", "EEE3006F", "EEE3007F")
+        ),
+        reading("equivalences", "EEE1006F/EEE1008F", "A reason.", "not_printed"),
+    )
+
+    def run(decided=()):
+        return compare(
+            2026,
+            rules,
+            readings,
+            (),
+            entries=[f"EEE200{n}F" for n in range(1, 10)],
+            previous=previous,
+            decided=decided,
+        )
+
+    # The correction is typed with its leaves out of order
+    corrected = {
+        "any": [{"refer": "permission"}, {"course": "EEE2003F", "need": "pass"}]
+    }
+    decisions = {
+        "requirement/EEE3001F": ("reject", None),
+        "requirement/EEE3002F": ("reject", None),
+        "requirement/EEE3003F": ("correct", corrected),
+        "requirement/EEE3006F": ("accept", None),
+        "removal/EEE3004F": ("reject", None),
+        "removal/EEE3005F": ("accept", None),
+        "equivalence/EEE1006F/EEE1008F": ("reject", None),
+    }
+    decided = [row.model_dump(mode="json") for row in run().rows]
+    for row in decided:
+        row["decision"], row["corrected"] = decisions.get(row["id"], (None, None))
+    review = run(decided)
+
+    def as_stored(code, rule, convener="Dr A Made-Up"):
+        return course(code, rule, convener=convener).model_dump(
+            mode="json", exclude={"handbook_year"}
+        )
+
+    assert [(d.entity_key, d.approved, d.corrected_value) for d in review.deltas] == [
+        # Rejected, so 2023's row stands
+        ("EEE3001F", False, None),
+        # Rejected, so 2023's rule stands, but beside the new convener, read with certainty: a
+        # correction of what was read
+        ("EEE3002F", True, as_stored("EEE3002F", needs("EEE2002F"), "Dr B Made-Up")),
+        # Corrected, with its leaves in canonical order
+        (
+            "EEE3003F",
+            True,
+            as_stored(
+                "EEE3003F",
+                AnyOf(any=(needs("EEE2003F"), Refer(refer="permission"))),
+            ),
+        ),
+        # A rejected removal keeps 2023's row, and an accepted one removes it
+        ("EEE3004F", False, None),
+        ("EEE3005F", True, None),
+        ("EEE3006F", True, None),
+        # Not decided yet
+        ("EEE3007F", None, None),
+        # A rejected addition is never added
+        ("EEE1006F/EEE1008F", False, None),
+    ]
+    assert review.pending == ("requirement/EEE3007F",)

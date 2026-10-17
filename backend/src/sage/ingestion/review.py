@@ -2,26 +2,34 @@
 # year's rules that's unchanged since then carries over, and a change read with certainty is accepted
 # automatically. Everything else becomes a review row, one per printed thing, with every reason a
 # person must look at it: a refusal, a removal, an equivalence no handbook prints, a course with no
-# entry, a curriculum note or a failed check. An approved year is kept as a snapshot.
+# entry, a curriculum note or a failed check. A person's decision on a row holds only while the row
+# shows what it showed then, and the code check runs again on the year as decided. An approved year
+# is kept as a snapshot.
+import hashlib
+import json
 import re
 from collections import defaultdict
-from collections.abc import Collection, Iterable, Sequence
+from collections.abc import Collection, Iterable, Mapping, Sequence
 from typing import Literal, get_args
 
-from pydantic import JsonValue
+from pydantic import JsonValue, TypeAdapter, ValidationError, computed_field
 
 from sage.domain.base import Row
 from sage.domain.rules import (
     NODE_KEYS,
     PRIMARY_KEYS,
+    Course,
     DeltaFlag,
     DeltaTable,
+    EntryRule,
+    Equivalence,
     HandbookDelta,
     RefusalCause,
     RuleSet,
+    YearRules,
     year_column,
 )
-from sage.ingestion.checks import Check
+from sage.ingestion.checks import Check, tree_codes
 from sage.ingestion.sources import Reading
 
 # Every flag in DeltaFlag's order, the order rows are sorted in
@@ -29,12 +37,25 @@ FLAGS = tuple(flag for flags in get_args(DeltaFlag) for flag in get_args(flags))
 REFUSALS = frozenset(get_args(RefusalCause))
 # A printed DP (a duly performed certificate), which both models in E2 tended to read as a pass
 DP = re.compile(r"\bDP\b")
-# What each table's review rows are called, and the part of a row a person decides
+# What each table's review rows are called, and the column a person decides, or None where a person
+# decides the whole row
 KINDS = {
-    "courses": ("requirement", lambda row: row["entry_rule"]),
-    "curriculum_rules": ("rule", lambda row: row["rule"]),
-    "equivalences": ("equivalence", lambda row: row),
+    "courses": ("requirement", "entry_rule"),
+    "curriculum_rules": ("rule", "rule"),
+    "equivalences": ("equivalence", None),
 }
+# The decisions each kind of row takes, and the type a correction must be
+DECISIONS = {
+    "requirement": ("accept", "correct", "reject"),
+    "rule": ("accept", "correct", "reject"),
+    "equivalence": ("accept", "reject"),
+    "removal": ("accept", "reject"),
+    "no_entry": ("accept",),
+    "check": ("accept",),
+}
+TREES = {"requirement": TypeAdapter(EntryRule), "rule": TypeAdapter(YearRules)}
+# What a row shows a person, which its fingerprint is made from
+SHOWN = {"id", "causes", "covers", "printed", "failures", "old", "new", "mark"}
 
 
 class Snapshot(Row):
@@ -60,16 +81,47 @@ class ReviewRow(Row):
     old: dict[str, JsonValue]
     new: JsonValue  # what this year reads, the same for every row covered; None for a removal
     mark: Literal["dp"] | None  # a draft of wording that prints a DP, to read closely
+    # A person's decision as review.json holds it: accept, correct or reject, the tree a correction
+    # makes it, and why. Each is kept as written, so a slip is shown rather than lost.
+    decision: JsonValue = None
+    corrected: JsonValue = None
+    note: JsonValue = None
+
+    @property
+    def kind(self) -> str:
+        return self.id.split("/", 1)[0]
+
+    @computed_field
+    @property
+    def fingerprint(self) -> str:
+        # What the row shows, in twelve hex digits. A decision holds only while this is unchanged.
+        shown = json.dumps(self.model_dump(mode="json", include=SHOWN), sort_keys=True)
+        return hashlib.sha256(shown.encode()).hexdigest()[:12]
+
+
+class Problem(Row):
+    # Why a row's decision can't be used yet, or a check that fails on the year as decided on no
+    # row's account, where row is None. A note settles one that only asks for a note.
+    row: str | None
+    text: str
+    note: bool = False
 
 
 class Review(Row):
     year: int
     compared_with: int | None  # the previous approved year; None when there's none
-    rows: tuple[ReviewRow, ...]
+    rows: tuple[ReviewRow, ...]  # with each decision that still holds
     carried: int  # table rows unchanged since the previous approved year
-    # Every table row added, changed or removed since then, flagged with its review row's first
-    # cause, and accepted already where it has none
+    # Every table row added, changed or removed since then, or changed by a decision, flagged with
+    # its review row's first cause, and accepted already where it has none
     deltas: tuple[HandbookDelta, ...]
+    # Decided rows that no longer show what they did when decided, or no longer exist
+    returned: tuple[str, ...]
+    problems: tuple[Problem, ...]
+
+    @property
+    def pending(self) -> tuple[str, ...]:
+        return _pending(self.rows, self.problems)
 
 
 def compare(
@@ -77,9 +129,15 @@ def compare(
     rules: RuleSet,
     readings: Iterable[Reading],
     checks: Iterable[Check],
+    *,
     left_out: Collection[str] = (),
+    entries: Collection[str] = (),
     previous: Snapshot | None = None,
+    decided: Iterable[Mapping[str, JsonValue]] = (),
 ) -> Review:
+    # entries are the codes the handbook prints an entry for, and decided the rows as review.json
+    # held them when the run began
+    readings = tuple(readings)
     before = _keyed(previous.rules) if previous else {}
     after = _keyed(rules)
     read = {f"{r.entity}/{r.key}": r for r in readings}
@@ -177,28 +235,216 @@ def compare(
             row.id,
         )
     )
+    rows, returned = _decisions(rows, decided)
 
-    flagged = {key: row.causes[0] for row in rows for key in row.covers}
-    deltas = tuple(
-        HandbookDelta(
-            handbook_year=year,
-            entity=key.split("/", 1)[0],
-            entity_key=key.split("/", 1)[1],
-            old_value=before.get(key),
-            new_value=after.get(key),
-            flag=flagged.get(key),
-            approved=None if key in flagged else True,
-        )
-        for key in sorted(before.keys() | after.keys())
-        if before.get(key) != after.get(key)
-    )
+    # Each decision that can be used sets its rows. The code check then runs again on the year as
+    # decided, so a correction naming a mistyped code, or a rejected equivalence a rule relies on, is
+    # caught, and a decision a check fails on needs a note saying why it stands.
+    problems = [
+        Problem(row=row.id, text=fault)
+        for row in rows
+        if row.decision is not None
+        for fault in _faults(row)
+    ]
+    stuck = {problem.row for problem in problems}
+    stored = dict(after)
+    for row in rows:
+        if row.decision is not None and row.id not in stuck:
+            _apply(row, stored, before)
+    places = {r.key: r.place for r in readings if r.entity == "courses"}
+    places |= {
+        key.split("/", 1)[1]: place
+        for row in rows
+        if row.kind == "removal"
+        for key, place in row.covers.items()
+        if key.startswith("courses/")
+    }
+    failing = _rechecked(year, stored, places, entries)
+    covered = {key: row for row in rows for key in row.covers}
+    for row in rows:
+        if row.decision is None or row.id in stuck:
+            continue
+        found = [
+            text
+            for key in row.covers
+            for text in failing.get(key, ())
+            if text not in row.failures
+        ]
+        noted = isinstance(row.note, str) and row.note.strip()
+        if (row.failures or found) and not noted:
+            text = "needs a note saying why it stands, as a check fails on it"
+            problems.append(
+                Problem(row=row.id, text="; ".join((text, *found)), note=True)
+            )
+    problems += [
+        Problem(row=None, text=text)
+        for key, texts in failing.items()
+        if key not in covered
+        for text in texts
+    ]
     return Review(
         year=year,
         compared_with=previous.year if previous else None,
         rows=tuple(rows),
         carried=len(unchanged),
-        deltas=deltas,
+        deltas=_deltas(
+            year, before, after, stored, covered, set(_pending(rows, problems))
+        ),
+        returned=returned,
+        problems=tuple(problems),
     )
+
+
+def _decisions(
+    rows: Sequence[ReviewRow], decided: Iterable[Mapping[str, JsonValue]]
+) -> tuple[list[ReviewRow], tuple[str, ...]]:
+    # Each row with the decision review.json holds for it, where the row shows what it showed when
+    # decided. A decision made on anything else no longer holds, and its row is returned to pending.
+    held = {row["id"]: row for row in decided}
+    kept, returned = [], []
+    for row in rows:
+        mine = held.pop(row.id, None)
+        if mine and mine.get("fingerprint") == row.fingerprint:
+            fields = ("decision", "corrected", "note")
+            row = row.model_copy(update={field: mine.get(field) for field in fields})
+        elif mine and mine.get("decision") is not None:
+            returned.append(row.id)
+        kept.append(row)
+    returned += [key for key, mine in held.items() if mine.get("decision") is not None]
+    return kept, tuple(sorted(returned))
+
+
+def _faults(row: ReviewRow) -> list[str]:
+    # What stops a decision being used, other than a missing note
+    allowed = DECISIONS[row.kind]
+    if row.decision not in allowed:
+        return [
+            f"{row.kind} rows take {_listed(allowed, 'or')}, not {json.dumps(row.decision)}"
+        ]
+    faults = []
+    if row.note is not None and not isinstance(row.note, str):
+        faults.append("note must be text in quotes")
+    if row.decision == "correct":
+        if row.corrected is None:
+            faults.append(
+                "correct needs the tree in corrected, with a refer leaf where no tree fits"
+            )
+        else:
+            try:
+                TREES[row.kind].validate_python(row.corrected)
+            except ValidationError as error:
+                faults.append(f"corrected isn't a {row.kind} tree: {_first(error)}")
+    elif row.corrected is not None:
+        faults.append("corrected is filled, so the decision should be correct")
+    # A rejected draft must never leave a course needing nothing
+    if row.decision == "reject" and row.kind in TREES:
+        missing = [
+            key.split("/", 1)[1] for key in row.covers if row.old.get(key) is None
+        ]
+        if missing:
+            faults.append(
+                f"reject keeps the previous approved year's rule, but {_listed(missing, 'and')} "
+                + "had none: correct it instead, with a refer leaf where no tree fits"
+            )
+    return faults
+
+
+def _rechecked(
+    year: int,
+    stored: dict[str, dict[str, JsonValue]],
+    places: Mapping[str, str],
+    entries: Collection[str],
+) -> dict[str, list[str]]:
+    # Each failure of the code check on the year as decided, by the row it flags
+    rechecked = tree_codes(
+        [
+            Course.model_validate({"handbook_year": year, **value})
+            for key, value in stored.items()
+            if key.startswith("courses/")
+        ],
+        places,
+        set(entries),
+        [
+            Equivalence.model_validate({"handbook_year": year, **value})
+            for key, value in stored.items()
+            if key.startswith("equivalences/")
+        ],
+    )
+    failing: dict[str, list[str]] = defaultdict(list)
+    for failure in rechecked.failures:
+        failing["/".join(failure.flags)].append(f"{failure.place}: {failure.what}")
+    return failing
+
+
+def _deltas(
+    year: int,
+    before: dict[str, dict[str, JsonValue]],
+    after: dict[str, dict[str, JsonValue]],
+    stored: dict[str, dict[str, JsonValue]],
+    covered: Mapping[str, ReviewRow],
+    pending: set[str],
+) -> tuple[HandbookDelta, ...]:
+    # Each change with its decision: accepted as read, rejected for the previous approved year's
+    # row, or corrected to what the decision made it. One awaiting its decision is pending.
+    deltas = []
+    for key in sorted(before.keys() | after.keys()):
+        old, new, kept = before.get(key), after.get(key), stored.get(key)
+        if old == new == kept:
+            continue
+        row = covered.get(key)
+        if row is None:
+            approved, corrected = True, None
+        elif row.id in pending:
+            approved, corrected = None, None
+        elif kept == new:
+            approved, corrected = True, None
+        elif kept == old:
+            approved, corrected = False, None
+        else:
+            approved, corrected = True, kept
+        table, name = key.split("/", 1)
+        deltas.append(
+            HandbookDelta(
+                handbook_year=year,
+                entity=table,
+                entity_key=name,
+                old_value=old,
+                new_value=new,
+                corrected_value=corrected,
+                approved=approved,
+                flag=row.causes[0] if row else None,
+            )
+        )
+    return tuple(deltas)
+
+
+def _pending(rows: Iterable[ReviewRow], problems: Iterable[Problem]) -> tuple[str, ...]:
+    # Rows with no decision that can be used yet
+    stuck = {problem.row for problem in problems}
+    return tuple(row.id for row in rows if row.decision is None or row.id in stuck)
+
+
+def _apply(
+    row: ReviewRow,
+    stored: dict[str, dict[str, JsonValue]],
+    before: dict[str, dict[str, JsonValue]],
+) -> None:
+    # Each table row the decision covers, as the decision leaves it
+    for key in row.covers:
+        if row.kind in TREES:
+            if row.decision == "correct":
+                trees = TREES[row.kind]
+                value = trees.dump_python(
+                    trees.validate_python(row.corrected), mode="json"
+                )
+            else:
+                value = row.old[key] if row.decision == "reject" else row.new
+            column = KINDS[key.split("/", 1)[0]][1]
+            stored[key] = {**stored[key], column: value}
+        elif row.decision == "reject" and row.kind == "removal":
+            stored[key] = before[key]
+        elif row.decision == "reject" and row.kind == "equivalence":
+            del stored[key]
 
 
 def _row(
@@ -210,7 +456,11 @@ def _row(
 ) -> ReviewRow:
     # A row for table rows read this year, which share their printed words and what they read
     table, name = keys[0].split("/", 1)
-    kind, decided = KINDS.get(table, ("check", lambda row: row))
+    kind, column = KINDS.get(table, ("check", None))
+
+    def decided(value: dict[str, JsonValue]) -> JsonValue:
+        return value[column] if column else value
+
     found = tuple(text for key in keys for text in failures.get(key, ()))
     causes = {read[key].flag for key in keys if read[key].flag}
     causes |= {"check_failed"} if found else set()
@@ -252,3 +502,17 @@ def _shape(value: JsonValue) -> str:
     if isinstance(children, list):
         return f"{node}({','.join(_shape(child) for child in children)})"
     return node
+
+
+def _listed(words: Sequence[str], last: str) -> str:
+    # Words in a list, such as "accept, correct or reject"
+    return (
+        words[0] if len(words) == 1 else f"{', '.join(words[:-1])} {last} {words[-1]}"
+    )
+
+
+def _first(error: ValidationError) -> str:
+    # The first thing wrong with a tree, and where in it
+    problem = error.errors()[0]
+    where = ".".join(str(part) for part in problem["loc"])
+    return f"{where}: {problem['msg']}" if where else problem["msg"]

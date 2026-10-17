@@ -256,4 +256,17 @@ def review_report(review: Review) -> str:
         f"data/rules/{review.year}/review.json: {len(review.rows)} rows for you, by cause:",
     ]
     lines += [f"  {cause:<26} {count}" for cause, count in causes.most_common()]
+    pending = review.pending
+    lines.append(f"Decided {len(review.rows) - len(pending)}, pending {len(pending)}")
+    if review.returned:
+        lines.append(
+            "Returned to pending, as the reading they were decided on has changed: "
+            + ", ".join(review.returned)
+        )
+    if review.problems:
+        lines.append("Decisions that can't be used yet:")
+        lines += [
+            f"  {problem.row or 'the year as decided'}: {problem.text}"
+            for problem in review.problems
+        ]
     return "\n".join(lines)
