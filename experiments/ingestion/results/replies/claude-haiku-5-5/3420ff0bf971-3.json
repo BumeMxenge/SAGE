@@ -1,0 +1,44 @@
+{
+ "request": "f4e2859ffea421319eb71ae3681ea7b7cc1565decd259e567b12fa943d130fe7",
+ "seconds": 1.44,
+ "reply": {
+  "id": "msg_011Cg6mM8FcAueraT7nuEn6i",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSlQYKEAgSGAI4AUIIdGhpbmtpbmcSDAW6SNCaoI7Cw3QSIxoM2tZttdoKvt3hkhnXIjDL2uYSTEOeWZ4LG/gAlNIKwOBiIQEVIv0IomyJRRMv4l+0nZ0+TfzzbT9uIpGUGc4qsgUQBhDv4TM0GqC6BFbnxZIUYaVOaUYwdvZEUZNGTrCa0INaCYrb2W3ae4+VKHdNlfoDZ0kLVAx0O0mUp3Rxxw/JxMwOcoWWiNZcZjKVHDQAPQYqdpF+L2Z3xE/6IT5kSkquEqvaFVpTas7/uK2pxd5p0jpXETB/BS+MJtedTCay8Acuto12fpngglob7DBZnbUdUGrED0CVumB0eHDKPU5gXKmXrp2xd/NANBE7rfEEv7vptqVFptaC2isvkmJ3BsVkgdElwfA2cjZl5vO97HWSMOyE0y4u02Ztk5ywldAjYoFAx2MXeq93vvZmlr0VqOEQVR7meHfG31TlcimCVk+azzlFnYMNo+0OA80I/aH0NpX1lbfXF8eEzPTckhOsD/17BeaUpSzdenSpFDoGu+t5Drryq99J8OeedBucorhCmLzEoyTGvfbbhlK77810E0J0GyvVx953NjmE3P8XdWFN3MDrfCs647hIPymiethJwNADsEriK/mFlGJHVJ+270JhXW3UDtILDBmAAhe+n06OhcPqLJljdJiOeiJUaBBOL7D6jRiYF27TRIRH9llHZmJVnMKO71Ov0Yv6tknKiBPemnwsveQ4sM2vv0fLG3e75zx6h/YF6qBJ69cveXxu2LSQPz/5XcfKcKHY9TqkO9D7Xz31UDVQTCQcAIUKAE5uShxTC9GWFN4MUGPqBPAKm3JuLa8hz9+B+nXsoCsGUjbMexLdOFHTdbX6VW9z4e2RK6c+mrysBQf3TRzZ3QgOJtMel4qTSghvIc7N27sis8Qro2ErTwBiKQ39ZPsg/SuAzOkzC8KCd9OnMZmqPI6XTlVr18DQc6j5qiiJCJV+WzeJZliENt3GgNl5F7DN6BvyNdll5qZv5vgQNJcNw31owyZuf+uTYsMiSVdgN+gjS2g9XrwYAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG2021W\", \"need\": \"concurrent\"}, {\"course\": \"APG2039W\", \"need\": \"concurrent\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3217,
+   "output_tokens": 135,
+   "output_tokens_details": {
+    "thinking_tokens": 77
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

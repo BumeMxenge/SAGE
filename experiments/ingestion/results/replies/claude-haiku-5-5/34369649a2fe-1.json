@@ -1,0 +1,44 @@
+{
+ "request": "2e1b439e4b8c5f4c87481ab672fee61c664cf408181a973273d9439a836f8349",
+ "seconds": 1.4,
+ "reply": {
+  "id": "msg_011Cg6muo48M6dRbwJfPKi8A",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSvwYKEAgSGAI4AUIIdGhpbmtpbmcSDErznexRu4zkn5wtjxoMjTNfRA76z02CNsIRIjDrlEG9nR1S/z+DMWh9vyFfP9+g8CldH38Qo/KP2t7lCbf9bXA7AfhGZ7ymjTUE3MEq3AUzTJOp5tZBbSG4+ksv3faHEAFSgen747q6laiNZwTo7Kng3jgwgVZ1ZfaffWOpRLVkG+hPP+WUJUvvYNpX9cVXdukYJX+a+69UMuJbATbupCOdZqupwFaFyLnPNwx1mahOzu2ktMVrPLnfH/YHyc9xtlSvFjmHLmkvt2QCdJusGMSxM9AK/JsLQWcNLdPFJTjXAJWPqRwl8Av3UfoovFP4FPaTUbB8bzbzb6OA6DxTyxkQee7RXDXPWwlv62XGyf8V5uhQPrA6NK5kgLB+3G2Y2u+2aqLDAH6RG1QQJG9UuHJsU5fnCKGzGpqaxsOaumjS8iEOsAEqmxCc9E82ixCLLgW0a6op7pGr3GpIM9EuNfAOzIzmllEGjuE0YyGlAd448s4dsFIWvyvOJ0ALZQLar/hqBduQdBAgC9lAH5NYy4vWeGbZJxbpsccTyPirXcU0lIFFFz1m/R9mNenoC5bpJPKgJ3s5+dzMWu8lnyLTxm7HiCzoWCVw7AzQd6l/5tgf0Hvx2r994QCJ86LwUN8ugYX0JpMIxCXCIsKG0707B71qT2mI8TZHpuH43yqQalbMpyhxflSp8JTLR/97WEspjRCe231pN2V8L1QE/UbJS04BkyCooonYUQO+qL5xU+kvLT1fUMDxg6jv+vQ5EVQJ4KND3wTDagpyyqUdYydJ0YpygXQVWtyLy6KbSHX2etVEB2iImkQt/fgHB2z+yoj4tYRKp8IdeyzJq+x7HeSDFl9iDmevMWCbzZbIDhSGkU4zC35y94wWNLilTIC+6Vd4cQoiy6nWfOSfNZkYRxlveyBKU8vt9baVGoteHinjujztQis7AzC08x9sUpJShYfG8fQzRKDG0GXmRac7hhKw/6Ad+6tEAKdCCcY2epXoWM6pIEPi7M60B72N7GhqAz1u7/uDfkRtry8SateZFteoUfEYdWRcu5oiQ35jJc69qKYiJpqiAH/ecqNMsjkYAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"refer\": \"DP in CIV2044F\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3216,
+   "output_tokens": 133,
+   "output_tokens_details": {
+    "thinking_tokens": 108
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "request": "9317013ac40cd664147e7bc89a40e698049e759d559c2c04d77eee00be9cfe06",
+ "seconds": 1.01,
+ "reply": {
+  "id": "msg_011Cg6mmZGRytiDWa2cEWd5f",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSpQYKEAgSGAI4AUIIdGhpbmtpbmcSDB1aGbdGpzo9ariD8BoMpS1+2K01jnSBgxQKIjA/aAtkUDdFyCOnDB7iYahrQxZZFH9ZIYZTPSlk6/QnJCqpWu4KCH6psfS8afeKFVYqwgVS3KebDVJ4gXKqjPNG6hVlNNUbeSF4bY6hIRC7uV2tM0dxOm4B5VXHPyUaX7BV+xUjl9VSi8xOqXtSpZMKcsPtDwa8PHyhfHnzG8nkODBnoABQS8RrQydmpoJz5cUuPEdU3OUEDL2yqgMZkXhpnz+af467sKkz38Mq2BjUid116BWoF9DDXNC7w06njq7x1X46IH7jcQ7W52nOlSblOe/uY3YnNJhwlzgbHAJWGc4TBjU387X7gWuYds4rPJWdy4qShJ8LKZvrcbSEWOUVDYgvbaSCgLrWXcJVtCiTHOGSnNe+ojoOqiFA/W7XBzQCSFXEnpZ+FZMnJboU4Q262Bvm2txTIEJj3MgwjXdobw5WShx3ub2FAtLdcJZ761aQXY2aCy5S+T5WL0ugMZqceR6hRkGcg8H+AOQL2G+031hPY17j34oyXHWBuCOIbZXg9huOcZs+StiMpZJqJtWcJop2jC+bXYUGdo2+FrCjEJfeaGKWD78xqdnBCwmQ/nD06KeXwfAzBQfiCJxIhB3RvkNVwOMtHcEPGGwOgGuH+kamyrI4/kHLidP1SOKSoULlcrNwo1ZlICf+TXdmprCbn8U8xLehYT+M7Sn1Hp6i2Tg95W/3kbhJpJqEG1ePl2bgGofO7GkOrqhGrJNoT4mLGIYSCxVRd2tOrJDBLCyu8bOPtJ5Wmn5SB4xNh9S9sm8knsHiZFkLKchODHA6Jm5TPYc1DT3C6b543NH/1ol25Bx3yHeG5CIgPjLokNaxBtxPvxw4/YTUu01/9C14I2PFMviTWtotC3Ym6C7AOILyQBgCz9r7M3ZjtSnujNtsMyeGgm6RRKhUdMucshmE66HjddVQRzs3AKw9dxPVDYxu0Jd2P5Y5PH143u7zxnEA4P2NwvSKg+ClCxWRi9+nM0cTFqkCKNV13OC6VGToR50isJKp6mk+GAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"refer\": \"The candidate must be able to graduate in the year in which the course is taken.\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3229,
+   "output_tokens": 104,
+   "output_tokens_details": {
+    "thinking_tokens": 67
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

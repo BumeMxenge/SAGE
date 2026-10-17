@@ -1,0 +1,44 @@
+{
+ "request": "96dbe3819c662da7401aeb1c070c7f297804d69df9d9295e9bc928e9f6576d12",
+ "seconds": 1.39,
+ "reply": {
+  "id": "msg_011Cg6mSrMKFn9zBBYKKnRqL",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSggYKEAgSGAI4AUIIdGhpbmtpbmcSDHFuCcrti8xMEa1C3hoMExOocWruq83CiXHeIjBHOsFuQ0w93od0tJg60U5oBOE6vBunSWVQm0UeQGLaAIbV0UYwUOT2rW+hGmC9QN4qnwUaTAcW45ykGVPNJCpeVM49q6ixu6JuV0pSoDSslzfV5vQM7rvIq4E+8zPziWVrIPimHd2Z+ViJMsGvICV0fQ7YDWAceXApgFigDU4WyQ3TYUvKWXmfJVCdqv2xtGYfSBdWPc7sOWt/Z8o3DcLBqozOEKVRYuJqOSL4QLw8ThIDEKH31hip3h0SpeIpPfVXTvJHLxJN3XMxvIxCEpP6cKV3Z+J19m1gwqhrNhKcmCHJ76kquUFw7vfm61toGFbN9Hg2RvaQyeVFVDO/r7kZNXWRtpJVEkbR4yRCUCIfx61qfVRaTuwFR1yusCigXjSQyHJE9zfEagqUQ1RoRlAYHlDo/YHEY2DcDh1tTuL2b2Uel3KPncpsImCAlaXv8v098qqTNqIdTADQ348eBKAnI9mnAiMLwdwRUEWZ8qScwgN7WGuxdhYU7oI7gAMwVOiCvCAQAnMXww5J67DIYXjwzCALfqrBjfikvZSW1QS5MHRXcGXXXFXG/diqQTfgwxfswHbFznnHfGU1rTU/2WRUhrT7NOtbJWVd7yCiyckfQJtnCcurTLWB4yL6oGhd1FRPb/x4Ykiek6lP3KS+k/Qe8oA52VbXAjGYjMTUhJW9rA3WH5raqFOlvFbut7Wn1L7YHtmZmJYYBxoZN+wmDdEIt3gQzqOAVzEdxtru2lLbmQuCGVi/R29JkguJy7Katn4I56gYZLNEERcll5RnLUzMVpS7li5MxIKjPCZfHvfJ9GGbNjrI3a1KpYW3xG0UOikItUry5Gh5zL4xGJYbS60NU43AN8PBqofhZ0YGk2qWZU/+bnQloVK1I0kyycvgkTGqRn2EkkVi8rljls/9z3gIa01uRliI7vvS/nCzPm/5SXU3Pwv+Mp/LQWUMol5jN8CyeRgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG2039W\", \"need\": \"concurrent\"}, {\"course\": \"APG2021W\", \"need\": \"concurrent\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3217,
+   "output_tokens": 131,
+   "output_tokens_details": {
+    "thinking_tokens": 73
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

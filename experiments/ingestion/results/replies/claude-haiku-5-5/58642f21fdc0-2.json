@@ -1,0 +1,44 @@
+{
+ "request": "6909ea95dbbd7067bad427c068073dd2f1ac87443e2406e14094da79316a2126",
+ "seconds": 2.17,
+ "reply": {
+  "id": "msg_011Cg6mPCwwmUrUpZBiGvVng",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQStwgKEAgSGAI4AUIIdGhpbmtpbmcSDEoxVmYYKxsLTCeaMhoM60naD9cPF4cjhd1YIjB+9Qx4mVtSxGiz7i+1PwScudVAZYMZm9dRWJW8yDNtOUVupVoKfHqY+XCRMCxTFmYq1AfFmNFX16wrfaHkHbY7vtBy7iP2PBAXiA9borqPag/zs/EwtUedHb2ssm4U5uDDknkYK5tomcc5dWlkg6G+SQ+YozeH9nw/aGiAvbK6lP2SY0W8GVKMX3sG78sbXyE4slpA6jVGjI3/7s7AhqltPhz/muyMc2z5PP3XxZQ/4OC1d8m4b7+f9h1x3cpTdIsN3JcLYuLhwViRCYqrgzQdgFQcqth89XOpuSR0ddpsn7GuQtUeeFn64c9won/OHCxYVxKoiwu90roknkbLuVRlgd+GrW17U9jLwMjKtrWQQISoTMxNGBHEDjKLwqJymeYXkhSZdC1Pec9bvUW2WIrV/eBkzYsCbhPaQqW3jUeT+0i1G0l1ZpDUnYyOiGmlRyZZHGaayL02ehQCy752cOSvc/a/cfQtQYrWLB7v4/XfgRy36XVoQgrOI5HSGwWv9e1+4wNPmyyL1hy1aLkzv0kdiw/amhildUWI2+9O6bgfnJlvddCE2gQyAUk43jEDPkUBR9wgG186D3JLwUmWnTE5eoFwGN64k9QNppDRJHZJ4d9QJujCDinZSsYPaK3xtNOil3gOiHFSOj/c6enFoKHmb+sNCxpw5mPxwPwq/4SVD0UaWNbReVa6bpD62ORrqBJbZQ3qDfzwLIRzxWWSrXh9WD+2WSr+876lNoteMra72sI8AnMT/D4/XHd2XXblnBvIzjjjiX3e5p9sec9v2SPUc0lFHZjHjgBocVMRqVpq0pE1bp6nH9435BHPA5S/RXRwj0j05sasBp0WVusNOTt4Cb2tgzwgkvdU/UJOv+xuu8P0f4kObgV/Utk5aXaUND1fjD0gbY9DOgMdxLyH2GxqNSEhmhhvs5fHE7PlA5ahvPygHWC40OxjLbV2Wjht3un2PjSyg7SMRmRnnOJDjXVueCRuyN8U17cyoSX3Db+ur5CXAP5VGar4emIgYyFk+vGDmoSfPR5f4O8I3sO9E/+mLj2nMZ6EkKFM4FMXeJDF+pEWA/bwPHmZp98/4TYzBPofe0lKrvVuxZhXBN3GKgJypGOEAvzzZHCKUBak5MdsZZrWSBXZV9naCEE5iEKvHbJVpi83CcqsTeeXCzRZOocVv8Esp/XxFlp4TisFlVMZiDwjiS66bZLAOfx2CIo306KoJ8PWPEXphOLSve+WiJ8djcAOqyE352dmHgRWok1dlKnPHZb0ikbP+UiuaOBeXpra6aELC+uK6RRMys4SbaJZVQ6tRTxdTkvujgLXWGn8PQ9PuUr/DJ8WlTDcV22AC4T8EeA/7t3zQNG223nKWDNGaUOsZqkyzxgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"any\": [{\"any\": [{\"course\": \"MAM1021F\", \"need\": \"pass\"}, {\"course\": \"MAM1021S\", \"need\": \"pass\"}]}, {\"all\": [{\"course\": \"MAM1004F\", \"need\": \"pass\"}, {\"course\": \"STA1000S\", \"need\": \"pass\"}]}]}, {\"course\": \"APG1016H\", \"need\": \"pass\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3235,
+   "output_tokens": 372,
+   "output_tokens_details": {
+    "thinking_tokens": 234
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

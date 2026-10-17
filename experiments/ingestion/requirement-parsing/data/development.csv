@@ -1,0 +1,59 @@
+field,text,printed_by
+Co-requisites,MAM1020F (or equivalent),PHY1012F 2023 p. 189; PHY1013S 2023 p. 190; PHY1012F 2026 p. 187; PHY1013S 2026 p. 188
+Co-requisites,"MAM1020F/S or MAM1023F/S, or equivalent",PHY1014F 2023 p. 190; PHY1015S 2023 p. 192; PHY1014F 2026 p. 189; PHY1015S 2026 p. 190
+Co-requisites,MAM2084F/S.,PHY2010S 2023 p. 193; PHY2010S 2026 p. 191
+Co-requisites,None,MEC1003F 2023 p. 144; MEC1003F 2026 p. 144; MEC1009F 2026 p. 145
+Course entry requirements,(CSC1015F and CSC1016S) or (CSC1010H and CSC1011H),CSC2001F 2023 p. 177; CSC2004Z 2023 p. 177
+Course entry requirements,(CSC1015F/S and CSC1016S) or (CSC1010H and CSC1011H),CSC2001F 2026 p. 170; CSC2004Z 2026 p. 170
+Course entry requirements,(EEE1006F and CSC1015F) or (EEE2042S and CSC1019F),EEE2046F 2023 p. 130
+Course entry requirements,(EEE1006F and CSC1015F/S) or (EEE2042S and CSC1019F),EEE2046F 2026 p. 131
+Course entry requirements,"(MAM1020F/S or MAM1023F/S) and, (PHY1013F/S or PHY1015F/S) and EEE1007S",EEE2044S 2023 p. 129; EEE2044S 2026 p. 130
+Course entry requirements,"A pass in NSC Mathematics with at least 70%, or at least a D symbol at A-level.",MAM1020F 2023 p. 184; MAM1020F 2026 p. 178
+Course entry requirements,"At least 70% for NSC Mathematics. Students registered for this course will be assessed in week 5; if it is judged that they are not coping with the level and pace of the course, and would benefit from an opportunity to strengthen foundational concepts and learn new material at a slower pace, they will be required to transfer to CSC1010H from week 7.",CSC1015F 2023 p. 175; CSC1015F 2026 p. 168
+Course entry requirements,CSC1015F (At least 45% for CSC1015F or at least 70% for CSC1017F),CSC1016S 2023 p. 175
+Course entry requirements,CSC1015F (or at least 60% for CSC1017S),CSC1016S 2026 p. 168
+Course entry requirements,CSC2001F (At least 45% for CSC2001F),CSC2002S 2023 p. 177; CSC2002S 2026 p. 170
+Course entry requirements,"CSC2001F, CSC2002S and ((MAM1004F+MAM1008S) or (MAM1000W) or (both MAM1031F & MAM1032S (or equivalent)), and either INF2009F or permission from the Head of Department to do compensation work to a satisfactory standard. CSC2004Z is required if CSC2002S was passed after 2017.",CSC3003S 2023 p. 178
+Course entry requirements,"CSC2001F, CSC2002S and ((MAM1004F+MAM1008S) or (MAM1000W) or (both MAM1031F & MAM1032S (or equivalent)). CSC2004Z is required if CSC2002S was passed after 2017.",CSC3002F 2023 p. 178
+Course entry requirements,"CSC2001F, CSC2002S, CSC2004Z and ((MAM1004F+MAM1008S) or (MAM1000W) or (MAM1031F or equivalent)).",CSC3002F 2026 p. 171; CSC3003S 2026 p. 171; CSC3024S 2026 p. 171
+Course entry requirements,"CSC2001F, CSC2002S. CSC2004Z is required if CSC2002S was passed after 2017.",CSC3023F 2023 p. 179
+Course entry requirements,EEE1006F,EEE2045F 2023 p. 129; EEE2045F 2026 p. 131
+Course entry requirements,EEE2044S,EEE3091F 2023 p. 133; EEE3100S 2023 p. 137; EEE3091F 2026 p. 134; EEE3100S 2026 p. 138
+Course entry requirements,EEE2045F,EEE2051L 2023 p. 131
+Course entry requirements,EEE2045F and EEE2047S,EEE3088F 2023 p. 132; EEE3090F 2023 p. 133; EEE3090F 2026 p. 134
+Course entry requirements,EEE2045F and EEE2047S and EEE3088F,EEE3097S 2023 p. 136; EEE3098S 2023 p. 136; EEE3099S 2023 p. 136
+Course entry requirements,EEE2045F and EEE2047S and MAM2084F/S,EEE3094S 2023 p. 134
+Course entry requirements,EEE2045F and EEE2047S and MAM2084S/F,EEE3094S 2026 p. 135
+Course entry requirements,EEE2045F or EEE2046F/S,EEE3088F 2026 p. 133
+Course entry requirements,EEE2046F,EEE3093S 2023 p. 134; EEE3096S 2023 p. 135
+Course entry requirements,EEE2046F/S,EEE3093S 2026 p. 135; EEE3096S 2026 p. 136
+Course entry requirements,"EEE2047S, MAM2083F/S",EEE3092F 2023 p. 134; EEE3092F 2026 p. 135
+Course entry requirements,EEE3088F,EEE4124C 2023 p. 140; EEE3097S 2026 p. 137; EEE3098S 2026 p. 137; EEE3099S 2026 p. 137; EEE4124C 2026 p. 141
+Course entry requirements,EEE3089F,EEE4105C 2023 p. 137
+Course entry requirements,EEE3091F,EEE4117F 2023 p. 138; EEE4123C 2023 p. 140; EEE4117F 2026 p. 139
+Course entry requirements,EEE3092F,EEE4122C 2023 p. 140
+Course entry requirements,EEE3092F or EEE3094S,EEE4114F 2023 p. 138; EEE4114F 2026 p. 139
+Course entry requirements,EEE3093S,EEE4121F 2023 p. 140; EEE4121F 2026 p. 140
+Course entry requirements,EEE3094S,EEE4118F 2023 p. 139; EEE4118F 2026 p. 139
+Course entry requirements,EEE3096S,EEE4120F 2023 p. 139; EEE4120F 2026 p. 140
+Course entry requirements,EEE3097S or EEE3098S or EEE3099S,EEE4113F 2023 p. 138; EEE4113F 2026 p. 138; EEE4125C 2026 p. 141
+Course entry requirements,EEE3100S,EEE4126F 2023 p. 141; EEE4126F 2026 p. 141
+Course entry requirements,EEE4114F or EEE4126F or EEE4117F or EEE4118F or EEE4121F,EEE4022S 2023 p. 137
+Course entry requirements,EEE4114F or EEE4126F or EEE4117F or EEE4118F or EEE4121F or EEE4120F or EEE4119F,EEE4022S 2026 p. 138
+Course entry requirements,MAM1020 or equivalent and MAM1021 or equivalent.,MAM2083F 2023 p. 187; MAM2083F 2026 p. 182
+Course entry requirements,MAM1020F.,MAM1021S 2023 p. 185; MAM1021S 2026 p. 179
+Course entry requirements,MAM1020F/S or MAM1023F/S,MAM1024S 2023 p. 186; MAM1024S 2026 p. 181
+Course entry requirements,MAM1021F/S or MAM1024S/F,EEE2047S 2023 p. 130; EEE2047S 2026 p. 132
+Course entry requirements,MAM1021F/S or equivalent.,MAM2084S 2023 p. 188; MAM2084S 2026 p. 183
+Course entry requirements,"MAM1021F/S, PHY1012F/S and MEC1009F/S",MEC2047F 2023 p. 148; MEC2047F 2026 p. 148
+Course entry requirements,MAM1023 and MAM1024,MAM2085F 2023 p. 188; MAM2085F 2026 p. 183
+Course entry requirements,MEC1009F/S and MEC2023F/S or MEC2047F/S,MEC2045S 2023 p. 147; MEC2045S 2026 p. 148
+Course entry requirements,MEC2047F and MEC2045S and EEE3094S,EEE4119F 2023 p. 139; EEE4119F 2026 p. 140
+Course entry requirements,None,EEE2048F 2023 p. 131; MEC1003F 2023 p. 144; HUB2005F 2023 p. 166; MEC1003F 2026 p. 144; MEC1009F 2026 p. 145
+Course entry requirements,PHY1012F/S and PHY1013F/S; or PHY1014F/S and PHY1015F/S. MAM2083F/S.,PHY2010S 2023 p. 193; PHY2010S 2026 p. 191
+Course entry requirements,PHY1012F/S or PHY1014F/S,PHY1013S 2023 p. 190; PHY1013S 2026 p. 188
+Course entry requirements,PHY1014F/S or PHY1012F/S.,PHY1015S 2023 p. 192; PHY1015S 2026 p. 190
+Course entry requirements,"PHY2010S, MAM2083F/S",EEE3089F 2023 p. 132; EEE3089F 2026 p. 133
+Course entry requirements,Students must be in their fourth year of study.,HUB4045F 2023 p. 166; HUB4049F 2026 p. 162
+Course entry requirements,This course is for non-Humanities students only and does not count towards Humanities degrees.,ASL1200S 2023 p. 167
+Course entry requirements,This course is only available to BSc(Eng) Electrical Engineering; BSc(Eng) Electrical and Computer Engineering and BSc(Eng) Mechatronics students.,CML4607F 2023 p. 170; CML4607F 2026 p. 164

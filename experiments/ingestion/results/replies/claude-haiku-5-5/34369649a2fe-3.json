@@ -1,0 +1,44 @@
+{
+ "request": "2e1b439e4b8c5f4c87481ab672fee61c664cf408181a973273d9439a836f8349",
+ "seconds": 1.47,
+ "reply": {
+  "id": "msg_011Cg6muzRyvHNrRJwmcNjWt",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSnwYKEAgSGAI4AUIIdGhpbmtpbmcSDJtLfYUw9yWbyueiTBoMvydokceR1KMYKsZ4IjAYF4eUC8SdZvGaT+o5hnAGL59ZHkGsr6dhXvpCLgV07skCGjVVU/6J4774KsqRukoqvAWMk0Nc2NnpLcxaVvXK5/pj9QMs38spIvj8NS7xb7t1oCTkJEN7mu1RrxsG/OonK0Dp0HXvSvQMDOdt9oefvjxA1iyR05wcAOLoN7Oy2PBPYeUVeT2Bl5DMVm89j9zN+U4Gm/DQeLZoroa3avMHjHmRitMLDSCJV5oT78caBMG/o8lBatyE1orR1dL+OHV19qaZZQYnjrjw8w+WZ2N+Dfx1SuSj/HQMkI2tE7wtJC+keFaHxpuf/PyJxl6uwV+NYwJ3HWRDMJgQAQzx62JIQRDMpGeb275TqzlZtt7Dq/qzy1CNQM110xzq0HeB1ofxX2hATfVy/d057IOHuLUZoIaj+jUYbQLGB2tGLKd9j+9ZElcSvfcP4G3EcWyaOXh4ux3r8RqvFs6nuA2lnX/ECEwUbukutkw+loJjSaJBqiRh1SlE+r7SDZdQLYoGNw2fRSSTq1m2a5TjP0CpBFN4kNwjk5GGP+lJTSzflLlFGEjNAaV8SFz97W0v9GTliNZ3/cGTcikfaeeKzpyv39ZxxWI6ZWnd4QLHb41kWHxbe/KeE1ITNrA1CeHQrAjnEw/wnbNe9y3OdK3G80ryOvpD0a8s/BRRoCm0vbpRNThk/uwJ3gcubEPK8vq3ouex/ymjtRSCQ/R6bwLPPraPMqxsoy6t+6pVvoVpRpBq4BBdFt0joe7EfaI5qXs9kFLMpOxcTH2MHxgxzzKSHr60apvqXXhkGnMN+Yj13ThA48/z1rUL2038GNE+aE0V/OoCXIiVvPFI8mN7h1eDZG7jhs7/DB/aHmUhjTG80su7Sj5aEifWoKutfBrHVRyUsMonRITzjjmnmOg/tfSGHakanySwzfMSMZ70j3NxlaCN7rPhypbd7BqAL1anW40NoskIypbdc5kD2Ki2K5sgacVFZtGSqyfYIwFFfvRP9ucPRf/cGAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"refer\": \"DP in CIV2044F\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3216,
+   "output_tokens": 115,
+   "output_tokens_details": {
+    "thinking_tokens": 90
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

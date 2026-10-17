@@ -1,0 +1,44 @@
+{
+ "request": "3ca91e050103fd818a415d428c07009e1389b5c2eb67af54e67dd1137b2b5797",
+ "seconds": 2.25,
+ "reply": {
+  "id": "msg_011Cg6nRyWW8xW4jL9Vw4X5H",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSnAkKEAgSGAI4AUIIdGhpbmtpbmcSDMZZKiFDAj0dgA/pYxoMngxVlE/CiqjV4mvTIjC4/yg+g3gfsJHal4TRIELZUuYaZEPGgENxJo67S6YAif3cTHGczpEbAeP8yySCN8YquQiFX1euSiZ3taB23sdo041w113JY3oyDu3jXoUQp4Wp3hdbgQNhEmhS973/TNPOFfM0qkePdqak9n4OMvkArhe3LmPFGQJndhLzeYk9KWwaudhF/O6sY/37kybntBHfjVt+M8rwtnNQf1kR6mEC3Hugmbxo33dTAeNwaY9bvtaTXQ37WxrFH69KlC+JYLux1tt3G4osCIelxp02wilIaEAIiOo3qNiLeuX6+UIV5v/Wna68uzMW/39K6TAJ8W9BVLNjkgma8w3k1NiPJNOKkh/H/I8dalx6CLPN2K4K0/W+JDvsCs5xu+zW4pvzijOEskOWpg/oXetDSW0wKbNhQwjoDbW7ZsJV/QdOnxjWDDnRGvFYMUU6Wrwk7p/ChuDn54FVMf31PBK9GFyHh5zDuNt7sFiy0e3k7TQRmgUBruYLtIoH3qGHP3+xt/YYwmTLHNbh0tapl6pnq/AiL6bJG7ECGRdSxVrmGjjR2JSAp8Cuuu5cYUs65dp+77N78rO50R42eK+YrCcA8QeMUVpfWs0C8cbMl5BE7PSTaQGWpFNCtH0ZGW36CeIcyY8TFx/5MqeqlfyrFzLr4JUh8CSjfECTFst2U9jHuiA1bDZ2RewGzXkUIawjiMJftkjcWFL/ewYYjJnaE6pl7/3lpwnbdJ07gIeiIG8tOK9th3Durz9r0yfgJIQCsjvT4yDvHdI3j8IyoYwW0I4QUxkwCf8Ff/siTLULGn5gqXMpYklj0yIqWSRngsHpdu/Mjv7IfRDFpJxk9i5QqU9Gdmfcq3K+yv4XFYoCdHJM+iqiFm4ySQ8UY6/i50KQwpFUn+D1juUewB8GL8UT1lggQF9MGj66/zYfikqdmCs9tA31GodrFucsp3Fc2uF0TXJGKBYEg6iUXHcYsPhS6dstHcmLSS+rpSAeI+VEv2eUKiQr28a6OOJYbghZ0wFW3h0Vn/aXl7cyCnN3SBhUB3FUBccOXm3h8D57i7jUoqQ+oJOzdaT4H1x1RQ8lLYeQ8QC6b4wytpMCnUDR2nXicHlad88kpfFJQoPVepjDZiKu1Kx9oZrhBel5Rsrvd4CCTme9vjFJ3Q/a3upWeJ5+k/1lzdKLcMcD+Eh0obb4O4QsA9/vRauLkliC0lfxc0nNcFLSaVlx5x10hTu6EaDbPQxAr41kJhQxJa5CBvOMVCotmXGv4mOkc6dlMNuSozEtzjIrY5uSRrNOydyhItXVz5TFdJ2N8IvxaxmFTTKjbGUFhWQq+uvX6VWIQo8nj/9nF/XmUHRVUFoa31lN6Og0tsBRi71e9iKPC695OBHsvk3lN2cnlG9DgmyXII0lvCBNJqjB2PgsJhK6pyNzEDYnIe/0wPwVkL1xxH4+TMs7EA9a9yih2+jFueBbgIkmag23sc/RvQ6Oz+YCG1M+ZFlSB42hrmdM44Chv4M2UPt07P3R692RGAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"any\": [{\"all\": [{\"course\": \"MEC3072F\", \"need\": \"pass\"}, {\"course\": \"MEC3073S\", \"need\": \"pass\"}]}, {\"course\": \"MEC3050W\", \"need\": \"pass\"}, {\"course\": \"MEC3082S\", \"need\": \"pass\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3234,
+   "output_tokens": 387,
+   "output_tokens_details": {
+    "thinking_tokens": 282
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "request": "de974be009d26513be3b4f3fe7fcc0ffa99f6f184e73b297b743f4cce6b55034",
+ "seconds": 2.34,
+ "reply": {
+  "id": "msg_011Cg6mWg71tC77FREjrUYbN",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSuwsKEAgSGAI4AUIIdGhpbmtpbmcSDKtlpcNKVEXlhynJIBoM97D/OBe3RSnkaT46IjBgsUsIX7qgLMTtC2s+xRRZAto3TgvkQoqBo+6PF/Fhp3FVwYPARkGj1gTQQLrEWC4q2AqvY/CJEu+V1UW+Wnp2Kjxc7r7g6QDjYa6Oymnq8W8b4GvjqJ0jatNzW08dmmfug22rnd85YbjO+z7AjiAMea4fVcdOtVO8xnpPzvDDG4P/0VydyEdtgwepE0kGt2NrS0ievVrx3ePcy0JZ7kmNzkXq94x9svz5R9ahSP/tFSJIgJ6c9Myeq1L3d/FYyxMVv5G0FKkXw5IZOqzbecsZ2k4Y7V29z1pKvlkvkTWqL8GO5HMDUWBt2pJh7cGdD3Soizrn7OLF782hemqMYuYhMI519x0IbAoxDljNqlGDim/QZI7snpTcWLoROVieqKgdTYwGrI0RrEDpzLS+mFyNZHwURdL3iumoTiF+17aWZXKYwjf4vVTBqI+nFfL26Msfwn1Ha0DRjXFfiBOMfffdDPx0sfY4f3v90cvToDLlBn0hhF9UuUTKGva94ypIU/rba1qVYAWCazP/dLW0/Eu69kv9nLUgrJ3sa4eQKRuKurxyReC0KvOg4lDJrQ/GGiuJY9m6VvItjI3hltLUfxkzTZgRGTYLPE0E7dT/0s0j280KnjJSvQvXz/OT0rcPzBCAKMrctdR44/nQ17XqF646BOJW5+8OILTfMoYJPXbqEIGA8/7bd20oz3NgwmIKLEGSsuYEUszQpRMh2hpplUKzcV1LD35US3qw7Su8BCE9+7EVp1MOEyH88RH7btaymj4u3d/jYjB4XQGs0Eg0EkN8Oo/GP5P8B1/Lt/Z1Kc8zHQ+yBblrnFrD5mCOEfLzeQP0j6e7ZOOP8HWT9dwRBgney8SvbZilhMa1OpEI03ixgawQw+0vDPo0AXG9N8jf0/gNNXwjbSSZkgSgnUjWPWDrWzTH83SJZl43HElGlVIZFD5rdZzs22uGPhDyJx/jY+nXPi0D2cjYhUPAhrRlbsE2/iO+THfAZfPno4rufDP4sFWmgGOU/DD82hbCUPljH+Rs9Hzx9uCGHxgwcIIBzOHLlxEvcH6iRGlqJof/GoYdKP41yTwU/Upo6FZINwEiNhcP6TQJ2jW18jbNY/1pD0EcWll2c0RrP1DBFdoSAlmDpqThBKhM4yRYwieBfqDZ6MvtGH+1gWSOULKQAWC3xwgnzI6o/3JjCwK0YpmNdbJ8EPziVlwOyaQWLxo+iDYYV8KCUMEUWN1GZ37n0io6Jyqz53RgoDGlRVBQrh/oicb4zxbu6y8wbZX7Y2v3YBb+kBhzt+oRaB6L67MGJUrA8GooKAoxps/nHoeKimJ91ExtJrpWYswgZcIyW4dS1YY/LaC/HOP8OYMUFVjL6J5A0VEZ30Fj1xMEaAiB6vTF2zrPCqJyoTax3RvQNxvD3vTGUG0bYmoHH0m6KVOmvWmWldyphqXxVKlXklhKGjTU6jec11qTHLYJjSv+TTKRE97Zg6+dUpvw/5qOUSEKGUQAAvldLF+NwJvaI4MUtfQ9aOemnyzrP0m2qLv5qLafMWBaLTVpF7lLWsbCKK14sAvupNFJA3ZFzHpn2dR65GFaA3JYxfWRSuO1H1PyvOh5r0TAchX5UFnCnpnCLbVTfWxeKqaNf5stkM+3lchW8FU7Re1RIaCpLeTEBZiGvitjMoAmbVnl+iJd8YLwox2R1DWE5z0gfPIpVin0UiuMtO3GAcfkrJl0SflwDWGfBUsQDINcIZMd6KIT034yZWmCoS4VO3MsxOWwzQYsDJFL0xmfChD7xfR23pthyqPfkoI3ok1yZRs3ZY8qk77SCWKfoPHS4sNT+NMmBAgclz54N5yxIvm0RkgArterAjbWKYFLGo571FFljY1mq3yrLTMdUo+YqMq5lTKjeX8kCaTsCp8YAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG1016H\", \"need\": \"pass\"}, {\"refer\": \"for BSc Geomatics students APG2016W or (APG2040F and APG2041S) are also prerequisites\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3250,
+   "output_tokens": 411,
+   "output_tokens_details": {
+    "thinking_tokens": 332
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

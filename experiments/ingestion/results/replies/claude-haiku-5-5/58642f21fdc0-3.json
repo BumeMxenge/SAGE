@@ -1,0 +1,44 @@
+{
+ "request": "6909ea95dbbd7067bad427c068073dd2f1ac87443e2406e14094da79316a2126",
+ "seconds": 2.05,
+ "reply": {
+  "id": "msg_011Cg6mPN8LuTwmnBj6wGtbR",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQShgcKEAgSGAI4AUIIdGhpbmtpbmcSDPYQ7jvCoHCE+gDuPxoM2YTCyYU7qdlKjraoIjBEhHu2lLq9//Zg4tiI06S558oxR3gKYPzhwXfp2quo4X0JHmJ2nbCoIyTCv6xNvl4qowb3uA5IxbFOuaG0fitL5rNCLRqhIJ7Hc2eq7A8vEbekFX8fD2YL8er1xKpXOYzN7GNLjUkeJDHW+mB/jv7WEpScQBjxRVThCLkVZlcjfZBa0fsGIzi3t5zcCcD8MHn8wVb86dbp740I3bb8sq+6Yahvh/r3Re6ZxZQV7VleWX0H6y+BY1idhrupPJfucp3nJZ8YjxuDn3xNnwco7j8d1JOnrbMAI5MET59ENo+uAltEvbI2Jk0K90goTqil6d3Z6sB54JWW8djhBQqofRf/JDqXl5uWUb47DyoGbAQm7G9vjlnsTp9SVpE/w5+cF6ejBTrOG816mHragO5sCKr/QAAepaWhH42MxGQNyBxwIP0ilQI9rcf1pKykZy4vWc1hAc4jyHuaT/PqXCbgsif3bHNYid6g/PMfDCjs1aPPwliRJKtC7zaPwGSVVOgKzg15kqtNRPFMtc+SKt3MMXXeWbiwfApG05Df0IFcjNihTR180hnFDpJSHeVRs0mkuNSTgghxBwVni6sWoMrZhTF6QOOYjPX4TLi+WM82pHaPRvm/hJ1NlxatiGJ3XDxchxDg4ZWciv73I6+oR4907QKILAPDnbd5iqn0E/gSa6rIepwsng+oCX6V+2H6YNohTfeekAECJNcGGKYefhYorsdRmbKyJpnhY1Cr18Udvn8oqhywKrt+AZZX0w3+mff/xZ80LeFHao3RYV5lsHLF/Jk32KPVMIYfNw5sktXqXje/Uc1nnB05hnelW66Qemq7sVSiZ1dbvXgaSj5cbewIGC80tLNVBDhWezlMN4AXIBVd1613sfUh3RzAZaIDWfTlyVIIMT9olrFF94+J0hRDesTy6d544+xKRqGTluQaHhHBrcvZo0bG+T76RJI6lbSbxB01K1lKWhN+55OGGGnOpAgqEfsV2HBk9HtB3QBHCdYseMu5iAVAU0Pz/dI07J8g6xzrU/gLmhUI4cQEC6VCJHXCNM9XD8tMAreKD7RzGX8PnH+i1vZBSjvEoQUoXHSPSRSkoygcS9GGqeRYZyPi3fnidLJcDe5UctbxncvAsfAjM5JScX0QqhgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"any\": [{\"course\": \"MAM1021F\", \"need\": \"pass\"}, {\"course\": \"MAM1021S\", \"need\": \"pass\"}, {\"all\": [{\"course\": \"MAM1004F\", \"need\": \"pass\"}, {\"course\": \"STA1000S\", \"need\": \"pass\"}]}]}, {\"course\": \"APG1016H\", \"need\": \"pass\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3235,
+   "output_tokens": 294,
+   "output_tokens_details": {
+    "thinking_tokens": 163
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

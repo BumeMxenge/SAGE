@@ -1,0 +1,39 @@
+{
+ "request": "46d7627d75706ed6b756b658b71750208658a469e27d3065a73e6d7a8b34085b",
+ "seconds": 1.15,
+ "reply": {
+  "id": "msg_011Cg6moi8Hz8xJ4jLvDMhbP",
+  "container": null,
+  "content": [
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG3012S\", \"need\": \"pass\"}, {\"any\": [{\"course\": \"MAM2084F\", \"need\": \"pass\"}, {\"course\": \"MAM2084S\", \"need\": \"pass\"}]}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3222,
+   "output_tokens": 83,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}
