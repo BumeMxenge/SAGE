@@ -24,7 +24,7 @@ DRAFT = TypeAdapter(EntryRule | None)
 class Translation(Row):
     printed: str  # with its spacing evened out, as the grammar reads it
     need: Need
-    tree: EntryRule | None  # None where the print says None
+    tree: EntryRule | None  # None where the print, or a draft of it, asks for nothing
     cause: RefusalCause | None  # why the grammar refused it; None when it read it
     drafted: bool  # whether the tree is a model's draft, rather than the grammar's or a stand-in
 
