@@ -24,7 +24,7 @@ Folders marked (planned) don't exist yet; each arrives with its first code.
 | `frontend/src/lib` | Shared code with no markup: the API client and its generated types, the settings, the Supabase client, the appearance hook and the toast queue, and later the query keys |
 | `frontend/src/styles` | `tokens.css` (values shared by both themes) and `theme.css` (a light block and a dark block of colours), the only places a raw colour, size, radius, shadow or duration is written, `base.css`, and `outline.module.css`, the outlined look that secondary buttons and the Select share |
 | `supabase/` | Database migrations |
-| `data/` | `sources/<year>/`: each year's handbook, workbooks and equivalences, with `manifest.toml` holding each file's fingerprint. `rules/<year>/` (planned): the cached model drafts (`drafts.json`), the review sheet (`review.csv`) and the approved snapshot (`rulebook.json`). `synthetic/`: the made-up student |
+| `data/` | `sources/<year>/`: each year's handbook, workbooks and equivalences, with `manifest.toml` holding each file's fingerprint. `rules/<year>/`: the cached model drafts (`drafts.json`), and (planned) the review sheet (`review.csv`) and the approved snapshot (`rulebook.json`). `synthetic/`: the made-up student |
 
 ## Dependency rule
 

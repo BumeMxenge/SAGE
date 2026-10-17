@@ -1,0 +1,391 @@
+{
+  "concurrent": {
+    "MAM1020F (or equivalent)": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "MAM1020F",
+            "need": "concurrent"
+          },
+          {
+            "refer": "or equivalent"
+          }
+        ]
+      }
+    },
+    "MAM1020F/S or MAM1023F/S, or equivalent": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "MAM1020F",
+            "need": "concurrent"
+          },
+          {
+            "course": "MAM1020S",
+            "need": "concurrent"
+          },
+          {
+            "course": "MAM1023F",
+            "need": "concurrent"
+          },
+          {
+            "course": "MAM1023S",
+            "need": "concurrent"
+          },
+          {
+            "refer": "or equivalent"
+          }
+        ]
+      }
+    }
+  },
+  "pass": {
+    "A pass in NSC Mathematics with at least 70%, or at least a D symbol at A-level.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "A pass in NSC Mathematics with at least 70%, or at least a D symbol at A-level."
+      }
+    },
+    "At least 70% for NSC Mathematics. Students registered for this course will be assessed in week 5; if it is judged that they are not coping with the level and pace of the course, and would benefit from an opportunity to strengthen foundational concepts and learn new material at a slower pace, they will be required to transfer to CSC1010H from week 7.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "At least 70% for NSC Mathematics."
+      }
+    },
+    "CSC1015F (At least 45% for CSC1015F or at least 70% for CSC1017F)": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "CSC1015F",
+            "min_mark": 45,
+            "need": "mark"
+          },
+          {
+            "course": "CSC1017F",
+            "min_mark": 70,
+            "need": "mark"
+          }
+        ]
+      }
+    },
+    "CSC2001F (At least 45% for CSC2001F)": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "course": "CSC2001F",
+        "min_mark": 45,
+        "need": "mark"
+      }
+    },
+    "CSC2001F, CSC2002S and ((MAM1004F+MAM1008S) or (MAM1000W) or (both MAM1031F & MAM1032S (or equivalent)), and either INF2009F or permission from the Head of Department to do compensation work to a satisfactory standard. CSC2004Z is required if CSC2002S was passed after 2017.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "course": "CSC2001F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2002S",
+            "need": "pass"
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "course": "MAM1004F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1008S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "course": "MAM1000W",
+                "need": "pass"
+              },
+              {
+                "all": [
+                  {
+                    "course": "MAM1031F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1032S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "refer": "or equivalent"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "INF2009F",
+                "need": "pass"
+              },
+              {
+                "refer": "permission from the Head of Department to do compensation work to a satisfactory standard"
+              }
+            ]
+          },
+          {
+            "refer": "CSC2004Z is required if CSC2002S was passed after 2017."
+          }
+        ]
+      }
+    },
+    "CSC2001F, CSC2002S and ((MAM1004F+MAM1008S) or (MAM1000W) or (both MAM1031F & MAM1032S (or equivalent)). CSC2004Z is required if CSC2002S was passed after 2017.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "course": "CSC2001F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2002S",
+            "need": "pass"
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "course": "MAM1004F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1008S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "course": "MAM1000W",
+                "need": "pass"
+              },
+              {
+                "all": [
+                  {
+                    "course": "MAM1031F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1032S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "refer": "or equivalent"
+              }
+            ]
+          },
+          {
+            "refer": "CSC2004Z is required if CSC2002S was passed after 2017."
+          }
+        ]
+      }
+    },
+    "CSC2001F, CSC2002S. CSC2004Z is required if CSC2002S was passed after 2017.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "course": "CSC2001F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2002S",
+            "need": "pass"
+          },
+          {
+            "refer": "CSC2004Z is required if CSC2002S was passed after 2017."
+          }
+        ]
+      }
+    },
+    "MAM1020 or equivalent and MAM1021 or equivalent.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "MAM1020 or equivalent and MAM1021 or equivalent."
+      }
+    },
+    "MAM1021F/S or equivalent.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "MAM1021F",
+            "need": "pass"
+          },
+          {
+            "course": "MAM1021S",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent"
+          }
+        ]
+      }
+    },
+    "MAM1023 and MAM1024": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "MAM1023 and MAM1024"
+      }
+    },
+    "MEC1009F/S and MEC2023F/S or MEC2047F/S": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "MEC1009F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC1009S",
+                "need": "pass"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "MEC2023F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2023S",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2047F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2047S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "PHY1012F/S and PHY1013F/S; or PHY1014F/S and PHY1015F/S. MAM2083F/S.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1012F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1012S",
+                        "need": "pass"
+                      }
+                    ]
+                  },
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1013F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1013S",
+                        "need": "pass"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1014F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1014S",
+                        "need": "pass"
+                      }
+                    ]
+                  },
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1015F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1015S",
+                        "need": "pass"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "MAM2083F",
+                "need": "pass"
+              },
+              {
+                "course": "MAM2083S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "Students must be in their fourth year of study.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "min_year_of_study": 4
+      }
+    },
+    "This course is for non-Humanities students only and does not count towards Humanities degrees.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "This course is for non-Humanities students only and does not count towards Humanities degrees."
+      }
+    },
+    "This course is only available to BSc(Eng) Electrical Engineering; BSc(Eng) Electrical and Computer Engineering and BSc(Eng) Mechatronics students.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "student_in": [
+          "EB009EEE01",
+          "EB809EEE01",
+          "EB022EEE02",
+          "EB822EEE02",
+          "EB011EEE05",
+          "EB811EEE05"
+        ]
+      }
+    }
+  }
+}

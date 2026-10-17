@@ -1,0 +1,811 @@
+{
+  "concurrent": {
+    "MAM1020F (or equivalent)": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "MAM1020F",
+            "need": "concurrent"
+          },
+          {
+            "refer": "or equivalent"
+          }
+        ]
+      }
+    },
+    "MAM1020F/S or MAM1023F/S, or equivalent": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "MAM1020F",
+            "need": "concurrent"
+          },
+          {
+            "course": "MAM1020S",
+            "need": "concurrent"
+          },
+          {
+            "course": "MAM1023F",
+            "need": "concurrent"
+          },
+          {
+            "course": "MAM1023S",
+            "need": "concurrent"
+          },
+          {
+            "refer": "or equivalent"
+          }
+        ]
+      }
+    }
+  },
+  "pass": {
+    "2nd year status": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "min_year_of_study": 2
+      }
+    },
+    "A minimum mark of 50% for ECO1010F/S or ECO1110F/S. ECO1010F/S may be taken concurrently with ECO1011F/S if ECO1010F/S has been previously attempted.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "ECO1010F",
+                "min_mark": 50,
+                "need": "mark"
+              },
+              {
+                "course": "ECO1010S",
+                "min_mark": 50,
+                "need": "mark"
+              },
+              {
+                "course": "ECO1110F",
+                "min_mark": 50,
+                "need": "mark"
+              },
+              {
+                "course": "ECO1110S",
+                "min_mark": 50,
+                "need": "mark"
+              }
+            ]
+          },
+          {
+            "refer": "ECO1010F/S may be taken concurrently with ECO1011F/S if ECO1010F/S has been previously attempted."
+          }
+        ]
+      }
+    },
+    "A pass at 60% in NSC Life Sciences or Physical Sciences or by permission of the Head of Department.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "A pass at 60% in NSC Life Sciences or Physical Sciences or by permission of the Head of Department."
+      }
+    },
+    "A pass in NSC Mathematics with at least 70%, or at least a D symbol at A-level.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "A pass in NSC Mathematics with at least 70%, or at least a D symbol at A-level."
+      }
+    },
+    "Admission as first year Faculty of Commerce students, or by permission of Head of the School.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "refer": "Admission as first year Faculty of Commerce students"
+          },
+          {
+            "refer": "by permission of Head of the School"
+          }
+        ]
+      }
+    },
+    "Admission to degree and a pass (5) in National Senior Certificate: Mathematics.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "refer": "Admission to degree"
+          },
+          {
+            "refer": "a pass (5) in National Senior Certificate: Mathematics."
+          }
+        ]
+      }
+    },
+    "Admission to degree. National Senior Certificate: a pass (5) in Mathematics.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Admission to degree. National Senior Certificate: a pass (5) in Mathematics."
+      }
+    },
+    "Admission to the BMus degree, BA major in Music or Diploma in Music Performance. Registration for students in other programmes is at the discretion of the course convener.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Admission to the BMus degree, BA major in Music or Diploma in Music Performance. Registration for students in other programmes is at the discretion of the course convener."
+      }
+    },
+    "Admission will be restricted to students who have passed either NSC Physical Science or Life Science with at least 60%. NOTE: Preference will be given to students registered in the Science Faculty. Students registered for this course will be assessed in week 5; if it is judged that they are not coping with the level and pace of the course and would benefit from an opportunity to strengthen foundational concepts and learn new material at a slower pace, they will be required to transfer to BIO1000H from week 7.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Admission will be restricted to students who have passed either NSC Physical Science or Life Science with at least 60%."
+      }
+    },
+    "At least 50% for NSC Geography or GEO1009F. For Humanities students: At least 50% for NSC Geography": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "any": [
+              {
+                "refer": "At least 50% for NSC Geography"
+              },
+              {
+                "course": "GEO1009F",
+                "min_mark": 50,
+                "need": "mark"
+              }
+            ]
+          },
+          {
+            "refer": "For Humanities students: At least 50% for NSC Geography."
+          }
+        ]
+      }
+    },
+    "At least 50% for NSC Geography or at least 60% for NSC Physical Science or Life Sciences. NOTE: Preference will be given to students majoring in Archaeology, Environmental and Geographical Science, Geology or Oceanography.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "At least 50% for NSC Geography or at least 60% for NSC Physical Science or Life Sciences."
+      }
+    },
+    "At least 70% for NSC Mathematics. Students registered for this course will be assessed in week 5; if it is judged that they are not coping with the level and pace of the course, and would benefit from an opportunity to strengthen foundational concepts and learn new material at a slower pace, they will be required to transfer to CSC1010H from week 7.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "At least 70% for NSC Mathematics."
+      }
+    },
+    "At least second year status": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "min_year_of_study": 2
+      }
+    },
+    "At least second year status or be registered for an ACC04/ACC08 programme.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "min_year_of_study": 2
+          },
+          {
+            "refer": "be registered for an ACC04/ACC08 programme"
+          }
+        ]
+      }
+    },
+    "At least second year status.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "min_year_of_study": 2
+      }
+    },
+    "At least second-year status": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "min_year_of_study": 2
+      }
+    },
+    "At least second-year status, or at the discretion of the Head of Department": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "min_year_of_study": 2
+          },
+          {
+            "refer": "at the discretion of the Head of Department"
+          }
+        ]
+      }
+    },
+    "CSC1015F (or at least 60% for CSC1017S)": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "CSC1015F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC1017S",
+            "min_mark": 60,
+            "need": "mark"
+          }
+        ]
+      }
+    },
+    "CSC2001F (At least 45% for CSC2001F)": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "course": "CSC2001F",
+        "min_mark": 45,
+        "need": "mark"
+      }
+    },
+    "CSC2001F, CSC2002S, CSC2004Z and ((MAM1004F+MAM1008S) or (MAM1000W) or (MAM1031F or equivalent)).": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "course": "CSC2001F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2002S",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2004Z",
+            "need": "pass"
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "course": "MAM1004F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1008S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "course": "MAM1000W",
+                "need": "pass"
+              },
+              {
+                "any": [
+                  {
+                    "course": "MAM1031F",
+                    "need": "pass"
+                  },
+                  {
+                    "refer": "or equivalent"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "ECO1010 or MAM1010 (or equivalent).": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "ECO1010 or MAM1010 (or equivalent)."
+      }
+    },
+    "Faculty admission. Admission to this course is restricted to students (a) registered for the major in Psychology, (b) for which the completion of this course is a degree-specific requirement (e.g., Social Work, Physiotherapy, Occupational Therapy, Speech and Communication Disorders [Speech Therapy and Audiology], or any other approved Health Sciences service programme), (c) majoring in Organisational Psychology and (d) registered for the BMus and BA(T&P) degrees, where the Head of Section has approved their elective choice.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Faculty admission. Admission to this course is restricted to students (a) registered for the major in Psychology, (b) for which the completion of this course is a degree-specific requirement (e.g., Social Work, Physiotherapy, Occupational Therapy, Speech and Communication Disorders [Speech Therapy and Audiology], or any other approved Health Sciences service programme), (c) majoring in Organisational Psychology and (d) registered for the BMus and BA(T&P) degrees, where the Head of Section has approved their elective choice."
+      }
+    },
+    "Initial Arabic A (SLL1058F)": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "course": "SLL1058F",
+        "need": "pass"
+      }
+    },
+    "MAM1020 or equivalent and MAM1021 or equivalent.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "MAM1020 or equivalent and MAM1021 or equivalent."
+      }
+    },
+    "MAM1021F/S or equivalent.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "MAM1021F",
+            "need": "pass"
+          },
+          {
+            "course": "MAM1021S",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent"
+          }
+        ]
+      }
+    },
+    "MAM1023 and MAM1024": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "MAM1023 and MAM1024"
+      }
+    },
+    "MEC1009F/S and MEC2023F/S or MEC2047F/S": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "MEC1009F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC1009S",
+                "need": "pass"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "MEC2023F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2023S",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2047F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2047S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "No pre-requisite for Jazz students; registration for other students is at the discretion of the course convener.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "No pre-requisite for Jazz students; registration for other students is at the discretion of the course convener."
+      }
+    },
+    "No previous knowledge of German is required. Students who have passed German within the preceding five years with at least a D symbol (SC), or a 4 rating (NSC), or a course recognised as equivalent will not be admitted to this course for degree purposes unless the Head of Section is satisfied that for some special reason they are not able to perform the work of SLL2062F.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Students who have passed German within the preceding five years with at least a D symbol (SC), or a 4 rating (NSC), or a course recognised as equivalent will not be admitted to this course for degree purposes unless the Head of Section is satisfied that for some special reason they are not able to perform the work of SLL2062F."
+      }
+    },
+    "None. Students with a pass (SC) or a 4 rating (NSC) or equivalent in Italian or mother-tongue speakers may be admitted directly into SLL2064F at the Head of Section's discretion.": {
+      "model": "claude-haiku-5-5",
+      "tree": null
+    },
+    "None. The course is designed for those who have not studied Hebrew before. In special cases students with an elementary knowledge of Hebrew may be admitted into the course by special permission of the Head of Department. NOTE: Students who have passed SC or NSC Hebrew or equivalent within the last five years are not eligible for registration.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Students who have passed SC or NSC Hebrew or equivalent within the last five years are not eligible for registration."
+      }
+    },
+    "None. This course is primarily designed for those who have not studied Latin before, but is also open to those who have done some Latin at school but not enough to enter Latin IB or IIA.": {
+      "model": "claude-haiku-5-5",
+      "tree": null
+    },
+    "None. This is a beginners’ course aimed at non-mother tongue speakers of Swahili.": {
+      "model": "claude-haiku-5-5",
+      "tree": null
+    },
+    "None. This is a beginners’ course. Students with a Sotho language as a 1st language are not permitted to do Sotho Additional.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Students with a Sotho language as a 1st language are not permitted to do Sotho Additional."
+      }
+    },
+    "None. This is a beginners’ course. Students with a Sotho language as a first language are not permitted to do Sesotho Communication IA.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Students with a Sotho language as a first language are not permitted to do Sesotho Communication IA."
+      }
+    },
+    "None. This is a beginners’ course. Students with an Nguni language as a 1st language are not permitted to do Xhosa Additional, and are encouraged to register for SLL1131F isiXhosa Language & Literature Studies IA.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Students with an Nguni language as a 1st language are not permitted to do Xhosa Additional"
+      }
+    },
+    "None. This is a course designed for beginners.": {
+      "model": "claude-haiku-5-5",
+      "tree": null
+    },
+    "None. This is a course for beginners, but under certain circumstances students with prior knowledge of Portuguese may be admitted.": {
+      "model": "claude-haiku-5-5",
+      "tree": null
+    },
+    "None. This is a course for beginners, but under certain circumstances students with prior knowledge of Spanish may be admitted.": {
+      "model": "claude-haiku-5-5",
+      "tree": null
+    },
+    "None. This is a course for beginners. Students with an Nguni language as a 1st language are not permitted to do this course and are encouraged to register for SLL1131F isiXhosa Language & Literature Studies IA.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Students with an Nguni language as a 1st language are not permitted to do this course"
+      }
+    },
+    "None. This is a course for beginners. Students with previous knowledge of French may not register for this course.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "Students with previous knowledge of French may not register for this course."
+      }
+    },
+    "None. This is a course for beginners; under certain conditions students with basic knowledge of Afrikaans may be permitted to attend, with permission of the Section Head.": {
+      "model": "claude-haiku-5-5",
+      "tree": null
+    },
+    "PHY1012F/S and PHY1013F/S; or PHY1014F/S and PHY1015F/S. MAM2083F/S.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1012F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1012S",
+                        "need": "pass"
+                      }
+                    ]
+                  },
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1013F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1013S",
+                        "need": "pass"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1014F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1014S",
+                        "need": "pass"
+                      }
+                    ]
+                  },
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1015F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1015S",
+                        "need": "pass"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "MAM2083F",
+                "need": "pass"
+              },
+              {
+                "course": "MAM2083S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "SLL1022F Sesotho Communication IA or SLL1016S Sotho Additional": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "SLL1022F",
+            "need": "pass"
+          },
+          {
+            "course": "SLL1016S",
+            "need": "pass"
+          }
+        ]
+      }
+    },
+    "SLL1050F Latin IA": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "course": "SLL1050F",
+        "need": "pass"
+      }
+    },
+    "SLL1052F Greek IA": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "course": "SLL1052F",
+        "need": "pass"
+      }
+    },
+    "SLL1060F or equivalent. This second semester is specially designed for students who passed SLL1060F but students with adequate level of French language acquisition may, by permission of the course convener, be admitted in SLL1061S. Note that “special admissions” exclude students coming from countries where French is spoken and/or taught; thus students who have studied French at high school, e.g. South Africa, Zimbabwe, and/or passed their Matric – with French as a foreign language - within the last three years at the day of registration are not allowed to register for this module.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "SLL1060F",
+                "need": "pass"
+              },
+              {
+                "refer": "or equivalent"
+              },
+              {
+                "refer": "by permission of the course convener, students with adequate level of French language acquisition may be admitted in SLL1061S"
+              }
+            ]
+          },
+          {
+            "refer": "special admissions exclude students coming from countries where French is spoken and/or taught; students who have studied French at high school, e.g. South Africa, Zimbabwe, and/or passed their Matric with French as a foreign language within the last three years at the day of registration are not allowed to register for this module"
+          }
+        ]
+      }
+    },
+    "SLL1073F, or equivalent at the discretion of the Head of Department.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "SLL1073F",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent at the discretion of the Head of Department"
+          }
+        ]
+      }
+    },
+    "SLL1075F, or equivalent at the discretion of the Head of Section.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "SLL1075F",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent at the discretion of the Head of Section"
+          }
+        ]
+      }
+    },
+    "SLL1082F or equivalent by permission of the Head of Department.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "SLL1082F",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent by permission of the Head of Department"
+          }
+        ]
+      }
+    },
+    "SLL1101F or SLL1018S, or equivalent at the discretion of the Head of Section. Students with a Nguni language as a 1 st language are not permitted to do this course and are encouraged to register for SLL1132S isiXhosa Language & Literature Studies IB.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "SLL1101F",
+                "need": "pass"
+              },
+              {
+                "course": "SLL1018S",
+                "need": "pass"
+              },
+              {
+                "refer": "or equivalent at the discretion of the Head of Section"
+              }
+            ]
+          },
+          {
+            "refer": "Students with a Nguni language as a 1 st language are not permitted to do this course"
+          }
+        ]
+      }
+    },
+    "SLL1121F, or equivalent at the discretion of the Head of Section.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "course": "SLL1121F",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent at the discretion of the Head of Section"
+          }
+        ]
+      }
+    },
+    "SLL1131F isiXhosa Language and Literature Studies IA.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "course": "SLL1131F",
+        "need": "pass"
+      }
+    },
+    "Second year status and at least 50% for Matric mathematics, or a pass for a MAM course, or a lower intermediate score for the NBT in Quantitative Literacy.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "all": [
+              {
+                "min_year_of_study": 2
+              },
+              {
+                "refer": "at least 50% for Matric mathematics"
+              }
+            ]
+          },
+          {
+            "refer": "a pass for a MAM course"
+          },
+          {
+            "refer": "a lower intermediate score for the NBT in Quantitative Literacy"
+          }
+        ]
+      }
+    },
+    "Second-year status or permission of the Head of Department.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "min_year_of_study": 2
+          },
+          {
+            "refer": "permission of the Head of Department"
+          }
+        ]
+      }
+    },
+    "Students must be in at least their 2nd year of study to register for the course. 3rd and 4th year students may also register for the course.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "min_year_of_study": 2
+      }
+    },
+    "Students must be in their fourth year of study.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "min_year_of_study": 4
+      }
+    },
+    "Students must have passed SLL1062F. In certain instances, where students have some informal knowledge of German, they may be admitted to German Studies IB without having done German Studies IA, provided the Head of Section is satisfied of the students’ German competence. Students who have passed German within the preceding five years with at least a D symbol (SC), or a 4 rating (NSC), or a course recognised as equivalent, will not be admitted to this course for degree purposes unless the Head of Section is satisfied that for some special reason they are not able to perform the work of SLL2062F.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "SLL1062F",
+                "need": "pass"
+              },
+              {
+                "refer": "In certain instances, where students have some informal knowledge of German, they may be admitted to German Studies IB without having done German Studies IA, provided the Head of Section is satisfied of the students' German competence."
+              }
+            ]
+          },
+          {
+            "refer": "Students who have passed German within the preceding five years with at least a D symbol (SC), or a 4 rating (NSC), or a course recognised as equivalent, will not be admitted to this course for degree purposes unless the Head of Section is satisfied that for some special reason they are not able to perform the work of SLL2062F."
+          }
+        ]
+      }
+    },
+    "Students should be in their second AYOS or above.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "min_year_of_study": 2
+      }
+    },
+    "Students should be in their second or third AYOS in any faculty or have permission from the Course Convenor.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "refer": "Students should be in their second or third AYOS in any faculty"
+          },
+          {
+            "refer": "have permission from the Course Convenor"
+          }
+        ]
+      }
+    },
+    "The student must have passed an African language (isiXhosa, isiZulu, isiNdebele, isiSwati) at Grade 12 level or have completed SLL1101F Xhosa Communication IA and SLL1102S Xhosa Communication IB.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "any": [
+          {
+            "refer": "passed an African language (isiXhosa, isiZulu, isiNdebele, isiSwati) at Grade 12 level"
+          },
+          {
+            "all": [
+              {
+                "course": "SLL1101F",
+                "need": "pass"
+              },
+              {
+                "course": "SLL1102S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "This course is intended for students in the special field of Industrial and Organisational Psychology, but students from other faculties may choose this course as an elective.": {
+      "model": "claude-haiku-5-5",
+      "tree": null
+    },
+    "This course is only available to BSc(Eng) Electrical Engineering; BSc(Eng) Electrical and Computer Engineering and BSc(Eng) Mechatronics students.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "student_in": [
+          "EB009EEE01",
+          "EB809EEE01",
+          "EB022EEE02",
+          "EB822EEE02",
+          "EB011EEE05",
+          "EB811EEE05"
+        ]
+      }
+    },
+    "This course is restricted to students in their second academic year of study (AYOS). The course is intended for students majoring in Industrial and Organisational Psychology, but students from other streams/faculties may choose this course as an elective.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "This course is restricted to students in their second academic year of study (AYOS)."
+      }
+    }
+  }
+}
