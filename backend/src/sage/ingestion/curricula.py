@@ -3,6 +3,7 @@
 # can hold, such as a footnote about the 576-credit curriculum, is kept as a note for a person to
 # judge, and each curriculum's introduction and tables are kept word for word as passages.
 import re
+from collections import defaultdict
 
 from sage.domain.base import Row
 from sage.domain.rules import (
@@ -66,14 +67,6 @@ class Listed(Row):
     page: int
 
 
-class Note(Row):
-    # Printed with a year's tables, but no rule shape can hold it, so a person judges it
-    curriculum: str
-    year: int
-    page: int
-    text: str
-
-
 class Subtotal(Row):
     # A core table's printed total, and what its rows and complementary slot add up to
     curriculum: str
@@ -94,7 +87,6 @@ class Curricula(Row):
     # Every code the curricula print, and each wildcard's courses
     scope: frozenset[str]
     listed: tuple[Listed, ...]
-    notes: tuple[Note, ...]
     subtotals: tuple[Subtotal, ...]
     # Each wildcard, such as CSC3xxx, and the courses it stands for
     expanded: dict[str, tuple[str, ...]]
@@ -133,7 +125,8 @@ class _Reader:
         self.curricula: list[tuple[Curriculum, int]] = []  # each with its page
         self.years: dict[tuple[str, int], _Year] = {}
         self.listed: list[Listed] = []
-        self.notes: list[Note] = []
+        # Each curriculum year's printed lines no rule shape can hold, for a person to judge
+        self.notes: dict[tuple[str, int], list[str]] = defaultdict(list)
         self.subtotals: list[Subtotal] = []
         self.units: list[Unit] = []
         self.expanded: dict[str, tuple[str, ...]] = {}
@@ -287,9 +280,7 @@ class _Reader:
                         )
                     )
                     taken[code, course] = number
-            notes = [
-                n.text for n in self.notes if (n.curriculum, n.year) == (code, number)
-            ]
+            notes = self.notes[code, number]
             rules.append(
                 CurriculumRule(
                     handbook_year=handbook_year,
@@ -332,7 +323,6 @@ class _Reader:
             taken=taken,
             scope=frozenset(self.scope),
             listed=tuple(self.listed),
-            notes=tuple(self.notes),
             subtotals=tuple(self.subtotals),
             expanded=self.expanded,
             units=tuple(self.units),
@@ -409,9 +399,7 @@ class _Reader:
             page = self.book.lines[paragraph[0]][0]
             self._year().pages.add(page)
             if not text.lstrip("*† ").lower().startswith(KNOWN):
-                self.notes.append(
-                    Note(curriculum=self.code, year=self.year, page=page, text=text)
-                )
+                self.notes[self.code, self.year].append(text)
 
     def _open(self, start: int, label: str) -> None:
         self._close(start)

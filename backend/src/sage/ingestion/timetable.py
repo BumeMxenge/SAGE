@@ -78,7 +78,6 @@ class Workbook(Row):
 class Timetable(Row):
     slots: tuple[TimetableSlot, ...]
     links: tuple[TimetableSlotCurriculum, ...]
-    places: dict[UUID, tuple[str, ...]]  # the cells each stored meeting is printed in
 
 
 def read(path: Path, sheets: Mapping[str, Sequence[str]]) -> Workbook:
@@ -227,7 +226,7 @@ def stored(
             if key is None:
                 raise SourceError(f"{place} prints no meeting of {alternative.course}")
             choices[key] = (alternative.group, ascii_uppercase[number])
-    slots, links, where = [], [], {}
+    slots, links = [], []
     for key, (curricula, places) in found.items():
         code, term, day, start, end = key
         group, choice = choices.get(key, (None, None))
@@ -244,7 +243,6 @@ def stored(
         }
         slot = TimetableSlot(id=row_id(row), **row)
         slots.append(slot)
-        where[slot.id] = tuple(places)
         if curricula and not curricula >= taking.get(code, set()):
             links += [
                 TimetableSlotCurriculum(
@@ -252,7 +250,7 @@ def stored(
                 )
                 for c in sorted(curricula)
             ]
-    return Timetable(slots=tuple(slots), links=tuple(links), places=where)
+    return Timetable(slots=tuple(slots), links=tuple(links))
 
 
 def round_trip(

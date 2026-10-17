@@ -8,7 +8,6 @@ from collections.abc import Iterator
 from datetime import time
 from pathlib import Path
 from typing import Annotated, Literal, Self
-from uuid import UUID
 
 import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
@@ -212,14 +211,12 @@ def members(
     return rows, readings
 
 
-def slots(
-    read: Complementary, year: int
-) -> tuple[tuple[TimetableSlot, ...], dict[UUID, tuple[str, ...]]]:
-    # One stored meeting per day a row prints, or one with no day when it prints none, kept with
-    # its row. Rows are stored as written, so REL1017S's "plus two tutorials" is two tutorials even
-    # though neither prints a time, and each id includes its row.
+def slots(read: Complementary, year: int) -> tuple[TimetableSlot, ...]:
+    # One stored meeting per day a row prints, or one with no day when it prints none. Rows are
+    # stored as written, so REL1017S's "plus two tutorials" is two tutorials even though neither
+    # prints a time, as each id includes its row.
     terms = {offering.code: offering.term for offering in read.offerings}
-    slots, places = [], {}
+    slots = []
     for meeting in read.meetings:
         for day in meeting.days or (None,):
             row = {
@@ -234,10 +231,8 @@ def slots(
                 "choice": meeting.choice,
             }
             place = f"Meetings row {meeting.row}"
-            slot = TimetableSlot(id=row_id({"place": place, **row}), **row)
-            slots.append(slot)
-            places[slot.id] = (place,)
-    return tuple(slots), places
+            slots.append(TimetableSlot(id=row_id({"place": place, **row}), **row))
+    return tuple(slots)
 
 
 def passages(read: Complementary, year: int, skip: set[str]) -> tuple[Passage, ...]:

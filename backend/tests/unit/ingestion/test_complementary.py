@@ -103,7 +103,7 @@ def test_offerings_become_members_meetings_and_passages(tmp_path, complementary_
         ("complementary/ECO1007S", "Courses row 4"),
         ("complementary/SLL1017F", "Language options row 3"),
     ]
-    stored, places = slots(workbook_read, 2026)
+    stored = slots(workbook_read, 2026)
     assert {
         (
             s.course_code,
@@ -124,11 +124,6 @@ def test_offerings_become_members_meetings_and_passages(tmp_path, complementary_
         ("ECO1007S", "sem2", 3, time(9), time(9, 45), "lecture", "B"),
         ("SLL1017F", "sem1", None, time(15), time(15, 45), None, None),
     }
-    assert sorted(places.values()) == [("Meetings row 3",)] * 4 + [
-        ("Meetings row 4",),
-        ("Meetings row 5",),
-        ("Meetings row 6",),
-    ]
     # ECO1007S is read from the faculty handbook itself, so the workbook gives it no passage
     read_passages = passages(workbook_read, 2026, {"ECO1007S"})
     assert [
@@ -150,6 +145,16 @@ def test_offerings_become_members_meetings_and_passages(tmp_path, complementary_
         "Assessment: Assignments and class tests count 50% towards the final mark",
         "Other details: None",
     ]
+
+
+def test_identical_meeting_rows_stay_two_meetings(tmp_path, complementary_xlsx):
+    # REL1017S's "plus two tutorials" (2026) is typed as two identical rows, as neither prints a
+    # day or time, and both are stored
+    tutorial = ("SLL1017F", "tutorial", None, None, None, None, None)
+    rows = ROWS | {"Meetings": [*ROWS["Meetings"], tutorial, tutorial]}
+    path = complementary_xlsx(tmp_path / "complementary.xlsx", rows)
+    stored = slots(read(path, SOURCE), 2026)
+    assert len({slot.id for slot in stored if slot.kind == "tutorial"}) == 2
 
 
 @pytest.mark.parametrize(

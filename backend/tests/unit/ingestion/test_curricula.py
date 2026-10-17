@@ -11,7 +11,7 @@ from sage.domain.rules import (
     TotalCredits,
     YearRules,
 )
-from sage.ingestion.curricula import Listed, Note, Subtotal, read
+from sage.ingestion.curricula import Listed, Subtotal, read
 from sage.ingestion.handbook import Handbook, Page
 from sage.ingestion.sources import Section, SourceError
 
@@ -117,20 +117,18 @@ def test_a_curriculum_reads_as_printed(handbook):
         "EB009EEE01-y4-group-1": ["EEE4126F", "EEE4118F", "EEE4121F"],
         "EB009EEE01-y4-group-2": ["EEE4114F", "EEE4117F", "HUB4049F"],
     }
-    # Only the footnote about the 576-credit curriculum needs a person: the complementary list and
-    # the timetable warning hold no rule
-    assert curricula.notes == (
-        Note(
-            curriculum="EB009EEE01",
-            year=2,
-            page=49,
-            text=(
+    # Only the footnote about the 576-credit curriculum needs a person, on year 2's rule: the
+    # complementary list and the timetable warning hold no rule
+    assert [(r.key, r.printed) for r in curricula.readings if r.flag] == [
+        (
+            "EB009EEE01/2",
+            (
                 "*CON2026S is a core course in the 576 cr. curriculum and students should "
                 "register for an approved Complementary Studies course of at least 8 credits "
                 "(timetable permitting) to meet the core requirements if CON2026S is outstanding."
             ),
-        ),
-    )
+        )
+    ]
     # Year 2: 7 × 16 + 2 × 8 = 128 + 16 = 144. Year 3: 7 × 16 + 2 × 8 + 18 for the slot + 0 = 146.
     # Year 4's core: 16 + 10 + 16 + 8 + 40 = 90.
     assert curricula.subtotals == (

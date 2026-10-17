@@ -1,7 +1,7 @@
 # Ingests one handbook year into a candidate rulebook, writing nothing to any database. It checks the
 # year's sources against their manifest, reads each, translates the printed requirements, grammar
-# first, and checks the sources against each other. Every row keeps where it was printed and why a
-# person must look at it, for the review in C2.
+# first, and checks the sources against each other. Every row C2 reviews keeps where it was printed
+# and why a person must look at it.
 from collections import defaultdict
 from pathlib import Path
 
@@ -177,7 +177,7 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
         differences = timetable.round_trip(
             sheet_read, meetings, sheets, read.taken, loaded
         )
-    typed_slots = complementary.slots(workbook, year)[0] if workbook else ()
+    typed_slots = complementary.slots(workbook, year) if workbook else ()
 
     units = book.prose(
         [s for s in manifest.handbook.passages if s.section != manifest.department]
