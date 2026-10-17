@@ -5,6 +5,7 @@ from collections import Counter, defaultdict
 from urllib.parse import urlencode, urlsplit
 from uuid import UUID
 
+from sage.adapters.anthropic import ClaudeDrafter
 from sage.adapters.supabase import connect
 from sage.adapters.supabase.auth import sign_in_token
 from sage.adapters.supabase.rules import SupabaseRuleRepository
@@ -50,6 +51,11 @@ def main(argv: list[str] | None = None) -> None:
         required=True,
         help="print the report and write nothing to any database",
     )
+    ingest_command.add_argument(
+        "--draft",
+        action="store_true",
+        help="ask the drafting model for refused wording with no draft yet, and cache its drafts",
+    )
 
     args = parser.parse_args(argv)
     if args.command == "seed":
@@ -57,7 +63,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "sign-in":
         run_sign_in(args.port)
     elif args.command == "ingest":
-        run_ingest(args.year)
+        run_ingest(args.year, draft=args.draft)
 
 
 def run_seed(account: UUID, *, yes: bool) -> None:
@@ -121,12 +127,25 @@ def check_read_back(result: SeedResult) -> None:
         raise SystemExit(f"Her data didn't read back as written: {problems}")
 
 
-def run_ingest(year: int) -> None:
+def run_ingest(year: int, *, draft: bool) -> None:
+    drafter = None
+    if draft:
+        settings = get_settings()
+        if not settings.anthropic_api_key:
+            raise SystemExit("Add ANTHROPIC_API_KEY to backend/.env first")
+        drafter = ClaudeDrafter(settings.anthropic_api_key, settings.drafting_model)
     try:
-        run = ingest(year)
+        run = ingest(year, drafter)
     except SourceError as error:
         raise SystemExit(f"Stopped: {error}") from None
     print(report(run))
+    if drafter is not None:
+        tokens = drafter.tokens
+        print(
+            f"\nDrafting with {drafter.model}: {tokens['input']:,} tokens in, "
+            + f"{tokens['cached']:,} read from the provider's cache and "
+            + f"{tokens['output']:,} out, USD {drafter.cost:.4f}"
+        )
 
 
 def report(run: DryRun) -> str:
@@ -161,7 +180,10 @@ def report(run: DryRun) -> str:
         lines.append(
             f"  {cause:<26} {count}: {drafted} drafted, {count - drafted} awaiting a draft"
         )
-    lines.append(f"  Model calls in this run: {run.translations.calls}")
+    lines.append(
+        f"  Model calls in this run: {run.translations.calls}. "
+        + f"Drafts copied from an earlier year: {run.translations.reused}"
+    )
     lines += [
         f"  Not kept, as it isn't a rule tree: {p}" for p in run.translations.refused
     ]

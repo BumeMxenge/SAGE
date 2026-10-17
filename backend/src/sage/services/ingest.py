@@ -84,8 +84,13 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
         for o in typed
         if o.requirement != complementary.NOT_STATED
     ]
+    # Every year's cached drafts, in year order, as each folder is named by its year
+    caches = sorted((data / "rules").glob("*/drafts.json"))
     translated = translate.translate(
-        strings, data / "rules" / str(year) / "drafts.json", drafter
+        strings,
+        data / "rules" / str(year) / "drafts.json",
+        drafter,
+        [cache for cache in caches if int(cache.parent.name) < year],
     )
     found = {(t.printed, t.need): t for t in translated.translations}
 

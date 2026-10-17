@@ -1,6 +1,7 @@
 # Checks the grammar reads first and a model drafts only what it refuses: a draft is kept only if it
-# fits a rule tree, a cached draft never calls the model, and with no model a refused string stands as
-# a refer leaf. A fake stands in for the model, so no test calls one.
+# fits a rule tree, a cached draft never calls the model, wording an earlier year drafted keeps that
+# draft, and with no model a refused string stands as a refer leaf. A fake stands in for the model, so
+# no test calls one.
 import json
 
 from sage.domain.rules import CourseNeed, Refer
@@ -21,6 +22,14 @@ class Fake:
     def draft(self, printed, need):
         self.calls.append((printed, need))
         return self.draft_given
+
+
+def earlier_draft(tmp_path):
+    # An earlier year's cache, as `sage ingest --draft` writes it, holding the mark leaf for REFUSED
+    path = tmp_path / "2023.json"
+    drafts = {"pass": {REFUSED: {"model": "a made-up model", "tree": MARK}}}
+    path.write_text(json.dumps(drafts), encoding="utf-8")
+    return path
 
 
 def test_a_refused_string_is_drafted_once_and_cached(tmp_path):
@@ -67,9 +76,27 @@ def test_a_draft_that_does_not_fit_a_rule_tree_is_refused(tmp_path):
     assert json.loads(cache.read_text(encoding="utf-8")) == {}
 
 
+def test_wording_an_earlier_year_drafted_keeps_that_draft_without_asking(tmp_path):
+    cache = tmp_path / "drafts.json"
+    # A model that would draft it differently
+    fake = Fake({"refer": REFUSED})
+    read = translate([(REFUSED, "pass")], cache, fake, [earlier_draft(tmp_path)])
+    assert fake.calls == []
+    assert (read.calls, read.reused) == (0, 1)
+    assert read.translations[0].tree == CourseNeed(
+        course="CSC2001F", need="mark", min_mark=45
+    )
+    assert read.translations[0].drafted
+    # The year's own cache holds it too, so its drafts stand on their own
+    assert json.loads(cache.read_text(encoding="utf-8")) == {
+        "pass": {REFUSED: {"model": "a made-up model", "tree": MARK}}
+    }
+
+
 def test_without_a_model_a_refused_string_stands_as_a_refer_leaf(tmp_path):
     cache = tmp_path / "drafts.json"
-    read = translate([(REFUSED, "pass")], cache, None)
+    # Even where an earlier year drafted it, as only a run that drafts copies a draft
+    read = translate([(REFUSED, "pass")], cache, None, [earlier_draft(tmp_path)])
     assert read.translations == (
         Translation(
             printed=REFUSED,
@@ -79,4 +106,4 @@ def test_without_a_model_a_refused_string_stands_as_a_refer_leaf(tmp_path):
             drafted=False,
         ),
     )
-    assert (read.calls, cache.exists()) == (0, False)
+    assert (read.calls, read.reused, cache.exists()) == (0, 0, False)

@@ -1,12 +1,13 @@
 # Checks a year ingests end to end from small sources built here: the handbook's own entries win over
 # the workbook's copies, requirements are translated grammar first, a check's failure flags the row
-# it names, and a dry run writes nothing and asks no model
+# it names, a dry run writes nothing and asks no model, and drafting takes earlier years' drafts
 import hashlib
+import json
 from datetime import time
 
 import openpyxl
 
-from sage.domain.rules import AllOf, CourseNeed, Refer
+from sage.domain.rules import AllOf, AnyOf, CourseNeed, Refer
 from sage.services.ingest import ingest
 
 EBE = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"
@@ -268,3 +269,56 @@ def test_a_year_ingests_into_a_candidate_rulebook(
     # Nothing is written and no model is asked
     assert run.translations.calls == 0
     assert not (tmp_path / "rules").exists()
+
+
+class Drafter:
+    # Stands in for the model, and keeps what it's asked
+    model = "a made-up model"
+
+    def __init__(self):
+        self.asked = []
+
+    def draft(self, printed, need):
+        self.asked.append(printed)
+        return {"refer": printed}
+
+
+def test_a_year_takes_the_drafts_of_the_years_before_it(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
+    # PHY1013S's co-requisite as 2023 drafted it, in E2's prompt's tree for that wording, and as a
+    # later year drafted it differently
+    co_requisite = "MAM1020F (or equivalent)"
+    for year, tree in (
+        (
+            2023,
+            {
+                "any": [
+                    {"course": "MAM1020F", "need": "concurrent"},
+                    {"refer": "or equivalent"},
+                ]
+            },
+        ),
+        (2027, {"refer": co_requisite}),
+    ):
+        cache = tmp_path / "rules" / str(year) / "drafts.json"
+        cache.parent.mkdir(parents=True)
+        drafts = {"concurrent": {co_requisite: {"model": "made up", "tree": tree}}}
+        cache.write_text(json.dumps(drafts), encoding="utf-8")
+    drafter = Drafter()
+    run = ingest(2026, drafter, data=tmp_path)
+    # Only the wording no earlier year drafted is asked for
+    assert drafter.asked == [BEGINNERS]
+    rules = {c.code: c.entry_rule for c in run.rules.courses}
+    assert rules["PHY1013S"] == AllOf(
+        all=(
+            CourseNeed(course="EEE1006F", need="pass"),
+            AnyOf(
+                any=(
+                    CourseNeed(course="MAM1020F", need="concurrent"),
+                    Refer(refer="or equivalent"),
+                )
+            ),
+        )
+    )

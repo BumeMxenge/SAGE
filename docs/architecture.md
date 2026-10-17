@@ -8,13 +8,13 @@ Folders marked (planned) don't exist yet; each arrives with its first code.
 | Folder | What it does |
 | --- | --- |
 | `backend/src/sage/api` | HTTP routes, request and response schemas, auth dependencies |
-| `backend/src/sage/cli.py` | The `sage` command, such as `sage seed`, which loads the made-up student, and `sage ingest --year <year> --dry-run`, which reads a handbook year's sources and reports on them |
+| `backend/src/sage/cli.py` | The `sage` command, such as `sage seed`, which loads the made-up student, and `sage ingest --year <year> --dry-run`, which reads a handbook year's sources and reports on them, with `--draft` to have a model draft what the grammar can't read |
 | `backend/src/sage/services` | Use cases that join the components: onboarding, plans and the questionnaire, electives, history and chats |
 | `backend/src/sage/ingestion` | Turns sources into data: a student's transcript into her course history, a printed requirement into a rule tree (the grammar, with a model's draft where it refuses), and a year's handbook, timetable, complementary workbook and equivalences into a candidate rulebook, through one reader per source and checks across the sources. (Planned) the review of what changed since the year before, and the approved rulebook |
 | `backend/src/sage/engine` (planned) | Validates plans and generates every valid plan (clingo) |
 | `backend/src/sage/advisor` (planned) | Conversational agent: engine tools, scoped context (the handbook passages for her courses, with no embeddings or search), guardrails, prompts |
 | `backend/src/sage/domain` | Shared models (plan, course, rule model, student) and interfaces |
-| `backend/src/sage/adapters` | Supabase and (planned) model-provider implementations of those interfaces, and in-memory fakes for tests |
+| `backend/src/sage/adapters` | Supabase and model-provider (Anthropic) implementations of those interfaces, and in-memory fakes for tests |
 | `backend/tests` | Unit and integration tests. [testing.md](testing.md) has their rules and how to run them |
 | `backend/scripts` | Measures the tests: the planted faults, and the line `make mutation` writes |
 | `frontend/` | React and TypeScript interface, deployed as static files. Its code is in `frontend/src`, in the five folders below |
