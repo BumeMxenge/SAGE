@@ -508,8 +508,7 @@ def test_a_decision_holds_only_for_the_reading_it_was_made_on():
 
 def test_a_decision_is_checked_before_it_counts():
     # 2023 approved EEE2004F's rule. In 2026 each course prints new words, refused by the grammar,
-    # and is decided as its comment says. EEE2010F's rule, read with certainty, names EEE1006F,
-    # known only through an equivalence, which is rejected.
+    # and is decided as its comment says, and a new equivalence is corrected.
     previous = Snapshot(
         rules=approved_2023(
             courses=(
@@ -540,12 +539,12 @@ def test_a_decision_is_checked_before_it_counts():
     }
     courses = [course(code, Refer(refer=code)) for code in decisions]
     courses[5] = course("EEE2006F", CourseNeed(course="EEE9998F", need="pass"))
-    known = CourseNeed(course="EEE1006F", need="pass")
     rules = RuleSet(
-        courses=(*courses, course("EEE2010F", known)),
-        equivalences=tuple(
-            Equivalence(handbook_year=2026, course_code=a, counts_as=b)
-            for a, b in (("EEE1006F", "EEE1008F"), ("MAM1020F", "MAM1023F"))
+        courses=tuple(courses),
+        equivalences=(
+            Equivalence(
+                handbook_year=2026, course_code="MAM1020F", counts_as="MAM1023F"
+            ),
         ),
     )
     readings = (
@@ -553,8 +552,6 @@ def test_a_decision_is_checked_before_it_counts():
             reading("courses", code, f"{code} in new words", "refused_free_text")
             for code in decisions
         ),
-        reading("courses", "EEE2010F", "EEE1006F"),
-        reading("equivalences", "EEE1006F/EEE1008F", "A reason.", "not_printed"),
         reading("equivalences", "MAM1020F/MAM1023F", "A reason.", "not_printed"),
     )
     failed = Failure(
@@ -569,10 +566,8 @@ def test_a_decision_is_checked_before_it_counts():
         name = row["id"].split("/", 1)[1]
         if name in decisions:
             row["decision"], row["corrected"], row["note"] = decisions[name]
-    by_id = {row["id"]: row for row in decided}
-    by_id["equivalence/EEE1006F/EEE1008F"]["decision"] = "reject"
-    by_id["equivalence/MAM1020F/MAM1023F"]["decision"] = "correct"
-    by_id["equivalence/MAM1020F/MAM1023F"]["corrected"] = {"made": "up"}
+    equivalence = next(row for row in decided if row["id"].startswith("equivalence/"))
+    equivalence["decision"], equivalence["corrected"] = "correct", {"made": "up"}
     review = compare(2026, rules, readings, checks, previous=previous, decided=decided)
     assert {(problem.row, problem.note) for problem in review.problems} == {
         ("requirement/EEE2001F", False),
@@ -583,19 +578,50 @@ def test_a_decision_is_checked_before_it_counts():
         ("requirement/EEE2007F", True),
         ("requirement/EEE2009F", False),
         ("equivalence/MAM1020F/MAM1023F", False),
-        (None, False),
     }
-    # The mistyped code is named, and so is the rule the rejected equivalence leaves unmet
+    # The mistyped code is named
     texts = {problem.row: problem.text for problem in review.problems}
     assert unknown.format("EEE2007F", "EEE2O08F") in texts["requirement/EEE2007F"]
-    assert [problem.text for problem in review.problems if problem.row is None] == [
-        unknown.format("EEE2010F", "EEE1006F")
-    ]
-    # The decisions that stand, EEE2004F's, EEE2008F's and the rejected equivalence's, aren't pending,
-    # and a change waits for its decision to be usable
-    assert set(review.pending) == {problem.row for problem in review.problems} - {None}
+    # The decisions that stand, EEE2004F's and EEE2008F's, aren't pending, and a change waits for
+    # its decision to be usable
+    assert set(review.pending) == {problem.row for problem in review.problems}
     approved = {d.entity_key: d.approved for d in review.deltas}
     assert (approved["EEE2006F"], approved["EEE2008F"]) == (None, True)
+
+
+def test_a_check_failing_on_the_year_as_decided_stops_approval():
+    # EEE2010F's rule, read with certainty, names EEE1006F, which the year knows only through a
+    # new equivalence. Rejecting the equivalence is a decision that can stand, but it leaves the
+    # rule naming a code the year doesn't hold, on no row of its own.
+    rules = RuleSet(
+        courses=(course("EEE2010F", CourseNeed(course="EEE1006F", need="pass")),),
+        equivalences=(
+            Equivalence(
+                handbook_year=2026, course_code="EEE1006F", counts_as="EEE1008F"
+            ),
+        ),
+    )
+    readings = (
+        reading("courses", "EEE2010F", "EEE1006F"),
+        reading("equivalences", "EEE1006F/EEE1008F", "A reason.", "not_printed"),
+    )
+
+    def decided(decision):
+        (row,) = compare(2026, rules, readings, ()).rows
+        return compare(
+            2026,
+            rules,
+            readings,
+            (),
+            decided=[{**row.model_dump(mode="json"), "decision": decision}],
+        )
+
+    rejected = decided("reject")
+    assert rejected.pending == ()
+    unmet = "p. 1: EEE2010F's rule names EEE1006F, which isn't loaded, printed or equivalent"
+    assert [(p.row, p.text) for p in rejected.problems] == [(None, unmet)]
+    assert not rejected.settled
+    assert decided("accept").settled
 
 
 def test_each_decision_sets_the_year_and_is_recorded_with_its_change():
@@ -700,3 +726,14 @@ def test_each_decision_sets_the_year_and_is_recorded_with_its_change():
         ("EEE1006F/EEE1008F", False, None),
     ]
     assert review.pending == ("requirement/EEE3007F",)
+    # The year as decided: 2023's rules where rejected, the correction, the restored course, and
+    # neither the removed course nor the rejected equivalence
+    assert {c.code: c.entry_rule for c in review.rules.courses} == {
+        "EEE3001F": needs("EEE2001F"),
+        "EEE3002F": needs("EEE2002F"),
+        "EEE3003F": AnyOf(any=(needs("EEE2003F"), Refer(refer="permission"))),
+        "EEE3006F": draft,
+        "EEE3007F": draft,
+        "EEE3004F": needs("EEE2004F"),
+    }
+    assert review.rules.equivalences == ()

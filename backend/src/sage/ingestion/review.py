@@ -112,6 +112,7 @@ class Review(Row):
     compared_with: int | None  # the previous approved year; None when there's none
     rows: tuple[ReviewRow, ...]  # with each decision that still holds
     carried: int  # table rows unchanged since the previous approved year
+    rules: RuleSet  # the year's rows with each decision that can be used
     # Every table row added, changed or removed since then, or changed by a decision, flagged with
     # its review row's first cause, and accepted already where it has none
     deltas: tuple[HandbookDelta, ...]
@@ -122,6 +123,11 @@ class Review(Row):
     @property
     def pending(self) -> tuple[str, ...]:
         return _pending(self.rows, self.problems)
+
+    @property
+    def settled(self) -> bool:
+        # Whether the year can be approved: every row decided, and no check failing unexplained
+        return not (self.pending or self.problems)
 
 
 def compare(
@@ -287,6 +293,7 @@ def compare(
         compared_with=previous.year if previous else None,
         rows=tuple(rows),
         carried=len(unchanged),
+        rules=_decided(year, rules, stored),
         deltas=_deltas(
             year, before, after, stored, covered, set(_pending(rows, problems))
         ),
@@ -381,6 +388,19 @@ def _rechecked(
     for failure in rechecked.failures:
         failing["/".join(failure.flags)].append(f"{failure.place}: {failure.what}")
     return failing
+
+
+def _decided(
+    year: int, rules: RuleSet, stored: dict[str, dict[str, JsonValue]]
+) -> RuleSet:
+    # The year's rules with the rows its decisions leave
+    tables: dict[str, list[dict[str, JsonValue]]] = {
+        t: [] for t in get_args(DeltaTable)
+    }
+    for key, value in stored.items():
+        table = key.split("/", 1)[0]
+        tables[table].append({year_column(table): year, **value})
+    return RuleSet.model_validate({**dict(rules), **tables})
 
 
 def _deltas(

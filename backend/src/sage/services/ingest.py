@@ -2,7 +2,8 @@
 # year's sources against their manifest, reads each, translates the printed requirements, grammar
 # first, and checks the sources against each other. A requirement printed in the words the latest
 # approved year before it printed keeps that year's approved rule. Every row keeps where it was
-# printed and why a person must look at it, and review_year writes the rows a person must decide.
+# printed and why a person must look at it. review_year writes the rows a person must decide, and
+# approve writes the approved year once none is pending.
 import json
 from collections import defaultdict
 from collections.abc import Callable
@@ -37,6 +38,8 @@ from sage.ingestion.review import Problem, Review, Snapshot, compare
 
 # Four folders up from this file: the repo root, as for the seed file
 DATA = Path(__file__).resolve().parents[4] / "data"
+# Each approved year's snapshot, as data/rules/<year>/ holds it
+SNAPSHOT = "rulebook.json"
 WORKBOOK = "complementary workbook"
 
 
@@ -337,6 +340,37 @@ def review_file(year: int, data: Path = DATA) -> Path:
     return data / "rules" / str(year) / "review.json"
 
 
+def approve(year: int, data: Path = DATA) -> tuple[Review, Snapshot | None]:
+    # Reruns the year's review, and only once no row is pending and no check fails unexplained
+    # writes the approved year: its rows as decided, every change with its flag and decision, and
+    # where each row was printed, with any removed row a person kept from the year before
+    candidate, review = review_year(year, data=data)
+    if not review.settled:
+        return review, None
+    kept = {
+        key
+        for row in review.rows
+        if row.kind == "removal" and row.decision == "reject"
+        for key in row.covers
+    }
+    earlier = candidate.previous.readings if candidate.previous else ()
+    snapshot = Snapshot(
+        rules=review.rules.model_copy(
+            update={
+                "handbook_versions": (HandbookVersion(year=year, approved=True),),
+                "handbook_deltas": review.deltas,
+            }
+        ),
+        readings=(
+            *candidate.readings,
+            *(r for r in earlier if f"{r.entity}/{r.key}" in kept),
+        ),
+    )
+    path = data / "rules" / str(year) / SNAPSHOT
+    path.write_text(snapshot.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    return review, snapshot
+
+
 class Sitting:
     # One sitting of a person deciding a year's pending rows. Each decision is checked as sage ingest
     # checks it and saved to review.json as it's made, with when the sitting began and last saved and
@@ -431,7 +465,7 @@ def _latest_approved(year: int, data: Path) -> Snapshot | None:
     # The latest approved year before this one, each held in data/rules/<year>/rulebook.json
     before = [
         path
-        for path in (data / "rules").glob("*/rulebook.json")
+        for path in (data / "rules").glob(f"*/{SNAPSHOT}")
         if int(path.parent.name) < year
     ]
     if not before:

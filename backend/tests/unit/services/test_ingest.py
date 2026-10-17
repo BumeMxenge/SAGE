@@ -1,8 +1,8 @@
 # Checks a year ingests end to end from small sources built here: the handbook's own entries win over
 # the workbook's copies, requirements are translated grammar first, a check's failure flags the row
 # it names, ingesting writes nothing and asks no model, drafting takes earlier years' drafts,
-# wording the previous approved year printed keeps the rule it approved, and a review sitting saves
-# each decision as it's made
+# wording the previous approved year printed keeps the rule it approved, a review sitting saves each
+# decision as it's made, and approving waits for every row and writes a snapshot that reads back
 import hashlib
 import json
 from datetime import UTC, datetime, time, timedelta
@@ -20,7 +20,7 @@ from sage.domain.rules import (
 )
 from sage.ingestion.review import Snapshot
 from sage.ingestion.sources import Reading
-from sage.services.ingest import Sitting, ingest, review_file, review_year
+from sage.services.ingest import Sitting, approve, ingest, review_file, review_year
 
 EBE = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"
 SCIENCE = "UCT Faculty of Science Handbook 2026 (Book 11)"
@@ -490,3 +490,98 @@ def test_a_sitting_saves_each_decision_and_a_rerun_keeps_them(
             "decided": 2,
         }
     ]
+
+
+def accept_all(data, but=()):
+    # Accepts each row of the made-up year's review but those named, with a note where a check fails
+    candidate, review = review_year(2026, data=data)
+    sitting = Sitting(
+        candidate, review_file(2026, data), lambda: datetime(2026, 10, 18, tzinfo=UTC)
+    )
+    for row in review.rows:
+        if row.id not in but:
+            note = "Made up" if row.failures else None
+            assert sitting.decide(row.id, "accept", note=note) == ()
+    return candidate
+
+
+def test_approve_refuses_while_one_row_is_pending(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
+    accept_all(tmp_path, but={"requirement/SLL1017F"})
+    review, snapshot = approve(2026, data=tmp_path)
+    assert (review.pending, snapshot) == (("requirement/SLL1017F",), None)
+    assert not (tmp_path / "rules" / "2026" / "rulebook.json").exists()
+
+
+def test_an_approved_year_survives_the_snapshot_round_trip(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
+    candidate = accept_all(tmp_path)
+    _, snapshot = approve(2026, data=tmp_path)
+    path = tmp_path / "rules" / "2026" / "rulebook.json"
+    assert Snapshot.model_validate_json(path.read_text(encoding="utf-8")) == snapshot
+    # Every row accepted as read, now approved, with where each was printed
+    rules = snapshot.rules
+    assert rules.handbook_versions == (HandbookVersion(year=2026, approved=True),)
+    assert (rules.courses, rules.passages) == (
+        candidate.rules.courses,
+        candidate.rules.passages,
+    )
+    assert snapshot.readings == candidate.readings
+    # In a first year every row is a change: accepted automatically where nothing needed a
+    # person, and accepted by one where something did
+    flags = {
+        (d.entity, d.entity_key): (d.flag, d.approved) for d in rules.handbook_deltas
+    }
+    assert flags[("courses", "EEE3100S")] == (None, True)
+    assert flags[("courses", "PHY1013S")] == ("refused_or_equivalent", True)
+    assert flags[("curriculum_rules", "EB009EEE01/3")] == ("check_failed", True)
+    assert len(flags) == sum(
+        len(getattr(rules, table))
+        for table in (
+            "curricula",
+            "curriculum_rules",
+            "courses",
+            "course_groups",
+            "course_group_members",
+            "equivalences",
+        )
+    )
+
+
+def test_a_kept_removal_keeps_its_row_and_where_it_was_printed(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    # 2023 approved a course the made-up 2026 no longer prints, and its removal is rejected
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
+    path = tmp_path / "rules" / "2023" / "rulebook.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        approved(
+            2023, {"EEE9001F": ("No requirement printed", None)}
+        ).model_dump_json(),
+        encoding="utf-8",
+    )
+    candidate = accept_all(tmp_path, but={"removal/EEE9001F"})
+    sitting = Sitting(
+        candidate,
+        review_file(2026, tmp_path),
+        lambda: datetime(2026, 10, 18, tzinfo=UTC),
+    )
+    assert sitting.decide("removal/EEE9001F", "reject") == ()
+    _, snapshot = approve(2026, data=tmp_path)
+    kept = next(c for c in snapshot.rules.courses if c.code == "EEE9001F")
+    assert kept.handbook_year == 2026
+    # The next year reads its words from here
+    assert (
+        Reading(
+            entity="courses",
+            key="EEE9001F",
+            place="p. 1",
+            printed="No requirement printed",
+        )
+        in snapshot.readings
+    )

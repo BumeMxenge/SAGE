@@ -20,13 +20,14 @@ from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import LOCAL_HOSTS, get_settings, is_local
 from sage.domain.repositories import AccountNotFound
-from sage.domain.rules import DeltaTable
+from sage.domain.rules import DeltaTable, RuleSet
 from sage.domain.wording import in_words
 from sage.ingestion.review import DECISIONS, TREES, Review, ReviewRow, tree_fault
 from sage.ingestion.sources import SourceError
 from sage.services.ingest import (
     Candidate,
     Sitting,
+    approve,
     review_file,
     review_year,
 )
@@ -78,6 +79,15 @@ def main(argv: list[str] | None = None) -> None:
         "--year", type=int, required=True, help="the handbook year, such as 2026"
     )
 
+    approve_command = commands.add_parser(
+        "approve",
+        help="Approve a year whose review has nothing pending, writing "
+        "data/rules/<year>/rulebook.json",
+    )
+    approve_command.add_argument(
+        "--year", type=int, required=True, help="the handbook year, such as 2026"
+    )
+
     args = parser.parse_args(argv)
     if args.command == "seed":
         run_seed(args.user, yes=args.yes)
@@ -87,6 +97,8 @@ def main(argv: list[str] | None = None) -> None:
         run_ingest(args.year, draft=args.draft)
     elif args.command == "review":
         run_review(args.year)
+    elif args.command == "approve":
+        run_approve(args.year)
 
 
 def run_seed(account: UUID, *, yes: bool) -> None:
@@ -294,6 +306,39 @@ def review_report(review: Review) -> str:
             for problem in review.problems
         ]
     return "\n".join(lines)
+
+
+def run_approve(year: int) -> None:
+    try:
+        review, snapshot = approve(year)
+    except SourceError as error:
+        raise SystemExit(f"Stopped: {error}") from None
+    if snapshot is None:
+        print(review_report(review))
+        raise SystemExit(
+            f"Not approved, as rows are pending: sage review --year {year} decides them"
+        )
+    rules = snapshot.rules
+    rows = sum(
+        len(getattr(rules, table))
+        for table in RuleSet.model_fields
+        if table != "handbook_deltas"
+    )
+    settled = Counter(
+        "accepted automatically"
+        if delta.flag is None
+        else "corrected"
+        if delta.corrected_value is not None
+        else "rejected"
+        if delta.approved is False
+        else "accepted"
+        for delta in rules.handbook_deltas
+    )
+    print(
+        f"Approved {year}: data/rules/{year}/rulebook.json holds {rows} rows and "
+        + f"{len(rules.handbook_deltas)} changes, "
+        + ", ".join(f"{count} {how}" for how, count in settled.most_common())
+    )
 
 
 # The keys that decide a row, and the decision each makes
