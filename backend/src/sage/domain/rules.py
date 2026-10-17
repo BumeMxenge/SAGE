@@ -84,6 +84,19 @@ def _in_order[T: Row](children: tuple[T, ...]) -> tuple[T, ...]:
     return tuple(sorted(children, key=lambda child: child.model_dump_json()))
 
 
+def _flat(kind: str) -> AfterValidator:
+    # Nor do they depend on grouping: an all inside an all holds when its parts do, so its parts
+    # join the outer one (E2's prompt.md, rule 10). Joining a requirement to a co-requisite nests
+    # them, and a model may group by habit; flat, the same rule is the same tree however it was put
+    # together. Each inner node was flattened when it was validated, so one level is enough.
+    def join(children):
+        return _in_order(
+            tuple(part for child in children for part in getattr(child, kind, (child,)))
+        )
+
+    return AfterValidator(join)
+
+
 # Codes or group keys whose printed order means nothing, kept sorted for the same reason
 SortedNames = Annotated[
     tuple[str, ...], AfterValidator(lambda names: tuple(sorted(names)))
@@ -91,15 +104,11 @@ SortedNames = Annotated[
 
 
 class AllOf(Row):
-    all: Annotated[
-        tuple["EntryRule", ...], Field(min_length=1), AfterValidator(_in_order)
-    ]
+    all: Annotated[tuple["EntryRule", ...], Field(min_length=1), _flat("all")]
 
 
 class AnyOf(Row):
-    any: Annotated[
-        tuple["EntryRule", ...], Field(min_length=1), AfterValidator(_in_order)
-    ]
+    any: Annotated[tuple["EntryRule", ...], Field(min_length=1), _flat("any")]
 
 
 class CourseNeed(Row):

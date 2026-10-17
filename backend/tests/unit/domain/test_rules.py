@@ -1,5 +1,5 @@
-# Checks the rule trees' shapes: a tree that doesn't fit is refused, an any needs a child, and a
-# rule printed in another order is the same tree
+# Checks the rule trees' shapes: a tree that doesn't fit is refused, an any needs a child, a rule
+# printed in another order is the same tree, and so is one grouped differently within its own kind
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
@@ -79,3 +79,57 @@ def test_a_rule_printed_in_another_order_is_the_same_tree():
     }
     tree = ENTRY_RULE.validate_python(printed)
     assert ENTRY_RULE.dump_python(tree, mode="json") == expected
+
+
+def leaf(code, need="pass"):
+    return {"course": code, "need": need}
+
+
+def test_an_all_inside_an_all_is_the_same_tree_as_one_all():
+    # PHY2010S's requirement joined to its co-requisite "MAM2084F/S", as the ingest joins them: an
+    # all holding an all. E2's prompt.md rule 10 says to join them, and a model may group either way.
+    requirement = {
+        "all": [
+            {"any": [leaf("PHY1012F"), leaf("PHY1012S")]},
+            {"any": [leaf("MAM2083F"), leaf("MAM2083S")]},
+        ]
+    }
+    corequisite = {
+        "any": [leaf("MAM2084F", "concurrent"), leaf("MAM2084S", "concurrent")]
+    }
+    joined = ENTRY_RULE.validate_python({"all": [requirement, corequisite]})
+    flat = ENTRY_RULE.validate_python({"all": [*requirement["all"], corequisite]})
+    assert joined == flat
+    # Sorted by hand as above: the three anys by their first code, MAM2083F, MAM2084F, PHY1012F
+    assert ENTRY_RULE.dump_python(joined, mode="json") == {
+        "all": [
+            {"any": [leaf("MAM2083F"), leaf("MAM2083S")]},
+            {"any": [leaf("MAM2084F", "concurrent"), leaf("MAM2084S", "concurrent")]},
+            {"any": [leaf("PHY1012F"), leaf("PHY1012S")]},
+        ]
+    }
+
+
+def test_an_any_inside_an_any_joins_however_deep():
+    nested = {
+        "any": [
+            leaf("EEE3097S"),
+            {"any": [leaf("EEE3098S"), {"any": [leaf("EEE3099S")]}]},
+        ]
+    }
+    assert ENTRY_RULE.dump_python(ENTRY_RULE.validate_python(nested), mode="json") == {
+        "any": [leaf("EEE3097S"), leaf("EEE3098S"), leaf("EEE3099S")]
+    }
+
+
+def test_an_all_and_an_any_inside_each_other_stay_apart():
+    # Joining only holds within a kind: "A and (B or C)" is not "A and B and C", nor is
+    # "A or (B and C)" "A or B or C". Each node's children are only sorted, "all" and "any" before
+    # "course" by their JSON text.
+    b_or_c = {"any": [leaf("EEE3098S"), leaf("EEE3099S")]}
+    b_and_c = {"all": [leaf("EEE3098S"), leaf("EEE3099S")]}
+    for kind, inner in (("all", b_or_c), ("any", b_and_c)):
+        tree = ENTRY_RULE.validate_python({kind: [leaf("EEE3097S"), inner]})
+        assert ENTRY_RULE.dump_python(tree, mode="json") == {
+            kind: [inner, leaf("EEE3097S")]
+        }

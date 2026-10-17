@@ -68,10 +68,11 @@ def _part(part: YearRule) -> str:
 
 
 def _lists(node: EntryRule) -> bool:
-    # Whether a node's words hold a list of their own
+    # Whether a node's words hold a list of their own. An all never sits inside an all, as a tree
+    # joins them.
     if isinstance(node, StudentIn):
         return len(node.student_in) > 1
-    return isinstance(node, AllOf | AnyOf)
+    return isinstance(node, AnyOf)
 
 
 def _commas(node: EntryRule) -> bool:
