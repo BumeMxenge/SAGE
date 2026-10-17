@@ -84,10 +84,11 @@ test-integration:
 # How many small faults (mutants) planted in the code the unit tests catch, written to
 # backend/mutation-score.txt. It takes about ten minutes, so CI never runs it. Each run starts
 # afresh, as mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a
-# copy of the code from backend/mutants/, one folder deeper than usual, so a link puts data/ where
-# SEED_FILE looks for it while the run lasts.
+# copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts links
+# put data/ where SEED_FILE looks for it, and experiments/ where the drafter's test reads E2's prompt.
 mutation:
-	@cd backend && rm -rf mutants && ln -sfn ../data data && trap 'rm -f data' EXIT && \
+	@cd backend && rm -rf mutants && ln -sfn ../data data && ln -sfn ../experiments experiments && \
+		trap 'rm -f data experiments' EXIT && \
 		uv run --group mutation mutmut run && \
 		uv run --group mutation mutmut export-cicd-stats > /dev/null && \
 		uv run python scripts/mutation_score.py | tee mutation-score.txt
