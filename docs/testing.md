@@ -1,4 +1,4 @@
-<!-- How the backend is tested: the rules every test follows, the levels, how to run them, and how strong they are -->
+<!-- How SAGE is tested: the rules every test follows, the levels, how to run them, how strong the backend's tests are, and the frontend's tests -->
 # Testing
 
 A test is worth keeping if it catches a fault. So the backend's suite is kept small, and its strength is measured by the faults it catches, not by how many tests pass.
@@ -21,6 +21,22 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 | Unit | Each rule, on in-memory stores, with no network | `backend/tests/unit`, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every push |
 | Integration | The Supabase adapters, the migrations, row level security and real sign-in tokens, against a rebuilt local database | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every push |
 | Acceptance | The finished system, against held-back cases (the ATPs) | `tests/acceptance` (planned) | Their own workflow, on demand |
+
+## Frontend
+
+The eight rules above apply to the frontend too. Its tests run with Vitest and Testing Library through `npm test` in `frontend/`. `make check` and CI's frontend job already call it, so there is no extra step.
+
+| Test | What it checks | The fault it catches |
+| --- | --- | --- |
+| `src/styles/tokens.test.ts` | Reads `tokens.css` and `theme.css`. Every text token reaches 4.5:1 on every surface, white reaches 4.5:1 on the sign-in, accent and course fills, and the focus ring and the checkbox's border reach 3:1, in both themes. The field border reaches 3:1 in light. Dark fields have none and rely on their placeholder, which the secondary text check covers on the field fill. Decorative borders and disabled text are left out, as WCAG allows. Both themes define the same tokens | A token changed to a failing value, a new text token that fails, or a colour given a light value only, which would stay light in the dark theme. It also checks the audit's published ratios, so a broken formula can't pass |
+| `src/lib/useAppearance.test.ts` | The choice survives a reload, Match System follows the system, and the page falls back to Match System when storage is blocked | The storage key drifting between `public/theme.js` and the hook, the system's setting being ignored, or a missing try/catch that breaks the page in a private window |
+| `src/components/brand/Logo/Logo.test.tsx` | Two logos on one page each get their own title id and their own name, and Microsoft's mark is hidden from screen readers | svgr's `titleProp` setting being lost, so every logo keeps its file's `id="t"` and the ids clash, or the mark being read out beside the button's own name |
+| `scripts/check-tsx.test.ts` | The custom lint check rejects `style=` beyond custom properties, re-exports and imports across feature boundaries | The check silently passing everything |
+| `scripts/stylelint-config.test.ts` | stylelint rejects raw colours, gradients and radii in a component, and accepts them in `tokens.css` | `ignoreFunctions` drifting back to its default, which lets `rgb()` and `oklch()` through |
+
+Each test was checked by breaking what it guards: the old secondary grey, the audit's input border, the checkbox's dark border set to the field fill, a dark value left out, a renamed storage key, a script that ignores the system's setting or stops watching the choice, a hook without its try/catch, and `ignoreFunctions` turned back on. Each made a test fail.
+
+Not yet built: Playwright with axe, the keyboard walk and the parity screenshots. They need the local stack, so they arrive with app foundations as their own `make` target that CI doesn't run. The same branch adds a route-guard sweep that mirrors the backend's.
 
 ## How strong the tests are
 

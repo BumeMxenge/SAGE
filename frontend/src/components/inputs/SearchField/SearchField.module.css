@@ -1,0 +1,75 @@
+.search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* While SAGE is busy the search waits, faded as in the prototype */
+.search-field[data-disabled] {
+  opacity: 0.55;
+}
+
+/* In light the border is the field's edge, at 3:1. In dark there is none: the shaded fill, the
+   magnifier and the placeholder identify the field. */
+.input {
+  width: 100%;
+  min-height: var(--size-control-lg);
+  padding: 0 calc(var(--space-2) + var(--size-control-sm) + var(--space-2)) 0
+    calc(var(--space-4) + var(--size-icon-md) + var(--space-3));
+  border: 1px solid var(--color-border-field);
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  background: var(--color-surface-field);
+}
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.input[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.icon {
+  position: absolute;
+  left: var(--space-4);
+  display: flex;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.clear {
+  --icon-size: var(--size-icon-sm);
+
+  position: absolute;
+  right: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+}
+
+.clear[data-hovered] {
+  background: var(--color-hover);
+}
+
+.clear[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Nothing typed, nothing to clear. React Aria sets data-empty on the field. */
+.search-field[data-empty] .clear {
+  display: none;
+}

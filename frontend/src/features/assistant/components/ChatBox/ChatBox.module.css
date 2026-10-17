@@ -1,0 +1,86 @@
+/* In light the border is the box's edge, at 3:1. In dark there is none: the shaded fill, the
+   placeholder and the Send button identify it. */
+.chat-box {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-end;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border-field);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-field);
+}
+
+/* The ring shows only when the text area was reached with the keyboard */
+.chat-box:has(.textarea[data-focus-visible]) {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.field {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The text area and a hidden copy of its text share one grid cell, so the cell is as tall as the
+   text, up to five lines */
+.grow {
+  display: grid;
+}
+
+.grow::after {
+  content: attr(data-value) ' ';
+  white-space: pre-wrap;
+  visibility: hidden;
+}
+
+.grow::after,
+.textarea {
+  grid-area: 1 / 1 / 2 / 2;
+  max-height: calc(var(--space-6) * 5);
+  padding: var(--space-1) 0;
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  overflow-wrap: anywhere;
+}
+
+.textarea {
+  overflow-y: auto;
+  border: 0;
+  color: var(--color-text);
+  background: transparent;
+  resize: none;
+  outline: none;
+}
+
+.textarea::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.send {
+  --icon-size: var(--size-icon-sm);
+
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  cursor: pointer;
+}
+
+.send[data-disabled] {
+  color: var(--color-text-disabled);
+  background: var(--color-disabled);
+  cursor: default;
+}
+
+.send[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}

@@ -1,0 +1,38 @@
+.segmented-control {
+  display: inline-flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+
+/* No hover change: the parity file leaves segments as they are */
+.segment {
+  --icon-size: var(--size-icon-sm);
+
+  display: inline-flex;
+  align-items: center;
+  min-width: var(--size-target-min);
+  height: calc(var(--size-control-md) - var(--space-2));
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+}
+
+.segment[data-selected] {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.segment[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}

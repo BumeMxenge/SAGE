@@ -1,0 +1,47 @@
+.field {
+  display: flex;
+}
+
+.button {
+  --icon-size: var(--size-icon-sm);
+
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+/* An empty box is only its border, so the border reaches 3:1 in both themes */
+.box {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-target-min);
+  height: var(--size-target-min);
+  border: 2px solid var(--color-border-control);
+  border-radius: var(--radius-sm);
+  color: var(--color-on-primary);
+  background: var(--color-surface-field);
+}
+
+.box svg {
+  visibility: hidden;
+}
+
+.button[data-selected] .box {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.button[data-selected] .box svg {
+  visibility: visible;
+}
+
+.button[data-focus-visible] .box {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
