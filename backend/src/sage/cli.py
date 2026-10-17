@@ -1,10 +1,17 @@
 # Command-line entry point: `uv run sage <command>`, e.g. `uv run sage seed --user <account id>`
 import argparse
 import json
+import subprocess
+import tempfile
 from collections import Counter, defaultdict
+from collections.abc import Callable
+from datetime import datetime
+from pathlib import Path
 from typing import get_args
 from urllib.parse import urlencode, urlsplit
 from uuid import UUID
+
+from pydantic import JsonValue
 
 from sage.adapters.anthropic import ClaudeDrafter
 from sage.adapters.supabase import connect
@@ -14,9 +21,15 @@ from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import LOCAL_HOSTS, get_settings, is_local
 from sage.domain.repositories import AccountNotFound
 from sage.domain.rules import DeltaTable
-from sage.ingestion.review import Review
+from sage.domain.wording import in_words
+from sage.ingestion.review import DECISIONS, TREES, Review, ReviewRow, tree_fault
 from sage.ingestion.sources import SourceError
-from sage.services.ingest import Candidate, review_year
+from sage.services.ingest import (
+    Candidate,
+    Sitting,
+    review_file,
+    review_year,
+)
 from sage.services.seed import SEED_FILE, SeedResult, load_seed, seed
 
 
@@ -56,6 +69,15 @@ def main(argv: list[str] | None = None) -> None:
         help="ask the drafting model for refused wording with no draft yet, and cache its drafts",
     )
 
+    review_command = commands.add_parser(
+        "review",
+        help="Decide a year's pending review rows one at a time in the terminal, each saved to "
+        "data/rules/<year>/review.json as it's made",
+    )
+    review_command.add_argument(
+        "--year", type=int, required=True, help="the handbook year, such as 2026"
+    )
+
     args = parser.parse_args(argv)
     if args.command == "seed":
         run_seed(args.user, yes=args.yes)
@@ -63,6 +85,8 @@ def main(argv: list[str] | None = None) -> None:
         run_sign_in(args.port)
     elif args.command == "ingest":
         run_ingest(args.year, draft=args.draft)
+    elif args.command == "review":
+        run_review(args.year)
 
 
 def run_seed(account: UUID, *, yes: bool) -> None:
@@ -270,3 +294,181 @@ def review_report(review: Review) -> str:
             for problem in review.problems
         ]
     return "\n".join(lines)
+
+
+# The keys that decide a row, and the decision each makes
+KEYS = {"a": "accept", "c": "correct", "r": "reject"}
+
+
+def run_review(year: int) -> None:
+    try:
+        candidate, review = review_year(year)
+    except SourceError as error:
+        raise SystemExit(f"Stopped: {error}") from None
+    if not review.pending:
+        print(
+            f"Nothing is pending in {year}'s review: sage approve --year {year} approves it"
+        )
+        return
+    sitting = Sitting(candidate, review_file(year), lambda: datetime.now().astimezone())
+    walk(sitting, input, open_in_code)
+
+
+def walk(
+    sitting: Sitting, ask: Callable[[str], str], edit: Callable[[Path], None]
+) -> None:
+    # Shows each pending row in turn until the last or q, then the sitting's minutes
+    review = sitting.review
+    pending = [row for row in review.rows if row.id in review.pending]
+    with tempfile.TemporaryDirectory() as folder:
+        try:
+            for number, row in enumerate(pending, 1):
+                problems = [p.text for p in sitting.review.problems if p.row == row.id]
+                heading = f"Row {number} of {len(pending)}"
+                print(shown(row, heading, problems, review.compared_with))
+                if not settle(sitting, row, ask, edit, Path(folder)):
+                    break
+        except (KeyboardInterrupt, EOFError):
+            print()
+    sittings = sitting.end()
+    minutes, decided = sittings[-1]
+    review = sitting.review
+    print(f"\nThis sitting took {minutes:.0f} minutes and decided {decided} rows.")
+    print(
+        f"{review.year}'s review: {len(sittings)} sittings over "
+        + f"{sum(m for m, _ in sittings):.0f} minutes, and {len(review.pending)} of "
+        + f"{len(review.rows)} rows pending"
+    )
+    print(
+        *(
+            f"Failing on the year as decided: {p.text}"
+            for p in review.problems
+            if p.row is None
+        ),
+        sep="\n",
+    )
+
+
+def settle(
+    sitting: Sitting,
+    row: ReviewRow,
+    ask: Callable[[str], str],
+    edit: Callable[[Path], None],
+    folder: Path,
+) -> bool:
+    # One row's decision, asked for until it's kept or the row is skipped; False when the person quits
+    allowed = DECISIONS[row.kind]
+    choices = [f"{key} {word}" for key, word in KEYS.items() if word in allowed]
+    prompt = ", ".join([*choices, "s skip", "q quit"]) + ": "
+    while True:
+        key = ask(prompt).strip().lower()
+        if key in ("s", "q"):
+            return key == "s"
+        decision = KEYS.get(key)
+        if decision not in allowed:
+            continue
+        corrected = corrected_tree(row, folder, edit) if decision == "correct" else None
+        if decision == "correct" and corrected is None:
+            continue
+        problems = sitting.decide(row.id, decision, corrected)
+        if problems and all(problem.note for problem in problems):
+            print(*(f"  {problem.text}" for problem in problems), sep="\n")
+            note = ask("Note saying why it stands, or Enter to choose again: ").strip()
+            if not note:
+                continue
+            problems = sitting.decide(row.id, decision, corrected, note)
+        if not problems:
+            return True
+        print(*(f"  Not kept: {problem.text}" for problem in problems), sep="\n")
+
+
+def corrected_tree(
+    row: ReviewRow, folder: Path, edit: Callable[[Path], None]
+) -> JsonValue:
+    # The tree saved in the editor, which opens filled with the draft and reopens with the error at
+    # the top until what's saved is a tree of the row's kind. None when the file is saved empty.
+    path = folder / f"{row.id.replace('/', '-')}.jsonc"
+    start = row.new if row.corrected is None else row.corrected
+    text, error = json.dumps(start, indent=2, ensure_ascii=False), None
+    while True:
+        header = [
+            f"// {row.id}: {row.printed}",
+            "// Save and close this tab to use the tree below, or empty the file to choose again.",
+        ]
+        if error:
+            header.append(f"// Not used: {error}")
+        path.write_text("\n".join([*header, text]) + "\n", encoding="utf-8")
+        edit(path)
+        lines = path.read_text(encoding="utf-8").splitlines()
+        text = "\n".join(line for line in lines if not line.lstrip().startswith("//"))
+        text = text.strip()
+        if not text:
+            return None
+        try:
+            tree = json.loads(text)
+        except json.JSONDecodeError as problem:
+            error = f"this isn't JSON: {problem}"
+            continue
+        error = tree_fault(row.kind, tree)
+        if error is None:
+            return tree
+
+
+def open_in_code(path: Path) -> None:
+    # Opens a file in VS Code and waits until its tab is closed
+    try:
+        subprocess.run(["code", "--wait", str(path)], check=True)
+    except FileNotFoundError:
+        raise SystemExit(
+            "There's no code command: in VS Code, run Shell Command: Install 'code' command in "
+            "PATH"
+        ) from None
+
+
+def shown(row: ReviewRow, heading: str, problems: list[str], before: int | None) -> str:
+    # A row as a person decides it: why it's here, what it covers, the print, and each value in
+    # plain words beside its JSON
+    lines = ["", f"{heading}: {row.id}", f"Causes: {', '.join(row.causes)}"]
+    if row.mark:
+        lines.append(
+            "Mark: the words print a DP, which models have read as a pass, so read the "
+            + "draft closely"
+        )
+    if row.failures:
+        lines += ["Failed checks:", *(f"  {text}" for text in row.failures)]
+    if row.covers:
+        lines += [
+            "Covers:",
+            *(f"  {key} ({place})" for key, place in row.covers.items()),
+        ]
+    lines.append(f"Printed: {row.printed}")
+    if row.kind not in ("check", "no_entry"):
+        approved = f"{before} approved" if before else "Approved before"
+        if not row.old:
+            lines.append(f"{approved}: nothing")
+        for key, value in row.old.items():
+            lines += [f"{approved}, for {key}:", *_described(row.kind, key, value)]
+        lines += ["Read now:", *_described(row.kind, None, row.new)]
+    lines += [f"Not usable yet: {text}" for text in problems]
+    return "\n".join(lines)
+
+
+def _described(kind: str, key: str | None, value: JsonValue) -> list[str]:
+    # A value in plain words, then as JSON
+    if value is None:
+        return ["  nothing: it's gone" if kind == "removal" else "  no requirement"]
+    words = None
+    if kind in TREES:
+        words = in_words(TREES[kind].validate_python(value))
+    elif kind == "equivalence":
+        words = f"{value['course_code']} counts as {value['counts_as']}"
+    elif key and key.startswith("courses/"):
+        entry = value["entry_rule"]
+        rule = in_words(
+            None if entry is None else TREES["requirement"].validate_python(entry)
+        )
+        words = f"{value['code']} {value['name']}, needing {rule}"
+    elif key and key.startswith("course_group_members/"):
+        words = f"{value['course_code']} in {value['group_key']}"
+    json_line = f"  {json.dumps(value, ensure_ascii=False)}"
+    return [f"  {words}", json_line] if words else [json_line]

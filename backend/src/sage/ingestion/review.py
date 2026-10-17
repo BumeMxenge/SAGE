@@ -314,6 +314,20 @@ def _decisions(
     return kept, tuple(sorted(returned))
 
 
+def tree_fault(kind: str, tree: JsonValue) -> str | None:
+    # Why a correction can't stand as a tree of its row's kind, or None where it can. It's never
+    # empty, so a correction left unfilled can't become "no requirement".
+    if tree is None:
+        return (
+            "correct needs the tree in corrected, with a refer leaf where no tree fits"
+        )
+    try:
+        TREES[kind].validate_python(tree)
+    except ValidationError as error:
+        return f"corrected isn't a {kind} tree: {_first(error)}"
+    return None
+
+
 def _faults(row: ReviewRow) -> list[str]:
     # What stops a decision being used, other than a missing note
     allowed = DECISIONS[row.kind]
@@ -325,15 +339,8 @@ def _faults(row: ReviewRow) -> list[str]:
     if row.note is not None and not isinstance(row.note, str):
         faults.append("note must be text in quotes")
     if row.decision == "correct":
-        if row.corrected is None:
-            faults.append(
-                "correct needs the tree in corrected, with a refer leaf where no tree fits"
-            )
-        else:
-            try:
-                TREES[row.kind].validate_python(row.corrected)
-            except ValidationError as error:
-                faults.append(f"corrected isn't a {row.kind} tree: {_first(error)}")
+        if fault := tree_fault(row.kind, row.corrected):
+            faults.append(fault)
     elif row.corrected is not None:
         faults.append("corrected is filled, so the decision should be correct")
     # A rejected draft must never leave a course needing nothing

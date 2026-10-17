@@ -5,7 +5,11 @@
 # printed and why a person must look at it, and review_year writes the rows a person must decide.
 import json
 from collections import defaultdict
+from collections.abc import Callable
+from datetime import datetime
 from pathlib import Path
+
+from pydantic import JsonValue
 
 from sage.domain.base import Row
 from sage.domain.drafting import Drafter
@@ -29,7 +33,7 @@ from sage.ingestion import (
     translate,
 )
 from sage.ingestion.names import title_case
-from sage.ingestion.review import Review, Snapshot, compare
+from sage.ingestion.review import Problem, Review, Snapshot, compare
 
 # Four folders up from this file: the repo root, as for the seed file
 DATA = Path(__file__).resolve().parents[4] / "data"
@@ -320,15 +324,80 @@ def review_year(
     year: int, drafter: Drafter | None = None, data: Path = DATA
 ) -> tuple[Candidate, Review]:
     # Ingests the year, compares it with the latest approved year before it, and writes the rows a
-    # person must decide to data/rules/<year>/review.json, with each decision there that still holds
-    path = data / "rules" / str(year) / "review.json"
-    try:
-        decided = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
-    except json.JSONDecodeError as error:
-        raise sources.SourceError(f"{path.name} isn't valid JSON: {error}") from None
+    # person must decide to review.json, with each decision there that still holds
+    path = review_file(year, data)
+    held = _read_review(path)
     candidate = ingest(year, drafter, data)
-    review = compare(
-        year,
+    review = _compare(candidate, held["rows"])
+    _write_review(path, held["sittings"], review)
+    return candidate, review
+
+
+def review_file(year: int, data: Path = DATA) -> Path:
+    return data / "rules" / str(year) / "review.json"
+
+
+class Sitting:
+    # One sitting of a person deciding a year's pending rows. Each decision is checked as sage ingest
+    # checks it and saved to review.json as it's made, with when the sitting began and last saved and
+    # the rows it decided, so stopping at any point loses nothing.
+    def __init__(
+        self, candidate: Candidate, path: Path, clock: Callable[[], datetime]
+    ) -> None:
+        self._candidate, self._path, self._clock = candidate, path, clock
+        held = _read_review(path)
+        self.review = _compare(candidate, held["rows"])
+        started = clock().isoformat(timespec="seconds")
+        self._sittings = [
+            *held["sittings"],
+            {"start": started, "end": started, "decided": 0},
+        ]
+        _write_review(path, self._sittings, self.review)
+
+    def decide(
+        self,
+        row_id: str,
+        decision: str,
+        corrected: JsonValue = None,
+        note: str | None = None,
+    ) -> tuple[Problem, ...]:
+        # A decision on one row, kept and saved only if it leaves the row with no problem; else the
+        # problems, with the row as it was
+        rows = [row.model_dump(mode="json") for row in self.review.rows]
+        for row in rows:
+            if row["id"] == row_id:
+                row.update(decision=decision, corrected=corrected, note=note)
+        review = _compare(self._candidate, rows)
+        problems = tuple(p for p in review.problems if p.row == row_id)
+        if not problems:
+            self.review = review
+            self._sittings[-1]["decided"] += 1
+            self._save()
+        return problems
+
+    def end(self) -> list[tuple[float, int]]:
+        # Saves the sitting's end, and every sitting's minutes and rows decided, this one last
+        self._save()
+        return [
+            (
+                (
+                    datetime.fromisoformat(sitting["end"])
+                    - datetime.fromisoformat(sitting["start"])
+                ).total_seconds()
+                / 60,
+                sitting["decided"],
+            )
+            for sitting in self._sittings
+        ]
+
+    def _save(self) -> None:
+        self._sittings[-1]["end"] = self._clock().isoformat(timespec="seconds")
+        _write_review(self._path, self._sittings, self.review)
+
+
+def _compare(candidate: Candidate, decided: list[dict[str, JsonValue]]) -> Review:
+    return compare(
+        candidate.year,
         candidate.rules,
         candidate.readings,
         candidate.checks,
@@ -337,12 +406,25 @@ def review_year(
         previous=candidate.previous,
         decided=decided,
     )
+
+
+def _read_review(path: Path) -> dict[str, list]:
+    # review.json's sittings and rows as last saved, or none before the year's first review
+    if not path.exists():
+        return {"sittings": [], "rows": []}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        raise sources.SourceError(f"{path.name} isn't valid JSON: {error}") from None
+
+
+def _write_review(path: Path, sittings: list[dict], review: Review) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     rows = [row.model_dump(mode="json") for row in review.rows]
-    path.write_text(
-        json.dumps(rows, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    text = json.dumps(
+        {"sittings": sittings, "rows": rows}, indent=2, ensure_ascii=False
     )
-    return candidate, review
+    path.write_text(text + "\n", encoding="utf-8")
 
 
 def _latest_approved(year: int, data: Path) -> Snapshot | None:

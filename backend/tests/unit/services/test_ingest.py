@@ -1,10 +1,11 @@
 # Checks a year ingests end to end from small sources built here: the handbook's own entries win over
 # the workbook's copies, requirements are translated grammar first, a check's failure flags the row
-# it names, ingesting writes nothing and asks no model, drafting takes earlier years' drafts, and
-# wording the previous approved year printed keeps the rule it approved
+# it names, ingesting writes nothing and asks no model, drafting takes earlier years' drafts,
+# wording the previous approved year printed keeps the rule it approved, and a review sitting saves
+# each decision as it's made
 import hashlib
 import json
-from datetime import time
+from datetime import UTC, datetime, time, timedelta
 
 import openpyxl
 
@@ -19,7 +20,7 @@ from sage.domain.rules import (
 )
 from sage.ingestion.review import Snapshot
 from sage.ingestion.sources import Reading
-from sage.services.ingest import ingest
+from sage.services.ingest import Sitting, ingest, review_file, review_year
 
 EBE = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"
 SCIENCE = "UCT Faculty of Science Handbook 2026 (Book 11)"
@@ -456,3 +457,36 @@ def test_wording_the_previous_approved_year_printed_keeps_its_rule(
     flags = {r.key: r.flag for r in run.readings if r.entity == "courses"}
     assert (flags["PHY1013S"], flags["SLL1017F"]) == ("check_failed", None)
     assert run.carried == ("PHY1013S", "SLL1017F")
+
+
+def test_a_sitting_saves_each_decision_and_a_rerun_keeps_them(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
+    candidate, _ = review_year(2026, data=tmp_path)
+    # A sitting from 09:00 to 09:12, by a made-up clock
+    start = datetime(2026, 10, 18, 9, tzinfo=UTC)
+    times = iter([start, *[start + timedelta(minutes=12)] * 9])
+    path = review_file(2026, tmp_path)
+    sitting = Sitting(candidate, path, lambda: next(times))
+    # The planted year-3 total fails a check, so accepting it needs a note, and without one the row
+    # stays as it was
+    problems = sitting.decide("rule/EB009EEE01/3", "accept")
+    assert [problem.note for problem in problems] == [True]
+    assert sitting.decide("rule/EB009EEE01/3", "accept", note="Made up") == ()
+    assert sitting.decide("requirement/PHY1013S", "accept") == ()
+    assert sitting.end() == [(12.0, 2)]
+    _, review = review_year(2026, data=tmp_path)
+    assert {
+        row.id: (row.decision, row.note) for row in review.rows if row.decision
+    } == {
+        "rule/EB009EEE01/3": ("accept", "Made up"),
+        "requirement/PHY1013S": ("accept", None),
+    }
+    assert json.loads(path.read_text(encoding="utf-8"))["sittings"] == [
+        {
+            "start": "2026-10-18T09:00:00+00:00",
+            "end": "2026-10-18T09:12:00+00:00",
+            "decided": 2,
+        }
+    ]
