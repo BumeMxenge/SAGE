@@ -1,7 +1,8 @@
 # Ingests one handbook year into a candidate rulebook, writing nothing to any database. It checks the
 # year's sources against their manifest, reads each, translates the printed requirements, grammar
-# first, and checks the sources against each other. Every row C2 reviews keeps where it was printed
-# and why a person must look at it.
+# first, and checks the sources against each other. A requirement printed in the words the latest
+# approved year before it printed keeps that year's approved rule. Every row C2 reviews keeps where
+# it was printed and why a person must look at it.
 from collections import defaultdict
 from pathlib import Path
 
@@ -27,6 +28,7 @@ from sage.ingestion import (
     translate,
 )
 from sage.ingestion.names import title_case
+from sage.ingestion.review import Snapshot
 
 # Four folders up from this file: the repo root, as for the seed file
 DATA = Path(__file__).resolve().parents[4] / "data"
@@ -48,10 +50,15 @@ class DryRun(Row):
     # Entries that print no requirement line, read like a printed "None"
     unprinted: tuple[str, ...]
     notes: tuple[timetable.Note, ...]
+    # The latest year approved before this one, which this year is compared with
+    previous: Snapshot | None
+    # Courses whose requirement is printed in words that year printed, so keep its approved rule
+    carried: tuple[str, ...]
 
 
 def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryRun:
     manifest = sources.load(data / "sources" / str(year))
+    previous = _latest_approved(year, data)
     book = handbook.Handbook(handbook.pages(manifest.path(manifest.handbook)))
     department = next(
         section
@@ -97,7 +104,35 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
     def translation(printed: str | None, need: str) -> translate.Translation | None:
         return found[" ".join(printed.split()), need] if printed else None
 
-    courses, readings = [], list(read.readings)
+    # Each requirement the previous approved year printed, by its words, and the rule it approved
+    approved: dict[str, EntryRule | None] = {}
+    if previous:
+        rules = {course.code: course.entry_rule for course in previous.rules.courses}
+        approved = {
+            r.printed: rules[r.key] for r in previous.readings if r.entity == "courses"
+        }
+    courses, readings, carried = [], list(read.readings), []
+
+    def settle(
+        code: str,
+        place: str,
+        printed: str,
+        rule: EntryRule | None,
+        parts: list[translate.Translation],
+    ) -> EntryRule | None:
+        # Words the previous approved year printed keep the rule it approved, unflagged. Other words
+        # keep the rule read now, flagged with the grammar's cause where it refused a part.
+        cause = next((p.cause for p in parts if p.cause), None)
+        if printed in approved:
+            carried.append(code)
+            rule, cause = approved[printed], None
+        readings.append(
+            sources.Reading(
+                entity="courses", key=code, place=place, printed=printed, flag=cause
+            )
+        )
+        return rule
+
     for code, entry in entries.items():
         parts = [
             t
@@ -107,6 +142,7 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
             )
             if t
         ]
+        printed = _printed(entry.requirement, entry.corequisite)
         courses.append(
             Course(
                 handbook_year=year,
@@ -115,14 +151,12 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
                 credits=entry.credits,
                 nqf_level=entry.nqf_level,
                 term=entry.term or TERM_BY_SUFFIX[code[-1]],
-                entry_rule=_rule(parts),
+                entry_rule=settle(
+                    code, f"p. {entry.page}", printed, _rule(parts), parts
+                ),
                 convener=entry.convener,
             )
         )
-        printed = " Co-requisites: ".join(
-            text for text in (entry.requirement, entry.corequisite) if text
-        )
-        readings.append(_course_reading(code, f"p. {entry.page}", printed, parts))
     for offering in typed:
         # The workbook's "Not stated in course entry." is a refer leaf, as it doesn't mean there's
         # no requirement; any other wording was translated
@@ -132,6 +166,8 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
             if not_stated
             else [found[" ".join(offering.requirement.split()), "pass"]]
         )
+        rule = Refer(refer=offering.requirement) if not_stated else _rule(parts)
+        place = f"{offering.handbook}, p. {offering.pages} ({offering.sheet} row {offering.row})"
         courses.append(
             Course(
                 handbook_year=year,
@@ -140,15 +176,15 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
                 credits=offering.credits,
                 nqf_level=offering.nqf_level,
                 term=offering.term,
-                entry_rule=Refer(refer=offering.requirement)
-                if not_stated
-                else _rule(parts),
+                entry_rule=settle(
+                    offering.code,
+                    place,
+                    _printed(offering.requirement, None),
+                    rule,
+                    parts,
+                ),
                 convener=offering.convener,
             )
-        )
-        place = f"{offering.handbook}, p. {offering.pages} ({offering.sheet} row {offering.row})"
-        readings.append(
-            _course_reading(offering.code, place, offering.requirement, parts)
         )
 
     members = list(read.members)
@@ -271,7 +307,22 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
             code for code, entry in entries.items() if not entry.requirement
         ),
         notes=notes,
+        previous=previous,
+        carried=tuple(carried),
     )
+
+
+def _latest_approved(year: int, data: Path) -> Snapshot | None:
+    # The latest approved year before this one, each held in data/rules/<year>/rulebook.json
+    before = [
+        path
+        for path in (data / "rules").glob("*/rulebook.json")
+        if int(path.parent.name) < year
+    ]
+    if not before:
+        return None
+    latest = max(before, key=lambda path: int(path.parent.name))
+    return Snapshot.model_validate_json(latest.read_text(encoding="utf-8"))
 
 
 def _present(
@@ -292,14 +343,8 @@ def _rule(parts: list[translate.Translation]) -> EntryRule | None:
     return trees[0] if len(trees) == 1 else AllOf(all=trees)
 
 
-def _course_reading(
-    code: str, place: str, printed: str, parts: list[translate.Translation]
-) -> sources.Reading:
-    # A course with wording the grammar refused is flagged with that refusal's cause
-    return sources.Reading(
-        entity="courses",
-        key=code,
-        place=place,
-        printed=printed or "No requirement printed",
-        flag=next((part.cause for part in parts if part.cause), None),
-    )
+def _printed(requirement: str | None, corequisite: str | None) -> str:
+    # A course's requirement as a reviewer reads it and the next year matches it: single-spaced, with
+    # any co-requisite labelled, so the same words as a requirement and as a co-requisite never match
+    words = [requirement or "", f"Co-requisites: {corequisite}" if corequisite else ""]
+    return " ".join(" ".join(words).split()) or "No requirement printed"

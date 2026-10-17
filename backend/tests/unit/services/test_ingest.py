@@ -1,13 +1,24 @@
 # Checks a year ingests end to end from small sources built here: the handbook's own entries win over
 # the workbook's copies, requirements are translated grammar first, a check's failure flags the row
-# it names, a dry run writes nothing and asks no model, and drafting takes earlier years' drafts
+# it names, a dry run writes nothing and asks no model, drafting takes earlier years' drafts, and
+# wording the previous approved year printed keeps the rule it approved
 import hashlib
 import json
 from datetime import time
 
 import openpyxl
 
-from sage.domain.rules import AllOf, AnyOf, CourseNeed, HandbookVersion, Refer
+from sage.domain.rules import (
+    AllOf,
+    AnyOf,
+    Course,
+    CourseNeed,
+    HandbookVersion,
+    Refer,
+    RuleSet,
+)
+from sage.ingestion.review import Snapshot
+from sage.ingestion.sources import Reading
 from sage.services.ingest import ingest
 
 EBE = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"
@@ -169,11 +180,18 @@ sha256 = "{equivalences}"
 """
 
 
-def sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block):
+def sources(
+    tmp_path,
+    handbook_pdf,
+    complementary_xlsx,
+    timetable_block,
+    pages=PAGES,
+    change=None,
+):
     folder = tmp_path / "sources" / "2026"
     folder.mkdir(parents=True)
-    handbook_pdf(folder / "handbook.pdf", PAGES)
-    complementary_xlsx(folder / "complementary.xlsx", WORKBOOK)
+    handbook_pdf(folder / "handbook.pdf", pages)
+    complementary_xlsx(folder / "complementary.xlsx", WORKBOOK, change)
     # PHY1013S on Monday at 08:00 in its year's block, and a lab for EEE2041F, which no curriculum
     # here lists
     book = openpyxl.Workbook()
@@ -368,3 +386,73 @@ def test_a_year_takes_the_drafts_of_the_years_before_it(
             ),
         )
     )
+
+
+def approved(year, printed):
+    # An approved year whose courses printed these words, each with the rule approved for them
+    return Snapshot(
+        rules=RuleSet(
+            handbook_versions=(HandbookVersion(year=year, approved=True),),
+            courses=tuple(
+                Course(
+                    handbook_year=year,
+                    code=code,
+                    name="Made Up",
+                    credits=8,
+                    nqf_level=5,
+                    term="sem1",
+                    entry_rule=rule,
+                )
+                for code, (_, rule) in printed.items()
+            ),
+        ),
+        readings=tuple(
+            Reading(entity="courses", key=code, place="p. 1", printed=words)
+            for code, (words, _) in printed.items()
+        ),
+    )
+
+
+def test_wording_the_previous_approved_year_printed_keeps_its_rule(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    # PHY1013S printing only its co-requisite, and SLL1017F's requirement typed across two lines
+    pages = [list(page) for page in PAGES]
+    pages[2].remove("Course entry requirements: EEE1006F")
+    typed = ("Language options", "G3", BEGINNERS.replace(" aimed", "\naimed"))
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block, pages, typed)
+    co_requisite = "Co-requisites: MAM1020F (or equivalent)"
+    alongside = AnyOf(
+        any=(
+            CourseNeed(course="MAM1020F", need="concurrent"),
+            Refer(refer="or equivalent"),
+        )
+    )
+    passed = AnyOf(
+        any=(CourseNeed(course="MAM1020F", need="pass"), Refer(refer="or equivalent"))
+    )
+    beginners = Refer(refer="This is a beginners’ course.")
+    # 2023 approved these words for other courses, other words for PHY1013S, and a requirement in
+    # the co-requisite's words, which is another rule. 2020, and 2026 itself, aren't compared with.
+    years = {
+        2020: {"PHY1099S": (co_requisite, None)},
+        2023: {
+            "PHY1099S": (co_requisite, alongside),
+            "PHY1098S": ("MAM1020F (or equivalent)", passed),
+            "PHY1013S": ("EEE1006F", CourseNeed(course="EEE1006F", need="pass")),
+            "SLL1099F": (BEGINNERS, beginners),
+        },
+        2026: {"PHY1099S": (co_requisite, None)},
+    }
+    for year, printed in years.items():
+        path = tmp_path / "rules" / str(year) / "rulebook.json"
+        path.parent.mkdir(parents=True)
+        path.write_text(approved(year, printed).model_dump_json(), encoding="utf-8")
+    run = ingest(2026, data=tmp_path)
+    rules = {c.code: c.entry_rule for c in run.rules.courses}
+    assert (rules["PHY1013S"], rules["SLL1017F"]) == (alongside, beginners)
+    # Neither keeps the grammar's cause, as 2023 approved their words, but a carried rule is still
+    # checked: no course here is MAM1020F
+    flags = {r.key: r.flag for r in run.readings if r.entity == "courses"}
+    assert (flags["PHY1013S"], flags["SLL1017F"]) == ("check_failed", None)
+    assert run.carried == ("PHY1013S", "SLL1017F")

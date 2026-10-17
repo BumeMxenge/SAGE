@@ -198,6 +198,12 @@ def report(run: DryRun) -> str:
         "Entries that print no requirement line, read as needing nothing beyond any "
         + f"co-requisite: {', '.join(run.unprinted)}"
     )
+    if run.previous:
+        year = run.previous.year
+        lines.append(
+            f"Requirements printed in {year}'s words keep {year}'s approved rules: "
+            + f"{len(run.carried)} courses"
+        )
     notes: dict[str, list[str]] = defaultdict(list)
     for note in run.notes:
         notes[note.text].append(f"{note.sheet}!{note.cell}")
