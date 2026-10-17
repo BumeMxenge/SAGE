@@ -20,8 +20,10 @@ CROP = 45
 GAP = 5
 
 CODE = r"[A-Z]{3}\d{4}[A-Z]"
-# An entry's heading: its code, with any other term it runs in (EEE4022F/S), then its title
-HEADING = re.compile(rf"({CODE}(?:/[A-Z])*)\s+(\S.*)")
+# An entry's heading: its code, with any other term it runs in (EEE4022F/S), then its title, which
+# opens with a capital or a digit. Prose that opens with a code goes on in lower case, as in
+# "APG2021F/S versions are available for Semester Abroad students only" under APG2021W.
+HEADING = re.compile(rf"({CODE}(?:/[A-Z])*)\s+([A-Z0-9].*)")
 CREDITS = re.compile(r"(\d+) NQF credits at NQF level (\d+)(.*)")
 # A rule clause's number opening a line, such as FB8.10
 CLAUSE = re.compile(r"([A-Z]{2}(\d+(?:\.\d+)*))\s")

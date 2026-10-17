@@ -131,6 +131,31 @@ def test_an_entry_reads_as_printed(handbook, code, read, last_line):
     assert lines[-1] == last_line
 
 
+def test_a_line_of_prose_opening_with_a_code_is_not_a_heading():
+    # APG2021W's entry (2026, page 78), shortened, with a line under its heading that opens with the
+    # codes of its semester versions
+    lines = (
+        "APG2021W TECHNOLOGY II",
+        "APG2021F/S versions are available for Semester Abroad students only.",
+        "20 NQF credits at NQF level 6; Site visits, tutorials. Second year undergraduate.",
+        "Convener: TBA",
+        "Course entry requirements: APG1003W",
+        "Co-requisites: APG2038W, APG2039W",
+        "Course outline:",
+        "Understanding materials, components, assembly systems, and generic details.",
+        "Assessment: Please refer to the official course handout document.",
+    )
+    book = Handbook([Page(number=78, lines=lines)])
+    entry = book.entry("APG2021W")
+    assert (entry.codes, entry.name, entry.credits, entry.requirement) == (
+        ("APG2021W",),
+        "Technology II",
+        20,
+        "APG1003W",
+    )
+    assert book.entry("APG2021F") is book.entry("APG2021S") is None
+
+
 def test_a_requirement_line_opening_with_a_code_is_not_an_entry(handbook):
     # EEE4022S's requirement carries on with "EEE4120F or EEE4119F", and EEE4120F's own entry isn't
     # among these pages
