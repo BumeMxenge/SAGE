@@ -1,0 +1,82 @@
+code,field,text,grammar,Claude Haiku 5.5 run 1,Claude Haiku 5.5 same on 3 runs,Claude Haiku 5.5 leaves to fix,GPT-6 Luna run 1,GPT-6 Luna same on 3 runs,GPT-6 Luna leaves to fix
+APG1003W,Co-requisites,APG1020W,read,right,yes,0,right,yes,0
+APG1016H,Co-requisites,CSC1015F or CSC1017F,read,right,yes,0,right,yes,0
+APG1020W,Co-requisites,APG1003W,read,right,yes,0,right,yes,0
+APG1021W,Co-requisites,"APG1003W, APG1020W",read,right,yes,0,right,yes,0
+APG2014S,Course entry requirements,"CSC1015F or CSC1017F, APG1016F/H",refused_mixed_and_or,right,yes,0,right,yes,0
+APG2014S,Co-requisites,"APG2040F, MAM2084F/S, STA1000S",read,right,yes,0,right,yes,0
+APG2015F,Course entry requirements,"BSc Geomatics students: CSC1015F or CSC1017F, APG1016H",refused_free_text,right,no,0,right,yes,0
+APG2019X,Co-requisites,APG2040F,read,right,yes,0,right,yes,0
+APG2021F,Course entry requirements,APG1003W,read,right,yes,0,right,yes,0
+APG2021F,Co-requisites,"APG2038W, APG2039W",read,right,yes,0,right,yes,0
+APG2026F APG2026S,Course entry requirements,Civil Engineering students: MAM1020F/S or MAM1023F/S. Construction Studies students: MAM1010F/S.,refused_free_text,right,yes,0,right,yes,0
+APG2027X,Co-requisites,"APG2021W, APG2039W",read,right,yes,0,right,yes,0
+APG2039F,Course entry requirements,APG1020W,read,right,yes,0,right,no,0
+APG2039F,Co-requisites,"APG2021W, APG2043F",read,right,yes,0,right,yes,0
+APG2040F,Course entry requirements,MAM1021F/S or (MAM1004F and STA1000S); APG1016H,refused_punctuation,right,yes,0,right,yes,0
+APG2041S,Course entry requirements,DP for APG2040F and APG2015F,refused_free_text,right,yes,0,right,yes,0
+APG2042Z,Course entry requirements,APG1021W,read,right,yes,0,right,no,0
+APG2042Z,Co-requisites,APG2039W,read,right,yes,0,right,yes,0
+APG2043F,Co-requisites,APG2039W; APG2021W,refused_punctuation,right,yes,0,right,yes,0
+APG3012S,Course entry requirements,"MAM1000W or MAM1021F/S, STA1000S, CSC1015F or CSC1017F, APG2014S, APG2015F; APG2016W or APG2040F.",refused_punctuation,right,yes,0,right,yes,0
+APG3012S APG3013F,Co-requisites,APG2041S,read,right,yes,0,right,yes,0
+APG3013F,Course entry requirements,"MAM2084F/S, APG2014S, APG2016W or APG2040F.",refused_mixed_and_or,right,yes,0,right,yes,0
+APG3016C,Course entry requirements,APG1016H; for BSc Geomatics students APG2016W or (APG2040F and APG2041S) are also prerequisites.,refused_free_text,right,yes,0,right,yes,0
+APG3017D,Course entry requirements,"APG2040F, APG2041S, APG2019X, MAM1021S",read,right,yes,0,right,yes,0
+APG3017D,Co-requisites,APG3016C.,read,right,yes,0,right,yes,0
+APG3023W,Course entry requirements,APG2021W,read,right,yes,0,wrong,no,2
+APG3023W,Co-requisites,"APG3034W, APG3037W",read,right,yes,0,right,yes,0
+APG3027Z,Course entry requirements,"APG2040F, APG2041S, APG2019X.",read,right,yes,0,right,yes,0
+APG3027Z,Co-requisites,"CON2033F, APG3033W",read,right,yes,0,right,yes,0
+APG3028X APG3041Z,Co-requisites,APG3037W,read,right,yes,0,right,yes,0
+APG3033W,Co-requisites,CON2033F,read,right,yes,0,right,yes,0
+APG3034Z,Course entry requirements,APG2038W / APG2043F,refused_free_text,right,yes,0,right,yes,0
+APG3034Z,Co-requisites,APG3023W ; APG3037W,refused_punctuation,right,yes,0,right,yes,0
+APG3035F,Course entry requirements,APG2009F,read,right,yes,0,right,yes,0
+APG3037W,Course entry requirements,APG2039W.,read,right,yes,0,wrong,no,2
+APG3037W,Co-requisites,"APG3023W, APG3034W.",read,right,yes,0,right,yes,0
+APG3039B APG3040C,Course entry requirements,"MAM1021F/S, STA1000S, CSC1015F or CSC1017F, APG2014S, APG2015F",refused_mixed_and_or,right,yes,0,right,yes,0
+APG3041Z,Course entry requirements,APG2042Z,read,right,yes,0,wrong,no,2
+APG4001S,Course entry requirements,"APG3013F, APG3016C, APG3017D, MAM2084S, STA1000S, PHY1031F, PHY1032S.",read,right,yes,0,right,yes,0
+APG4002Z,Course entry requirements,APG3016C,read,right,yes,0,wrong,no,2
+APG4003Z,Course entry requirements,The candidate must be able to graduate in the year in which the course is taken.,refused_free_text,right,yes,0,right,yes,0
+APG4005F,Course entry requirements,"APG3013F, APG3017D.",read,right,yes,0,right,yes,0
+APG4010X,Course entry requirements,APG3012S.,read,right,yes,0,right,yes,0
+APG4011F,Course entry requirements,"APG3012S, MAM2084F/S.",read,right,yes,0,right,yes,0
+APG4012S,Course entry requirements,It is intended that this course is taken by students in the final year of their degree programme. Students on ASPECT may take the course in their programme year of study where timetabling permits.,refused_year_of_study,wrong,yes,1,right,no,0
+CIV1011S,Course entry requirements,"PHY1012F/S (DP), MAM1020F/S (DP)",refused_free_text,wrong,yes,4,wrong,yes,4
+CIV2048S,Course entry requirements,PHY1012F (DP) and MAM1020F (DP) and CIV1011S (DP),refused_free_text,right,yes,0,wrong,yes,3
+CIV2051S,Course entry requirements,DP in CIV2044F,refused_free_text,right,yes,0,right,yes,0
+CIV3042F,Course entry requirements,CIV2039S,read,right,yes,0,right,yes,0
+CIV3043F,Course entry requirements,CIV2040S (DP),refused_free_text,right,yes,0,wrong,yes,1
+CIV3044F,Course entry requirements,STA1008F/S (DP),refused_free_text,wrong,yes,2,wrong,yes,2
+CIV3046S CIV4042F,Course entry requirements,CEM1008F,read,right,yes,0,right,yes,0
+CIV3047S,Course entry requirements,APG2026S; CIV3043F (DP) and CIV3044F (DP).,refused_free_text,right,no,0,wrong,yes,2
+CIV3048F,Course entry requirements,CIV2041S,read,right,yes,0,right,yes,0
+CIV3048F CIV3049S,Co-requisites,n/a,refused_free_text,right,yes,0,right,yes,0
+CIV3049S,Course entry requirements,CIV3048F,read,right,yes,0,right,yes,0
+CIV4035C,Course entry requirements,"All core Civil Engineering design (CIV) courses, including successful completion of their respective pre-requisites, as well as MAM2083F, MAM2084S, CIV2042F, EGS1005F and CIV4041F.",refused_free_text,right,yes,0,right,yes,0
+CIV4041F,Course entry requirements,Students must be potential qualifiers (i.e. anticipated final year of study).,refused_year_of_study,right,yes,0,right,yes,0
+CIV4044F,Course entry requirements,No simultaneous registration of more than one additional course (besides CIV4035C). Students will not be permitted to undertake a research topic in a field for which they have not successfully completed the relevant core courses.,refused_free_text,right,yes,0,right,yes,0
+MEC2046F,Co-requisites,CEM1008F,read,right,yes,0,right,yes,0
+MEC2048S,Course entry requirements,"MEC1008S, MEC1005W, MEC2025F or MEC2049F, MEC2042F) or MEC2046F",refused_mixed_and_or,wrong,yes,1,wrong,yes,1
+MEC2049F,Course entry requirements,"MEC1009F/S, MAM1020F/S (or equivalent)",refused_or_equivalent,right,yes,0,right,yes,0
+MEC2050S,Course entry requirements,CEM1008F and MAM1020F and PHY1012F,read,right,yes,0,right,yes,0
+MEC3074F,Course entry requirements,"EEE2041F, EEE2042S",read,right,yes,0,right,yes,0
+MEC3075F,Course entry requirements,CSC1019F or CSC1017F or CSC1015F/S or CSC1010H,read,right,yes,0,right,yes,0
+MEC3075F,Co-requisites,MAM2084F,read,right,yes,0,right,yes,0
+MEC3076F,Course entry requirements,"MEC2046F or MEC2042F, MEC2025F or MEC2049F, MAM2083F/S (DP), MAM2084F/S (DP)",refused_free_text,wrong,no,4,wrong,yes,4
+MEC3077F,Course entry requirements,MEC2022S or MEC2050S,read,right,yes,0,right,yes,0
+MEC3078S,Course entry requirements,"MEC2048S (DP), MEC2047F/S",refused_free_text,right,yes,0,wrong,yes,1
+MEC3079S,Course entry requirements,(MAM2083F/S or MAM2085F/S) and MAM2084F/S,read,right,yes,0,right,yes,0
+MEC3080S,Course entry requirements,MEC3077F (DP),refused_free_text,right,yes,0,wrong,yes,1
+MEC3081S,Course entry requirements,MEC3076F,read,right,yes,0,right,yes,0
+MEC3082S,Course entry requirements,"MEC2048S, MEC2049F",read,right,yes,0,right,yes,0
+MEC3083W,Course entry requirements,AYOS 3,refused_free_text,wrong,yes,2,right,yes,0
+MEC4047F,Course entry requirements,MEC3078S or MEC3031S and MEC3075F or equivalent,refused_or_equivalent,right,yes,0,right,no,0
+MEC4108S,Co-requisites,MEC4124W or MEC4103F,read,right,yes,0,right,yes,0
+MEC4123F,Course entry requirements,MEC3083W,read,right,yes,0,right,yes,0
+MEC4124W,Course entry requirements,MEC3072F and MEC3073S or MEC3050W or MEC3082S,refused_mixed_and_or,right,yes,0,wrong,yes,1
+MEC4125F,Course entry requirements,MEC3080S (DP),refused_free_text,right,yes,0,wrong,yes,1
+MEC4126F,Course entry requirements,"EEE2046S, MEC3074F",read,right,yes,0,right,yes,0
+MEC4127F,Course entry requirements,"MEC3074F, MEC3079S, EEE2046S",read,right,yes,0,right,yes,0

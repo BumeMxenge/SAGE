@@ -1,0 +1,58 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: var(--color-scrim);
+  transition: opacity var(--duration-slow) var(--easing);
+}
+
+.modal {
+  width: min(var(--width-dialog), 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-dialog);
+  transition:
+    opacity var(--duration-slow) var(--easing),
+    transform var(--duration-slow) var(--easing);
+}
+
+/* React Aria sets these while the dialog appears and disappears */
+.overlay[data-entering],
+.overlay[data-exiting],
+.modal[data-entering],
+.modal[data-exiting] {
+  opacity: 0;
+}
+
+.modal[data-entering],
+.modal[data-exiting] {
+  transform: translateY(var(--space-4));
+}
+
+.dialog {
+  padding: var(--space-6);
+  outline: none;
+}
+
+.header {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-text);
+}

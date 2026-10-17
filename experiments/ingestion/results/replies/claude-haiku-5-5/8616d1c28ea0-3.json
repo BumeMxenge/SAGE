@@ -1,0 +1,44 @@
+{
+ "request": "88e38d74e499485bee83d853c3ef1add0a41b4c72e1852a27f9e8417b72eb232",
+ "seconds": 1.28,
+ "reply": {
+  "id": "msg_011Cg6mSGnxPby2t22EHWtFh",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS7gUKEAgSGAI4AUIIdGhpbmtpbmcSDIthdF5KR0ubY/MkdhoMT5IVLC8uvdUbT2eBIjA5ZXdmMZHF+ZGcWUysyU7l9toI9KmWiMbNF5kVYoT3S9XfHVymJijZSDK+qXwdZiYqiwXTgj99j3lfCzjEBmwJhbVXjbUqLJCkSTLUtG9wipiLIMMAyjTXrelxoX7ZDBjVGBJ27u95qS9/STWd2Yl+lOGAY0qYMLbVvIFweC2hLS8CR5XwZK9RL9Ed2Lb+EkolGTIngN6aOPgO9U9twBprxR0VeZQAyiWjm2xXqEkMy5fQyap3fYuuKKMuVXY3nzvRLF9neEsN2LKuu/I8zNruG02aAAHiVPgJeNWPTqjJFQniawXgvKJi4T3Si6aDgdQlBhO+0baRC7MtXxmyV7oMuraVybPHjcpSRf/9ReFhwJRBTevvedIQRGF8afl8EdKik5LODVKs/0dGc0rCRzV75Qd5JNxw9iI15KQXcKYjMOao89UVrzcCYzWBh7tHZk8ptCvnQa16+wtSs9/QHmDczfFRMxqG9kdIErOiaeaxXTLn2iREAxGAR5wz1jqF2u83IpZ23wnHcjuI4h/k8DSIZ5S3R71WKkymuqDJftBsuR2cRryfINV83HO8XP9uAX2kR82Xdl/hf0iOogYY2bwYqV8ZmLOmCdtadGSztzvMRpQb7DH+GT5LMwRQzDwhqv6Xdpy5vOpU4ani2HKBkN7lVQEfIbJR8U/dgkE+MDo+D3n/MJoPVPuILwV5eKvE99xxxDvcMUVL90o6IE6vCF0tBDrlLp9JmQp3PlZ2MpSDrpWuuk9V4W8pa6URXvUVhXVWk3Fpc1GQMC7tzZgp/SIHiZBXMGXApp+eXpst++78cqZ3Jd85UKVbdKYn2iUr9qk0xWJpE6F6BBArjQ2ttpqd/BQgyMBL3I61P22qtf1nY762BUPln7XeUPj65E1Ji+S5VukBexyS4smB91P9lXHhuEiitOPgzQDWcTdNvkMYAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"course\": \"APG2039W\", \"need\": \"concurrent\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3211,
+   "output_tokens": 91,
+   "output_tokens_details": {
+    "thinking_tokens": 62
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

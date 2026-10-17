@@ -1,0 +1,44 @@
+{
+ "request": "d38d263bc684d4b582497fffe9ed73372e98b2e660123fdb9bda81127c3be3cc",
+ "seconds": 2.84,
+ "reply": {
+  "id": "msg_011Cg6nKCsj6AfSfzg8AFLt4",
+  "container": null,
+  "content": [
+   {
+    "signature": "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",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"refer\": \"MEC3077F (DP)\"}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3217,
+   "output_tokens": 415,
+   "output_tokens_details": {
+    "thinking_tokens": 389
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "request": "f4e2859ffea421319eb71ae3681ea7b7cc1565decd259e567b12fa943d130fe7",
+ "seconds": 1.47,
+ "reply": {
+  "id": "msg_011Cg6mM2VLTya4muqAmY53E",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSwQUKEAgSGAI4AUIIdGhpbmtpbmcSDNLuaKsZaRuwPo2vGhoMEhargXkQt34LJTyyIjBmGFaSNLm5naHISp4B2tMaF8tpi7lkE7/x0aIph2w2g8CNuw9q+wyqu7L8dNCQctsq3gRo0pUJUGkIkTZyZGvnvJy9yZ43qk1RkyjclSxhY8fabs8vhIxkgd0eHGobVpxwF2o6Qm1uWl1HF4Lac6vmrPzDKfVLscz6hWJXJMxuVMpT6KKqyVZysLyFYBGSSaNxZdlzS86MGXfwotqwPSSBUxsbp7zuZxeKmPDN7g72gFHstkyCQAqmEG2i+6uduNFyWXV1f6l129c7xkGZyaL35Y5tQh362Hk751Y7zYWOeyTrKxhCBJ9nenaKuedfufNnyVJ6Gcb25DQlHauqqauAws9q1riQN0qO6yLXINYJ4ifLsr1GLamX0gGWTVHpHmx+g8jgtYYurgd3GSDGzpOUgu1ylhYDVui0oDTbsZxehKshirRyinTfDYhQTixec2LthZ17estju4BBPNW2lBiiklgUjUwjKeJQqQ63HwofNhZyuJwiyJeDcTbPy3tTFSwuLDaMuAviWtzHgxgnRpuRBmbW5/Gq5klq3koGRN2bAQBKhvescJiUDa4fSfRyfMqsniqYppRa5QgTOfRW0WvzrZ+s9uOYgBqLDQ+s1q3Qk409is1d6nJEFywmmbU3Pxb4w8NhGH1FKl7dZKxQ63Fnvdz+gQVyMwrlPM6O4u9MvkAcG0TxRN018MgbyitwnFw3zsn/vSD+pKRfGNbpvSFu2kQHZOHFI2IhF2UJakLX+mgUsBeQMWgi4UGg+1gmHBA49gVFf6/06TgB+CKh2z9RgPFRLTR2tkrDjs0nmI8g0Gci+zGYjENjZdqRNR5gJfSKfkvrZ3BZYaRmEU8mMqrWez8WsUBDE6e0O0/bp4HMIF0YAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG2021W\", \"need\": \"concurrent\"}, {\"course\": \"APG2039W\", \"need\": \"concurrent\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3217,
+   "output_tokens": 110,
+   "output_tokens_details": {
+    "thinking_tokens": 52
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

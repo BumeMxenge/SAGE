@@ -1,0 +1,44 @@
+{
+ "request": "91163cc04fd39385d201480021354fbcfcb37f9cae941963118339ceaaad3247",
+ "seconds": 2.62,
+ "reply": {
+  "id": "msg_011Cg6nH1tdbKX2gxrAUAQHd",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSxQoKEAgSGAI4AUIIdGhpbmtpbmcSDNRUadm+R00XSNKX2xoMGqLLnXfh34WK0y1xIjBK2uCL7vN1+NBQQ1YGBa5UigNuZ1frUNrEnqwZWAuEMpbi/TaDIqQ+yix5Yzm0upUq4gmOy9Oi3JL10j+0YnapmyzxdMWqU3v5ibeI8L0TqDK5SlGzYUwrmTlRje7Mot02P8eABb88Ifm4x8vebrozuJpdWCceiTI81SIPpTp6Xm3fE1TnjjE0hYeQxfkycuU/ctWh01eWA84yJreurvNqKXfBVAuTZ4MMnAlDfwmWIDLZI7cvLyOz43QVPOVjBvC6m3Zuc/GAb5c7yK3eecihrzrFX7iKDM7UbdvWJmkCzCtkoTJIEBMh7FJq5lHgjxs7rq1AmkIYTeWHUiXVG/mZtOJcz7FTF56bHqIqFH93KMDeEl4ok4+OSByxwK9eIDSgkIQZlwuVUAA/sw7NzQ1RNcT24FJwFPh1Am+33Pv//5y94xSdE1m395RlprtTALQbOeieGN7Ks1HT/LEgkJY9Yur+zCgJhDsxr15uNTgdlbKqDb0Ej8YAP4GJqJ0IEyaoWtidiG9eUiOKpagyH5TeCeW4mlXJnLHItrGtfyWN5++BtUFRcvQ9SZc7FhWhLoAKmCHCrvVyE7kz92yJz98No3A6Fj4i08fdMF5+SwNHvL0UK2TzMpGqzxUyS5ehMsHxPHYzVDaT9g66HXVEO2AH67bZaTslYyDrnFe05vmuTNoOHJSgiKCzxC92oMGYsxLpal/mmxw8EEm8STIMVuOL5pQFC/wIroQdwKTIbsoDDYObpF420wmMF9ZXWAOHdrtqEzt9Ygpl6L/y5uyS7PyJ90GKN3swcOcS8gJfCupS4tSHZiNpMCcz6F/EIZY2ojPvnD3+YFBmM3UCIqrzpmIirYBMlbe83DMjFQknKpxeDRB5IIJExmMCvF+RB59TNkhI4tj05ap0g+OcqS2DhuBq50oT5xDwpq5038oOxmdQj7L5+g5yHvh08Fia1D5mw8eK0ByN32zTGtK1193dgAjTi/p3ONKPXUWmOQ+YNqvttQ1pT9MaQF0dhEjXFP2zedpKh35E9CxeJFpRJIv1Hf6EwpFaviqIKeAyMKwv9tzi2i8jUnXV+pRhC9s/gc1/0+TyGhzMS86PobxzUu50ghm7qDX2iBbtxbevmYejdk//f0pnI3U1I4S7WNd3KGapnuWH48SFcsLoFJNCCBL2FfdQXYFuRL0RRQkd/484fP8vIZFAIEeUOZIDZ601jn0Rxhjuh0vVSYhIwSkA9X0PB0Mkzvn+ibXgthSklSEGFZ41NQgvVAvr6mgn+YUZg+Dlxh1MykTq8l/PhYpspijncpVGqTfxxSFCEKtpRd+X1c1rMKH8OECkvPvyYESGfQYVcmZmYs2nsPr9DwDJYNZ3bo18oBHmG/jiKn5bU0Q4oFD75+QZZJp5Yn1t9rtAL5Rk5Oif5nAzLBaatu26Tl9ccB3tkTrLn0hobbWgRad6G97pAcn702ZcKA/1M7dl5F8Joq0hHVAwZh5q0BPWPIm1FkvPDOVYcNoiuCM8/h53/d3OAHDkbDwuc3f61yHyJ1Td8J2iD32c7s16cLArTVDmSyZhDQwf5o7G0ygYjmlang1NWEPJPNUJmhTjka7ay6M8GJMKNXADQC8ssoDlm0bHH0tNeXdZmN77NPVqQyV4KobJATwUvGmXwmdoQRMnhAtjm/4U9F7+mQcZYugG8l0pp/4442lZsmPfK53pipF788v7F4tvL2T6fLUD4iGuxvfQkmLJi8uL4BgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"refer\": \"MEC2048S (DP)\"}, {\"any\": [{\"course\": \"MEC2047F\", \"need\": \"pass\"}, {\"course\": \"MEC2047S\", \"need\": \"pass\"}]}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3225,
+   "output_tokens": 404,
+   "output_tokens_details": {
+    "thinking_tokens": 322
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

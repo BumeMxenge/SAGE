@@ -1,0 +1,44 @@
+{
+ "request": "6769899e5ffc0e3e2ed608cd23181c6b3fd882978142d6007f759a47b80fcf4b",
+ "seconds": 1.32,
+ "reply": {
+  "id": "msg_011Cg6nQEh1VriAmYNeUAuN4",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS1wUKEAgSGAI4AUIIdGhpbmtpbmcSDCrvvQpbze5qZ1AG1RoMmyc/XGF9rUgyGfXeIjCHNGpth4arY2zK04mxUp2PdxX/vlx3WFyGZFu06AHU9ot0CQRFj95UqS+jTzE9p0oq9AQAQ3lKo6tOzhyHHnZyrJczYHOqcPu4cHugKfIe0ugPDTnirD8g67P2+vkeNk3+7vgqiKTKfRf7DKY7QEYYIbv2YTRccHLMKsklRHqoipiOe456UxgaHYBmcrIscR1sBa3InpLUWFtU+g0Aa5c5rNvH3rdu0U5+hXkKYETCLayzZcbLbmIhc0dc+KDu9ncL72WUcWN60SZnLOr8Y47Q0Z6k7tdUPz+uBjiHwZo1KecnkrBKhSrJ5SvjvvsUk12wtxJ/FXE6omstRmwiYbtGZUtkSfzGCBZIdDP1Wi9TOr6fUN8eoHXg+q2kfdkE3uWlV+RbRs2bBHgWdMVybqZtbn8Yw43Y0ka+kRdrIe3tg9Q26Uw0oAbcQWugrlCK9Gtqueb7lHk3pHa5huI1EGUeg0Uy8liZI3smFDkziPGyvRvx511FcZ6dKfXi8/ddQhI0Jo/U3qKswEIy6eI7L9RojwS96axQC4JvTVyxjIF+t7+bTAWcZ6VNf1bpGS5NmiaX5kZzz4z9gplrtQKDJGAN+KMgfk15Xjr93sEoBWAPGa7KT51qXf14M8FnqJTttCMhbhCynMs4AvAzs/lNeM+Ww2vqTlo6Wys3i2PpiUbMN3Q9VSVFH9LZMfG62uHWDT2HxDnuKbqkPMiQO6sZDuPREsmN0QonBFn+iYH88f2AN1tWLyaK5fOoemCgwF9HQDw5p0PaZnYs55C2iIBt2Nicz1G50KEG+S0hy0TACH1rF3mDuva46msO9qDCMNu9YJioGfYvkPyREsRAWfxUue888J/dy93rf/VcUcnbp5jHbVbytD+sW9SBP8sMA6m3AeXEY8cq3XCyGAE=",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"any\": [{\"course\": \"MEC4124W\", \"need\": \"concurrent\"}, {\"course\": \"MEC4103F\", \"need\": \"concurrent\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3219,
+   "output_tokens": 119,
+   "output_tokens_details": {
+    "thinking_tokens": 59
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

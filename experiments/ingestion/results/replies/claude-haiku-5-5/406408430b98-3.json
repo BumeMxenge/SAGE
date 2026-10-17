@@ -1,0 +1,44 @@
+{
+ "request": "d578e21f41cccb402eabfdffcfb8b2b9b9ad4853c9921b23fb3fc838ad914926",
+ "seconds": 1.93,
+ "reply": {
+  "id": "msg_011Cg6mnTD5auBtA6E7GkLnC",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS6AkKEAgSGAI4AUIIdGhpbmtpbmcSDASRAkBjwkTuEkysPxoMu5C1ITMPyZodn0ZaIjB9SXOdK9LKjZiRP5X3qHAJiq+Y2WoUR40mj2v78DMjJjJWNAMa2JWPnGlxR5OfBdoqhQmVVXvXxSzSGob2vYOh0k1tlaeiYJMfmpLI/DDn9dxC1M2Zm2wdoH6ivQwLoiUgVQ783A9+wR5WNaO8NJ/7aR1LMZSI0a65wRY9JD/8DZeyn34zgxfyxgQ24eszTiUWlywsoA/E5FHWy8J9X3E+hBqa8faUG1yyJ0CCuX+j21zlRiwUHVIDj7K9OzPCCAEr2x0tB2E94rPTbqxiwVmpIHF/omkowP+bpFx6Fq0xuVB1a5b+1e42QAMdsJsHStfsn9PjSRBReAB7JdVMzyuwnNtnihO+WHA6yl+PP/Jt5G7LwPEaBQCgzc4+Zqot4bjnImXsqhjtBGIKaExznXcM6WC2qbZXqJTAPzWFmt+BQ7LA3u3e25XgVH/sVas07Js8IiVNUmNgTfrpz6g+VgxVrqyoSzG1HiIrJoa2mwRUeBLrZ9jP2Q+bzzZkqQ/HSMdtQ9WLVXHo6j1AJMcxyPfS1P3WtGb3zOdCm2LO8SUzHsKVxv6OPw1UnQobZxFySo8S8j3U+EIuOclJruFbsYfEWLxxoQS96b+0uAbKmQ42824fjgdy6qnRX+N+3V8mtRw/Ziw2ufxhEfI16GFPGAx7W8YPjNNAXZc29eZrMvszry2mzF9p7K3moNLhRIuTt0EP8GZzeM8g3FpK18Ako9Rs7roDeTGvuphvD2w9g8q34lswSlBccSrGU9TNZA96QY2UdR2jU+Wde0DlnjQf1H3+/y1YRoEz92+n3nLkb80/bxOghOqxgyGpsJlwqWUKKP8olu4rpab1jNL270aG8bDt8nzMoSHP1hNb8Nw07FYP0YMBZCI7J8EQg307OVCXCPxw9sgLf1mFjQi4N7S1j3JFsmxvo0F12u6fYPk8YejOpdVXH5304gt2ZcM5pXPNrrsjtlg82sOd8FEg8YKqds1vQ5+DBKlOJLrDyhVYcbr6Uh2Ygpq9oTckiSTrbmVbKvSQEbpBVsUAA7PRacQPi+RU2adpdtcpaMxXzebQBes4A1C7hgDcFjeXgcByKAqgiM6yM8/SNdavYI4n8A+eTBAtBqSb31SGOUdKU28HxBpq9h39nG6X11zF/55xeBQryq+cU6I3Qt0ZmMt8lLut8xv3Ka/1fkY92xuTn+8k0tIj5v8hSjhHs2r+TgaDrpealOGpxoWVC5DhwSV8tsKJZ1WcXwGN0MfQ2mXiRWswdWBoRYnNMUwLaq1VD7PVj7hqKaihfJVvTHBkB431ggjV2Fl38NqHoiIj6GIb9YmQdr/OZd4uCgEYVhSJEv5+ioLaz8HYiH8Frz+VIaa9tTNRoLE4z8kBGJaxMfdL47ooVCnEcBibudcL5Q4go9UKYSlusJlomFa0mQhEBGi960TIIh8+X34u8O98w9nzLklI0FwiiQH7kZVNVm+KaO9gP+F9HB/yhsrH3hBnlWbs5FG40vjBkV00tU7uAgc+g0F3ayZlEOa9c+GiTIhEuJQEbDT5tMunN4cuIzZZofmdXdQgGCf/uKZ9pf2BqxsBNEAeHWK7TWwRryqlcy4GzliciRF5AiNqpRAjWBrzxBgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG3013F\", \"need\": \"pass\"}, {\"course\": \"APG3017D\", \"need\": \"pass\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3219,
+   "output_tokens": 310,
+   "output_tokens_details": {
+    "thinking_tokens": 256
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

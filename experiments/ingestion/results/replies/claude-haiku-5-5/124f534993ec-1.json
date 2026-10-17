@@ -1,0 +1,44 @@
+{
+ "request": "b991dbc0d6608bad0a66363f00911b3a61eeddf263f8f3bce884426fe4a3bb51",
+ "seconds": 2.35,
+ "reply": {
+  "id": "msg_011Cg6n447hxbaS693ANmyvq",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQS5gkKEAgSGAI4AUIIdGhpbmtpbmcSDCJBsMVSM1ydi6CJmRoMZpLCb0bb7cpuqn6iIjCMlpZDwyBfMu8PDGQmtMzQERsBpqoeIcnsGotEoyXt+pUXyFOwYlMMgNqzYfefCjEqgwkDItrlOXTtWXtTm/A1noC6TQC4TpDuj5wM7urlFAmDMmZ0o8JQpDXqRV4WagE64xKB3iMYXyeJrIzVnh/lA3EudpFD+ZKGOBc6NWaa8w1Ir50WASoLygLrb/VcRCL96zdQhl96FNmTo994oWImVThNc9o7c85hC8r13SSgjbtztyM6IJJr3PIF2VfT2dGy2qe3Z1JPTdC1lTsVfw6INpO9+ZAilONz1rb9wbedHEeNHSA9qpAWISZSqTRyVtLYT8wkH1SJVXdJ5nZUgjAu+zDhw1w/DKP1yoQxoui1qLlGJFUpDaH0VtlA+kwDJUACmj6fbQRtPScS6RDKi5tY8FSTSmEP5jFRnpTgfVEz+tHt5CavMuYfNiTeCU/2McLD44caRsHvExBnJPqJ2w1nCdKS+TTrHnTEEB7a8bmijlH8+cRDPaYqcleeOvFk4xexq+vFi9S33EbQ8G8CXuFW1Xr4I545vL+64DluhYSUGY5SGTejjQBpWMFoc1jn4x4wtil7kAziTaFaaHQ4l1P9RCUV73GHkkw7qYcGQDMBfZKHa2NbssywIQcpPvh7gCSxmQl3yVTC6TnmPgfac7lQiPIbg/3fCYD4Y0MnYE0eptCuxdMrvDmx/4ArpVP/L/aWVR2gOcy1uase9h71yHZ7Itxk87rNJbsgegFrbbw4rreEb6b9uCQ86ZUeZ+tOO+IvxJ/p/Cu20xcc+wM5Be9tdsMQV3CBPg6QzZ067SmPUU8I/kOm57TkVbR0/Z5O3pt8CH/WuPJAOameXoAJCwCiK/PJ/Hynv4Dxb/aFf5DhJSF2HdLEHbNHVgbCFSdJZF0SbbREyhKmMclE/AUrGSmoD6oc+Vje1r1wQNqwZPLHMHGk1L3WpkFiZ9pr3JEQ6hhiBVQtbYXo0UMwaOH/Xy4zemojOxz7JFUClvFl5gW+oj1GLjC21cBt1WRmpOhpDkVU1r7UK4UEWK734BS9//bqf+bTa6AoP7qMYl+hPgGYwIdzv3jvLrMfrCKUzIpGILCkj3RG5i1nx8F2MwioJ6+4FdyYdF1fQgD/XL72h4TctRWpz5Ydr1Lv4D7FYuCv9J+mpcuj7XYqK2TubVKeNTh82XWu/nl80VmRlJyX/r5mbfR0l7A+u2c+I0TcSxuZsvJfJBEW4uzrsLRfwmvhF9vbZ8dOXWKI0v5eMeeyxztpvi11r+5rsidvJikkqPk0h1wSJ0mX0KmrWrwopxyctOmEYnc2bk+khy0pDXoBpfoenNWCJ52p/q0vCVQP8M3Kmf2Ctio7IkgLNkXYET2nlSBXCyxEmVw8iC2JBH/Qd+Odc4X13UuqudnhR+oQsrzdJRJRdKXGpmzEFezJ6U/KoQHzb/PpOWEAdLof6H2Bg8ngaxmIiXohPOYVGpuTTKB4g9AmplgrSHLvJSduP97pT1kQXSQkTM1TrhO98zTgTRzMnoKvpKEVcnsI4Z8DrDyPSgZsdXSyDXl2FQecQmjCbZcBaOoXIQmDbbbkn/NEDmfZGHaqxKaBWPwa6vv/ccn4aL+gmPRpkv0YAQ==",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"refer\": \"All core Civil Engineering design (CIV) courses, including successful completion of their respective pre-requisites\"}, {\"course\": \"MAM2083F\", \"need\": \"pass\"}, {\"course\": \"MAM2084S\", \"need\": \"pass\"}, {\"course\": \"CIV2042F\", \"need\": \"pass\"}, {\"course\": \"EGS1005F\", \"need\": \"pass\"}, {\"course\": \"CIV4041F\", \"need\": \"pass\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3279,
+   "output_tokens": 412,
+   "output_tokens_details": {
+    "thinking_tokens": 251
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}

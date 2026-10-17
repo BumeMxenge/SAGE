@@ -1,0 +1,44 @@
+{
+ "request": "ffa6976f0127bd72243af466bae0ee8cbe9eb33ec86bfe98e254208f826d303e",
+ "seconds": 2.15,
+ "reply": {
+  "id": "msg_011Cg6n17PaSPUSPxecV5GG9",
+  "container": null,
+  "content": [
+   {
+    "signature": "CAQSgwoKEAgSGAI4AUIIdGhpbmtpbmcSDESA4cs9yo1pYAN0wxoMX7ekdzbmFXfX8MLSIjDtdtcDxsifJdzJNE6EY7cH6AfvyfwUB/Rs4keJrjUnzUopz5HUJKv3Sqs1dL6CXv4qoAklqfjwynCpAB09ZAhxjiU7dGqtMgKUHHKBfU6MpTBuX2ycWibroxxgtSjz3wqocMNIFLFgNPWxg6dS2uWZVnouPzthmdlIgWl1paJ1ZSUn1xdYZtAEQCwHkEhYm0Yz5UvDLXK61VMIWA8vSZ888AJmR86q+VbPGxlwIQCyEAxQCg6Hxu7We60v636bGSESZ5OleefLi3oF+nLzI++C/2i0nz4cFQyUCa04s6NzVNMTsvGimjFKGJyHq/PvK3ITLv2lDpmH2yAr9J22CQF/creETaR4pjmo+OOirxFW8tUMGW/DM/ZppL32h4aTniO5kGEwi1j1+3XK5LZaTUNt5M3B+U6f/yL72MuEyP6xkAYkRZeWksaXMTm4QwMeJRjQTYD9lAapHqLSef7BXa2ayfdlFuxw+CW+V+ldX3HWfCjicLWJSi2+5UdXLDGW2CDBw0U7vV5ysWV4CladHNS6qukxH0mtpGrfhQVt5hBwu52uyfJxorfJLWagxCnS8QVUGaezKeOK68lRVEnW7/tWO5KD1F2HILh1+0gXxCRigYxUYcAl3BmQXbn4PQgPoyerG1b2PJNqIjirfAd4UDUGFJvdlQ1p7MKuR9UI8TcKjKtWiIkQQcNqhGdcDM8/aVyNj/6anrmAeHtKFhN1oZT78+v67D0753MIOfVV6WnHoOmr+hGkQwrZoLR9M34o7tHUCLiPkLWiy21abx2+3Ko3vJwKBXdPnh1xZlyoXEGw3UKvCAq8IXU0vrWKOf6fElkh43naDPGch+JOk32xE9jFefBbiJLNoBFpad+gA5nyzvRU52Bk6z+jog5NE/z1Ke3OEc5lTltzC1T04epYPTsJnjb+YW1AmD48kuN+n/qDOe378K+8qayGuQxfR/PdKi5Uo3ciFWrzgAPl/vfgU+1SG2lk7grKr7zww+DmmDGQzEELcU172HeQtX1SrFJDxOTB+tbVoOc/K3MnwhHCo2DyYtxBVcASoJ2MDrojfR1cxOsc+sNd3hXe/n7dzqu7m0jrqgHL7fVdKFl9NGxbpvgQXlDHyM3axLWNWUujv8hkhv8VeN+ecBCERtfS07R1XCIgrzH5G1Lda53x0We2tdSrG5wJlu+oQs00mTCAZvheeqT3NSIsxzD6hywPo76VuCS3wqvMlaSgAhob+nnOR5fo1kWydybs8TE+hjK/ACuTVlVXSw92zxig6YQId9HvpUNQyCl3M1tmnFLC3B+c1FXbpeh0zfaDdaVV7/Osej1tPbuj3cXas4t4Y01ujV6Ns5M37hs9qvOdgJL+yfke6cf/RIFHoM7yeWZEAYz5qvvkfambzL7AFac8tZNbufezn0/nehgZfNzElFOI3MJ8fsINCtfLZIiwiiQLC7hX7wBiG3hq8cQa6YbaGX9/STIEuugwCKieysJroJacz2q2fx0JzCwiXaXqdwi3aUQCMf4Rt6sXC1NcBsWp1VuvvdP4eNwqPI0jdTnXhtfJ5wb3Pkl38d70OqweTg10TfInp5XHOjnzUQQtifuAmqcKA5HlJ377q2p6gQlhv/yrBAhk/Izz9BKTQib/3WcIlFBE7jXIQ9SnOxgB",
+    "thinking": "",
+    "type": "thinking"
+   },
+   {
+    "citations": null,
+    "text": "{\"rule\": {\"all\": [{\"course\": \"APG2026S\", \"need\": \"pass\"}, {\"refer\": \"CIV3043F (DP)\"}, {\"refer\": \"CIV3044F (DP)\"}]}}",
+    "type": "text"
+   }
+  ],
+  "diagnostics": null,
+  "model": "claude-haiku-5-5",
+  "role": "assistant",
+  "stop_details": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "type": "message",
+  "usage": {
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "inference_geo": "global",
+   "input_tokens": 3234,
+   "output_tokens": 380,
+   "output_tokens_details": {
+    "thinking_tokens": 308
+   },
+   "server_tool_use": null,
+   "service_tier": "standard",
+   "speed": "standard"
+  }
+ }
+}
