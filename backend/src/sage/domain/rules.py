@@ -97,6 +97,14 @@ def _flat(kind: str) -> AfterValidator:
     return AfterValidator(join)
 
 
+def _only_child(node: Row) -> Row:
+    # An all or an any with one child holds when that child does, so it is that child (E2's prompt.md,
+    # rule 10). It runs on the union, as a model can't turn into another model. Each child was
+    # unwrapped when it was validated, so a node left with one child here is the last to unwrap.
+    children = getattr(node, "all", None) or getattr(node, "any", None) or ()
+    return children[0] if len(children) == 1 else node
+
+
 # Codes or group keys whose printed order means nothing, kept sorted for the same reason
 SortedNames = Annotated[
     tuple[str, ...], AfterValidator(lambda names: tuple(sorted(names)))
@@ -151,6 +159,7 @@ EntryRule = Annotated[
     | Annotated[MinYearOfStudy, Tag("min_year_of_study")]
     | Annotated[Refer, Tag("refer")],
     Discriminator(_node_key),
+    AfterValidator(_only_child),
 ]
 AllOf.model_rebuild()
 AnyOf.model_rebuild()
