@@ -21,6 +21,9 @@ from sage.domain.electives import ElectiveTab
 TermCode = Literal[
     "q1", "q2", "q3", "q4", "sem1", "sem2", "full_year", "winter", "summer", "other"
 ]
+# A course code in the handbook's eight-character format, as courses.code's check in the
+# rule-tables migration gives it, such as EEE4117F
+COURSE_CODE = r"[A-Z]{3}[0-9]{4}[A-Z]"
 # The handbook's course-code suffix key, as the rule-tables migration gives it: A to D are quarters,
 # F and S semesters, H and W the whole year, L winter, U, J and P summer, and M, X and Z other
 TERM_BY_SUFFIX: dict[str, TermCode] = {

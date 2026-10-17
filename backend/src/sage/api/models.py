@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from sage.domain.electives import ElectiveTab
 from sage.domain.planning import EligibilityStatus
-from sage.domain.rules import Outcome, TermCode
+from sage.domain.rules import COURSE_CODE, Outcome, TermCode
 from sage.domain.students import ReasonKind
 from sage.ingestion.transcript import WarningCode
 from sage.services.questionnaire import QuestionId
@@ -91,7 +91,7 @@ class ConfirmedLine(RequestBody):
     academic_year: int = Field(ge=2000, le=2100)
     term: TermCode
     # The handbook's format
-    course_code: str = Field(pattern=r"^[A-Z]{3}[0-9]{4}[A-Z]$")
+    course_code: str = Field(pattern=rf"^{COURSE_CODE}$")
     course_name: str = Field(min_length=1)
     credits: int = Field(ge=0, le=32767)  # course_history.credits is a smallint
     nqf_level: int | None = Field(ge=5, le=10)

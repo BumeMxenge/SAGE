@@ -6,6 +6,7 @@ import re
 
 from sage.domain.base import Row
 from sage.domain.rules import (
+    COURSE_CODE,
     AllOfGroup,
     ChooseFromGroup,
     CourseGroup,
@@ -17,7 +18,7 @@ from sage.domain.rules import (
     YearRule,
     YearRules,
 )
-from sage.ingestion.handbook import CODE, Handbook, Unit
+from sage.ingestion.handbook import Handbook, Unit
 from sage.ingestion.sources import Reading, Section, SourceError
 
 YEARS = {"First": 1, "Second": 2, "Third": 3, "Fourth": 4, "Fifth": 5}
@@ -29,7 +30,7 @@ TABLE = re.compile(r"(First|Second|Third|Fourth|Fifth) Year (.*)Courses \(\w+\)[
 OPTIONAL = "Optional Courses"
 COLUMNS = "Code Course NQF Credits NQF Level"
 # A course row: code, title, dot leaders, credits and NQF level
-LISTED = re.compile(rf"({CODE}) .+?[.…]+ ?(\d+) (\d+)")
+LISTED = re.compile(rf"({COURSE_CODE}) .+?[.…]+ ?(\d+) (\d+)")
 # A wildcard row, such as CSC3xxx, standing for every course whose code starts that way
 WILDCARD = re.compile(r"([A-Z]{3}\d)xxx .+?[.…]+ ?\d+ \d+")
 # The complementary studies slot and its credits, however its marks are printed
@@ -404,7 +405,7 @@ class _Reader:
         self.loose = []
         for paragraph in paragraphs:
             text = " ".join(self.book.lines[at][1] for at in paragraph)
-            self.scope.update(re.findall(CODE, text))
+            self.scope.update(re.findall(COURSE_CODE, text))
             page = self.book.lines[paragraph[0]][0]
             self._year().pages.add(page)
             if not text.lstrip("*† ").lower().startswith(KNOWN):

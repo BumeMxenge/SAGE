@@ -16,6 +16,7 @@ from pydantic import Field, StringConstraints, ValidationError, model_validator
 
 from sage.domain.base import Row
 from sage.domain.rules import (
+    COURSE_CODE,
     TERM_BY_SUFFIX,
     CourseGroupMember,
     Passage,
@@ -55,7 +56,7 @@ DAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 # The workbook's words where an entry prints no requirement, which doesn't mean there's none
 NOT_STATED = "Not stated in course entry."
 
-Code = Annotated[str, StringConstraints(pattern=r"^[A-Z]{3}\d{4}[A-Z]$")]
+Code = Annotated[str, StringConstraints(pattern=rf"^{COURSE_CODE}$")]
 # A page, a range or a list of them, as in 58, 58–59 or 153, 247
 Pages = Annotated[
     str, StringConstraints(pattern=r"^\d+(?:[–-]\d+)?(?:, ?\d+(?:[–-]\d+)?)*$")
