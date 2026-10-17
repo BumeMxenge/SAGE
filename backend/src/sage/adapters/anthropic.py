@@ -52,8 +52,13 @@ class ClaudeDrafter:
         )
         text = "".join(b.text for b in reply.content if b.type == "text").strip()
         fenced = FENCE.match(text)
-        # An answer that isn't JSON holding a rule raises, and the run stops
-        return json.loads(fenced[1] if fenced else text)["rule"]
+        answer = fenced[1] if fenced else text
+        try:
+            return json.loads(answer)["rule"]
+        except json.JSONDecodeError:
+            # Not JSON, so no tree: it fails EntryRule, and translate reports it rather than keeping
+            # it, while the run goes on and keeps its other drafts
+            return answer
 
     @property
     def cost(self) -> float:

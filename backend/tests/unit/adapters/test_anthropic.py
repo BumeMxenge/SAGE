@@ -103,3 +103,12 @@ def test_an_answer_is_read_past_its_thinking_and_any_code_fence(served):
     # (6,000 x 0.10 + 400 x 0.50) / 1,000,000 = USD 0.0008
     assert drafter.tokens == {"input": 6000, "cached": 0, "output": 400}
     assert drafter.cost == pytest.approx(0.0008)
+
+
+def test_an_answer_that_is_not_json_comes_back_as_its_text(served):
+    # A comma missing, as in one of 2026's replies. The text fails EntryRule, so translate reports
+    # it, and the run goes on.
+    broken = '{"rule": {"any": [{"course": "MAM1020F", "need": "pass"} {"refer": "or equivalent"}]}}'
+    served(broken)
+    drafter = ClaudeDrafter("made-up-key", "claude-haiku-5-5")
+    assert drafter.draft("MAM1020F or equivalent", "pass") == broken
