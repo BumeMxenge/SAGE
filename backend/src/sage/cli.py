@@ -14,12 +14,12 @@ from uuid import UUID
 from pydantic import JsonValue
 
 from sage.adapters.anthropic import ClaudeDrafter
-from sage.adapters.supabase import connect
+from sage.adapters.supabase import Client, connect
 from sage.adapters.supabase.auth import sign_in_token
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import LOCAL_HOSTS, get_settings, is_local
-from sage.domain.repositories import AccountNotFound
+from sage.domain.repositories import AccountNotFound, YearInUse
 from sage.domain.rules import DeltaTable, RuleSet
 from sage.domain.wording import in_words
 from sage.ingestion.review import DECISIONS, TREES, Review, ReviewRow, tree_fault
@@ -27,7 +27,10 @@ from sage.ingestion.sources import SourceError
 from sage.services.ingest import (
     Candidate,
     Sitting,
+    YearLoaded,
     approve,
+    approved_snapshot,
+    load,
     review_file,
     review_year,
 )
@@ -88,6 +91,21 @@ def main(argv: list[str] | None = None) -> None:
         "--year", type=int, required=True, help="the handbook year, such as 2026"
     )
 
+    load_command = commands.add_parser(
+        "load",
+        help="Write an approved year, data/rules/<year>/rulebook.json, to the database "
+        "SUPABASE_URL names",
+    )
+    load_command.add_argument(
+        "--year", type=int, required=True, help="the handbook year, such as 2026"
+    )
+    load_command.add_argument(
+        "--replace", action="store_true", help="replace the year if it's stored already"
+    )
+    load_command.add_argument(
+        "--yes", action="store_true", help="write to a hosted project without asking"
+    )
+
     args = parser.parse_args(argv)
     if args.command == "seed":
         run_seed(args.user, yes=args.yes)
@@ -99,26 +117,31 @@ def main(argv: list[str] | None = None) -> None:
         run_review(args.year)
     elif args.command == "approve":
         run_approve(args.year)
+    elif args.command == "load":
+        run_load(args.year, replace=args.replace, yes=args.yes)
 
 
-def run_seed(account: UUID, *, yes: bool) -> None:
+def project(yes: bool) -> tuple[Client, str]:
+    # The project SUPABASE_URL names, and its host. Anywhere but this laptop is real data, so
+    # writing there needs a yes.
     settings = get_settings()
     if not settings.supabase_url or not settings.supabase_secret_key:
         raise SystemExit(
-            "Set SUPABASE_URL and SUPABASE_SECRET_KEY first: `make seed` does it for "
-            "local Supabase, and backend/.env holds the hosted project's"
+            "Set SUPABASE_URL and SUPABASE_SECRET_KEY first: `make seed` and `make load` do "
+            "it for local Supabase, and backend/.env holds the hosted project's"
         )
     host = urlsplit(settings.supabase_url).hostname or settings.supabase_url
-    # A bad file stops here, before anything is written
-    data = load_seed(SEED_FILE, account)
-
-    # Anywhere but this laptop is real data, so it needs a yes
     if host not in LOCAL_HOSTS and not yes:
         answer = input(f"This writes to {host}. Type yes to continue: ")
         if answer.strip().lower() != "yes":
             raise SystemExit("Nothing written")
+    return connect(settings.supabase_url, settings.supabase_secret_key), host
 
-    client = connect(settings.supabase_url, settings.supabase_secret_key)
+
+def run_seed(account: UUID, *, yes: bool) -> None:
+    # A bad file stops here, before anything is written
+    data = load_seed(SEED_FILE, account)
+    client, host = project(yes)
     rules, students = SupabaseRuleRepository(client), SupabaseStudentRepository(client)
     try:
         result = seed(rules, students, data)
@@ -135,6 +158,29 @@ def run_seed(account: UUID, *, yes: bool) -> None:
         print(f"  Already stored, left as it was: {difference}")
     check_read_back(result)
     print("Read back: her data matches the file.")
+
+
+def run_load(year: int, *, replace: bool, yes: bool) -> None:
+    try:
+        snapshot = approved_snapshot(year)
+    except FileNotFoundError:
+        raise SystemExit(
+            f"{year} isn't approved yet: sage approve --year {year} writes its snapshot"
+        ) from None
+    client, host = project(yes)
+    try:
+        load(snapshot, SupabaseRuleRepository(client), replace=replace)
+    except YearLoaded:
+        raise SystemExit(
+            f"{host} holds {year} already: --replace replaces it"
+        ) from None
+    except YearInUse:
+        raise SystemExit(
+            f"A student's plan or chat on {host} uses {year}, so the database won't remove it"
+        ) from None
+    print(f"Loaded {year}'s approved snapshot onto {host}:")
+    for table in RuleSet.model_fields:
+        print(f"  {table}: {len(getattr(snapshot.rules, table))}")
 
 
 def run_sign_in(port: int) -> None:

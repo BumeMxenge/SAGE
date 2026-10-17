@@ -2,8 +2,8 @@
 # year's sources against their manifest, reads each, translates the printed requirements, grammar
 # first, and checks the sources against each other. A requirement printed in the words the latest
 # approved year before it printed keeps that year's approved rule. Every row keeps where it was
-# printed and why a person must look at it. review_year writes the rows a person must decide, and
-# approve writes the approved year once none is pending.
+# printed and why a person must look at it. review_year writes the rows a person must decide,
+# approve writes the approved year once none is pending, and load writes that to a database.
 import json
 from collections import defaultdict
 from collections.abc import Callable
@@ -14,6 +14,7 @@ from pydantic import JsonValue
 
 from sage.domain.base import Row
 from sage.domain.drafting import Drafter
+from sage.domain.repositories import RuleRepository
 from sage.domain.rules import (
     TERM_BY_SUFFIX,
     AllOf,
@@ -41,6 +42,11 @@ DATA = Path(__file__).resolve().parents[4] / "data"
 # Each approved year's snapshot, as data/rules/<year>/ holds it
 SNAPSHOT = "rulebook.json"
 WORKBOOK = "complementary workbook"
+
+
+class YearLoaded(Exception):
+    # The database holds the year already, and loading it again would replace it
+    pass
 
 
 class Candidate(Row):
@@ -429,6 +435,19 @@ class Sitting:
         _write_review(self._path, self._sittings, self.review)
 
 
+def approved_snapshot(year: int, data: Path = DATA) -> Snapshot:
+    return Snapshot.model_validate_json(
+        (data / "rules" / str(year) / SNAPSHOT).read_text(encoding="utf-8")
+    )
+
+
+def load(snapshot: Snapshot, rules: RuleRepository, *, replace: bool) -> None:
+    # Writes an approved year to the database, refusing one already there unless asked to replace it
+    if not replace and rules.get(snapshot.year).handbook_versions:
+        raise YearLoaded(snapshot.year)
+    rules.replace_year(snapshot.rules)
+
+
 def _compare(candidate: Candidate, decided: list[dict[str, JsonValue]]) -> Review:
     return compare(
         candidate.year,
@@ -464,14 +483,11 @@ def _write_review(path: Path, sittings: list[dict], review: Review) -> None:
 def _latest_approved(year: int, data: Path) -> Snapshot | None:
     # The latest approved year before this one, each held in data/rules/<year>/rulebook.json
     before = [
-        path
+        int(path.parent.name)
         for path in (data / "rules").glob(f"*/{SNAPSHOT}")
         if int(path.parent.name) < year
     ]
-    if not before:
-        return None
-    latest = max(before, key=lambda path: int(path.parent.name))
-    return Snapshot.model_validate_json(latest.read_text(encoding="utf-8"))
+    return approved_snapshot(max(before), data) if before else None
 
 
 def _present(

@@ -2,13 +2,16 @@
 # the workbook's copies, requirements are translated grammar first, a check's failure flags the row
 # it names, ingesting writes nothing and asks no model, drafting takes earlier years' drafts,
 # wording the previous approved year printed keeps the rule it approved, a review sitting saves each
-# decision as it's made, and approving waits for every row and writes a snapshot that reads back
+# decision as it's made, approving waits for every row and writes a snapshot that reads back and
+# loads, and a year already loaded is only replaced when asked
 import hashlib
 import json
 from datetime import UTC, datetime, time, timedelta
 
 import openpyxl
+import pytest
 
+from sage.adapters.memory.rules import InMemoryRuleRepository
 from sage.domain.rules import (
     AllOf,
     AnyOf,
@@ -20,7 +23,16 @@ from sage.domain.rules import (
 )
 from sage.ingestion.review import Snapshot
 from sage.ingestion.sources import Reading
-from sage.services.ingest import Sitting, approve, ingest, review_file, review_year
+from sage.services.ingest import (
+    Sitting,
+    YearLoaded,
+    approve,
+    approved_snapshot,
+    ingest,
+    load,
+    review_file,
+    review_year,
+)
 
 EBE = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"
 SCIENCE = "UCT Faculty of Science Handbook 2026 (Book 11)"
@@ -521,8 +533,10 @@ def test_an_approved_year_survives_the_snapshot_round_trip(
     sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
     candidate = accept_all(tmp_path)
     _, snapshot = approve(2026, data=tmp_path)
-    path = tmp_path / "rules" / "2026" / "rulebook.json"
-    assert Snapshot.model_validate_json(path.read_text(encoding="utf-8")) == snapshot
+    assert approved_snapshot(2026, tmp_path) == snapshot
+    store = InMemoryRuleRepository()
+    load(snapshot, store, replace=False)
+    assert store.get(2026) == snapshot.rules
     # Every row accepted as read, now approved, with where each was printed
     rules = snapshot.rules
     assert rules.handbook_versions == (HandbookVersion(year=2026, approved=True),)
@@ -585,3 +599,15 @@ def test_a_kept_removal_keeps_its_row_and_where_it_was_printed(
         )
         in snapshot.readings
     )
+
+
+def test_a_loaded_year_is_replaced_only_when_asked():
+    store = InMemoryRuleRepository()
+    first = approved(2097, {"TST1001F": ("First words", None)})
+    second = approved(2097, {"TST1002F": ("Second words", None)})
+    load(first, store, replace=False)
+    with pytest.raises(YearLoaded):
+        load(second, store, replace=False)
+    assert store.get(2097) == first.rules
+    load(second, store, replace=True)
+    assert store.get(2097) == second.rules
