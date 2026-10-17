@@ -44,6 +44,8 @@ KINDS = (
     "refer asking for a DP",
     "no rule (null)",
 )
+# The rows labels-notes.md lists as my judgement calls, by labels.csv's spreadsheet row
+JUDGEMENT_ROWS = {8, 12, 24, 33, 42, 46, 56, 58, 59, 60, 62, 75, 76, 79}
 
 
 def upper_bound(n: int) -> float:
@@ -85,11 +87,14 @@ def normal(tree: dict | None) -> dict | None:
 
 
 def leaves(tree: dict | None) -> Counter:
-    # A tree's leaves, each as its JSON
+    # A tree's leaves, each as its JSON, with a refer leaf's wording dropped. A tree in normal form
+    # has its repeated refers merged; any other counts each one apart.
     if tree is None:
         return Counter()
     if "all" in tree or "any" in tree:
         return sum(map(leaves, tree.get("all") or tree["any"]), Counter())
+    if "refer" in tree:
+        return Counter([REFER])
     return Counter([json.dumps(tree, sort_keys=True)])
 
 
@@ -100,12 +105,24 @@ def to_correct(draft: dict | None, label: dict | None) -> int:
     return max(1, sum((theirs - ours + (ours - theirs)).values()))
 
 
-def outcome(tree: dict | None, label: dict | None, valid: bool = True) -> tuple:
+def to_fix(right: bool, valid: bool, draft: dict | None, label: dict | None) -> int:
+    # The leaves a person must type or fix for a draft: none if it's right, every leaf of the label
+    # if it gave no tree, and otherwise the leaves to correct
+    if right:
+        return 0
+    if not valid:
+        return sum(leaves(label).values())
+    return to_correct(draft, label)
+
+
+def outcome(
+    tree: dict | None, label: dict | None, size: int, valid: bool = True
+) -> tuple:
     # What storing a tree unseen means for one string: whether a rule is stored, whether it's wrong,
     # whether a person is needed, and the leaves that person must type. A reply that doesn't fit, or
-    # a refer at the root, leaves the whole rule to a person.
+    # a refer at the root, leaves the whole rule, size leaves, to a person.
     if not valid or (tree is not None and "refer" in tree):
-        return False, False, True, sum(leaves(label).values())
+        return False, False, True, size
     return True, tree != label, REFER in leaves(tree), 0
 
 
@@ -127,13 +144,13 @@ def cached(model: str, field: str, text: str, run: int) -> dict:
 
 
 def drafted(model: str, entry: dict) -> tuple[bool, dict | None]:
-    # Whether a reply gave a tree that fits EntryRule, and that tree in normal form. A refusal or a
-    # reply cut short gives none.
+    # Whether a reply gave a tree that fits EntryRule, and that tree. A refusal or a reply cut short
+    # gives none.
     text = answer(model, entry["reply"])
     if text is None:
         return False, None
     try:
-        return True, normal(canonical(json.loads(text)["rule"]))
+        return True, canonical(json.loads(text)["rule"])
     except (json.JSONDecodeError, ValidationError):
         return False, None
 
@@ -148,7 +165,8 @@ def cost(model: str, entry: dict) -> float:
 def score(row: dict[str, str]) -> dict:
     # One string's label, what the grammar made of it, and each model's three runs
     field, text = row["field"], wording(row)
-    label = normal(canonical(json.loads(row["tree"])))
+    printed = canonical(json.loads(row["tree"]))
+    label = normal(printed)
     start = time.perf_counter()
     try:
         need = "concurrent" if field == "Co-requisites" else "pass"
@@ -160,26 +178,28 @@ def score(row: dict[str, str]) -> dict:
     for model in MODELS:
         entries = [cached(model, field, text, run) for run in range(1, RUNS + 1)]
         runs = [drafted(model, entry) for entry in entries]
-        valid, tree = runs[0]
-        right = valid and tree == label
-        if right:
-            fix = 0
-        elif valid:
-            fix = to_correct(tree, label)
-        else:
-            fix = sum(leaves(label).values())
+        trees = [normal(tree) for _, tree in runs]
+        valid, drawn = runs[0]
+        right = valid and trees[0] == label
+        same = (
+            ok and tree == trees[0] for (ok, _), tree in zip(runs, trees, strict=True)
+        )
         models[model] = {
             "valid": valid,
-            "tree": tree,
+            "tree": trees[0],
             "right": right,
-            "same": valid and all(run == runs[0] for run in runs),
-            "fix": fix,
+            "same": valid and all(same),
+            "fix": to_fix(right, valid, trees[0], label),
+            # The same, with each refer leaf counted apart rather than merged
+            "fix_apart": to_fix(right, valid, drawn, printed),
             "cost": cost(model, entries[0]),
             "seconds": entries[0]["seconds"],
         }
     return {
         "row": row,
         "label": label,
+        "size": sum(leaves(label).values()),
+        "size_apart": sum(leaves(printed).values()),
         "grammar": grammar,
         "cause": cause,
         "grammar_seconds": seconds,
@@ -187,9 +207,10 @@ def score(row: dict[str, str]) -> dict:
     }
 
 
-def arms(strings: list[dict]) -> list[dict]:
+def arms(strings: list[dict], apart: bool = False) -> list[dict]:
     # Each arm's measures, in table 1's order. The hybrid arms draft only the grammar's refusals,
-    # with the same replies the model-only arms store.
+    # with the same replies the model-only arms store. Apart counts each refer leaf on its own.
+    size, fix = ("size_apart", "fix_apart") if apart else ("size", "fix")
     refused = [string for string in strings if string["cause"]]
     found = []
 
@@ -224,10 +245,10 @@ def arms(strings: list[dict]) -> list[dict]:
     def grammar_first(string: dict, draft: tuple | None) -> tuple:
         # A parse is stored unseen; a refusal is a referral, or a draft a person reviews
         if not string["cause"]:
-            return outcome(string["grammar"], string["label"])
+            return outcome(string["grammar"], string["label"], string[size])
         if draft is None:
-            return outcome({"refer": ""}, string["label"])
-        return False, False, True, draft["fix"]
+            return outcome({"refer": ""}, string["label"], string[size])
+        return False, False, True, draft[fix]
 
     measure("Grammar only", [grammar_first(s, None) for s in strings])
     for model, (name, *_) in MODELS.items():
@@ -235,7 +256,7 @@ def arms(strings: list[dict]) -> list[dict]:
         measure(
             f"Model only: {name}",
             [
-                outcome(r["tree"], s["label"], r["valid"])
+                outcome(r["tree"], s["label"], s[size], r["valid"])
                 for r, s in zip(runs, strings, strict=True)
             ],
             strings,
@@ -256,8 +277,8 @@ def percent(part: int, whole: int) -> str:
     return f"{part / whole:.1%}" if whole else "none"
 
 
-def arms_table(found: list[dict]) -> tuple[list[str], list[list], list[str]]:
-    # Table 1, and its verdict: the plan's rule applied in order
+def arms_table(found: list[dict]) -> tuple[list[str], list[list]]:
+    # Table 1
     header = [
         "Arm",
         "Stored unseen",
@@ -291,6 +312,11 @@ def arms_table(found: list[dict]) -> tuple[list[str], list[list], list[str]]:
                 f"{arm['seconds']:.1f}",
             ]
         )
+    return header, rows
+
+
+def rule(found: list[dict]) -> tuple[list[str], str]:
+    # Table 1's verdict, the plan's rule applied in order, and the arm it chooses
 
     def names(arms: list[dict]) -> str:
         # Semicolons, as an arm's name can hold a comma
@@ -313,9 +339,10 @@ def arms_table(found: list[dict]) -> tuple[list[str], list[list], list[str]]:
         fourth = [arm for arm in third if arm["cost"] == cheapest]
         if len(third) > 1:
             verdict.append(f"Rule 4, lowest cost: {names(fourth)}.")
-        verdict.append(f"Verdict: {names(fourth)}.")
+        chosen = names(fourth)
     else:
-        verdict.append("Verdict: no arm passes the first two rules.")
+        chosen = "no arm passes the first two rules"
+    verdict.append(f"Verdict: {chosen}.")
     for arm in second:
         if arm["name"].startswith("Model only"):
             verdict.append(
@@ -323,7 +350,7 @@ def arms_table(found: list[dict]) -> tuple[list[str], list[list], list[str]]:
                 "silent and can change when the provider updates the model, while a grammar's "
                 "refusal is visible, so choosing grammar first over it rests on that argument."
             )
-    return header, rows, verdict
+    return verdict, chosen
 
 
 def drafting_verdict(strings: list[dict]) -> list[str]:
@@ -488,10 +515,51 @@ def write(name: str, header: list[str], rows: list[list]) -> None:
 
 
 if __name__ == "__main__":
-    strings = [score(row) for row in labels()]
-    header, rows, verdict = arms_table(arms(strings))
+    numbered = list(enumerate(labels(), start=2))
+    strings = [score(row) for _, row in numbered]
+    found = arms(strings)
+    verdict, chosen = rule(found)
+    apart = arms(strings, apart=True)
+    chosen_apart = rule(apart)[1]
+    counts = "; ".join(f"{arm['name']}, {arm['typing']}" for arm in apart)
+    note = (
+        "Leaves are counted after the normal form merges repeated refer leaves. Counted with "
+        f"each refer apart, the leaves to type or fix are: {counts}. The verdict "
+        + (
+            "is the same."
+            if chosen_apart == chosen
+            else f"would change to {chosen_apart}."
+        )
+    )
+    kept = [
+        string
+        for (number, _), string in zip(numbered, strings, strict=True)
+        if number not in JUDGEMENT_ROWS
+    ]
+    chosen_kept = rule(arms(kept))[1]
+    left_out = (
+        f"With the {len(strings) - len(kept)} judgement rows in labels-notes.md left out "
+        f"(rows {', '.join(map(str, sorted(JUDGEMENT_ROWS)))}), {len(kept)} strings remain, "
+        "and the verdict "
+        + (
+            f"is the same: {chosen_kept}."
+            if chosen_kept == chosen
+            else f"changes from {chosen} to {chosen_kept}."
+        )
+    )
     tables = [
-        ("arms.csv", "1. The arms", header, rows, verdict + drafting_verdict(strings)),
+        (
+            "arms.csv",
+            "1. The arms",
+            *arms_table(found),
+            [note, *verdict, *drafting_verdict(strings)],
+        ),
+        (
+            None,
+            "1b. The arms without the judgement rows",
+            *arms_table(arms(kept)),
+            [left_out],
+        ),
         (
             "refusals.csv",
             "2. Refusals by the grammar's ten causes",
@@ -502,11 +570,10 @@ if __name__ == "__main__":
     report = [
         f"# E2 results\n\nFrom score.py, on {len(strings)} labelled validation strings."
     ]
-    for name, title, header, rows, verdict in tables:
-        write(name, header, rows)
-        report.append(
-            f"## {title}\n\n{markdown(header, rows)}\n\n" + "\n".join(verdict)
-        )
+    for name, title, header, rows, lines in tables:
+        if name:
+            write(name, header, rows)
+        report.append(f"## {title}\n\n{markdown(header, rows)}\n\n" + "\n".join(lines))
     write("outcomes.csv", *outcomes(strings))
     text = "\n\n".join(report) + "\n"
     (RESULTS / "tables.md").write_text(text, encoding="utf-8")

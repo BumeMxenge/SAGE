@@ -2,7 +2,7 @@
 # by hand in a comment, never taken from what the code returned
 import pytest
 
-from score import mcnemar, normal, to_correct, upper_bound
+from score import leaves, mcnemar, normal, to_correct, upper_bound
 
 
 def course(code: str, need: str = "pass") -> dict:
@@ -53,6 +53,18 @@ def test_a_tree_that_means_another_rule_differs(draft):
 def test_the_leaves_to_correct_in_a_wrong_draft(draft, fixes):
     label = {"all": [course("EEE2045F"), course("EEE2047S")]}
     assert to_correct(normal(draft), normal(label)) == fixes
+
+
+def test_each_refer_counts_apart_until_the_normal_form_merges_them():
+    # CIV1011S's label: two DP refers, worded differently. As printed they're two leaves, and the
+    # normal form merges them into one, as their wording never counts.
+    label = {"all": [{"refer": "PHY1012F/S (DP)"}, {"refer": "MAM1020F/S (DP)"}]}
+    assert sum(leaves(label).values()) == 2
+    assert sum(leaves(normal(label)).values()) == 1
+    # Counted apart, a draft with one refer and a pass in PHY1012F is one refer short and one
+    # course over: 2 leaves to correct, whatever its refer says
+    draft = {"all": [course("PHY1012F"), {"refer": "DP for MAM1020F/S"}]}
+    assert to_correct(draft, label) == 2
 
 
 @pytest.mark.parametrize(

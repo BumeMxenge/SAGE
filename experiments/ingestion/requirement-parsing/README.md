@@ -19,7 +19,7 @@ Each tree is written from print, as JSON in the seed's shape, by the conventions
 
 ## Arms
 
-1. **Model only**, on Claude Haiku 5.5 and on GPT-6 Luna. Every string goes to the model with the shared prompt and default sampling, three times, and the first run's tree is stored as it is. Luna's output is held to the tree's schema. Haiku's isn't: its structured output compiles a rule tree only three levels deep, and two labels and two worked examples go deeper. So Haiku answers in plain JSON, read from a code fence if it adds one, and a reply that isn't one tree fitting `EntryRule` needs a person.
+1. **Model only**, on Claude Haiku 5.5 and on GPT-6 Luna. Every string goes to the model with the shared prompt and default sampling, three times, and the first run's tree is stored as it is. Luna's output is held to the tree's schema. Haiku's isn't: its structured output compiles a rule tree only three levels deep, and two labels and two worked examples go deeper. So Haiku answers in plain JSON, read from a code fence if it adds one, and a reply that isn't one tree fitting `EntryRule` needs a person. Before the run, twelve schema probes, eleven to Haiku and one to Luna, found that limit. Their replies aren't in `results/`, and none was scored.
 2. **Grammar only.** The grammar's parse is stored, and a refused string becomes a `refer` leaf.
 3. **Grammar first, with each model drafting the refusals.** The parse is stored, and a refusal's first-run draft goes to a person. The drafts are the model-only arm's replies to those strings, as the request is the same.
 
