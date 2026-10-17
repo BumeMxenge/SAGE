@@ -87,11 +87,13 @@ def offering(code, credits):
     ("check", "failure"),
     [
         (
-            # A Labs cell for a course no curriculum lists
+            # A Labs cell for a course no curriculum lists, beside one settled as excluded
             lambda: checks.known_codes(
-                [meeting("EEE3090F"), meeting("EEE2041F")], {"EEE3090F"}
+                [meeting("EEE3090F"), meeting("EEE2041F"), meeting("EEE3099S")],
+                {"EEE3090F"},
+                {"EEE2041F"},
             ),
-            ("Labs!D27:D30", "EEE2041F isn't in the rulebook", None),
+            ("Labs!D27:D30", "EEE3099S isn't in the rulebook", None),
         ),
         (
             lambda: checks.entries(
@@ -200,3 +202,12 @@ def offering(code, credits):
 def test_each_check_fires_on_one_planted_inconsistency(check, failure):
     place, what, flags = failure
     assert check().failures == (checks.Failure(place=place, what=what, flags=flags),)
+
+
+def test_a_settled_exclusion_is_reported_not_failed():
+    # EEE2041F's Labs cells were left out at C1's Stop 1, so they never stop a year's approval
+    check = checks.known_codes([meeting("EEE2041F")], set(), {"EEE2041F"})
+    assert check.failures == ()
+    assert check.reported == (
+        checks.Failure(place="Labs!D27:D30", what="EEE2041F isn't in the rulebook"),
+    )

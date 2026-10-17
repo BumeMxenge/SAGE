@@ -203,7 +203,9 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> DryR
     ]
     if manifest.timetable:
         found_checks += [
-            checks.known_codes(printed_meetings, loaded),
+            checks.known_codes(
+                printed_meetings, loaded, set(manifest.timetable.excluded)
+            ),
             checks.round_trip(differences),
         ]
     if workbook:

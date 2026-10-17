@@ -1,5 +1,6 @@
 # Checks the sources against each other. Each check names every failure and where to look, and a
-# failure on a row a person reviews flags that row check_failed.
+# failure on a row a person reviews flags that row check_failed. A finding a person has already
+# settled is reported, not failed, so it never stops a year being approved.
 from collections.abc import Iterable, Mapping
 
 from sage.domain.base import Row
@@ -28,17 +29,25 @@ class Failure(Row):
 class Check(Row):
     name: str
     failures: tuple[Failure, ...]
+    reported: tuple[Failure, ...] = ()
 
 
-def known_codes(meetings: Iterable[Printed], known: set[str]) -> Check:
+def known_codes(
+    meetings: Iterable[Printed], known: set[str], excluded: set[str]
+) -> Check:
+    # A code the manifest excludes, such as a Labs course no curriculum lists, is reported
+    unknown = [(m, code) for m in meetings for code in m.codes if code not in known]
+
+    def failure(meeting: Printed, code: str) -> Failure:
+        return Failure(
+            place=f"{meeting.sheet}!{meeting.cells}",
+            what=f"{code} isn't in the rulebook",
+        )
+
     return Check(
         name="Every timetable code is a course the rulebook holds",
-        failures=tuple(
-            Failure(place=f"{m.sheet}!{m.cells}", what=f"{code} isn't in the rulebook")
-            for m in meetings
-            for code in m.codes
-            if code not in known
-        ),
+        failures=tuple(failure(m, code) for m, code in unknown if code not in excluded),
+        reported=tuple(failure(m, code) for m, code in unknown if code in excluded),
     )
 
 

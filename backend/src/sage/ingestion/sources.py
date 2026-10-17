@@ -62,6 +62,8 @@ class Alternatives(Row):
 class TimetableFile(SourceFile):
     sheets: dict[str, tuple[str, ...]]  # each sheet read, with the curricula it shows
     alternatives: tuple[Alternatives, ...] = ()
+    # Courses the sheets print that are settled as out of scope, reported rather than failed
+    excluded: tuple[str, ...] = ()
 
 
 class ComplementaryFile(SourceFile):

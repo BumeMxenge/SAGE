@@ -187,4 +187,7 @@ def report(run: DryRun) -> str:
         state = f"{len(check.failures)} failed" if check.failures else "passed"
         lines.append(f"  {state}: {check.name}")
         lines += [f"      {f.place}: {f.what}" for f in check.failures]
+        lines += [
+            f"      {f.place}: {f.what}, reported as settled" for f in check.reported
+        ]
     return "\n".join(lines)

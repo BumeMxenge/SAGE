@@ -71,6 +71,9 @@ file = "2026_timetable.xlsx"
 format = "xlsx"
 title = "2026 EEE Timetables"
 sha256 = "45de2ef0621f93b6974b06775f73d99d69ea8cec999c1d412c563b589a27181a"
+# Courses the Labs sheet prints that no EEE curriculum lists, left out at C1's Stop 1 (reading 4), so
+# the timetable check reports their cells rather than failing
+excluded = ["EEE2041F", "EEE2042S", "EEE2046S"]
 
 # The sheets read, each with the curricula it shows. Labs holds meetings for everyone on a course,
 # so it names none. The MEC and SCI sheets show other departments' programmes and aren't read.
