@@ -289,9 +289,20 @@ DeltaFlag = (
 )
 
 
+# The tables a change can be in, as handbook_deltas.entity's check in the rule-tables migration allows
+DeltaTable = Literal[
+    "curricula",
+    "curriculum_rules",
+    "courses",
+    "course_groups",
+    "course_group_members",
+    "equivalences",
+]
+
+
 class HandbookDelta(Row):
     handbook_year: int
-    entity: str
+    entity: DeltaTable
     entity_key: str
     old_value: JsonValue = None
     new_value: JsonValue = None

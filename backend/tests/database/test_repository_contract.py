@@ -8,8 +8,8 @@ import pytest
 
 from sage.adapters.memory.rules import InMemoryRuleRepository
 from sage.adapters.memory.students import InMemoryStudentRepository
-from sage.domain.repositories import RuleRepository, StudentRepository
-from sage.domain.rules import HandbookVersion, Passage, RuleSet
+from sage.domain.repositories import RuleRepository, StudentRepository, YearInUse
+from sage.domain.rules import Course, HandbookVersion, Passage, RuleSet
 from sage.domain.students import (
     Chat,
     Citation,
@@ -44,6 +44,43 @@ def store(request, seed_file, result_symbols) -> Store:
     mbali = load_seed(seed_file, her)
     seed(rules, students, mbali)
     return Store(rules, students, mbali, stranger)
+
+
+@pytest.fixture
+def made_up_year(request):
+    # A year no plan uses, which leaves local Supabase again once its test is over
+    secret = (
+        request.getfixturevalue("secret")
+        if request.node.callspec.params["store"] == "supabase"
+        else None
+    )
+    yield 2097
+    if secret:
+        secret.table("handbook_versions").delete().eq("year", 2097).execute()
+
+
+def test_replacing_a_year_leaves_exactly_its_new_rows(store, made_up_year):
+    def holding(*courses):
+        return RuleSet(
+            handbook_versions=(HandbookVersion(year=made_up_year, approved=True),),
+            courses=tuple(
+                Course(
+                    handbook_year=made_up_year,
+                    code=code,
+                    name=name,
+                    credits=8,
+                    nqf_level=5,
+                    term="sem1",
+                )
+                for code, name in courses
+            ),
+        )
+
+    store.rules.replace_year(holding(("TST1001F", "Gone"), ("TST1002F", "Before")))
+    # One course goes, one changes and one is new, in key order as the store reads them
+    after = holding(("TST1002F", "After"), ("TST1003F", "New"))
+    store.rules.replace_year(after)
+    assert store.rules.get(made_up_year) == after
 
 
 def test_profile_reads_her_row_and_nothing_for_a_stranger(store):
@@ -268,3 +305,16 @@ def test_a_cited_reply_reads_back_with_its_passage(
     ).execute()
     secret.table("handbook_versions").delete().eq("year", 2098).execute()
     assert reply.citations == (citation,)
+
+
+@pytest.mark.integration
+def test_a_year_a_plan_uses_is_never_replaced(stores, mbali):
+    # Mbali's seeded plans use the seed's 2026, so the database refuses to remove that year, and
+    # nothing of it changes. sage load --replace goes through this.
+    rules, _ = stores
+    before = rules.get(2026)
+    with pytest.raises(YearInUse):
+        rules.replace_year(
+            RuleSet(handbook_versions=(HandbookVersion(year=2026, approved=True),))
+        )
+    assert rules.get(2026) == before

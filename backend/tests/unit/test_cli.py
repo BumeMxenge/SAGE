@@ -1,6 +1,8 @@
-# Checks `sage seed` asks before writing anywhere but this laptop, and `sage sign-in` refuses to run
-# anywhere else. The database is replaced by the in-memory fakes, so these tests never reach a real
-# project.
+# Checks `sage seed` asks before writing anywhere but this laptop, `sage sign-in` refuses to run
+# anywhere else, and `sage review` walks a person through the pending rows. The database is replaced
+# by the in-memory fakes, so these tests never reach a real project.
+import json
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import pytest
@@ -9,6 +11,20 @@ import sage.cli
 from sage.adapters.memory.rules import InMemoryRuleRepository
 from sage.adapters.memory.students import InMemoryStudentRepository
 from sage.config import get_settings
+from sage.domain.rules import (
+    AllOfGroup,
+    Course,
+    CurriculumRule,
+    HandbookVersion,
+    Refer,
+    RuleSet,
+    TotalCredits,
+    YearRules,
+)
+from sage.ingestion.checks import Check, Failure
+from sage.ingestion.sources import Reading
+from sage.ingestion.translate import Translations
+from sage.services.ingest import Candidate, Sitting
 
 ACCOUNT = UUID("00000000-0000-4000-8000-000000000001")
 
@@ -80,3 +96,118 @@ def test_sign_in_refuses_a_hosted_project(opened, database):
     with pytest.raises(SystemExit, match="only runs on local Supabase"):
         sage.cli.run_sign_in(3000)
     assert opened == []
+
+
+def made_up_year() -> Candidate:
+    # A first year whose review has four rows: a curriculum note on a year whose printed total
+    # fails its check, and three drafted requirements
+    codes = ("EEE3001F", "EEE3002F", "EEE3004F")
+    year_two = YearRules(
+        all=(
+            AllOfGroup(all_of_group="EB022EEE02-y2-core"),
+            TotalCredits(total_credits=136),
+        )
+    )
+    rules = RuleSet(
+        handbook_versions=(HandbookVersion(year=2026),),
+        curriculum_rules=(
+            CurriculumRule(
+                handbook_year=2026,
+                curriculum_code="EB022EEE02",
+                year_of_study=2,
+                rule=year_two,
+            ),
+        ),
+        courses=tuple(
+            Course(
+                handbook_year=2026,
+                code=code,
+                name="Made Up",
+                credits=8,
+                nqf_level=5,
+                term="sem1",
+                entry_rule=Refer(refer=f"{code}'s words"),
+            )
+            for code in codes
+        ),
+    )
+    readings = (
+        Reading(
+            entity="curriculum_rules",
+            key="EB022EEE02/2",
+            place="p. 53",
+            printed="*A made-up note.",
+            flag="refused_free_text",
+        ),
+        *(
+            Reading(
+                entity="courses",
+                key=code,
+                place="p. 130",
+                printed=f"{code}'s words",
+                flag="refused_free_text",
+            )
+            for code in codes
+        ),
+    )
+    totals = Failure(
+        place="p. 53",
+        what="EB022EEE02 year 2's core table prints 136 credits, but its rows add up to 144",
+        flags=("curriculum_rules", "EB022EEE02/2"),
+    )
+    return Candidate(
+        year=2026,
+        rules=rules,
+        readings=readings,
+        rows={},
+        translations=Translations(translations=(), calls=0, reused=0, refused=()),
+        checks=(Check(name="Printed totals add up", failures=(totals,)),),
+        expanded={},
+        left_out=(),
+        entries=frozenset(),
+        unprinted=(),
+        notes=(),
+        previous=None,
+        carried=(),
+    )
+
+
+def test_a_review_walk_saves_each_decision_as_it_is_made(tmp_path, capsys):
+    path = tmp_path / "review.json"
+    start = datetime(2026, 10, 18, 9, tzinfo=UTC)
+    times = iter([start, *[start + timedelta(minutes=8)] * 9])
+    sitting = Sitting(made_up_year(), path, lambda: next(times))
+    # The note asks for a note, as its year's total fails a check. A stray key is asked again. The
+    # correction is first saved without its need. A first year has nothing to reject for.
+    answers = iter(["a", "The rows are right", "x", "a", "c", "r", "q"])
+    saved = iter(['{"course": "EEE3001F"}', '{"course": "EEE3001F", "need": "pass"}'])
+    opened = []
+
+    def edit(file):
+        opened.append(file.read_text(encoding="utf-8"))
+        file.write_text(next(saved), encoding="utf-8")
+
+    sage.cli.walk(sitting, lambda prompt: next(answers), edit)
+    rows = json.loads(path.read_text(encoding="utf-8"))["rows"]
+    assert [
+        (row["id"], row["decision"], row["corrected"], row["note"]) for row in rows
+    ] == [
+        ("rule/EB022EEE02/2", "accept", None, "The rows are right"),
+        ("requirement/EEE3001F", "accept", None, None),
+        (
+            "requirement/EEE3002F",
+            "correct",
+            {"course": "EEE3001F", "need": "pass"},
+            None,
+        ),
+        ("requirement/EEE3004F", None, None, None),
+    ]
+    # The editor opened with the draft, then again with why the first save wasn't used
+    assert '"refer": "EEE3002F\'s words"' in opened[0]
+    assert "Not used" not in opened[0]
+    assert "// Not used: corrected isn't a requirement tree" in opened[1]
+    assert '{"course": "EEE3001F"}' in opened[1]
+    out = capsys.readouterr().out
+    assert "Row 1 of 4: rule/EB022EEE02/2" in out
+    assert "every course in EB022EEE02-y2-core, and 136 credits in total" in out
+    assert "This sitting took 8 minutes and decided 3 rows." in out

@@ -8,6 +8,8 @@ from supabase import Client
 
 PAGE = 1000  # the most rows the Data API returns per request (max_rows)
 BATCH = 500  # rows per write, so no single request grows too large
+# Postgres refusing a row that points at one that isn't there, or a removal another row needs
+FOREIGN_KEY_VIOLATION = "23503"
 
 
 def columns(model: type[BaseModel]) -> str:

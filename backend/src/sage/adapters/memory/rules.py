@@ -18,6 +18,17 @@ class InMemoryRuleRepository:
                 key = tuple(getattr(row, column) for column in PRIMARY_KEYS[table])
                 stored.setdefault(key, row)
 
+    def replace_year(self, rules: RuleSet) -> None:
+        # The fake holds no student rows, so nothing here refuses the removal
+        (version,) = rules.handbook_versions
+        for table, stored in self._tables.items():
+            column = year_column(table)
+            for key in [
+                k for k, row in stored.items() if getattr(row, column) == version.year
+            ]:
+                del stored[key]
+        self.add_missing(rules)
+
     def get(self, year: int) -> RuleSet:
         def in_year(table: str, row: Any) -> bool:
             return getattr(row, year_column(table)) == year

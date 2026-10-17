@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed sign-in mutation planted-faults
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed sign-in load mutation planted-faults
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -103,6 +103,17 @@ seed:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
 		uv run sage seed --user "$(USER_ID)"
+
+# Loads every approved year, each data/rules/<year>/rulebook.json, into local Supabase, as after make
+# check-db wipes it. A year already loaded stops it, as sage load --replace is the way to replace one.
+load:
+	@$(LOCAL_SUPABASE) && cd backend && \
+		for snapshot in ../data/rules/*/rulebook.json; do \
+			[ -e "$$snapshot" ] || { echo "No year is approved yet: sage approve writes one"; exit 1; }; \
+			year=$$(basename "$$(dirname "$$snapshot")") && \
+			SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
+			uv run sage load --year "$$year" || exit 1; \
+		done
 
 # Prints a one-time link that signs Mbali in on the local frontend, with no password and no
 # Microsoft. On a fresh local database it first makes her account and loads her seed. PORT=3001 or
