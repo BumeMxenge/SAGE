@@ -2,7 +2,7 @@
 // and a student can sign in with their UCT Microsoft account through Supabase. Their name, when
 // Microsoft gives one, comes from Graph and stays in the browser.
 import { useEffect, useState } from 'react'
-import { useAuth } from '../features/auth/useAuth.ts'
+import { useAuth } from '@/lib/auth/useAuth.ts'
 import { getHealth, type Health } from '../lib/api.ts'
 import { env } from '../lib/env.ts'
 

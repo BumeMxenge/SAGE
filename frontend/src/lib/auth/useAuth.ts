@@ -2,8 +2,8 @@
 // actions
 import type { AuthError, Session } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
-import { env } from '../../lib/env.ts'
-import { supabase } from '../../lib/supabase.ts'
+import { env } from '@/lib/env.ts'
+import { supabase } from '@/lib/supabase.ts'
 import { forgetName, keepName, type Name, nameFromGraph, storedName } from './name.ts'
 
 // A link from `make sign-in` carries a one-time token, swapped for a session here once per page
