@@ -1,14 +1,38 @@
 # Checks a year ingests end to end from small sources built here: the handbook's own entries win over
 # the workbook's copies, requirements are translated grammar first, a check's failure flags the row
-# it names, a dry run writes nothing and asks no model, and drafting takes earlier years' drafts
+# it names, ingesting writes nothing and asks no model, drafting takes earlier years' drafts,
+# wording the previous approved year printed keeps the rule it approved, a review sitting saves each
+# decision as it's made, approving waits for every row and writes a snapshot that reads back and
+# loads, and a year already loaded is only replaced when asked
 import hashlib
 import json
-from datetime import time
+from datetime import UTC, datetime, time, timedelta
 
 import openpyxl
+import pytest
 
-from sage.domain.rules import AllOf, AnyOf, CourseNeed, HandbookVersion, Refer
-from sage.services.ingest import ingest
+from sage.adapters.memory.rules import InMemoryRuleRepository
+from sage.domain.rules import (
+    AllOf,
+    AnyOf,
+    Course,
+    CourseNeed,
+    HandbookVersion,
+    Refer,
+    RuleSet,
+)
+from sage.ingestion.review import Snapshot
+from sage.ingestion.sources import Reading
+from sage.services.ingest import (
+    Sitting,
+    YearLoaded,
+    approve,
+    approved_snapshot,
+    ingest,
+    load,
+    review_file,
+    review_year,
+)
 
 EBE = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"
 SCIENCE = "UCT Faculty of Science Handbook 2026 (Book 11)"
@@ -169,11 +193,18 @@ sha256 = "{equivalences}"
 """
 
 
-def sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block):
+def sources(
+    tmp_path,
+    handbook_pdf,
+    complementary_xlsx,
+    timetable_block,
+    pages=PAGES,
+    change=None,
+):
     folder = tmp_path / "sources" / "2026"
     folder.mkdir(parents=True)
-    handbook_pdf(folder / "handbook.pdf", PAGES)
-    complementary_xlsx(folder / "complementary.xlsx", WORKBOOK)
+    handbook_pdf(folder / "handbook.pdf", pages)
+    complementary_xlsx(folder / "complementary.xlsx", WORKBOOK, change)
     # PHY1013S on Monday at 08:00 in its year's block, and a lab for EEE2041F, which no curriculum
     # here lists
     book = openpyxl.Workbook()
@@ -353,9 +384,18 @@ def test_a_year_takes_the_drafts_of_the_years_before_it(
         drafts = {"concurrent": {co_requisite: {"model": "made up", "tree": tree}}}
         cache.write_text(json.dumps(drafts), encoding="utf-8")
     drafter = Drafter()
-    run = ingest(2026, drafter, data=tmp_path)
-    # Only the wording no earlier year drafted is asked for
+    # As sage ingest --draft runs it
+    run, _ = review_year(2026, drafter, data=tmp_path)
+    # Only the wording no earlier year drafted is asked for, and both drafts are kept where the next
+    # run and the next year read them, so neither is drafted again
     assert drafter.asked == [BEGINNERS]
+    kept = json.loads(
+        (tmp_path / "rules" / "2026" / "drafts.json").read_text(encoding="utf-8")
+    )
+    assert {need: list(drafts) for need, drafts in kept.items()} == {
+        "concurrent": [co_requisite],
+        "pass": [BEGINNERS],
+    }
     rules = {c.code: c.entry_rule for c in run.rules.courses}
     assert rules["PHY1013S"] == AllOf(
         all=(
@@ -368,3 +408,256 @@ def test_a_year_takes_the_drafts_of_the_years_before_it(
             ),
         )
     )
+
+
+def approved(year, printed):
+    # An approved year whose courses printed these words, each with the rule approved for them
+    return Snapshot(
+        rules=RuleSet(
+            handbook_versions=(HandbookVersion(year=year, approved=True),),
+            courses=tuple(
+                Course(
+                    handbook_year=year,
+                    code=code,
+                    name="Made Up",
+                    credits=8,
+                    nqf_level=5,
+                    term="sem1",
+                    entry_rule=rule,
+                )
+                for code, (_, rule) in printed.items()
+            ),
+        ),
+        readings=tuple(
+            Reading(entity="courses", key=code, place="p. 1", printed=words)
+            for code, (words, _) in printed.items()
+        ),
+    )
+
+
+def test_wording_the_previous_approved_year_printed_keeps_its_rule(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    # PHY1013S printing only its co-requisite, and SLL1017F's requirement typed across two lines
+    pages = [list(page) for page in PAGES]
+    pages[2].remove("Course entry requirements: EEE1006F")
+    typed = ("Language options", "G3", BEGINNERS.replace(" aimed", "\naimed"))
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block, pages, typed)
+    co_requisite = "Co-requisites: MAM1020F (or equivalent)"
+    alongside = AnyOf(
+        any=(
+            CourseNeed(course="MAM1020F", need="concurrent"),
+            Refer(refer="or equivalent"),
+        )
+    )
+    passed = AnyOf(
+        any=(CourseNeed(course="MAM1020F", need="pass"), Refer(refer="or equivalent"))
+    )
+    beginners = Refer(refer="This is a beginners’ course.")
+    # 2023 approved these words for other courses, other words for PHY1013S, and a requirement in
+    # the co-requisite's words, which is another rule. 2020, and 2026 itself, aren't compared with.
+    years = {
+        2020: {"PHY1099S": (co_requisite, None)},
+        2023: {
+            "PHY1099S": (co_requisite, alongside),
+            "PHY1098S": ("MAM1020F (or equivalent)", passed),
+            "PHY1013S": ("EEE1006F", CourseNeed(course="EEE1006F", need="pass")),
+            "SLL1099F": (BEGINNERS, beginners),
+        },
+        2026: {"PHY1099S": (co_requisite, None)},
+    }
+    for year, printed in years.items():
+        path = tmp_path / "rules" / str(year) / "rulebook.json"
+        path.parent.mkdir(parents=True)
+        path.write_text(approved(year, printed).model_dump_json(), encoding="utf-8")
+    run = ingest(2026, data=tmp_path)
+    rules = {c.code: c.entry_rule for c in run.rules.courses}
+    assert (rules["PHY1013S"], rules["SLL1017F"]) == (alongside, beginners)
+    # Neither keeps the grammar's cause, as 2023 approved their words, but a carried rule is still
+    # checked: no course here is MAM1020F
+    flags = {r.key: r.flag for r in run.readings if r.entity == "courses"}
+    assert (flags["PHY1013S"], flags["SLL1017F"]) == ("check_failed", None)
+    assert run.carried == ("PHY1013S", "SLL1017F")
+
+
+def test_a_sitting_saves_each_decision_and_a_rerun_keeps_them(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
+    candidate, _ = review_year(2026, data=tmp_path)
+    # A sitting from 09:00 to 09:12, by a made-up clock
+    start = datetime(2026, 10, 18, 9, tzinfo=UTC)
+    times = iter([start, *[start + timedelta(minutes=12)] * 9])
+    # Where review.json is committed
+    path = tmp_path / "rules" / "2026" / "review.json"
+    sitting = Sitting(candidate, path, lambda: next(times))
+    # The planted year-3 total fails a check, so accepting it needs a note, and without one the row
+    # stays as it was
+    problems = sitting.decide("rule/EB009EEE01/3", "accept")
+    assert [problem.note for problem in problems] == [True]
+    assert sitting.decide("rule/EB009EEE01/3", "accept", note="Made up") == ()
+    assert sitting.decide("requirement/PHY1013S", "accept") == ()
+    assert sitting.end() == [(12.0, 2)]
+    _, review = review_year(2026, data=tmp_path)
+    assert {
+        row.id: (row.decision, row.note) for row in review.rows if row.decision
+    } == {
+        "rule/EB009EEE01/3": ("accept", "Made up"),
+        "requirement/PHY1013S": ("accept", None),
+    }
+    assert json.loads(path.read_text(encoding="utf-8"))["sittings"] == [
+        {
+            "start": "2026-10-18T09:00:00+00:00",
+            "end": "2026-10-18T09:12:00+00:00",
+            "decided": 2,
+        }
+    ]
+
+
+def test_a_decision_naming_a_code_the_handbook_prints_needs_no_note(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    # The handbook also prints an entry for a course no curriculum here lists, so SAGE doesn't load
+    # it. The review counts every code the handbook prints, so a correction naming it needs no
+    # note, while one naming a code nothing prints does.
+    unloaded = "EEE2999F"
+    pages = [list(page) for page in PAGES]
+    pages[1] += [
+        "",
+        f"{unloaded} CIRCUITS FOR OTHER PROGRAMMES",
+        "8 NQF credits at NQF level 6",
+        "Convener: Dr A Made-Up",
+        "Course outline:",
+        "A made-up course for students outside Electrical Engineering.",
+        "Assessment: Coursework 100%.",
+    ]
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block, pages)
+    candidate = ingest(2026, data=tmp_path)
+    assert unloaded not in {course.code for course in candidate.rules.courses}
+    sitting = Sitting(
+        candidate,
+        review_file(2026, tmp_path),
+        lambda: datetime(2026, 10, 18, tzinfo=UTC),
+    )
+
+    def correct(code):
+        # A made-up correction of PHY1013S's rule, naming the code as its co-requisite
+        tree = {
+            "all": [
+                {"course": "EEE1006F", "need": "pass"},
+                {"course": code, "need": "concurrent"},
+            ]
+        }
+        return sitting.decide("requirement/PHY1013S", "correct", corrected=tree)
+
+    assert [problem.note for problem in correct("EEE2998F")] == [True]
+    assert correct(unloaded) == ()
+
+
+def accept_all(data, but=()):
+    # Accepts each row of the made-up year's review but those named, with a note where a check fails
+    candidate, review = review_year(2026, data=data)
+    sitting = Sitting(
+        candidate, review_file(2026, data), lambda: datetime(2026, 10, 18, tzinfo=UTC)
+    )
+    for row in review.rows:
+        if row.id not in but:
+            note = "Made up" if row.failures else None
+            assert sitting.decide(row.id, "accept", note=note) == ()
+    return candidate
+
+
+def test_approve_refuses_while_one_row_is_pending(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
+    # The one left is the code only a curriculum's notes name
+    accept_all(tmp_path, but={"no_entry/CON2026S"})
+    review, snapshot = approve(2026, data=tmp_path)
+    assert (review.pending, snapshot) == (("no_entry/CON2026S",), None)
+    assert not (tmp_path / "rules" / "2026" / "rulebook.json").exists()
+
+
+def test_an_approved_year_survives_the_snapshot_round_trip(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
+    candidate = accept_all(tmp_path)
+    _, snapshot = approve(2026, data=tmp_path)
+    assert approved_snapshot(2026, tmp_path) == snapshot
+    store = InMemoryRuleRepository()
+    load(snapshot, store, replace=False)
+    assert store.get(2026) == snapshot.rules
+    # Every row accepted as read, now approved, with where each was printed
+    rules = snapshot.rules
+    assert rules.handbook_versions == (HandbookVersion(year=2026, approved=True),)
+    assert (rules.courses, rules.passages) == (
+        candidate.rules.courses,
+        candidate.rules.passages,
+    )
+    assert snapshot.readings == candidate.readings
+    # In a first year every row is a change: accepted automatically where nothing needed a
+    # person, and accepted by one where something did
+    flags = {
+        (d.entity, d.entity_key): (d.flag, d.approved) for d in rules.handbook_deltas
+    }
+    assert flags[("courses", "EEE3100S")] == (None, True)
+    assert flags[("courses", "PHY1013S")] == ("refused_or_equivalent", True)
+    assert flags[("curriculum_rules", "EB009EEE01/3")] == ("check_failed", True)
+    assert len(flags) == sum(
+        len(getattr(rules, table))
+        for table in (
+            "curricula",
+            "curriculum_rules",
+            "courses",
+            "course_groups",
+            "course_group_members",
+            "equivalences",
+        )
+    )
+
+
+def test_a_kept_removal_keeps_its_row_and_where_it_was_printed(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    # 2023 approved two courses the made-up 2026 no longer prints. One's removal is rejected, and
+    # the other's accepted.
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
+    path = tmp_path / "rules" / "2023" / "rulebook.json"
+    path.parent.mkdir(parents=True)
+    gone = {
+        "EEE9001F": ("No requirement printed", None),
+        "EEE9002F": ("No requirement printed", None),
+    }
+    path.write_text(approved(2023, gone).model_dump_json(), encoding="utf-8")
+    candidate = accept_all(tmp_path, but={"removal/EEE9001F"})
+    sitting = Sitting(
+        candidate,
+        review_file(2026, tmp_path),
+        lambda: datetime(2026, 10, 18, tzinfo=UTC),
+    )
+    assert sitting.decide("removal/EEE9001F", "reject") == ()
+    _, snapshot = approve(2026, data=tmp_path)
+    kept = [c for c in snapshot.rules.courses if c.code in gone]
+    assert [(c.code, c.handbook_year) for c in kept] == [("EEE9001F", 2026)]
+    # The next year reads the kept course's words from here, and nothing of the other
+    assert [r for r in snapshot.readings if r.key in gone] == [
+        Reading(
+            entity="courses",
+            key="EEE9001F",
+            place="p. 1",
+            printed="No requirement printed",
+        )
+    ]
+
+
+def test_a_loaded_year_is_replaced_only_when_asked():
+    store = InMemoryRuleRepository()
+    first = approved(2097, {"TST1001F": ("First words", None)})
+    second = approved(2097, {"TST1002F": ("Second words", None)})
+    load(first, store, replace=False)
+    with pytest.raises(YearLoaded):
+        load(second, store, replace=False)
+    assert store.get(2097) == first.rules
+    load(second, store, replace=True)
+    assert store.get(2097) == second.rules

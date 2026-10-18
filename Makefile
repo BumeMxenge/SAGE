@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed sign-in mutation planted-faults
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed sign-in load mutation planted-faults
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -84,11 +84,12 @@ test-integration:
 # How many small faults (mutants) planted in the code the unit tests catch, written to
 # backend/mutation-score.txt. It takes about ten minutes, so CI never runs it. Each run starts
 # afresh, as mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a
-# copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts links
-# put data/ where SEED_FILE looks for it, and experiments/ where the drafter's test reads E2's prompt.
+# copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy
+# of data/ goes where SEED_FILE looks for it, and a link puts experiments/ where the drafter's test
+# reads E2's prompt. A copy, not a link, so a mutant that loses its folder can't write to the real one.
 mutation:
-	@cd backend && rm -rf mutants && ln -sfn ../data data && ln -sfn ../experiments experiments && \
-		trap 'rm -f data experiments' EXIT && \
+	@cd backend && rm -rf mutants data && cp -R ../data data && ln -sfn ../experiments experiments && \
+		trap 'rm -rf data; rm -f experiments' EXIT && \
 		uv run --group mutation mutmut run && \
 		uv run --group mutation mutmut export-cicd-stats > /dev/null && \
 		uv run python scripts/mutation_score.py | tee mutation-score.txt
@@ -103,6 +104,17 @@ seed:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
 		uv run sage seed --user "$(USER_ID)"
+
+# Loads every approved year, each data/rules/<year>/rulebook.json, into local Supabase, as after make
+# check-db wipes it. A year already loaded stops it, as sage load --replace is the way to replace one.
+load:
+	@$(LOCAL_SUPABASE) && cd backend && \
+		for snapshot in ../data/rules/*/rulebook.json; do \
+			[ -e "$$snapshot" ] || { echo "No year is approved yet: sage approve writes one"; exit 1; }; \
+			year=$$(basename "$$(dirname "$$snapshot")") && \
+			SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
+			uv run sage load --year "$$year" || exit 1; \
+		done
 
 # Prints a one-time link that signs Mbali in on the local frontend, with no password and no
 # Microsoft. On a fresh local database it first makes her account and loads her seed. PORT=3001 or

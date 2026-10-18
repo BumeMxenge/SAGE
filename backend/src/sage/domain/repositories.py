@@ -24,12 +24,21 @@ class AccountNotFound(Exception):
     pass
 
 
+class YearInUse(Exception):
+    # A student's plan, or a citation of a passage, uses this handbook year, so it can't be removed
+    pass
+
+
 class RuleRepository(Protocol):
     # Stores every row that isn't there yet and leaves rows already stored as they are
     def add_missing(self, rules: RuleSet) -> None: ...
 
     # Every stored row of one handbook year
     def get(self, year: int) -> RuleSet: ...
+
+    # Makes the stored year exactly these rows, which hold one handbook year's version and rows,
+    # removing whatever it held before. Raises YearInUse while a student's row uses the year.
+    def replace_year(self, rules: RuleSet) -> None: ...
 
     # The latest approved handbook year, or None before any is approved
     def current_year(self) -> int | None: ...
