@@ -13,7 +13,7 @@ from uuid import UUID
 
 from pydantic import JsonValue
 
-from sage.config import LOCAL_HOSTS, get_settings, is_local
+from sage.config import get_settings, is_local
 from sage.ingestion.anthropic import ClaudeDrafter
 from sage.ingestion.ingest import (
     Candidate,
@@ -138,7 +138,7 @@ def project(yes: bool) -> tuple[Client, str]:
             "it for local Supabase, and backend/.env holds the hosted project's"
         )
     host = urlsplit(settings.supabase_url).hostname or settings.supabase_url
-    if host not in LOCAL_HOSTS and not yes:
+    if not is_local(settings.supabase_url) and not yes:
         answer = input(f"This writes to {host}. Type yes to continue: ")
         if answer.strip().lower() != "yes":
             raise SystemExit("Nothing written")
@@ -200,14 +200,25 @@ def run_load(year: int, *, replace: bool, yes: bool) -> None:
         print(f"  {table}: {len(getattr(snapshot.rules, table))}")
 
 
-def run_sign_in(port: int) -> None:
+def local_client() -> Client:
+    # A sign-in link needs no password, so it may only ever sign in to this laptop's Supabase.
+    # sage sign-in and make sign-in-new's script both start here.
     settings = get_settings()
-    # The link needs no password, so it may only ever sign in to this laptop's Supabase
     if not is_local(settings.supabase_url):
         raise SystemExit(
-            "sage sign-in only runs on local Supabase: `make sign-in` points it there"
+            "A sign-in link only runs on local Supabase: make sign-in and make sign-in-new "
+            "point there"
         )
-    client = connect(settings.supabase_url, settings.supabase_secret_key)
+    return connect(settings.supabase_url, settings.supabase_secret_key)
+
+
+def link(token: str, port: int) -> str:
+    # The local frontend's address that swaps the token for a session
+    return f"http://localhost:{port}/?{urlencode({'token_hash': token})}"
+
+
+def run_sign_in(port: int) -> None:
+    client = local_client()
     rules, students = SupabaseRuleRepository(client), SupabaseStudentRepository(client)
     file = json.loads(SEED_FILE.read_text(encoding="utf-8"))
     try:
@@ -224,7 +235,7 @@ def run_sign_in(port: int) -> None:
     if students.profile(account) is None:
         check_read_back(seed(rules, students, load_seed(SEED_FILE, account)))
     # Only the link, so a script such as Playwright's setup can read it
-    print(f"http://localhost:{port}/?{urlencode({'token_hash': token})}")
+    print(link(token, port))
 
 
 def check_read_back(result: SeedResult) -> None:
