@@ -1,7 +1,7 @@
 // Calls to the SAGE backend (FastAPI). openapi-fetch reads every path, request and response from
 // api-types.ts, so no endpoint needs request code of its own. One middleware signs every request in,
 // gives it a time limit and turns every failure into an ApiError, so each screen handles one kind of
-// error.
+// error. Reads go through the queries in queryKeys.ts, and a screen sends a write through dataOf.
 //
 // POST /v1/onboarding/transcript takes the PDF itself, not a form. api-types.ts types that body as a
 // string, which is how openapi-typescript reads format: binary, so its caller passes the File with
@@ -65,3 +65,14 @@ const middleware: Middleware = {
 
 export const client = createFetchClient<paths>({ baseUrl: env.apiUrl })
 client.use(middleware)
+
+// What a write gives back, for a screen's useMutation, as in
+// mutationFn: (body) => dataOf(client.POST('/v1/questionnaire', { body })). The middleware has already
+// thrown an ApiError for any failure, so a result that reaches here succeeded, and its data is the
+// endpoint's answer.
+export async function dataOf<Result extends { data?: unknown; error?: unknown }>(
+  request: Promise<Result>,
+): Promise<Exclude<Result, { error: unknown }>['data']> {
+  const { data } = await request
+  return data as Exclude<Result, { error: unknown }>['data']
+}

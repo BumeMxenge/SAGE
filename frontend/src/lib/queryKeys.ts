@@ -6,15 +6,16 @@
 import { type QueryFunction, type QueryKey, queryOptions } from '@tanstack/react-query'
 import createQueryHooks from 'openapi-react-query'
 import type { paths } from './api-types.ts'
-import { type ApiError, client } from './api.ts'
+import { client } from './api.ts'
 import { queryClient } from './queryClient.ts'
 
 const openapi = createQueryHooks(client)
 
 // openapi-react-query types a read's error as the API's problem body, but the middleware turns every
-// failure into an ApiError, so each read is declared again with that
+// failure into an ApiError. Built again from its key and function, each read takes TanStack Query's
+// default error, which queryClient.ts registers as ApiError.
 function read<TData, TKey extends QueryKey>({ queryKey, queryFn }: { queryKey: TKey; queryFn: QueryFunction<TData, TKey> }) {
-  return queryOptions<TData, ApiError, TData, TKey>({ queryKey, queryFn })
+  return queryOptions({ queryKey, queryFn })
 }
 
 export const queries = {

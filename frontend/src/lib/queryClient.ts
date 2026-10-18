@@ -2,6 +2,14 @@
 import { QueryClient } from '@tanstack/react-query'
 import { ApiError } from './api.ts'
 
+// The middleware in api.ts turns every failed request into an ApiError, so every query's and every
+// mutation's error is typed as one
+declare module '@tanstack/react-query' {
+  interface Register {
+    defaultError: ApiError
+  }
+}
+
 // A read is tried again only when trying again could help: after a network failure, a timeout or a
 // server error (5xx), never after a refusal (4xx). TanStack Query counts failures from 0 and waits 1,
 // 2 and 4 seconds between tries, so this gives the error sheet's three retries with backoff. Writes

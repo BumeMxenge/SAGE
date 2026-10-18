@@ -4,7 +4,7 @@
 // Request refuses jsdom's AbortSignal.
 import type { Session } from '@supabase/supabase-js'
 import { afterEach, expect, it, vi } from 'vitest'
-import { ApiError, client, type Problem } from './api.ts'
+import { ApiError, client, dataOf, type Problem } from './api.ts'
 import { supabase } from './supabase.ts'
 
 afterEach(() => {
@@ -27,9 +27,10 @@ it('brings a refusal back as its code, with its status and extra fields, from a 
     account_student_number: 'QRTILV999',
   }
   let sent: Request | undefined
-  // The transcript goes as the PDF itself, the way lib/api.ts tells its caller to send it
-  const error: unknown = await client
-    .POST('/v1/onboarding/transcript', {
+  // The transcript goes as the PDF itself, the way lib/api.ts tells its caller to send it, and through
+  // dataOf, as a screen's write does
+  const error: unknown = await dataOf(
+    client.POST('/v1/onboarding/transcript', {
       body: new File(['%PDF-1.4 made up'], 'transcript.pdf') as unknown as string,
       bodySerializer: (body) => body,
       headers: { 'Content-Type': 'application/pdf' },
@@ -40,8 +41,8 @@ it('brings a refusal back as its code, with its status and extra fields, from a 
           headers: { 'Content-Type': 'application/problem+json' },
         })
       },
-    })
-    .catch((thrown: unknown) => thrown)
+    }),
+  ).catch((thrown: unknown) => thrown)
 
   expect(error).toBeInstanceOf(ApiError)
   expect(error).toMatchObject({
