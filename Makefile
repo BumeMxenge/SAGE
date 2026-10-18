@@ -106,7 +106,8 @@ seed:
 		uv run sage seed --user "$(USER_ID)"
 
 # Loads every approved year, each data/rules/<year>/rulebook.json, into local Supabase, as after make
-# check-db wipes it. A year already loaded stops it, as sage load --replace is the way to replace one.
+# check-db wipes it. A year held exactly as its snapshot is passed over, so a newly approved year loads
+# beside the others. One held differently stops it, as sage load --replace is the way to replace one.
 load:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		for snapshot in ../data/rules/*/rulebook.json; do \

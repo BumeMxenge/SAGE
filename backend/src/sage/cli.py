@@ -180,15 +180,21 @@ def run_load(year: int, *, replace: bool, yes: bool) -> None:
         ) from None
     client, host = project(yes)
     try:
-        load(snapshot, SupabaseRuleRepository(client), replace=replace)
+        written = load(snapshot, SupabaseRuleRepository(client), replace=replace)
     except YearLoaded:
         raise SystemExit(
-            f"{host} holds {year} already: --replace replaces it"
+            f"{host} holds {year} differently from its snapshot: "
+            f"sage load --year {year} --replace replaces it"
         ) from None
     except YearInUse:
         raise SystemExit(
             f"A student's plan or chat on {host} uses {year}, so the database won't remove it"
         ) from None
+    if not written:
+        print(
+            f"{host} holds {year} exactly as its snapshot already, so it's left as it is"
+        )
+        return
     print(f"Loaded {year}'s approved snapshot onto {host}:")
     for table in RuleSet.model_fields:
         print(f"  {table}: {len(getattr(snapshot.rules, table))}")

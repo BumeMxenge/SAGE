@@ -651,13 +651,15 @@ def test_a_kept_removal_keeps_its_row_and_where_it_was_printed(
     ]
 
 
-def test_a_loaded_year_is_replaced_only_when_asked():
+def test_a_loaded_year_is_passed_over_when_unchanged_and_replaced_only_when_asked():
     store = InMemoryRuleRepository()
     first = approved(2097, {"TST1001F": ("First words", None)})
     second = approved(2097, {"TST1002F": ("Second words", None)})
-    load(first, store, replace=False)
+    assert load(first, store, replace=False) is True
+    # The same snapshot again writes nothing, and a different one is refused until asked
+    assert load(first, store, replace=False) is False
     with pytest.raises(YearLoaded):
         load(second, store, replace=False)
     assert store.get(2097) == first.rules
-    load(second, store, replace=True)
+    assert load(second, store, replace=True) is True
     assert store.get(2097) == second.rules

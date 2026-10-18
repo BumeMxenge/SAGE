@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid5
 
-from sage.domain.base import Row
+from sage.domain.base import Row, canonical
 from sage.domain.repositories import RuleRepository, StudentRepository
 from sage.domain.students import (
     Chat,
@@ -84,7 +84,7 @@ def student_differences(
     problems = []
     for table in _student_tables():
         want, got = _rows(expected, table), _rows(stored, table)
-        if _canonical(want) != _canonical(got):
+        if canonical(want) != canonical(got):
             problems.append(f"{table}: {len(got)} stored, {len(want)} in the file")
     return problems
 
@@ -197,10 +197,3 @@ def _student_tables() -> list[str]:
 
 def _rows(state: StudentState, table: str) -> tuple[Row, ...]:
     return (state.student,) if table == "students" else getattr(state, table)
-
-
-def _canonical(rows: Iterable[Row]) -> list[str]:
-    # Rows as sorted JSON text, so neither row order nor the key order jsonb stores matters
-    return sorted(
-        json.dumps(row.model_dump(mode="json"), sort_keys=True) for row in rows
-    )
