@@ -30,9 +30,6 @@ class YearInUse(Exception):
 
 
 class RuleRepository(Protocol):
-    # Stores every row that isn't there yet and leaves rows already stored as they are
-    def add_missing(self, rules: RuleSet) -> None: ...
-
     # Every stored row of one handbook year
     def get(self, year: int) -> RuleSet: ...
 

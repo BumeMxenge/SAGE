@@ -9,7 +9,7 @@ import pytest
 from sage.adapters.memory.rules import InMemoryRuleRepository
 from sage.adapters.memory.students import InMemoryStudentRepository
 from sage.domain.repositories import RuleRepository, StudentRepository, YearInUse
-from sage.domain.rules import Course, HandbookVersion, Passage, RuleSet
+from sage.domain.rules import Course, HandbookVersion, RuleSet
 from sage.domain.students import (
     Chat,
     Citation,
@@ -266,26 +266,15 @@ def test_a_question_and_its_reply_are_stored_together_in_order(store):
 
 @pytest.mark.integration
 def test_a_cited_reply_reads_back_with_its_passage(
-    stores, new_account, seed_file, secret
+    stores, new_account, seed_file, approved_2026
 ):
     # Supabase only: it joins each citation to its passage, which the fake has no table for. The
-    # passage gets a year of its own, removed before the asserts.
+    # passage is one the approved 2026 holds, and her account takes the citation with it.
     rules, students = stores
     account = new_account()
     mbali = load_seed(seed_file, account.id)
     seed(rules, students, mbali)
-    passage = Passage(
-        id=uuid4(),
-        handbook_year=2098,
-        source="Test handbook",
-        section="Test",
-        page=7,
-        position=1,
-        content="Test",
-    )
-    rules.add_missing(
-        RuleSet(handbook_versions=(HandbookVersion(year=2098),), passages=(passage,))
-    )
+    passage = approved_2026.passages[0]
     chat = mbali.chats[0]
     asked = Message(
         id=uuid4(), chat_id=chat.id, student_id=account.id, role="user", content="Test"
@@ -295,17 +284,12 @@ def test_a_cited_reply_reads_back_with_its_passage(
         passage_id=passage.id,
         position=1,
         quote="Test",
-        source="Test handbook",
-        section="Test",
-        page=7,
+        source=passage.source,
+        section=passage.section,
+        page=passage.page,
     )
     students.add_exchange(asked, answered, [citation])
     reply = students.messages(account.id, chat.id)[-1]
-    # A citation holds its passage, so the messages, and their citations, go first
-    secret.table("messages").delete().in_(
-        "id", [str(asked.id), str(answered.id)]
-    ).execute()
-    secret.table("handbook_versions").delete().eq("year", 2098).execute()
     assert reply.citations == (citation,)
 
 
