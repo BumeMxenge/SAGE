@@ -40,11 +40,5 @@ export default {
         'scale-unlimited/declaration-strict-value': null,
       },
     },
-    // The starter page's styles predate these rules. The shell branch replaces them and removes this
-    // exemption. Only the rules they fail today are off.
-    {
-      files: ['src/styles/global.css'],
-      rules: { 'color-no-hex': null, 'scale-unlimited/declaration-strict-value': null },
-    },
   ],
 }

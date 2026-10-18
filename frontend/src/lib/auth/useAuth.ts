@@ -1,21 +1,11 @@
 // Sign-in state for any component: who is signed in and their name, plus sign-in and sign-out
 // actions
-import type { AuthError, Session } from '@supabase/supabase-js'
+import type { Session } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
-import { env } from '@/lib/env.ts'
 import { queryClient } from '@/lib/queryClient.ts'
 import { supabase } from '@/lib/supabase.ts'
 import { forgetName, keepName, type Name, nameFromGraph, storedName } from './name.ts'
-
-// A link from `make sign-in` carries a one-time token, swapped for a session here once per page
-// load, as React runs effects twice in development. Only on local Supabase: on the hosted site,
-// such a link could sign a student into someone else's account. Otherwise Supabase starts up as
-// usual, finishing a sign-in that has just come back from Microsoft.
-const localSupabase = ['127.0.0.1', 'localhost'].includes(new URL(env.supabaseUrl).hostname)
-const linkToken = localSupabase ? new URLSearchParams(window.location.search).get('token_hash') : null
-const started: Promise<{ error: AuthError | null }> = linkToken
-  ? supabase.auth.verifyOtp({ token_hash: linkToken, type: 'magiclink' })
-  : supabase.auth.initialize()
+import { signInFinished } from './session.ts'
 
 // Accounts whose name Graph was asked for on this page, so React's second subscription in
 // development, or a later event carrying the same Microsoft token, never asks again
@@ -28,11 +18,10 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // A refused sign-in shows its reason once. The address bar loses the refusal Microsoft or
-    // Supabase put there, or a link's token, which is spent either way.
-    void started.then(({ error }) => {
+    // A refused sign-in shows its reason. Every sign-in comes back to /, which always redirects, so the
+    // redirect clears the refusal Microsoft or Supabase put in the address bar, or a link's token.
+    void signInFinished.then(({ error }) => {
       if (error) setError(error.message)
-      if (error || linkToken) window.history.replaceState(null, '', window.location.pathname)
     })
     let accountId: string | undefined
     // Runs once with the current session, then on every sign-in, sign-out and token refresh

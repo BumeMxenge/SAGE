@@ -12,7 +12,6 @@ import type { components, paths } from './api-types.ts'
 import { env } from './env.ts'
 import { supabase } from './supabase.ts'
 
-export type Health = components['schemas']['Health']
 export type Problem = components['schemas']['Problem']
 
 // The ways a request can fail before the API can explain why: no connection, no answer in time, or an
@@ -66,11 +65,3 @@ const middleware: Middleware = {
 
 export const client = createFetchClient<paths>({ baseUrl: env.apiUrl })
 client.use(middleware)
-
-export async function getHealth(signal?: AbortSignal): Promise<Health> {
-  const response = await fetch(`${env.apiUrl}/health`, { signal })
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`)
-  }
-  return (await response.json()) as Health
-}
