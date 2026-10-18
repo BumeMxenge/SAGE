@@ -1,7 +1,7 @@
 <!-- How to fill ATP-1's label sheets from print, and check each one before it's committed -->
 # ATP-1 label sheets
 
-ATP-1 measures how well ingestion reads the printed sources, so its answers come from print alone: the handbooks, and the workbooks as Excel shows them, never anything SAGE produced. Each sheet names what to label and leaves every value blank. Once a sheet is filled and passes the check, it's committed on its own, before anything runs against it.
+ATP-1 measures how well ingestion reads the printed sources, so its answers come from print alone: the handbooks, and the workbooks as Excel shows them, never anything SAGE produced. Each sheet was made naming only what to label, with every value blank, and filled from print by hand. Once a sheet was filled and passed the check, it was committed on its own, before anything ran against it.
 
 | Sheet | Rows | Label from |
 | --- | --- | --- |

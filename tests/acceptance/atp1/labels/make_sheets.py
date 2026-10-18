@@ -33,12 +33,10 @@ SEEN = {"CON2026S", "CON3053S", "CON3054S"}
 SEED = 4022
 
 CODE = re.compile(r"\b[A-Z]{3}\d{4}[A-Z]\b")
-PLACEHOLDER = re.compile(
-    r"\b([A-Z]{3}\d)xxx\b"
-)  # such as CSC3xxx, any third-year CSC course
-HEADING = re.compile(
-    r"[A-Z]{3}\d{4}[A-Z](/[A-Z])?\b"
-)  # EEE4022F/S heads both terms' entry
+# Such as CSC3xxx, any third-year CSC course
+PLACEHOLDER = re.compile(r"\b([A-Z]{3}\d)xxx\b")
+# Such as EEE4022F/S, which heads both terms' entry
+HEADING = re.compile(r"[A-Z]{3}\d{4}[A-Z](/[A-Z])?\b")
 NAMES_A_COURSE = re.compile(r"[A-Z]{3}\d{4}")  # also EEE3097/8S, which names two
 ENTRY_RULE = (
     "The printed page of the entry's heading. Each entry prints one 'NQF credits at NQF level' "
