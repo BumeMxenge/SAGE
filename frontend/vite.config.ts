@@ -23,6 +23,17 @@ export default defineConfig({
   // serves SVG imports from allowed folders, and the default is this one.
   server: { ...port, fs: { allow: [searchForWorkspaceRoot(import.meta.dirname), '../assets/brand'] } },
   preview: port,
-  // css: true, because Vitest otherwise turns every stylesheet, even ?raw, into an empty string
-  test: { environment: 'jsdom', css: true, include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts'] },
+  // css: true, because Vitest otherwise turns every stylesheet, even ?raw, into an empty string. The
+  // settings are made up, on .test hosts that never resolve, so no test reads frontend/.env or reaches
+  // a real service.
+  test: {
+    environment: 'jsdom',
+    css: true,
+    include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts'],
+    env: {
+      VITE_API_URL: 'http://api.sage.test',
+      VITE_SUPABASE_URL: 'http://supabase.sage.test',
+      VITE_SUPABASE_PUBLISHABLE_KEY: 'made-up-publishable-key',
+    },
+  },
 })

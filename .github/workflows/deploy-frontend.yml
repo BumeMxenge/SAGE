@@ -22,7 +22,6 @@ defaults:
 
 env:
   SHA: ${{ github.event.workflow_run.head_sha || github.sha }} # the commit CI tested (or main's tip on a manual run)
-  NODE_VERSION: 24 # the same Node as CI's, in ci.yml
 
 jobs:
   deploy:
@@ -51,7 +50,7 @@ jobs:
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: frontend/.nvmrc # the same Node as CI's
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
