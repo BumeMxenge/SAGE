@@ -38,6 +38,14 @@ def test_ids_follow_the_account(seed_file):
     assert {p.id for p in mine.plans}.isdisjoint(p.id for p in theirs.plans)
 
 
+def test_her_plans_and_hearts_name_only_approved_2026_courses(seed_file, approved_2026):
+    # So an approval that drops one of her courses fails here, before a plan or a heart points at
+    # nothing. Her history keeps its own codes, which the year's equivalences cover.
+    student = load_seed(seed_file, ACCOUNT)
+    named = {row.course_code for row in (*student.plan_courses, *student.favourites)}
+    assert named <= {course.code for course in approved_2026.courses}
+
+
 def test_rows_belong_to_the_account(seed_file):
     student = load_seed(seed_file, ACCOUNT)
     assert student.student.id == ACCOUNT
