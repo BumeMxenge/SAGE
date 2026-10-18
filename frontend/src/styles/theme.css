@@ -55,6 +55,11 @@
   /* Behind dialogs, and inside the shadows */
   --color-scrim: rgb(30 36 40 / 32%);
   --color-shadow: rgb(30 36 40 / 9%);
+
+  /* Brand: the logo's navy for decoration, and sand, the warm panel behind the sign-in highlights,
+     which text sits on */
+  --color-brand-navy: #16345c;
+  --color-brand-sand: #f6f4ee;
 }
 
 /* Dark */
@@ -103,4 +108,8 @@
   /* Behind dialogs, and inside the shadows (50% black, as measured) */
   --color-scrim: rgb(0 0 0 / 60%);
   --color-shadow: rgb(0 0 0 / 50%);
+
+  /* Brand: navy lifts as the logo's navy petal does in dark, and sand becomes a warm near-black */
+  --color-brand-navy: #5580bd;
+  --color-brand-sand: #1a1916;
 }

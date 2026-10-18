@@ -45,7 +45,8 @@ function value(name: string, theme: Theme): string {
   return found
 }
 
-const surfaces = ['--color-surface', '--color-surface-raised', '--color-surface-muted', '--color-surface-field']
+// Brand sand is the sign-in highlights' panel, which text, dots and focus rings sit on
+const surfaces = ['--color-surface', '--color-surface-raised', '--color-surface-muted', '--color-surface-field', '--color-brand-sand']
 const courseColours = [...tokens.light.keys()].filter((name) => name.startsWith('--color-course-'))
 
 // Placeholders use --color-text-secondary, so its check on --color-surface-field is the one a dark

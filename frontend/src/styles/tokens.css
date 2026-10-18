@@ -14,6 +14,11 @@
   --color-sign-in: #333b3f;
   --color-sign-in-hover: #22282b;
 
+  /* Brand colours from the logo, for decoration only: the shapes behind the sign-in page and Account
+     Created. Never text or a control. Navy and sand change with the theme, so they are in theme.css. */
+  --color-brand-coral: #ea5b4c;
+  --color-brand-teal: #4cae94;
+
   /* Course colours, in the order the timetable gives them out. White text on each reaches 4.5:1. */
   --color-course-teal: #1e846a;
   --color-course-orange: #c6531f;
