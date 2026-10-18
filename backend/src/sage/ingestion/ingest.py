@@ -12,7 +12,6 @@ from pathlib import Path
 
 from pydantic import JsonValue
 
-from sage.domain.drafting import Drafter
 from sage.ingestion import (
     checks,
     complementary,
@@ -23,6 +22,7 @@ from sage.ingestion import (
     timetable,
     translate,
 )
+from sage.ingestion.drafting import Drafter
 from sage.ingestion.names import title_case
 from sage.ingestion.review import Problem, Review, Snapshot, compare
 from sage.shared.base import Row, canonical

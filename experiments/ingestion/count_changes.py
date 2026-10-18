@@ -6,7 +6,7 @@
 import sys
 from collections.abc import Hashable
 
-from sage.services.ingest import approved_snapshot
+from sage.ingestion.ingest import approved_snapshot
 from sage.shared.rules import RuleSet
 
 # What a year holds of one kind, by what identifies each

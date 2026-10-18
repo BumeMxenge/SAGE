@@ -12,8 +12,8 @@ from typing import Literal
 
 from pydantic import TypeAdapter, ValidationError
 
-from sage.domain.drafting import Drafter
 from sage.ingestion import grammar
+from sage.ingestion.drafting import Drafter
 from sage.shared.base import Row
 from sage.shared.rules import EntryRule, Refer, RefusalCause
 

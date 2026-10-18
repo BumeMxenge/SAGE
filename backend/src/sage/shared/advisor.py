@@ -1,4 +1,4 @@
-# The interface the advisor will implement. Until it exists, a stand-in in services/stubs.py fills it,
+# The interface the advisor will implement. Until it exists, a stand-in in engine/stubs.py fills it,
 # so swapping the real advisor in never touches a route.
 from typing import Protocol
 from uuid import UUID

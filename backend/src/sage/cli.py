@@ -13,11 +13,9 @@ from uuid import UUID
 
 from pydantic import JsonValue
 
-from sage.adapters.anthropic import ClaudeDrafter
 from sage.config import LOCAL_HOSTS, get_settings, is_local
-from sage.ingestion.review import DECISIONS, TREES, Review, ReviewRow, tree_fault
-from sage.ingestion.sources import SourceError
-from sage.services.ingest import (
+from sage.ingestion.anthropic import ClaudeDrafter
+from sage.ingestion.ingest import (
     Candidate,
     Sitting,
     YearLoaded,
@@ -27,6 +25,8 @@ from sage.services.ingest import (
     review_file,
     review_year,
 )
+from sage.ingestion.review import DECISIONS, TREES, Review, ReviewRow, tree_fault
+from sage.ingestion.sources import SourceError
 from sage.shared.repositories import AccountNotFound, YearInUse
 from sage.shared.rules import DeltaTable, RuleSet
 from sage.shared.seed import (

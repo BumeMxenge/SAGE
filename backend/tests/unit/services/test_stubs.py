@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from sage.services.stubs import (
+from sage.engine.stubs import (
     FIXED_REPLY,
     UNCHECKED,
     FixedAdvisor,

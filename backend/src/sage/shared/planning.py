@@ -1,4 +1,4 @@
-# The interfaces the planning engine will implement. Until it exists, stand-ins in services/stubs.py
+# The interfaces the planning engine will implement. Until it exists, stand-ins in engine/stubs.py
 # fill them, so swapping the engine in never touches a route.
 from collections.abc import Mapping, Sequence
 from typing import Literal, Protocol

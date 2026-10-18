@@ -8,8 +8,8 @@ import httpx2
 import pytest
 from anthropic import Anthropic
 
-from sage.adapters import anthropic as adapter
-from sage.adapters.anthropic import ClaudeDrafter
+from sage.ingestion import anthropic as adapter
+from sage.ingestion.anthropic import ClaudeDrafter
 
 # What E2 sent as the system prompt: its prompt.md from after the opening note for people, split as
 # its drafting.py splits it

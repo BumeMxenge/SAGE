@@ -19,7 +19,7 @@ from sage.api.routes import (
     questionnaire,
 )
 from sage.config import get_settings
-from sage.services.stubs import FixedAdvisor, InterimEligibility, SeededPlanGenerator
+from sage.engine.stubs import FixedAdvisor, InterimEligibility, SeededPlanGenerator
 from sage.shared.api import problems
 from sage.shared.errors import InternalError
 from sage.shared.rulebook import Rulebook

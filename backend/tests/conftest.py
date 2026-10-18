@@ -13,8 +13,8 @@ from fpdf import FPDF
 
 from sage.ingestion.complementary import MEETING_COLUMNS, OFFERING_COLUMNS
 from sage.ingestion.handbook import Handbook, Page
+from sage.ingestion.ingest import approved_snapshot
 from sage.main import create_app
-from sage.services.ingest import approved_snapshot
 from sage.shared.rules import ResultSymbol, RuleSet
 from sage.shared.seed import SEED_FILE
 

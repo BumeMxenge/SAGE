@@ -22,7 +22,7 @@ class Fault(NamedTuple):
     find: str
     replace: str
     stand_in: bool = (
-        False  # in services/stubs.py, so it goes when the engine replaces the stand-ins
+        False  # in engine/stubs.py, so it goes when the engine replaces the stand-ins
     )
 
 
@@ -142,7 +142,7 @@ FAULTS = [
     Fault(
         17,
         "eligibility (stand-in): failed course counts as passed",
-        "src/sage/services/stubs.py",
+        "src/sage/engine/stubs.py",
         'if symbols[line.result].outcome in ("pass", "credited")',
         'if symbols[line.result].outcome != "credited"',
         stand_in=True,
@@ -150,7 +150,7 @@ FAULTS = [
     Fault(
         18,
         "eligibility (stand-in): equivalences ignored",
-        "src/sage/services/stubs.py",
+        "src/sage/engine/stubs.py",
         "covered.setdefault(rule.counts_as, rule.course_code)",
         "pass",
         stand_in=True,

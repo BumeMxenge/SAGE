@@ -11,9 +11,7 @@ from datetime import UTC, datetime, time, timedelta
 import openpyxl
 import pytest
 
-from sage.ingestion.review import Snapshot
-from sage.ingestion.sources import Reading
-from sage.services.ingest import (
+from sage.ingestion.ingest import (
     Sitting,
     YearLoaded,
     approve,
@@ -23,6 +21,8 @@ from sage.services.ingest import (
     review_file,
     review_year,
 )
+from sage.ingestion.review import Snapshot
+from sage.ingestion.sources import Reading
 from sage.shared.memory.rules import InMemoryRuleRepository
 from sage.shared.rules import (
     AllOf,

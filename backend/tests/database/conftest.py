@@ -13,8 +13,8 @@ from postgrest import APIError
 from supabase import Client, create_client
 
 from sage.config import is_local
+from sage.ingestion.ingest import approved_snapshot, load
 from sage.ingestion.review import Snapshot
-from sage.services.ingest import approved_snapshot, load
 from sage.shared.seed import load_seed, seed
 from sage.shared.students import StudentState
 from sage.shared.supabase.rules import SupabaseRuleRepository

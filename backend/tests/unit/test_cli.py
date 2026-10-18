@@ -11,9 +11,9 @@ import pytest
 import sage.cli
 from sage.config import get_settings
 from sage.ingestion.checks import Check, Failure
+from sage.ingestion.ingest import Candidate, Sitting
 from sage.ingestion.sources import Reading
 from sage.ingestion.translate import Translations
-from sage.services.ingest import Candidate, Sitting
 from sage.shared.memory.rules import InMemoryRuleRepository
 from sage.shared.memory.students import InMemoryStudentRepository
 from sage.shared.rules import (
