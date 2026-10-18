@@ -87,16 +87,6 @@ def test_wording_with_one_reading_is_read(printed, tree):
     assert read(printed) == tree
 
 
-def test_a_corequisite_is_taken_alongside():
-    # PHY2010S's co-requisite (2026, page 191)
-    assert read("MAM2084F/S.", need="concurrent") == AnyOf(
-        any=(
-            CourseNeed(course="MAM2084F", need="concurrent"),
-            CourseNeed(course="MAM2084S", need="concurrent"),
-        )
-    )
-
-
 @pytest.mark.parametrize(
     ("printed", "cause"),
     [

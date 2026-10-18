@@ -1,20 +1,11 @@
 // Sign-in state for any component: who is signed in and their name, plus sign-in and sign-out
 // actions
-import type { AuthError, Session } from '@supabase/supabase-js'
+import type { Session } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
-import { env } from '../../lib/env.ts'
-import { supabase } from '../../lib/supabase.ts'
+import { queryClient } from '@/lib/queryClient.ts'
+import { supabase } from '@/lib/supabase.ts'
 import { forgetName, keepName, type Name, nameFromGraph, storedName } from './name.ts'
-
-// A link from `make sign-in` carries a one-time token, swapped for a session here once per page
-// load, as React runs effects twice in development. Only on local Supabase: on the hosted site,
-// such a link could sign a student into someone else's account. Otherwise Supabase starts up as
-// usual, finishing a sign-in that has just come back from Microsoft.
-const localSupabase = ['127.0.0.1', 'localhost'].includes(new URL(env.supabaseUrl).hostname)
-const linkToken = localSupabase ? new URLSearchParams(window.location.search).get('token_hash') : null
-const started: Promise<{ error: AuthError | null }> = linkToken
-  ? supabase.auth.verifyOtp({ token_hash: linkToken, type: 'magiclink' })
-  : supabase.auth.initialize()
+import { signInFinished } from './session.ts'
 
 // Accounts whose name Graph was asked for on this page, so React's second subscription in
 // development, or a later event carrying the same Microsoft token, never asks again
@@ -27,11 +18,10 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // A refused sign-in shows its reason once. The address bar loses the refusal Microsoft or
-    // Supabase put there, or a link's token, which is spent either way.
-    void started.then(({ error }) => {
+    // A refused sign-in shows its reason. Every sign-in comes back to /, which always redirects, so the
+    // redirect clears the refusal Microsoft or Supabase put in the address bar, or a link's token.
+    void signInFinished.then(({ error }) => {
       if (error) setError(error.message)
-      if (error || linkToken) window.history.replaceState(null, '', window.location.pathname)
     })
     let accountId: string | undefined
     // Runs once with the current session, then on every sign-in, sign-out and token refresh
@@ -59,7 +49,9 @@ export function useAuth() {
     return () => data.subscription.unsubscribe()
   }, [])
 
-  async function signIn() {
+  // chooseAccount makes Microsoft show its account picker rather than reuse the account it
+  // remembers, for the wrong-account page's Use a Different Account
+  async function signIn({ chooseAccount = false } = {}) {
     setError(null)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'azure', // Microsoft, through the Azure provider set up in Supabase
@@ -68,14 +60,18 @@ export function useAuth() {
         // Not profile, which would put every student's name in Supabase.
         scopes: 'email User.Read',
         redirectTo: `${window.location.origin}/`, // come back to this site, local or hosted
+        queryParams: chooseAccount ? { prompt: 'select_account' } : undefined,
       },
     })
     if (error) setError(error.message) // on success the browser has already left for Microsoft
   }
 
+  // The caller then goes to /sign-in. Everything read for this account leaves the cache with it, so
+  // the next person to sign in on this browser never sees it.
   async function signOut() {
     const { error } = await supabase.auth.signOut()
     if (error) setError(error.message)
+    else queryClient.clear()
   }
 
   return { session, name, loading, error, signIn, signOut }

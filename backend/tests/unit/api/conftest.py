@@ -1,6 +1,6 @@
 # The app with its stores swapped for in-memory fakes, and a made-up token for each kind of account.
-# Mbali's data is seeded twice, on her account and on another student's, so tests can check neither
-# ever sees the other's rows.
+# The rules are the approved 2026, and Mbali's data is seeded twice on them, on her account and on
+# another student's, so tests can check neither ever sees the other's rows.
 from collections.abc import Callable
 from uuid import UUID
 
@@ -22,12 +22,13 @@ from tests.unit.api.accounts import MBALI, QRTILV, ZVSORW
 
 @pytest.fixture
 def stores(
-    seed_file, result_symbols
+    seed_file, result_symbols, approved_2026
 ) -> tuple[InMemoryRuleRepository, InMemoryStudentRepository]:
     rules, students = (
         InMemoryRuleRepository(result_symbols),
         InMemoryStudentRepository(),
     )
+    rules.replace_year(approved_2026)
     for account in (MBALI, ZVSORW):
         seed(rules, students, load_seed(seed_file, account))
     return rules, students

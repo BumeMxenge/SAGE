@@ -29,13 +29,7 @@
   },
   "overrides": [
     // These tools read a default export
-    { "files": ["vite.config.ts", "stylelint.config.js"], "rules": { "import/no-default-export": "off" } },
-    { "files": ["src/components/brand/Icon/icons.ts", "src/components/brand/Logo/Logo.tsx"], "rules": { "no-restricted-imports": "off" } },
-    // The starter page predates these rules. The shell branch replaces it and removes this exemption.
-    // Each rule listed is one it fails today, and nothing else is exempt.
-    {
-      "files": ["src/app/App.tsx"],
-      "rules": { "no-nested-ternary": "off", "jsx-a11y/prefer-tag-over-role": "off", "import/no-default-export": "off" }
-    }
+    { "files": ["vite.config.ts", "stylelint.config.js", "playwright.config.ts"], "rules": { "import/no-default-export": "off" } },
+    { "files": ["src/components/brand/Icon/icons.ts", "src/components/brand/Logo/Logo.tsx"], "rules": { "no-restricted-imports": "off" } }
   ]
 }

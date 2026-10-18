@@ -16,7 +16,7 @@ def test_a_row_cannot_point_at_another_students_plan_or_chat(
     secret, mbali, stranger, refused
 ):
     plan_course = {
-        "plan_id": str(mbali.student.plans[0].id),
+        "plan_id": str(mbali.plans[0].id),
         "student_id": str(stranger.id),
         "course_code": "HUB4049F",  # a real 2026 course that isn't in her first plan
         "handbook_year": 2026,
@@ -27,7 +27,7 @@ def test_a_row_cannot_point_at_another_students_plan_or_chat(
         "plan_courses_plan_id_student_id_fkey",
     )
     message = {
-        "chat_id": str(mbali.student.chats[0].id),
+        "chat_id": str(mbali.chats[0].id),
         "student_id": str(stranger.id),
         "role": "user",
         "content": "Hi",
@@ -40,9 +40,9 @@ def test_a_row_cannot_point_at_another_students_plan_or_chat(
 
 
 def test_a_compared_pair_stored_in_the_wrong_order_is_refused(secret, mbali, refused):
-    low, high = sorted(plan.id for plan in mbali.student.plans[:2])
+    low, high = sorted(plan.id for plan in mbali.plans[:2])
     chat = {
-        "student_id": str(mbali.student.student.id),
+        "student_id": str(mbali.student.id),
         "plan_id": str(high),
         "other_plan_id": str(low),
     }
@@ -51,7 +51,7 @@ def test_a_compared_pair_stored_in_the_wrong_order_is_refused(secret, mbali, ref
 
 def test_an_unknown_result_symbol_is_refused(secret, mbali, refused):
     line = {
-        "student_id": str(mbali.student.student.id),
+        "student_id": str(mbali.student.id),
         "academic_year": 2025,
         "term": "sem1",
         "course_code": "TST1000F",
@@ -66,7 +66,7 @@ def test_an_unknown_result_symbol_is_refused(secret, mbali, refused):
     )
 
 
-def test_a_slot_curriculum_must_be_in_its_slots_year(secret, mbali):
+def test_a_slot_curriculum_must_be_in_its_slots_year(secret, approved_2026):
     curriculum = {
         "handbook_year": 2099,
         "code": "EB011EEE05",
@@ -74,7 +74,7 @@ def test_a_slot_curriculum_must_be_in_its_slots_year(secret, mbali):
         "department": "Test",
     }
     link = {
-        "slot_id": str(mbali.rules.timetable_slots[0].id),
+        "slot_id": str(approved_2026.timetable_slots[0].id),
         "handbook_year": 2099,
         "curriculum_code": "EB011EEE05",
     }
@@ -89,7 +89,7 @@ def test_a_slot_curriculum_must_be_in_its_slots_year(secret, mbali):
 
 
 def test_a_reason_names_only_a_plan_in_its_own_set(secret, mbali):
-    student_id = str(mbali.student.student.id)
+    student_id = str(mbali.student.id)
     plan_set = {"student_id": student_id, "period": 2026, "version": 2}
     other_set = secret.table("plan_sets").insert(plan_set).execute().data[0]["id"]
     reason = {
@@ -98,7 +98,7 @@ def test_a_reason_names_only_a_plan_in_its_own_set(secret, mbali):
         "kind": "included",
         "message": "Test",
     }
-    naming_a_plan = reason | {"plan_id": str(mbali.student.plans[0].id)}
+    naming_a_plan = reason | {"plan_id": str(mbali.plans[0].id)}
     with pytest.raises(APIError) as error:
         secret.table("plan_reasons").insert(naming_a_plan).execute()
     whole_set = secret.table("plan_reasons").insert(reason).execute().data
@@ -108,7 +108,7 @@ def test_a_reason_names_only_a_plan_in_its_own_set(secret, mbali):
 
 
 def test_two_messages_sent_together_get_increasing_times(secret, mbali):
-    chat = mbali.student.chats[0]
+    chat = mbali.chats[0]
     turn = {
         "chat_id": str(chat.id),
         "student_id": str(chat.student_id),
@@ -134,7 +134,7 @@ def test_a_slot_with_times_but_no_day_is_kept(secret, mbali):
 
 
 def test_only_a_reply_can_refer_or_offer_a_plan(secret, mbali, refused):
-    chat = mbali.student.chats[0]
+    chat = mbali.chats[0]
     question = {
         "chat_id": str(chat.id),
         "student_id": str(chat.student_id),
@@ -148,7 +148,7 @@ def test_only_a_reply_can_refer_or_offer_a_plan(secret, mbali, refused):
 
 def test_deleting_the_plan_a_reply_offers_clears_the_offer(secret, mbali):
     # The offered plan sits in a set of its own, so deleting it leaves her seeded plans alone
-    student_id = str(mbali.student.student.id)
+    student_id = str(mbali.student.id)
     plan_set = {"student_id": student_id, "period": 2026, "version": 3}
     set_id = secret.table("plan_sets").insert(plan_set).execute().data[0]["id"]
     plan = {
@@ -159,7 +159,7 @@ def test_deleting_the_plan_a_reply_offers_clears_the_offer(secret, mbali):
     }
     plan_id = secret.table("plans").insert(plan).execute().data[0]["id"]
     reply = {
-        "chat_id": str(mbali.student.chats[0].id),
+        "chat_id": str(mbali.chats[0].id),
         "student_id": student_id,
         "role": "assistant",
         "content": "Test",

@@ -35,7 +35,7 @@ NOT_HERS = {
 @pytest.fixture
 def her(seed_file) -> StudentState:
     # Her rows as seeded, for the ids the requests name
-    return load_seed(seed_file, MBALI).student
+    return load_seed(seed_file, MBALI)
 
 
 @pytest.fixture

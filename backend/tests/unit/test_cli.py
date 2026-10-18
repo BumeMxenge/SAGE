@@ -1,6 +1,7 @@
 # Checks `sage seed` asks before writing anywhere but this laptop, `sage sign-in` refuses to run
-# anywhere else, and `sage review` walks a person through the pending rows. The database is replaced
-# by the in-memory fakes, so these tests never reach a real project.
+# anywhere else and makes nothing before her plans' year is loaded, and `sage review` walks a person
+# through the pending rows. The database is replaced by the in-memory fakes, so these tests never
+# reach a real project.
 import json
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
@@ -30,13 +31,14 @@ ACCOUNT = UUID("00000000-0000-4000-8000-000000000001")
 
 
 @pytest.fixture
-def opened(monkeypatch):
-    # Hands the command the fakes instead of Supabase, and records each connection it opens
+def opened(monkeypatch, approved_2026):
+    # Hands the command the fakes instead of Supabase, with the approved 2026 loaded, and records
+    # each connection it opens
     urls = []
+    rules = InMemoryRuleRepository()
+    rules.replace_year(approved_2026)
     monkeypatch.setattr(sage.cli, "connect", lambda url, secret_key: urls.append(url))
-    monkeypatch.setattr(
-        sage.cli, "SupabaseRuleRepository", lambda client: InMemoryRuleRepository()
-    )
+    monkeypatch.setattr(sage.cli, "SupabaseRuleRepository", lambda client: rules)
     monkeypatch.setattr(
         sage.cli,
         "SupabaseStudentRepository",
@@ -96,6 +98,21 @@ def test_sign_in_refuses_a_hosted_project(opened, database):
     with pytest.raises(SystemExit, match="only runs on local Supabase"):
         sage.cli.run_sign_in(3000)
     assert opened == []
+
+
+def test_sign_in_makes_nothing_until_her_plans_year_is_loaded(
+    opened, database, monkeypatch
+):
+    # Local Supabase before make load, so not even her account is made
+    database("http://127.0.0.1:54321")
+    monkeypatch.setattr(
+        sage.cli, "SupabaseRuleRepository", lambda client: InMemoryRuleRepository()
+    )
+    monkeypatch.setattr(
+        sage.cli, "sign_in_token", lambda client, email: pytest.fail("made her account")
+    )
+    with pytest.raises(SystemExit, match="make load"):
+        sage.cli.run_sign_in(3000)
 
 
 def made_up_year() -> Candidate:

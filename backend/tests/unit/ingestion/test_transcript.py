@@ -55,7 +55,7 @@ def test_the_fixture_reads_as_her_seeded_history(transcript_pages, seed_file):
         )
         for line in transcript.lines
     ]
-    seeded = load_seed(seed_file, account).student.course_history
+    seeded = load_seed(seed_file, account).course_history
     assert len(read) == len(seeded) == 34
     assert set(read) == set(seeded)
     assert not any(line.unverified for line in transcript.lines)

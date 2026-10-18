@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed sign-in load mutation planted-faults
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -82,21 +82,35 @@ test-integration:
 		SAGE_TEST_SUPABASE_URL="$$API_URL" SAGE_TEST_PUBLISHABLE_KEY="$$PUBLISHABLE_KEY" \
 		SAGE_TEST_SECRET_KEY="$$SECRET_KEY" uv run pytest -m integration
 
+# The UI checks: axe, the keyboard walk and the parity images, in light and dark, against this
+# worktree's frontend on PORT (3000 by default), which Playwright starts if it isn't running. They
+# need local Supabase and the backend (make dev), so CI never runs them. The first run downloads
+# Playwright's Chromium.
+check-ui:
+	@$(SUPABASE) status > /dev/null 2>&1 || \
+		{ echo "Local Supabase isn't running: start Docker, then run npx supabase@2.120.0 start in ~/SAGE"; exit 1; }
+	@curl --silent --fail --max-time 5 --output /dev/null http://localhost:8000/health || \
+		{ echo "The backend isn't running: run make dev in ~/SAGE"; exit 1; }
+	@cd frontend && npx playwright install chromium && npx playwright test
+
 # How many small faults (mutants) planted in the code the unit tests catch, written to
 # backend/mutation-score.txt. It takes about ten minutes, so CI never runs it. Each run starts
 # afresh, as mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a
 # copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy
-# of data/ goes where SEED_FILE looks for it, and a link puts experiments/ where the drafter's test
-# reads E2's prompt. A copy, not a link, so a mutant that loses its folder can't write to the real one.
+# of data/ goes where SEED_FILE and DATA look for it, and a link puts experiments/ where the
+# drafter's test reads E2's prompt. A copy, not a link, so a mutant that loses its folder can't
+# write to the real one. mutmut runs several test sessions at once, so SAGE_TEST_TEMP gives each its
+# own temporary folder.
 mutation:
 	@cd backend && rm -rf mutants data && cp -R ../data data && ln -sfn ../experiments experiments && \
-		trap 'rm -rf data; rm -f experiments' EXIT && \
+		export SAGE_TEST_TEMP=$$(mktemp -d) && \
+		trap 'rm -rf data "$$SAGE_TEST_TEMP"; rm -f experiments' EXIT && \
 		uv run --group mutation mutmut run && \
 		uv run --group mutation mutmut export-cicd-stats > /dev/null && \
 		uv run python scripts/mutation_score.py | tee mutation-score.txt
 
-# The 24 faults my test review planted by hand, each in a copy of the backend, and the test that
-# caught it, if any. About five minutes.
+# The 26 planted faults, each in a copy of the backend, and the test that caught it, if any: the 24
+# from my test review, and two in the review and approval. About five minutes.
 planted-faults:
 	@cd backend && uv run python scripts/planted_faults.py
 
@@ -107,7 +121,8 @@ seed:
 		uv run sage seed --user "$(USER_ID)"
 
 # Loads every approved year, each data/rules/<year>/rulebook.json, into local Supabase, as after make
-# check-db wipes it. A year already loaded stops it, as sage load --replace is the way to replace one.
+# check-db wipes it. A year held exactly as its snapshot is passed over, so a newly approved year loads
+# beside the others. One held differently stops it, as sage load --replace is the way to replace one.
 load:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		for snapshot in ../data/rules/*/rulebook.json; do \
@@ -125,3 +140,17 @@ sign-in:
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
 		uv run sage sign-in $(if $(PORT),--port $(PORT)) && \
 		echo "Open that link in your browser to sign in as Mbali. It works once, within an hour." >&2
+
+# Prints a one-time link for Ilvane, a second made-up student, who hasn't finished setup. Each run
+# first deletes her account and everything it saved, so onboarding starts fresh, and never touches
+# Mbali's. PORT works as for sign-in, and again only the link goes to stdout.
+sign-in-new:
+	@$(LOCAL_SUPABASE) && cd backend && \
+		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
+		uv run python scripts/sign_in_new.py $(if $(PORT),--port $(PORT)) && \
+		echo "Open that link to sign in as Ilvane, with onboarding fresh. It works once, within an hour." >&2
+
+# Writes the made-up transcript as a PDF with Ilvane's student number, for her onboarding to upload:
+# local/transcript.pdf
+transcript:
+	@cd backend && uv run python scripts/transcript.py

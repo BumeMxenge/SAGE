@@ -17,6 +17,7 @@ from sage.domain.rules import (
     AnyOf,
     Course,
     CourseNeed,
+    HandbookDelta,
     HandbookVersion,
     Refer,
     RuleSet,
@@ -651,13 +652,45 @@ def test_a_kept_removal_keeps_its_row_and_where_it_was_printed(
     ]
 
 
-def test_a_loaded_year_is_replaced_only_when_asked():
+def test_a_loaded_year_is_passed_over_when_unchanged_and_replaced_only_when_asked():
     store = InMemoryRuleRepository()
     first = approved(2097, {"TST1001F": ("First words", None)})
     second = approved(2097, {"TST1002F": ("Second words", None)})
-    load(first, store, replace=False)
+    assert load(first, store, replace=False) is True
+    # The same snapshot again writes nothing, and a different one is refused until asked
+    assert load(first, store, replace=False) is False
     with pytest.raises(YearLoaded):
         load(second, store, replace=False)
     assert store.get(2097) == first.rules
-    load(second, store, replace=True)
+    assert load(second, store, replace=True) is True
     assert store.get(2097) == second.rules
+
+
+def test_a_year_held_in_another_order_is_still_held_exactly():
+    # Supabase reads rows back in key order and keeps JSON keys in an order of its own, so neither
+    # may make a loaded year look different from its snapshot
+    delta = HandbookDelta(
+        handbook_year=2097,
+        entity="courses",
+        entity_key="TST1001F",
+        new_value={"code": "TST1001F", "credits": 8},
+    )
+    first = approved(
+        2097, {"TST1001F": ("First words", None), "TST1002F": ("Second words", None)}
+    )
+    snapshot = first.model_copy(
+        update={"rules": first.rules.model_copy(update={"handbook_deltas": (delta,)})}
+    )
+    held = snapshot.rules.model_copy(
+        update={
+            "courses": snapshot.rules.courses[::-1],
+            "handbook_deltas": (
+                delta.model_copy(
+                    update={"new_value": {"credits": 8, "code": "TST1001F"}}
+                ),
+            ),
+        }
+    )
+    store = InMemoryRuleRepository()
+    store.replace_year(held)
+    assert load(snapshot, store, replace=False) is False

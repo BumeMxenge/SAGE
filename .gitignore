@@ -20,6 +20,11 @@ backend/mutants/
 backend/data
 backend/experiments
 backend/mutation-score.txt
+# Playwright's output: its results, the saved sign-in (it holds a session token) and the parity
+# images
+frontend/test-results/
+frontend/e2e/.auth/
+frontend/parity/
 # The Supabase CLI's local state: which project this laptop is linked to
 supabase/.temp/
 supabase/.branches/
@@ -28,3 +33,5 @@ supabase/.branches/
 CLAUDE.md
 CLAUDE.local.md
 docs/setup.md
+# Files made for local testing, such as make transcript's PDF
+local/
