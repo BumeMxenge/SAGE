@@ -124,31 +124,34 @@ it('says who may open every page in the table', () => {
   expect(paths(routes).sort()).toEqual(Object.keys(opens).sort())
 })
 
-it.each(Object.keys(opens).flatMap((path) => visits.map((visit) => [path, visit.who, visit] as const)))(
-  '%s, opened by %s',
-  async (path, _, visit) => {
-    arrive(visit)
-    const router = createMemoryRouter(routes, { initialEntries: [address(path)] })
+// Where a visitor comes to rest after opening an address, with nothing cached from the visitor before
+async function open(address: string, visit: Visit) {
+  queryClient.clear()
+  arrive(visit)
+  const router = createMemoryRouter(routes, { initialEntries: [address] })
+  const state = await settled(router)
+  router.dispose()
+  return state
+}
 
-    const state = await settled(router)
+it.each(Object.keys(opens))('%s, opened by every kind of visitor', async (path) => {
+  for (const visit of visits) {
+    const { location, historyAction } = await open(address(path), visit)
 
     const allowed = opens[path] === visit.is
-    expect(state.location.pathname).toBe(allowed ? address(path) : home[visit.is])
+    expect(location.pathname, `${path}, opened by ${visit.who}`).toBe(allowed ? address(path) : home[visit.is])
     // Sent away, the address is replaced, so Back doesn't return to a page that sends them away again
-    if (!allowed) expect(state.historyAction).toBe('REPLACE')
-    router.dispose()
-  },
-)
+    if (!allowed) expect(historyAction, `${path}, opened by ${visit.who}, replaces the address`).toBe('REPLACE')
+  }
+})
 
-it.each(visits.map((visit) => [visit.who, visit] as const))('/ sends %s home', async (_, visit) => {
-  arrive(visit)
-  const router = createMemoryRouter(routes, { initialEntries: ['/'] })
+it('/ sends every visitor home', async () => {
+  for (const visit of visits) {
+    const { location, historyAction } = await open('/', visit)
 
-  const state = await settled(router)
-
-  expect(state.location.pathname).toBe(home[visit.is])
-  expect(state.historyAction).toBe('REPLACE')
-  router.dispose()
+    expect(location.pathname, `/, opened by ${visit.who}`).toBe(home[visit.is])
+    expect(historyAction, `/, opened by ${visit.who}, replaces the address`).toBe('REPLACE')
+  }
 })
 
 it('asks who is visiting again once Finish Setup has refreshed it', async () => {
