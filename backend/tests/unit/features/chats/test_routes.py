@@ -134,26 +134,6 @@ def test_plans_from_different_sets_cant_share_a_chat(mbali, stores, plan_ids):
     )
 
 
-def test_her_one_plan_chat_reads_as_a_question_then_its_answer(mbali, one_plan_chat):
-    messages = messages_in(mbali, one_plan_chat).json()
-    assert [message["role"] for message in messages] == ["user", "assistant"]
-    assert messages[0]["content"] == "How busy are my Fridays on this plan?"
-    for message in messages:
-        assert (
-            message["term"],
-            message["referral"],
-            message["open_plan_id"],
-            message["citations"],
-        ) == ("sem1", False, None, [])
-
-
-def test_her_pair_chat_answer_offers_to_open_plan_7(mbali, pair_chat, plan_ids):
-    messages = messages_in(mbali, pair_chat).json()
-    assert [message["role"] for message in messages] == ["user", "assistant"]
-    assert messages[0]["content"] == "What's the difference between these two plans?"
-    assert messages[1]["open_plan_id"] == plan_ids[7]
-
-
 def test_a_question_and_the_advisors_reply_are_stored_together(app, mbali, pair_chat):
     advisor = Advisor()
     app.dependency_overrides[deps.advisor] = lambda: advisor

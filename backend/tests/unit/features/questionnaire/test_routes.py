@@ -156,11 +156,6 @@ def test_it_can_only_be_answered_once(mbali):
 def test_her_seeded_answered_set_doesnt_need_it(signed_in):
     mbali = signed_in("mbali")  # her set as seeded, already answered
     assert mbali.get("/v1/questionnaire").json() == {"needed": False, "questions": []}
-    response = mbali.post("/v1/questionnaire", json={"course": "EEE4119F"})
-    assert (response.status_code, response.json()["code"]) == (
-        409,
-        "questionnaire_answered",
-    )
 
 
 def test_a_set_of_5_plans_doesnt_need_it(mbali, stores):

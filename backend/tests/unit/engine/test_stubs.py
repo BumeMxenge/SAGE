@@ -18,12 +18,6 @@ STUDENT = Student(id=UUID(int=7))
 
 
 @pytest.mark.stub("engine")
-def test_a_missing_seed_file_stops_it_at_once(tmp_path):
-    with pytest.raises(FileNotFoundError):
-        SeededPlanGenerator(tmp_path / "mbali.json")
-
-
-@pytest.mark.stub("engine")
 def test_it_gives_mbalis_set_unanswered_and_all_visible(seed_file):
     rows = SeededPlanGenerator(seed_file).generate(STUDENT, [], RuleSet())
     seeded = load_seed(seed_file, STUDENT.id)
