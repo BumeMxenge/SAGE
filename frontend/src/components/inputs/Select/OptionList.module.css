@@ -1,0 +1,4 @@
+/* At least as wide as the plan switcher's list, wherever it shows */
+.option-list {
+  min-width: var(--width-popover);
+}

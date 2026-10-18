@@ -4,11 +4,11 @@
 // name: its codes and credits stay in the list. The list opens below, from the left edge, as the plan
 // switcher does.
 import type { ReactNode } from 'react'
-import { Button, Label, ListBox, Select as AriaSelect, type SelectProps as AriaSelectProps, SelectValue } from 'react-aria-components'
+import { Button, Label, Select as AriaSelect, type SelectProps as AriaSelectProps, SelectValue } from 'react-aria-components'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import { Popover } from '@/components/overlays/Popover/Popover.tsx'
-import listStyles from '@/components/overlays/Popover/Popover.module.css'
 import outline from '@/styles/outline.module.css'
+import { OptionList } from './OptionList.tsx'
 import styles from './Select.module.css'
 
 type SelectProps = Pick<
@@ -30,7 +30,7 @@ export function Select({ label, children, ...props }: SelectProps) {
         <Icon name="keyboard_arrow_down" />
       </Button>
       <Popover placement="bottom start">
-        <ListBox className={`${listStyles.list} ${styles.list}`}>{children}</ListBox>
+        <OptionList>{children}</OptionList>
       </Popover>
     </AriaSelect>
   )

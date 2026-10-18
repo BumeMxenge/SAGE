@@ -30,7 +30,3 @@
 .trigger:not([data-hovered]) .value[data-placeholder] {
   color: var(--color-text-secondary);
 }
-
-.list {
-  min-width: var(--width-popover);
-}
