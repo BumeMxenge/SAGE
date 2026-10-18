@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from sage.config import Settings, get_settings
-from sage.shared.api.models import Health
+from sage.features.health.models import Health
 
 router = APIRouter(tags=["health"])
 

@@ -3,8 +3,18 @@
 from fastapi import APIRouter, Depends, Request
 from starlette.concurrency import run_in_threadpool
 
+from sage.features.accounts.models import Me
 from sage.features.accounts.routes import me
 from sage.features.onboarding import service as onboarding
+from sage.features.onboarding.models import (
+    Catalogue,
+    Curriculum,
+    ResultSymbol,
+    Setup,
+    Transcript,
+    TranscriptLine,
+    TranscriptWarning,
+)
 from sage.shared.api.deps import (
     STUDENT_ERRORS,
     Generator,
@@ -13,17 +23,7 @@ from sage.shared.api.deps import (
     Students,
     student_account,
 )
-from sage.shared.api.models import (
-    Catalogue,
-    Course,
-    Curriculum,
-    Me,
-    ResultSymbol,
-    Setup,
-    Transcript,
-    TranscriptLine,
-    TranscriptWarning,
-)
+from sage.shared.api.models import Course
 from sage.shared.api.problems import errors
 from sage.shared.errors import (
     FileTooLarge,

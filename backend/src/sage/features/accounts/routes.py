@@ -2,8 +2,8 @@
 # telling staff their side isn't built yet.
 from fastapi import APIRouter
 
+from sage.features.accounts.models import Me
 from sage.shared.api.deps import SIGNED_IN_ERRORS, SignedIn, Students
-from sage.shared.api.models import Me
 from sage.shared.api.problems import errors
 from sage.shared.auth import Account
 

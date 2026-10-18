@@ -5,9 +5,7 @@ from uuid import UUID
 from fastapi import APIRouter
 
 from sage.features.chats import service as chats
-from sage.shared import students as domain
-from sage.shared.api.deps import ONBOARDED_ERRORS, ChatAdvisor, Onboarded, Students
-from sage.shared.api.models import (
+from sage.features.chats.models import (
     Chat,
     Citation,
     Exchange,
@@ -15,6 +13,8 @@ from sage.shared.api.models import (
     NewChat,
     NewMessage,
 )
+from sage.shared import students as domain
+from sage.shared.api.deps import ONBOARDED_ERRORS, ChatAdvisor, Onboarded, Students
 from sage.shared.api.problems import errors
 from sage.shared.errors import (
     ChatNotFound,

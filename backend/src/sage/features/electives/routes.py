@@ -2,8 +2,8 @@
 from fastapi import APIRouter
 
 from sage.features.electives import service as electives
+from sage.features.electives.models import Elective, Electives, Eligibility, Tab
 from sage.shared.api.deps import ONBOARDED_ERRORS, Checker, Onboarded, Rules, Students
-from sage.shared.api.models import Elective, Electives, Eligibility, Tab
 from sage.shared.api.problems import errors
 from sage.shared.errors import CourseNotFound, InvalidRequest, RulebookNotLoaded
 

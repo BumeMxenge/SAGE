@@ -2,10 +2,11 @@
 # plan they don't keep
 from fastapi import APIRouter
 
+from sage.features.plans.models import PlanSet
 from sage.features.plans.routes import get_plans
 from sage.features.questionnaire import service as questionnaire
+from sage.features.questionnaire.models import Answers, Question, Questionnaire
 from sage.shared.api.deps import ONBOARDED_ERRORS, Onboarded, Rules, Students
-from sage.shared.api.models import Answers, PlanSet, Question, Questionnaire
 from sage.shared.api.problems import errors
 from sage.shared.errors import (
     InvalidRequest,
