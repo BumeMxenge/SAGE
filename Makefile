@@ -85,11 +85,14 @@ test-integration:
 # backend/mutation-score.txt. It takes about ten minutes, so CI never runs it. Each run starts
 # afresh, as mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a
 # copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy
-# of data/ goes where SEED_FILE looks for it, and a link puts experiments/ where the drafter's test
-# reads E2's prompt. A copy, not a link, so a mutant that loses its folder can't write to the real one.
+# of data/ goes where SEED_FILE and DATA look for it, and a link puts experiments/ where the
+# drafter's test reads E2's prompt. A copy, not a link, so a mutant that loses its folder can't
+# write to the real one. mutmut runs several test sessions at once, so SAGE_TEST_TEMP gives each its
+# own temporary folder.
 mutation:
 	@cd backend && rm -rf mutants data && cp -R ../data data && ln -sfn ../experiments experiments && \
-		trap 'rm -rf data; rm -f experiments' EXIT && \
+		export SAGE_TEST_TEMP=$$(mktemp -d) && \
+		trap 'rm -rf data "$$SAGE_TEST_TEMP"; rm -f experiments' EXIT && \
 		uv run --group mutation mutmut run && \
 		uv run --group mutation mutmut export-cicd-stats > /dev/null && \
 		uv run python scripts/mutation_score.py | tee mutation-score.txt

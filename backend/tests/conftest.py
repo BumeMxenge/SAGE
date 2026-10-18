@@ -1,5 +1,7 @@
 # Shared pytest fixtures for every backend test
 import json
+import os
+import tempfile
 from collections.abc import Callable
 from datetime import time
 from pathlib import Path
@@ -15,6 +17,16 @@ from sage.ingestion.handbook import Handbook, Page
 from sage.main import create_app
 from sage.services.ingest import approved_snapshot
 from sage.services.seed import SEED_FILE
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_configure(config: pytest.Config) -> None:
+    # make mutation runs many test sessions at once, so each takes a temporary folder of its own in
+    # SAGE_TEST_TEMP. Their default folders share one pytest-current link, which every session
+    # remakes as it ends, and a session that crashes there would count as a caught mutant.
+    root = os.environ.get("SAGE_TEST_TEMP")
+    if root and config.option.basetemp is None:
+        config.option.basetemp = tempfile.mkdtemp(dir=root)
 
 
 @pytest.fixture
