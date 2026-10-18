@@ -3,6 +3,7 @@
 import type { AuthError, Session } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { env } from '@/lib/env.ts'
+import { queryClient } from '@/lib/queryClient.ts'
 import { supabase } from '@/lib/supabase.ts'
 import { forgetName, keepName, type Name, nameFromGraph, storedName } from './name.ts'
 
@@ -59,7 +60,9 @@ export function useAuth() {
     return () => data.subscription.unsubscribe()
   }, [])
 
-  async function signIn() {
+  // chooseAccount makes Microsoft show its account picker rather than reuse the account it
+  // remembers, for the wrong-account page's Use a Different Account
+  async function signIn({ chooseAccount = false } = {}) {
     setError(null)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'azure', // Microsoft, through the Azure provider set up in Supabase
@@ -68,14 +71,18 @@ export function useAuth() {
         // Not profile, which would put every student's name in Supabase.
         scopes: 'email User.Read',
         redirectTo: `${window.location.origin}/`, // come back to this site, local or hosted
+        queryParams: chooseAccount ? { prompt: 'select_account' } : undefined,
       },
     })
     if (error) setError(error.message) // on success the browser has already left for Microsoft
   }
 
+  // The caller then goes to /sign-in. Everything read for this account leaves the cache with it, so
+  // the next person to sign in on this browser never sees it.
   async function signOut() {
     const { error } = await supabase.auth.signOut()
     if (error) setError(error.message)
+    else queryClient.clear()
   }
 
   return { session, name, loading, error, signIn, signOut }
