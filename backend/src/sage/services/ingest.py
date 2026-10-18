@@ -501,11 +501,10 @@ def _present(
 
 
 def _rule(parts: list[translate.Translation]) -> EntryRule | None:
-    # A course's requirement and co-requisite as one tree, where both are printed
+    # A course's requirement and co-requisite as one tree. Where only one is printed, the course
+    # stores it alone, as the canonical form unwraps an all of one.
     trees = tuple(part.tree for part in parts if part.tree is not None)
-    if not trees:
-        return None
-    return trees[0] if len(trees) == 1 else AllOf(all=trees)
+    return AllOf(all=trees) if trees else None
 
 
 def _printed(requirement: str | None, corequisite: str | None) -> str:

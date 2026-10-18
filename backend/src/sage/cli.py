@@ -430,14 +430,9 @@ def walk(
         + f"{sum(m for m, _ in sittings):.0f} minutes, and {len(review.pending)} of "
         + f"{len(review.rows)} rows pending"
     )
-    print(
-        *(
-            f"Failing on the year as decided: {p.text}"
-            for p in review.problems
-            if p.row is None
-        ),
-        sep="\n",
-    )
+    for problem in review.problems:
+        if problem.row is None:
+            print(f"Failing on the year as decided: {problem.text}")
 
 
 def settle(

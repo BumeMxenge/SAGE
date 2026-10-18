@@ -26,9 +26,7 @@ class AccountNotFound(Exception):
 
 class YearInUse(Exception):
     # A student's plan, or a citation of a passage, uses this handbook year, so it can't be removed
-    def __init__(self, year: int) -> None:
-        super().__init__(year)
-        self.year = year
+    pass
 
 
 class RuleRepository(Protocol):

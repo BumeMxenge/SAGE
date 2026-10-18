@@ -525,9 +525,8 @@ def _shape(value: JsonValue) -> str:
     if not isinstance(value, dict):
         return ""
     node = next((key for key in NODE_KEYS if key in value), "")
-    children = value[node] if node in ("all", "any") else None
-    if isinstance(children, list):
-        return f"{node}({','.join(_shape(child) for child in children)})"
+    if node in ("all", "any"):
+        return f"{node}({','.join(_shape(child) for child in value[node])})"
     return node
 
 
