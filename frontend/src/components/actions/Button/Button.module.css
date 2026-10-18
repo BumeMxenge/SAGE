@@ -38,6 +38,12 @@
   opacity: 0.92;
 }
 
+/* Danger is shaped like primary, with the danger text colour as its fill: white on it in light, and
+   near-black on its lighter red in dark, both at least 4.5:1, which tokens.test.ts checks */
+.danger {
+  background: var(--color-text-danger);
+}
+
 /* Only a primary button is ever disabled, as Continue is until a transcript is read */
 .primary[data-disabled] {
   color: var(--color-text-disabled);

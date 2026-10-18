@@ -62,7 +62,8 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
   ].map((token) => ({ token, against: surfaces, minimum: 4.5 })),
   { token: '--color-text-danger', against: ['--color-danger-tint'], minimum: 4.5 },
   { token: '--color-text-warning', against: ['--color-warning-tint'], minimum: 4.5 },
-  { token: '--color-on-primary', against: ['--color-primary', '--color-surface-inverse'], minimum: 4.5 },
+  // The danger button's fill is the danger text colour
+  { token: '--color-on-primary', against: ['--color-primary', '--color-surface-inverse', '--color-text-danger'], minimum: 4.5 },
   { token: '--color-on-fill', against: ['--color-sign-in', '--color-accent-fill', ...courseColours], minimum: 4.5 },
   { token: '--color-border-field', against: surfaces, minimum: 3, theme: 'light' },
   { token: '--color-border-control', against: surfaces, minimum: 3 },
