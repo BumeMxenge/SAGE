@@ -56,6 +56,18 @@ def test_a_plan_shows_each_courses_groups_and_meetings(mbali, plan_ids):
     assert courses["EEE4022S"]["meetings"] == []  # no contact time
 
 
+def test_her_plan_shows_the_meetings_only_her_curriculum_has(mbali, plan_ids):
+    # EEE4120F's Thursday 16:00 meeting is printed on her EB011 sheet (F61:F62) but not on EB022's,
+    # so it's linked to the Mechatronics curricula, and plan 3 shows it as the route hands the filter
+    # her curriculum. The filter itself is tested in tests/unit/services/test_plans.py.
+    courses = {
+        course["code"]: course
+        for course in mbali.get(f"/v1/plans/{plan_ids[3]}").json()["courses"]
+    }
+    meetings = [(m["day"], m["start_time"]) for m in courses["EEE4120F"]["meetings"]]
+    assert (4, "16:00:00") in meetings
+
+
 def test_a_hidden_plan_still_opens(mbali, plan_ids):
     response = mbali.get(f"/v1/plans/{plan_ids[2]}")
     assert response.status_code == 200
