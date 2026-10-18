@@ -53,7 +53,7 @@ The eight rules above apply to the frontend too. Its tests run with Vitest and T
 
 Each test was checked by breaking what it guards: the old secondary grey, the audit's input border, the checkbox's dark border set to the field fill, a dark value left out, a renamed storage key, a script that ignores the system's setting or stops watching the choice, a hook without its try/catch, and `ignoreFunctions` turned back on. Then, for the app's plumbing: `redirect()` in place of `replace()`, a guard that doesn't wait for the sign-in, a `/v1/me` cached past Finish Setup, a hand-named key, a sent message that refreshed every chat, a gateway's page passed through as data, and refusals retried. Each made a test fail.
 
-That the error map has words for every code is TypeScript's job, not a test's: `satisfies` fails the build when one is missing. The tests that send a request run in Vitest's node environment, as Node's `Request` refuses jsdom's `AbortSignal`. Their settings are made up, on `.test` hosts that never resolve, so no test reads `frontend/.env` or reaches a real service.
+That the error map has words for every code is TypeScript's job, not a test's: `satisfies` fails the build when one is missing. The same goes for the term labels in `src/lib/copy.ts`, a `Record` over the API's terms. The tests that send a request run in Vitest's node environment, as Node's `Request` refuses jsdom's `AbortSignal`. Their settings are made up, on `.test` hosts that never resolve, so no test reads `frontend/.env` or reaches a real service.
 
 ### UI checks
 
