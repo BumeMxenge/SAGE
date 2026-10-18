@@ -18,9 +18,22 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 
 | Level | What it checks | Where | How to run |
 | --- | --- | --- | --- |
-| Unit | Each rule, on in-memory stores, with no network | `backend/tests/unit`, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every push |
-| Integration | The Supabase adapters, the migrations, row level security and real sign-in tokens, against a rebuilt local database | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every push |
-| Acceptance | The finished system, against held-back cases (the ATPs) | `tests/acceptance` (planned) | Their own workflow, on demand |
+| Unit | Each rule, on in-memory stores holding the approved 2026 rulebook, with no network | `backend/tests/unit`, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every pull request and every push to main |
+| Integration | The Supabase adapters, the migrations, row level security and real sign-in tokens, against a rebuilt local database holding both approved years | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every pull request and every push to main |
+| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened | `tests/acceptance` (planned: ATP-1's label sheets and harness arrive from branch E) | `make atp1`, and their own workflow on demand, which holds the model key, as held-out wording needs fresh drafts |
+
+## Ingestion tests
+
+The yearly job's tests build each source inside the test: typed page text in the printed layout, a small workbook in the real one's layout, or a few CSV rows. None reads the real handbook, which takes 34 seconds, and none calls a model, as a fake or a cached draft stands in. Their expected values come from the printed page, or the workbook as Excel shows it.
+
+| Stage | Where | The faults they catch |
+| --- | --- | --- |
+| Collect | `ingestion/test_sources.py` | A source read although its fingerprint changed |
+| Read | `ingestion/test_handbook.py`, `test_curricula.py`, `test_timetable.py`, `test_complementary.py`, `test_equivalences.py`, `test_names.py` | A running header leaking into an entry, prose taken for a heading or an entry, a passage cut at the wrong heading, a curriculum table read into the wrong groups or totals, a meeting timed off the period key or stored twice, a cell or row that fits no reading let through, an equivalence not flagged for a person, and a name cased against CP0's rule |
+| Translate | `ingestion/test_grammar.py`, `test_translate.py`, `adapters/test_anthropic.py` | Wording with more than one reading accepted, a refusal without its cause, a draft that isn't a rule tree kept, a cached draft asked for again, and a model's answer misread or not asked for as E2 asked |
+| Check | `ingestion/test_checks.py` | A check that misses its one planted inconsistency, fires on the row that agrees, or fails a settled exclusion |
+| Review | `ingestion/test_review.py` | A first year that isn't all new, an unchanged row not carried over, a removal let through unseen, a decision kept after its reading changed or counted before it's usable, and a check that fails on the year as decided without stopping approval |
+| Approve and load | `services/test_ingest.py` | Approval with a row pending, a snapshot that doesn't survive its round trip, a kept removal lost, and a load that rewrites a year held exactly or replaces one held differently unasked |
 
 ## Frontend
 

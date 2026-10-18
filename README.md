@@ -36,7 +36,7 @@ The design has one firm boundary: a deterministic engine decides validity. The c
 
 ### Capabilities
 
-Built so far: importing and confirming the academic record, and the API behind plan exploration, comparison and the advisor's chats, running on stand-ins until the engine and the advisor are built.
+Built so far: importing and confirming the academic record, the yearly handbook ingestion with its review of changes, and the API behind plan exploration, comparison and the advisor's chats, running on stand-ins until the engine and the advisor are built.
 
 - **Academic record:** Import and confirm the student's record before planning.
 - **Rule and timetable checks:** Check entry requirements, credit rules, course offerings and clashes.
@@ -70,21 +70,21 @@ These are the technologies SAGE is built with. The backend, its database and sig
 
 [![VS Code][VSCode]][VSCode-url] [![GitHub Actions][GitHubActions]][GitHubActions-url] [![Docker][Docker]][Docker-url]
 
-Python runs the plan service and transcript reading, and will run handbook ingestion, deterministic rule evaluation and the advisor's tools. Supabase Postgres stores the versioned rules and the plans, and will store the handbook passages. The FastAPI backend runs as a container on Azure Container Apps, the React interface is deployed separately as static files, and Supabase (EU) holds the data and handles sign-in.
+Python runs the plan service, transcript reading and handbook ingestion, and will run deterministic rule evaluation and the advisor's tools. Supabase Postgres stores the versioned rules, the handbook passages and the plans. The FastAPI backend runs as a container on Azure Container Apps, the React interface is deployed separately as static files, and Supabase (EU) holds the data and handles sign-in.
 
-pdfplumber reads transcripts and will read the handbooks, and clingo will generate plans. The language model will be selected through design experiments.
+pdfplumber reads the transcripts and the handbooks, and clingo will generate plans. The language model will be selected through design experiments.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- STATUS -->
 ## Project Status
 
-The backend API behind every planned screen is built, tested and deployed, working on the data of Mbali, a made-up student. It runs on stand-ins for the planning engine and the advisor, which come next: every student gets Mbali's plans, and every question is referred to a human advisor. The onboarding flow, the registration planner and their loading and error states have interactive HTML prototypes with mock data. How the backend is tested is in [docs/testing.md](docs/testing.md), and its known gaps are in [docs/shortfalls.md](docs/shortfalls.md). The implementation roadmap below covers the application only.
+The backend API behind every planned screen is built, tested and deployed. Handbook ingestion is built too, with the 2023 and 2026 handbooks approved for all six of the department's curricula, so the API runs on the real 2026 rules. Mbali, a made-up student, holds the only student data. The API runs on stand-ins for the planning engine and the advisor, which come next: every student gets Mbali's plans, and every question is referred to a human advisor. The onboarding flow, the registration planner and their loading and error states have interactive HTML prototypes with mock data. How the backend is tested is in [docs/testing.md](docs/testing.md), and its known gaps are in [docs/shortfalls.md](docs/shortfalls.md). The implementation roadmap below covers the application only.
 
 | Stage | Implementation work | Status |
 | --- | --- | --- |
 | 1. Interface prototypes | Explore the onboarding and planning flows with mock data. | ✅ Complete |
-| 2. Data foundation | Ingest handbook and timetable sources, verify extracted rules and build the versioned knowledge store. | 🚧 In progress: the store, its security and transcript reading are built. Handbook ingestion is next. |
+| 2. Data foundation | Ingest handbook and timetable sources, verify extracted rules and build the versioned knowledge store. | 🚧 In progress: the store, its security, transcript reading and handbook ingestion are built, with 2023 and 2026 approved. ATP-1, which measures ingestion's accuracy, is next. |
 | 3. Planning engine | Implement eligibility checks, valid plan search and structured explanations. | Next. A stand-in serves Mbali's plans meanwhile. |
 | 4. Advisor | Add handbook retrieval, engine tools, grounded answers and student-confirmed proposals. | Next. A stand-in refers every question to a human advisor. |
 | 5. Interface | Connect the React interface to the plan service and the advisor. | 🚧 In progress: the API serves every planned screen. The React screens are next. |
