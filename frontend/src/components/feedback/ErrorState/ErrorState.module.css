@@ -78,3 +78,53 @@
   font-variant-numeric: tabular-nums;
   color: var(--color-text-secondary);
 }
+
+/* An inline error is a tinted row: the icon, then the title over the message, in the tone's text
+   colour, which reaches 4.5:1 on its tint */
+.error-state[data-variant='inline'] {
+  --icon-size: var(--size-icon-sm);
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--space-3);
+  align-items: start;
+  max-width: none;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  text-align: start;
+}
+
+.error-state[data-variant='inline'][data-tone='danger'] {
+  color: var(--color-text-danger);
+  background: var(--color-danger-tint);
+}
+
+.error-state[data-variant='inline'][data-tone='warning'] {
+  color: var(--color-text-warning);
+  background: var(--color-warning-tint);
+}
+
+.error-state[data-variant='inline'] .tile {
+  grid-row: span 3;
+  width: auto;
+  height: auto;
+  background: none;
+}
+
+.error-state[data-variant='inline'] .title,
+.error-state[data-variant='inline'] .message,
+.error-state[data-variant='inline'] .actions {
+  grid-column: 2;
+  margin: 0;
+  color: inherit;
+}
+
+.error-state[data-variant='inline'] .title {
+  font-size: var(--font-size-md);
+  letter-spacing: normal;
+}
+
+.error-state[data-variant='inline'] .actions {
+  align-items: flex-start;
+}
