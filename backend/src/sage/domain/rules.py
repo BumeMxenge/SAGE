@@ -56,8 +56,9 @@ Outcome = Literal[
     "not_counted",
 ]
 
-# A printed rule as a tree, in the seed's JSON shapes. Each node is told apart by its one
-# distinctive key, as in {"any": [...]}, {"course": "EEE3091F", "need": "pass"} or {"refer": "..."}.
+# A printed rule as a tree, in the JSON shapes the snapshots store. Each node is told apart by its
+# one distinctive key, as in {"any": [...]}, {"course": "EEE3091F", "need": "pass"} or
+# {"refer": "..."}.
 NODE_KEYS = (
     "all",
     "any",
