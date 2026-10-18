@@ -152,4 +152,4 @@ sign-in-new:
 # Writes the made-up transcript as a PDF with Ilvane's student number, for her onboarding to upload:
 # local/transcript.pdf
 transcript:
-	@cd backend && uv run python scripts/transcript.py
+	@cd backend && uv run python -m scripts.transcript

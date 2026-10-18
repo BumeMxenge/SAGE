@@ -17,6 +17,7 @@ from sage.shared.errors import (
 )
 from sage.shared.seed import load_seed
 from sage.shared.students import CourseHistoryLine
+from tests.pdf import pdf_of
 
 MBALI = "DLMMBA999"
 
@@ -64,7 +65,7 @@ def test_the_fixture_reads_as_her_seeded_history(transcript_pages, seed_file):
     assert transcript.warnings == ()
 
 
-def test_a_generated_pdf_reads_back_line_for_line(transcript_pages, pdf_of):
+def test_a_generated_pdf_reads_back_line_for_line(transcript_pages):
     assert pdf_pages(pdf_of(transcript_pages)) == transcript_pages
 
 
@@ -237,7 +238,7 @@ def test_a_damaged_pdf_is_unreadable():
         pdf_pages(b"%PDF-1.7\nthis is not really a PDF")
 
 
-def test_a_pdf_with_a_malformed_page_is_unreadable(pdf_of):
+def test_a_pdf_with_a_malformed_page_is_unreadable():
     # The page's width printed as text, which pdfplumber calls malformed. The swap keeps the file's
     # length, so its byte offsets still hold.
     pdf = pdf_of([["ACADEMIC RECORD"]]).replace(b"595.28", b"(595.)")
@@ -245,7 +246,7 @@ def test_a_pdf_with_a_malformed_page_is_unreadable(pdf_of):
         pdf_pages(pdf)
 
 
-def test_a_pdf_the_pdf_library_crashes_on_is_unreadable(pdf_of, caplog):
+def test_a_pdf_the_pdf_library_crashes_on_is_unreadable(caplog):
     # A page rotation that's a name rather than a number, which pdfplumber fails on with a bare
     # TypeError: one of the many ways a malformed file can break it
     pdf = pdf_of([["ACADEMIC RECORD"]]).replace(

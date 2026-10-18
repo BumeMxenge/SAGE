@@ -4,12 +4,13 @@
 import pytest
 
 from sage.ingestion.transcript import read_lines
+from tests.pdf import pdf_of
 
 END = "– – – – – End of Academic Record – – – – –"
 
 
 @pytest.fixture
-def upload(signed_in, pdf_of):
+def upload(signed_in):
     # Sends pages of lines as a PDF, signed in as the named account
     def send(pages, token="mbali"):
         return signed_in(token).post(
