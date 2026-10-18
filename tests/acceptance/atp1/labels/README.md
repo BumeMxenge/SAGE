@@ -91,3 +91,14 @@ uv run --project backend python tests/acceptance/atp1/labels/make_sheets.py <emp
 ```
 
 It refuses to write over a sheet, so a rerun can't wipe labels.
+
+## Scoring
+
+The harness scores SAGE against these labels by these rules, set before its first run.
+
+- **Titles** match ignoring case, as SAGE title-cases names.
+- **Trees.** A label's Requirement tree and Co-requisite tree are joined in an all, as SAGE stores one entry rule per course. A tree left blank or null adds nothing, so a course with one tree keeps it alone. Both sides are compared in the normal form of `normal` in E2's [score.py](../../../../experiments/ingestion/requirement-parsing/score.py).
+- **Timetable.** Section isn't scored, as SAGE doesn't store it. Kind is scored only where a label gives one.
+- **Complementary.** Each Book's cover title maps to the workbook's handbook name, and each day name to the workbook's mon to fri. A Page matches if it falls within the course's printed pages in the workbook.
+- **Headline.** `held_out.xlsx` is the headline result for requirement trees. The course sheets are an in-sample check, as the grammar was written from their fields.
+- **Judgement calls.** A row is a judgement call when its Note holds anything but "no entry printed", or Ambiguous is yes. Each table is reported with and without those rows.
