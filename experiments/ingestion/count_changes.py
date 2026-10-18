@@ -4,11 +4,16 @@
 # facts a plan reads: name, credits, NQF level and term. A convener is shown, not a rule, so a change
 # to one is counted apart. Run from experiments/ingestion/: uv run python count_changes.py 2023 2026
 import sys
+from collections.abc import Hashable
 
+from sage.domain.rules import RuleSet
 from sage.services.ingest import approved_snapshot
 
+# What a year holds of one kind, by what identifies each
+Keyed = dict[Hashable, object]
 
-def changes(before: dict, after: dict) -> tuple[int, int, int]:
+
+def changes(before: Keyed, after: Keyed) -> tuple[int, int, int]:
     # Keys added and removed, and those in both whose value differs
     shared = before.keys() & after.keys()
     return (
@@ -18,37 +23,45 @@ def changes(before: dict, after: dict) -> tuple[int, int, int]:
     )
 
 
-def main(first: int, second: int) -> None:
-    years = [approved_snapshot(year).rules for year in (first, second)]
-    kinds = {
-        "Entry rules": lambda rules: {
+def kinds(rules: RuleSet) -> dict[str, Keyed]:
+    # Each kind of rule one approved year holds
+    return {
+        "Entry rules": {
             c.code: c.entry_rule for c in rules.courses if c.entry_rule is not None
         },
-        "Curriculum rules": lambda rules: {
+        "Curriculum rules": {
             (r.curriculum_code, r.year_of_study): r.rule for r in rules.curriculum_rules
         },
-        "Course list entries": lambda rules: {
+        "Course list entries": {
             (m.group_key, m.course_code): m.category for m in rules.course_group_members
         },
-        "Courses": lambda rules: {
+        "Courses": {
             c.code: (c.name, c.credits, c.nqf_level, c.term) for c in rules.courses
         },
-        "Equivalences": lambda rules: {
+        "Equivalences": {
             (e.course_code, e.counts_as): None for e in rules.equivalences
         },
     }
+
+
+def conveners(rules: RuleSet) -> Keyed:
+    return {c.code: c.convener for c in rules.courses}
+
+
+def main(first: int, second: int) -> None:
+    old, new = approved_snapshot(first).rules, approved_snapshot(second).rules
+    before, after = kinds(old), kinds(new)
     print(f"| Changed from {first} to {second} | Added | Removed | Changed |")
     print("| --- | --- | --- | --- |")
-    for name, rows in kinds.items():
-        added, removed, changed = changes(*(rows(rules) for rules in years))
+    for name in before:
+        added, removed, changed = changes(before[name], after[name])
         print(f"| {name} | {added} | {removed} | {changed} |")
-    conveners = changes(
-        *({c.code: c.convener for c in rules.courses} for rules in years)
-    )[2]
+    moved = changes(conveners(old), conveners(new))[2]
     print(
-        f"\nConveners changed on {conveners} courses in both years, not counted as rules."
+        f"\nConveners changed on {moved} courses in both years, not counted as rules."
     )
 
 
 if __name__ == "__main__":
-    main(*map(int, sys.argv[1:]))
+    first, second = map(int, sys.argv[1:])
+    main(first, second)
