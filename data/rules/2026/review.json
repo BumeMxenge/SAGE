@@ -1,0 +1,3108 @@
+{
+  "sittings": [
+    {
+      "start": "2026-10-18T02:09:08+02:00",
+      "end": "2026-10-18T02:49:43+02:00",
+      "decided": 87
+    }
+  ],
+  "rows": [
+    {
+      "id": "requirement/SLL1064F",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/SLL1064F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 284 (Language options row 33)"
+      },
+      "printed": "None. Students with a pass (SC) or a 4 rating (NSC) or equivalent in Italian or mother-tongue speakers may be admitted directly into SLL2064F at the Head of Section's discretion.",
+      "failures": [],
+      "old": {},
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "8d7f8bcec0c3"
+    },
+    {
+      "id": "requirement/EGS1007S",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/EGS1007S": "UCT Faculty of Science Handbook 2026 (Book 11), p. 130 (Courses row 27)"
+      },
+      "printed": "At least 50% for NSC Geography or GEO1009F. For Humanities students: At least 50% for NSC Geography",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "GEO1009F",
+                "need": "mark",
+                "min_mark": 50
+              },
+              {
+                "refer": "At least 50% for NSC Geography"
+              }
+            ]
+          },
+          {
+            "refer": "For Humanities students: At least 50% for NSC Geography."
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "correct",
+      "corrected": {
+        "any": [
+          {
+            "course": "GEO1009F",
+            "need": "mark",
+            "min_mark": 50
+          },
+          {
+            "refer": "At least 50% for NSC Geography"
+          },
+          {
+            "refer": "For Humanities students: At least 50% for NSC Geography"
+          }
+        ]
+      },
+      "note": null,
+      "fingerprint": "b979273898a0"
+    },
+    {
+      "id": "requirement/SLL1063S",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/SLL1063S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 279 (Language options row 30)"
+      },
+      "printed": "Students must have passed SLL1062F. In certain instances, where students have some informal knowledge of German, they may be admitted to German Studies IB without having done German Studies IA, provided the Head of Section is satisfied of the students’ German competence. Students who have passed German within the preceding five years with at least a D symbol (SC), or a 4 rating (NSC), or a course recognised as equivalent, will not be admitted to this course for degree purposes unless the Head of Section is satisfied that for some special reason they are not able to perform the work of SLL2062F.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "SLL1062F",
+                "need": "pass"
+              },
+              {
+                "refer": "In certain instances, where students have some informal knowledge of German, they may be admitted to German Studies IB without having done German Studies IA, provided the Head of Section is satisfied of the students' German competence."
+              }
+            ]
+          },
+          {
+            "refer": "Students who have passed German within the preceding five years with at least a D symbol (SC), or a 4 rating (NSC), or a course recognised as equivalent, will not be admitted to this course for degree purposes unless the Head of Section is satisfied that for some special reason they are not able to perform the work of SLL2062F."
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "b4436f5873da"
+    },
+    {
+      "id": "requirement/BIO1004S",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/BIO1004S": "UCT Faculty of Science Handbook 2026 (Book 11), p. 77 (Courses row 9)"
+      },
+      "printed": "A pass at 60% in NSC Life Sciences or Physical Sciences or by permission of the Head of Department.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "A pass at 60% in NSC Life Sciences or Physical Sciences or by permission of the Head of Department."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "2e3a0e12885a"
+    },
+    {
+      "id": "requirement/BIO1000F",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/BIO1000F": "UCT Faculty of Science Handbook 2026 (Book 11), p. 76 (Courses row 8)"
+      },
+      "printed": "Admission will be restricted to students who have passed either NSC Physical Science or Life Science with at least 60%. NOTE: Preference will be given to students registered in the Science Faculty. Students registered for this course will be assessed in week 5; if it is judged that they are not coping with the level and pace of the course and would benefit from an opportunity to strengthen foundational concepts and learn new material at a slower pace, they will be required to transfer to BIO1000H from week 7.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Admission will be restricted to students who have passed either NSC Physical Science or Life Science with at least 60%."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "38bc7d28ae02"
+    },
+    {
+      "id": "requirement/GEO1009F",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/GEO1009F": "UCT Faculty of Science Handbook 2026 (Book 11), p. 153, 247 (Courses row 38)"
+      },
+      "printed": "At least 50% for NSC Geography or at least 60% for NSC Physical Science or Life Sciences. NOTE: Preference will be given to students majoring in Archaeology, Environmental and Geographical Science, Geology or Oceanography.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "At least 50% for NSC Geography or at least 60% for NSC Physical Science or Life Sciences."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "3b5f184a772c"
+    },
+    {
+      "id": "requirement/SLL1062F",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/SLL1062F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 278 (Language options row 29)"
+      },
+      "printed": "No previous knowledge of German is required. Students who have passed German within the preceding five years with at least a D symbol (SC), or a 4 rating (NSC), or a course recognised as equivalent will not be admitted to this course for degree purposes unless the Head of Section is satisfied that for some special reason they are not able to perform the work of SLL2062F.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Students who have passed German within the preceding five years with at least a D symbol (SC), or a 4 rating (NSC), or a course recognised as equivalent will not be admitted to this course for degree purposes unless the Head of Section is satisfied that for some special reason they are not able to perform the work of SLL2062F."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "f3737d83d363"
+    },
+    {
+      "id": "requirement/SLL1082F",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/SLL1082F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 282 (Language options row 31)"
+      },
+      "printed": "None. The course is designed for those who have not studied Hebrew before. In special cases students with an elementary knowledge of Hebrew may be admitted into the course by special permission of the Head of Department. NOTE: Students who have passed SC or NSC Hebrew or equivalent within the last five years are not eligible for registration.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Students who have passed SC or NSC Hebrew or equivalent within the last five years are not eligible for registration."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "dc2038683453"
+    },
+    {
+      "id": "requirement/FTX2000S",
+      "causes": [
+        "refused_year_of_study"
+      ],
+      "covers": {
+        "courses/FTX2000S": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 168–169 (Courses row 37)"
+      },
+      "printed": "Students must be in at least their 2nd year of study to register for the course. 3rd and 4th year students may also register for the course.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "min_year_of_study": 2
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "1698222bbde5"
+    },
+    {
+      "id": "requirement/BUS2023S",
+      "causes": [
+        "refused_year_of_study"
+      ],
+      "covers": {
+        "courses/BUS2023S": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 188 (Courses row 16)",
+        "courses/BUS2024F": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 188 (Courses row 17)",
+        "courses/BUS2024S": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 188 (Courses row 18)"
+      },
+      "printed": "This course is restricted to students in their second academic year of study (AYOS). The course is intended for students majoring in Industrial and Organisational Psychology, but students from other streams/faculties may choose this course as an elective.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "This course is restricted to students in their second academic year of study (AYOS)."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "294a0fbdef94"
+    },
+    {
+      "id": "requirement/ECO1011F",
+      "causes": [
+        "refused_mark_threshold",
+        "check_failed"
+      ],
+      "covers": {
+        "courses/ECO1011F": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 153 (Courses row 21)",
+        "courses/ECO1011S": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 153 (Courses row 22)"
+      },
+      "printed": "A minimum mark of 50% for ECO1010F/S or ECO1110F/S. ECO1010F/S may be taken concurrently with ECO1011F/S if ECO1010F/S has been previously attempted.",
+      "failures": [
+        "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 153 (Courses row 21): ECO1011F's rule names ECO1110F, which isn't loaded, printed or equivalent",
+        "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 153 (Courses row 21): ECO1011F's rule names ECO1110S, which isn't loaded, printed or equivalent",
+        "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 153 (Courses row 22): ECO1011S's rule names ECO1110F, which isn't loaded, printed or equivalent",
+        "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 153 (Courses row 22): ECO1011S's rule names ECO1110S, which isn't loaded, printed or equivalent"
+      ],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "ECO1010F",
+                "need": "mark",
+                "min_mark": 50
+              },
+              {
+                "course": "ECO1010S",
+                "need": "mark",
+                "min_mark": 50
+              },
+              {
+                "course": "ECO1110F",
+                "need": "mark",
+                "min_mark": 50
+              },
+              {
+                "course": "ECO1110S",
+                "need": "mark",
+                "min_mark": 50
+              }
+            ]
+          },
+          {
+            "refer": "ECO1010F/S may be taken concurrently with ECO1011F/S if ECO1010F/S has been previously attempted."
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "correct",
+      "corrected": {
+        "any": [
+          {
+            "course": "ECO1010F",
+            "need": "mark",
+            "min_mark": 50
+          },
+          {
+            "course": "ECO1010S",
+            "need": "mark",
+            "min_mark": 50
+          },
+          {
+            "course": "ECO1110F",
+            "need": "mark",
+            "min_mark": 50
+          },
+          {
+            "course": "ECO1110S",
+            "need": "mark",
+            "min_mark": 50
+          },
+          {
+            "refer": "ECO1010F/S may be taken concurrently with ECO1011F/S if ECO1010F/S has been previously attempted."
+          }
+        ]
+      },
+      "note": "ECO1110F/S has no entry in the 2026 handbooks SAGE reads. Kept as printed: a student who passed it meets the rule. The concurrency sentence is a second route, so it joins the any, not the all.",
+      "fingerprint": "d4b4fa000f2a"
+    },
+    {
+      "id": "requirement/PHI2044F",
+      "causes": [
+        "refused_mark_threshold"
+      ],
+      "covers": {
+        "courses/PHI2044F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 368 (Courses row 53)"
+      },
+      "printed": "Second year status and at least 50% for Matric mathematics, or a pass for a MAM course, or a lower intermediate score for the NBT in Quantitative Literacy.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "all": [
+              {
+                "min_year_of_study": 2
+              },
+              {
+                "refer": "at least 50% for Matric mathematics"
+              }
+            ]
+          },
+          {
+            "refer": "a lower intermediate score for the NBT in Quantitative Literacy"
+          },
+          {
+            "refer": "a pass for a MAM course"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "correct",
+      "corrected": {
+        "all": [
+          {
+            "min_year_of_study": 2
+          },
+          {
+            "any": [
+              {
+                "refer": "at least 50% for Matric mathematics"
+              },
+              {
+                "refer": "a pass for a MAM course"
+              },
+              {
+                "refer": "a lower intermediate score for the NBT in Quantitative Literacy"
+              }
+            ]
+          }
+        ]
+      },
+      "note": null,
+      "fingerprint": "0c34c5bba408"
+    },
+    {
+      "id": "requirement/CSC1016S",
+      "causes": [
+        "refused_mark_threshold"
+      ],
+      "covers": {
+        "courses/CSC1016S": "p. 168"
+      },
+      "printed": "CSC1015F (or at least 60% for CSC1017S)",
+      "failures": [],
+      "old": {
+        "courses/CSC1016S": {
+          "any": [
+            {
+              "course": "CSC1015F",
+              "need": "mark",
+              "min_mark": 45
+            },
+            {
+              "course": "CSC1017F",
+              "need": "mark",
+              "min_mark": 70
+            }
+          ]
+        }
+      },
+      "new": {
+        "any": [
+          {
+            "course": "CSC1015F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC1017S",
+            "need": "mark",
+            "min_mark": 60
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "a0b986492967"
+    },
+    {
+      "id": "requirement/CSC3002F",
+      "causes": [
+        "refused_or_equivalent",
+        "check_failed"
+      ],
+      "covers": {
+        "courses/CSC3002F": "p. 171",
+        "courses/CSC3003S": "p. 171",
+        "courses/CSC3024S": "p. 171"
+      },
+      "printed": "CSC2001F, CSC2002S, CSC2004Z and ((MAM1004F+MAM1008S) or (MAM1000W) or (MAM1031F or equivalent)).",
+      "failures": [
+        "p. 171: CSC3002F's rule names MAM1000W, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3002F's rule names MAM1004F, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3002F's rule names MAM1008S, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3002F's rule names MAM1031F, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3003S's rule names MAM1000W, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3003S's rule names MAM1004F, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3003S's rule names MAM1008S, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3003S's rule names MAM1031F, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3024S's rule names MAM1000W, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3024S's rule names MAM1004F, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3024S's rule names MAM1008S, which isn't loaded, printed or equivalent",
+        "p. 171: CSC3024S's rule names MAM1031F, which isn't loaded, printed or equivalent"
+      ],
+      "old": {
+        "courses/CSC3002F": {
+          "all": [
+            {
+              "any": [
+                {
+                  "all": [
+                    {
+                      "course": "MAM1004F",
+                      "need": "pass"
+                    },
+                    {
+                      "course": "MAM1008S",
+                      "need": "pass"
+                    }
+                  ]
+                },
+                {
+                  "all": [
+                    {
+                      "course": "MAM1031F",
+                      "need": "pass"
+                    },
+                    {
+                      "course": "MAM1032S",
+                      "need": "pass"
+                    }
+                  ]
+                },
+                {
+                  "course": "MAM1000W",
+                  "need": "pass"
+                },
+                {
+                  "refer": "or equivalent"
+                }
+              ]
+            },
+            {
+              "course": "CSC2001F",
+              "need": "pass"
+            },
+            {
+              "course": "CSC2002S",
+              "need": "pass"
+            },
+            {
+              "refer": "CSC2004Z is required if CSC2002S was passed after 2017."
+            }
+          ]
+        },
+        "courses/CSC3003S": {
+          "all": [
+            {
+              "any": [
+                {
+                  "all": [
+                    {
+                      "course": "MAM1004F",
+                      "need": "pass"
+                    },
+                    {
+                      "course": "MAM1008S",
+                      "need": "pass"
+                    }
+                  ]
+                },
+                {
+                  "all": [
+                    {
+                      "course": "MAM1031F",
+                      "need": "pass"
+                    },
+                    {
+                      "course": "MAM1032S",
+                      "need": "pass"
+                    }
+                  ]
+                },
+                {
+                  "course": "MAM1000W",
+                  "need": "pass"
+                },
+                {
+                  "refer": "or equivalent"
+                }
+              ]
+            },
+            {
+              "any": [
+                {
+                  "course": "INF2009F",
+                  "need": "pass"
+                },
+                {
+                  "refer": "permission from the Head of Department to do compensation work to a satisfactory standard"
+                }
+              ]
+            },
+            {
+              "course": "CSC2001F",
+              "need": "pass"
+            },
+            {
+              "course": "CSC2002S",
+              "need": "pass"
+            },
+            {
+              "refer": "CSC2004Z is required if CSC2002S was passed after 2017."
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "course": "MAM1004F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1008S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "course": "MAM1000W",
+                "need": "pass"
+              },
+              {
+                "course": "MAM1031F",
+                "need": "pass"
+              },
+              {
+                "refer": "or equivalent"
+              }
+            ]
+          },
+          {
+            "course": "CSC2001F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2002S",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2004Z",
+            "need": "pass"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": "MAM1000W, MAM1004F, MAM1008S and MAM1031F are Science maths courses with no EBE entry. Kept as printed: a student who passed them meets the rule.",
+      "fingerprint": "4bb6c1b3a161"
+    },
+    {
+      "id": "requirement/SLL1102S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/SLL1102S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 249–250 (Language options row 13)"
+      },
+      "printed": "SLL1101F or SLL1018S, or equivalent at the discretion of the Head of Section. Students with a Nguni language as a 1 st language are not permitted to do this course and are encouraged to register for SLL1132S isiXhosa Language & Literature Studies IB.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "SLL1018S",
+                "need": "pass"
+              },
+              {
+                "course": "SLL1101F",
+                "need": "pass"
+              },
+              {
+                "refer": "or equivalent at the discretion of the Head of Section"
+              }
+            ]
+          },
+          {
+            "refer": "Students with a Nguni language as a 1 st language are not permitted to do this course"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "64d124e5754d"
+    },
+    {
+      "id": "requirement/SLL1061S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/SLL1061S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 273 (Language options row 27)"
+      },
+      "printed": "SLL1060F or equivalent. This second semester is specially designed for students who passed SLL1060F but students with adequate level of French language acquisition may, by permission of the course convener, be admitted in SLL1061S. Note that “special admissions” exclude students coming from countries where French is spoken and/or taught; thus students who have studied French at high school, e.g. South Africa, Zimbabwe, and/or passed their Matric – with French as a foreign language - within the last three years at the day of registration are not allowed to register for this module.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "SLL1060F",
+                "need": "pass"
+              },
+              {
+                "refer": "by permission of the course convener, students with adequate level of French language acquisition may be admitted in SLL1061S"
+              },
+              {
+                "refer": "or equivalent"
+              }
+            ]
+          },
+          {
+            "refer": "special admissions exclude students coming from countries where French is spoken and/or taught; students who have studied French at high school, e.g. South Africa, Zimbabwe, and/or passed their Matric with French as a foreign language within the last three years at the day of registration are not allowed to register for this module"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "correct",
+      "corrected": {
+        "any": [
+          {
+            "course": "SLL1060F",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent"
+          },
+          {
+            "all": [
+              {
+                "refer": "students with adequate level of French language acquisition may, by permission of the course convener, be admitted in SLL1061S"
+              },
+              {
+                "refer": "Note that “special admissions” exclude students coming from countries where French is spoken and/or taught; thus students who have studied French at high school, e.g. South Africa, Zimbabwe, and/or passed their Matric – with French as a foreign language - within the last three years at the day of registration are not allowed to register for this module."
+              }
+            ]
+          }
+        ]
+      },
+      "note": null,
+      "fingerprint": "fb6f7a0c19fe"
+    },
+    {
+      "id": "requirement/SLL1074S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/SLL1074S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 290–291 (Language options row 40)"
+      },
+      "printed": "SLL1073F, or equivalent at the discretion of the Head of Department.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "course": "SLL1073F",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent at the discretion of the Head of Department"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "62b801c8c953"
+    },
+    {
+      "id": "requirement/SLL1076S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/SLL1076S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 287 (Language options row 36)"
+      },
+      "printed": "SLL1075F, or equivalent at the discretion of the Head of Section.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "course": "SLL1075F",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent at the discretion of the Head of Section"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "49316b3cfcc5"
+    },
+    {
+      "id": "requirement/SLL1083S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/SLL1083S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 282 (Language options row 32)"
+      },
+      "printed": "SLL1082F or equivalent by permission of the Head of Department.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "course": "SLL1082F",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent by permission of the Head of Department"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "2916725c5046"
+    },
+    {
+      "id": "requirement/SLL1122S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/SLL1122S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 259–260 (Language options row 21)"
+      },
+      "printed": "SLL1121F, or equivalent at the discretion of the Head of Section.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "course": "SLL1121F",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent at the discretion of the Head of Section"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "acd1cb21426d"
+    },
+    {
+      "id": "requirement/ECO2007S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/ECO2007S": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 156 (Courses row 26)"
+      },
+      "printed": "ECO1010 or MAM1010 (or equivalent).",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "ECO1010 or MAM1010 (or equivalent)."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "78f4a828799b"
+    },
+    {
+      "id": "requirement/SLL1050F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1050F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 264 (Language options row 22)"
+      },
+      "printed": "None. This course is primarily designed for those who have not studied Latin before, but is also open to those who have done some Latin at school but not enough to enter Latin IB or IIA.",
+      "failures": [],
+      "old": {},
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "3ea36c4d8f5a"
+    },
+    {
+      "id": "requirement/SLL1017F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1017F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 244–245 (Language options row 3)",
+        "courses/SLL1017S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 244–245 (Language options row 4)"
+      },
+      "printed": "None. This is a beginners’ course aimed at non-mother tongue speakers of Swahili.",
+      "failures": [],
+      "old": {},
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "16461a7f0727"
+    },
+    {
+      "id": "requirement/SLL1121F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1121F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 259 (Language options row 20)"
+      },
+      "printed": "None. This is a course designed for beginners.",
+      "failures": [],
+      "old": {},
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "218cc48d0a76"
+    },
+    {
+      "id": "requirement/SLL1075F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1075F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 287 (Language options row 35)"
+      },
+      "printed": "None. This is a course for beginners, but under certain circumstances students with prior knowledge of Portuguese may be admitted.",
+      "failures": [],
+      "old": {},
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "2829b493e172"
+    },
+    {
+      "id": "requirement/SLL1073F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1073F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 290 (Language options row 39)"
+      },
+      "printed": "None. This is a course for beginners, but under certain circumstances students with prior knowledge of Spanish may be admitted.",
+      "failures": [],
+      "old": {},
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "69d7b193d3d5"
+    },
+    {
+      "id": "requirement/SLL1042F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1042F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 254 (Language options row 16)",
+        "courses/SLL1042S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 254 (Language options row 17)"
+      },
+      "printed": "None. This is a course for beginners; under certain conditions students with basic knowledge of Afrikaans may be permitted to attend, with permission of the Section Head.",
+      "failures": [],
+      "old": {},
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "02743dca8256"
+    },
+    {
+      "id": "requirement/BUS1007S",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/BUS1007S": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 186–187 (Courses row 11)"
+      },
+      "printed": "This course is intended for students in the special field of Industrial and Organisational Psychology, but students from other faculties may choose this course as an elective.",
+      "failures": [],
+      "old": {},
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "5c86b1531e13"
+    },
+    {
+      "id": "rule/EB822EEE02/3",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB822EEE02/3": "p. 55"
+      },
+      "printed": "F/S/P/L *ASL1200S equivalent ................................................................... *ASL1200S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if ASL1200S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB822EEE02/3": {
+          "all": [
+            {
+              "all_of_group": "EB822EEE02-y3-core"
+            },
+            {
+              "credits": 18,
+              "from_groups": [
+                "complementary"
+              ]
+            },
+            {
+              "total_credits": 122
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB822EEE02-y3-core"
+          },
+          {
+            "credits": 18,
+            "from_groups": [
+              "complementary"
+            ]
+          },
+          {
+            "total_credits": 114
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "62c8dab8a781"
+    },
+    {
+      "id": "rule/EB009EEE01/2",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB009EEE01/2": "pp. 48-49"
+      },
+      "printed": "*CON2026S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if CON2026S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB009EEE01/2": {
+          "all": [
+            {
+              "all_of_group": "EB009EEE01-y2-core"
+            },
+            {
+              "total_credits": 144
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB009EEE01-y2-core"
+          },
+          {
+            "total_credits": 144
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "28355f6074f3"
+    },
+    {
+      "id": "rule/EB011EEE05/2",
+      "causes": [
+        "refused_free_text",
+        "check_failed"
+      ],
+      "covers": {
+        "curriculum_rules/EB011EEE05/2": "pp. 57-58"
+      },
+      "printed": "*CON2026S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if CON2026S is outstanding.",
+      "failures": [
+        "p. 57: EB011EEE05 year 2's core table prints 136 credits, but its rows add up to 144"
+      ],
+      "old": {
+        "curriculum_rules/EB011EEE05/2": {
+          "all": [
+            {
+              "all_of_group": "EB011EEE05-y2-core"
+            },
+            {
+              "total_credits": 144
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB011EEE05-y2-core"
+          },
+          {
+            "total_credits": 136
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": "The table prints 136 where the core rows add to 144. Accepted as printed: the printed total is a lower bound, and the core rows give 144.",
+      "fingerprint": "1c04bb18ec43"
+    },
+    {
+      "id": "rule/EB022EEE02/2",
+      "causes": [
+        "refused_free_text",
+        "check_failed"
+      ],
+      "covers": {
+        "curriculum_rules/EB022EEE02/2": "p. 53"
+      },
+      "printed": "*CON2026S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if CON2026S is outstanding.",
+      "failures": [
+        "p. 53: EB022EEE02 year 2's core table prints 136 credits, but its rows add up to 144"
+      ],
+      "old": {
+        "curriculum_rules/EB022EEE02/2": {
+          "all": [
+            {
+              "all_of_group": "EB022EEE02-y2-core"
+            },
+            {
+              "total_credits": 144
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB022EEE02-y2-core"
+          },
+          {
+            "total_credits": 136
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": "The table prints 136 where the core rows add to 144. Accepted as printed: the printed total is a lower bound, and the core rows give 144.",
+      "fingerprint": "566a253a763a"
+    },
+    {
+      "id": "rule/EB809EEE01/2",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB809EEE01/2": "p. 50"
+      },
+      "printed": "*CON2026S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if CON2026S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB809EEE01/2": {
+          "all": [
+            {
+              "all_of_group": "EB809EEE01-y2-core"
+            },
+            {
+              "total_credits": 116
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB809EEE01-y2-core"
+          },
+          {
+            "total_credits": 108
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "1a27cb4b6965"
+    },
+    {
+      "id": "rule/EB811EEE05/2",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB811EEE05/2": "pp. 59-60"
+      },
+      "printed": "*CON2026S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if CON2026S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB811EEE05/2": {
+          "all": [
+            {
+              "all_of_group": "EB811EEE05-y2-core"
+            },
+            {
+              "total_credits": 116
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB811EEE05-y2-core"
+          },
+          {
+            "total_credits": 108
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "98f13184014f"
+    },
+    {
+      "id": "rule/EB822EEE02/2",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB822EEE02/2": "p. 55"
+      },
+      "printed": "*CON2026S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if CON2026S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB822EEE02/2": {
+          "all": [
+            {
+              "all_of_group": "EB822EEE02-y2-core"
+            },
+            {
+              "total_credits": 116
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB822EEE02-y2-core"
+          },
+          {
+            "total_credits": 108
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "e518d12a50a9"
+    },
+    {
+      "id": "rule/EB809EEE01/3",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB809EEE01/3": "p. 51"
+      },
+      "printed": "*F/S/P/L * ASL1200S equivalent ................................................................. *ASL1200S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if ASL1200S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB809EEE01/3": {
+          "all": [
+            {
+              "all_of_group": "EB809EEE01-y3-core"
+            },
+            {
+              "total_credits": 112
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB809EEE01-y3-core"
+          },
+          {
+            "total_credits": 104
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "ca00c852310f"
+    },
+    {
+      "id": "rule/EB811EEE05/3",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB811EEE05/3": "p. 60"
+      },
+      "printed": "*F/S/P/L *ASL1200S equivalent ................................................................... *ASL1200S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if ASL1200S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB811EEE05/3": {
+          "all": [
+            {
+              "all_of_group": "EB811EEE05-y3-core"
+            },
+            {
+              "total_credits": 112
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB811EEE05-y3-core"
+          },
+          {
+            "total_credits": 104
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "801a87a4181b"
+    },
+    {
+      "id": "rule/EB009EEE01/1",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB009EEE01/1": "p. 48"
+      },
+      "printed": "†ASL1200S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if ASL1200S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB009EEE01/1": {
+          "all": [
+            {
+              "all_of_group": "EB009EEE01-y1-core"
+            },
+            {
+              "total_credits": 148
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB009EEE01-y1-core"
+          },
+          {
+            "total_credits": 132
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "28b2994012dd"
+    },
+    {
+      "id": "rule/EB022EEE02/1",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB022EEE02/1": "pp. 52-53"
+      },
+      "printed": "†ASL1200S is a core course in the 576 cr. curriculum and students should register for an approved Complementary Studies course of at least 8 credits (timetable permitting) to meet the core requirements if ASL1200S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB022EEE02/1": {
+          "all": [
+            {
+              "all_of_group": "EB022EEE02-y1-core"
+            },
+            {
+              "total_credits": 148
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB022EEE02-y1-core"
+          },
+          {
+            "total_credits": 132
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "7ae883548a2d"
+    },
+    {
+      "id": "rule/EB011EEE05/1",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB011EEE05/1": "p. 57"
+      },
+      "printed": "†ASL1200S is a core course in the 576 cr. curriculum and students should register for an approved complementary studies course of at least 8 credits (timetable permitting) to meet the core requirements if ASL1200S is outstanding.",
+      "failures": [],
+      "old": {
+        "curriculum_rules/EB011EEE05/1": {
+          "all": [
+            {
+              "all_of_group": "EB011EEE05-y1-core"
+            },
+            {
+              "total_credits": 148
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB011EEE05-y1-core"
+          },
+          {
+            "total_credits": 132
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "9908e7444dc7"
+    },
+    {
+      "id": "requirement/ECO1010F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/ECO1010F": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 152–153 (Courses row 19)",
+        "courses/ECO1010S": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 152–153 (Courses row 20)"
+      },
+      "printed": "Admission to degree and a pass (5) in National Senior Certificate: Mathematics.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "refer": "Admission to degree"
+          },
+          {
+            "refer": "a pass (5) in National Senior Certificate: Mathematics."
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "273b9c04ad7e"
+    },
+    {
+      "id": "requirement/SLL1131F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1131F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 251 (Language options row 14)"
+      },
+      "printed": "The student must have passed an African language (isiXhosa, isiZulu, isiNdebele, isiSwati) at Grade 12 level or have completed SLL1101F Xhosa Communication IA and SLL1102S Xhosa Communication IB.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "all": [
+              {
+                "course": "SLL1101F",
+                "need": "pass"
+              },
+              {
+                "course": "SLL1102S",
+                "need": "pass"
+              }
+            ]
+          },
+          {
+            "refer": "passed an African language (isiXhosa, isiZulu, isiNdebele, isiSwati) at Grade 12 level"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "ffa26e7c81f8"
+    },
+    {
+      "id": "requirement/SLL1023S",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1023S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 248 (Language options row 10)"
+      },
+      "printed": "SLL1022F Sesotho Communication IA or SLL1016S Sotho Additional",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "course": "SLL1016S",
+            "need": "pass"
+          },
+          {
+            "course": "SLL1022F",
+            "need": "pass"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "1338f381a141"
+    },
+    {
+      "id": "requirement/PHI2043F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/PHI2043F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 367–368 (Courses row 51)",
+        "courses/PHI2043S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 367–368 (Courses row 52)"
+      },
+      "printed": "At least second year status or be registered for an ACC04/ACC08 programme.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "min_year_of_study": 2
+          },
+          {
+            "refer": "be registered for an ACC04/ACC08 programme"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "99df21d4335a"
+    },
+    {
+      "id": "requirement/FAM2000F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/FAM2000F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 204 (Courses row 32)"
+      },
+      "printed": "At least second-year status, or at the discretion of the Head of Department",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "min_year_of_study": 2
+          },
+          {
+            "refer": "at the discretion of the Head of Department"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "7f473b485b68"
+    },
+    {
+      "id": "requirement/REL2040F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/REL2040F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 435–436 (Courses row 59)",
+        "courses/REL2047F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 436 (Courses row 60)",
+        "courses/REL2048S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 436 (Courses row 61)"
+      },
+      "printed": "Second-year status or permission of the Head of Department.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "min_year_of_study": 2
+          },
+          {
+            "refer": "permission of the Head of Department"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "1675529c2172"
+    },
+    {
+      "id": "requirement/BUS1036F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/BUS1036F": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 187 (Courses row 12)",
+        "courses/BUS1036S": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 187 (Courses row 13)"
+      },
+      "printed": "Admission as first year Faculty of Commerce students, or by permission of Head of the School.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "refer": "Admission as first year Faculty of Commerce students"
+          },
+          {
+            "refer": "by permission of Head of the School"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "c247ad4e91fe"
+    },
+    {
+      "id": "requirement/BUS1004F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/BUS1004F": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 186 (Courses row 10)"
+      },
+      "printed": "Students should be in their second or third AYOS in any faculty or have permission from the Course Convenor.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "refer": "Students should be in their second or third AYOS in any faculty"
+          },
+          {
+            "refer": "have permission from the Course Convenor"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "b068ed95d154"
+    },
+    {
+      "id": "requirement/SLL1059S",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1059S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 257 (Language options row 19)"
+      },
+      "printed": "Initial Arabic A (SLL1058F)",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course": "SLL1058F",
+        "need": "pass"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "077a2cd45c46"
+    },
+    {
+      "id": "requirement/SLL1051S",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1051S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 264 (Language options row 23)"
+      },
+      "printed": "SLL1050F Latin IA",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course": "SLL1050F",
+        "need": "pass"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "b17d5aaddfe8"
+    },
+    {
+      "id": "requirement/SLL1053S",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1053S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 266 (Language options row 25)"
+      },
+      "printed": "SLL1052F Greek IA",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course": "SLL1052F",
+        "need": "pass"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "ad901e42961d"
+    },
+    {
+      "id": "requirement/SLL1132S",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1132S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 251–252 (Language options row 15)"
+      },
+      "printed": "SLL1131F isiXhosa Language and Literature Studies IA.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course": "SLL1131F",
+        "need": "pass"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "19c3c841def0"
+    },
+    {
+      "id": "requirement/SLL2058F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL2058F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 269–270 (Courses row 68)"
+      },
+      "printed": "2nd year status",
+      "failures": [],
+      "old": {},
+      "new": {
+        "min_year_of_study": 2
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "22b8517a04dc"
+    },
+    {
+      "id": "requirement/FAM2013F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/FAM2013F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 205 (Courses row 34)"
+      },
+      "printed": "At least second year status",
+      "failures": [],
+      "old": {},
+      "new": {
+        "min_year_of_study": 2
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "483312f2c124"
+    },
+    {
+      "id": "requirement/PHI2012F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/PHI2012F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 365–366 (Courses row 46)",
+        "courses/PHI2016S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 366 (Courses row 47)",
+        "courses/PHI2037F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 366 (Courses row 48)",
+        "courses/PHI2040S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 366 (Courses row 49)",
+        "courses/PHI2042F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 367 (Courses row 50)",
+        "courses/PHI2045S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 368 (Courses row 54)"
+      },
+      "printed": "At least second year status.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "min_year_of_study": 2
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "16283e6f0dab"
+    },
+    {
+      "id": "requirement/FAM2004S",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/FAM2004S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 205 (Courses row 33)"
+      },
+      "printed": "At least second-year status",
+      "failures": [],
+      "old": {},
+      "new": {
+        "min_year_of_study": 2
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "7738cf30d264"
+    },
+    {
+      "id": "requirement/BUS2010F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/BUS2010F": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 187 (Courses row 14)",
+        "courses/BUS2010S": "UCT Faculty of Commerce Undergraduate Handbook 2026 (Book 6a), p. 187 (Courses row 15)"
+      },
+      "printed": "Students should be in their second AYOS or above.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "min_year_of_study": 2
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "90548bd47c9a"
+    },
+    {
+      "id": "requirement/ECO1008F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/ECO1008F": "p. 161",
+        "courses/ECO1008S": "p. 161"
+      },
+      "printed": "Admission to degree. National Senior Certificate: a pass (5) in Mathematics.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Admission to degree. National Senior Certificate: a pass (5) in Mathematics."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "75c73a8ea1d2"
+    },
+    {
+      "id": "requirement/MUZ1340H",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/MUZ1340H": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 325 (Courses row 42)"
+      },
+      "printed": "Admission to the BMus degree, BA major in Music or Diploma in Music Performance. Registration for students in other programmes is at the discretion of the course convener.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Admission to the BMus degree, BA major in Music or Diploma in Music Performance. Registration for students in other programmes is at the discretion of the course convener."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "dd4866149202"
+    },
+    {
+      "id": "requirement/PSY1009F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/PSY1009F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 381–382 (Courses row 55)"
+      },
+      "printed": "Faculty admission. Admission to this course is restricted to students (a) registered for the major in Psychology, (b) for which the completion of this course is a degree-specific requirement (e.g., Social Work, Physiotherapy, Occupational Therapy, Speech and Communication Disorders [Speech Therapy and Audiology], or any other approved Health Sciences service programme), (c) majoring in Organisational Psychology and (d) registered for the BMus and BA(T&P) degrees, where the Head of Section has approved their elective choice.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Faculty admission. Admission to this course is restricted to students (a) registered for the major in Psychology, (b) for which the completion of this course is a degree-specific requirement (e.g., Social Work, Physiotherapy, Occupational Therapy, Speech and Communication Disorders [Speech Therapy and Audiology], or any other approved Health Sciences service programme), (c) majoring in Organisational Psychology and (d) registered for the BMus and BA(T&P) degrees, where the Head of Section has approved their elective choice."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "4e62c8dce587"
+    },
+    {
+      "id": "requirement/MUZ1339H",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/MUZ1339H": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 324–325 (Courses row 41)"
+      },
+      "printed": "No pre-requisite for Jazz students; registration for other students is at the discretion of the course convener.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "No pre-requisite for Jazz students; registration for other students is at the discretion of the course convener."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "32a08684b7c2"
+    },
+    {
+      "id": "requirement/SLL1016S",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1016S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 247 (Language options row 8)"
+      },
+      "printed": "None. This is a beginners’ course. Students with a Sotho language as a 1st language are not permitted to do Sotho Additional.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Students with a Sotho language as a 1st language are not permitted to do Sotho Additional."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "8228de1a21da"
+    },
+    {
+      "id": "requirement/SLL1022F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1022F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 247 (Language options row 9)"
+      },
+      "printed": "None. This is a beginners’ course. Students with a Sotho language as a first language are not permitted to do Sesotho Communication IA.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Students with a Sotho language as a first language are not permitted to do Sesotho Communication IA."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "2f516178c6d6"
+    },
+    {
+      "id": "requirement/SLL1018S",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1018S": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 249 (Language options row 11)"
+      },
+      "printed": "None. This is a beginners’ course. Students with an Nguni language as a 1st language are not permitted to do Xhosa Additional, and are encouraged to register for SLL1131F isiXhosa Language & Literature Studies IA.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Students with an Nguni language as a 1st language are not permitted to do Xhosa Additional"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "5fd16abb74da"
+    },
+    {
+      "id": "requirement/SLL1101F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1101F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 249 (Language options row 12)"
+      },
+      "printed": "None. This is a course for beginners. Students with an Nguni language as a 1st language are not permitted to do this course and are encouraged to register for SLL1131F isiXhosa Language & Literature Studies IA.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Students with an Nguni language as a 1st language are not permitted to do this course"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "663fb22872a9"
+    },
+    {
+      "id": "requirement/SLL1060F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/SLL1060F": "UCT Faculty of Humanities Undergraduate Handbook 2026 (Book 9a), p. 273 (Language options row 26)"
+      },
+      "printed": "None. This is a course for beginners. Students with previous knowledge of French may not register for this course.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "Students with previous knowledge of French may not register for this course."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "8baa9017052c"
+    },
+    {
+      "id": "removal/ASL1200S",
+      "causes": [
+        "removed",
+        "no_entry"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y1-core/ASL1200S": "2023, p. 46",
+        "course_group_members/EB011EEE05-y1-core/ASL1200S": "2023, p. 55",
+        "course_group_members/EB022EEE02-y1-core/ASL1200S": "2023, p. 50",
+        "course_group_members/EB809EEE01-y3-core/ASL1200S": "2023, p. 49",
+        "course_group_members/EB811EEE05-y3-core/ASL1200S": "2023, p. 57",
+        "course_group_members/EB822EEE02-y3-core/ASL1200S": "2023, p. 53",
+        "courses/ASL1200S": "2023, p. 167"
+      },
+      "printed": "ASL1200S Africa: Culture, Identity & Globalisation* ...................................... 8 5",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y1-core/ASL1200S": {
+          "group_key": "EB009EEE01-y1-core",
+          "course_code": "ASL1200S",
+          "category": null
+        },
+        "course_group_members/EB011EEE05-y1-core/ASL1200S": {
+          "group_key": "EB011EEE05-y1-core",
+          "course_code": "ASL1200S",
+          "category": null
+        },
+        "course_group_members/EB022EEE02-y1-core/ASL1200S": {
+          "group_key": "EB022EEE02-y1-core",
+          "course_code": "ASL1200S",
+          "category": null
+        },
+        "course_group_members/EB809EEE01-y3-core/ASL1200S": {
+          "group_key": "EB809EEE01-y3-core",
+          "course_code": "ASL1200S",
+          "category": null
+        },
+        "course_group_members/EB811EEE05-y3-core/ASL1200S": {
+          "group_key": "EB811EEE05-y3-core",
+          "course_code": "ASL1200S",
+          "category": null
+        },
+        "course_group_members/EB822EEE02-y3-core/ASL1200S": {
+          "group_key": "EB822EEE02-y3-core",
+          "course_code": "ASL1200S",
+          "category": null
+        },
+        "courses/ASL1200S": {
+          "code": "ASL1200S",
+          "name": "Africa: Culture, ID & Globalisation",
+          "credits": 8,
+          "nqf_level": 5,
+          "term": "sem2",
+          "entry_rule": {
+            "refer": "This course is for non-Humanities students only"
+          },
+          "convener": "TBA",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "a26577016183"
+    },
+    {
+      "id": "removal/CML4607F",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB811EEE05-y4-core/CML4607F": "2023, p. 58"
+      },
+      "printed": "CML4607F Law for Engineers......................................................................... 10 8",
+      "failures": [],
+      "old": {
+        "course_group_members/EB811EEE05-y4-core/CML4607F": {
+          "group_key": "EB811EEE05-y4-core",
+          "course_code": "CML4607F",
+          "category": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "3c2c6fe43208"
+    },
+    {
+      "id": "removal/CON2026S",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y2-core/CON2026S": "2023, p. 46",
+        "course_group_members/EB011EEE05-y2-core/CON2026S": "2023, p. 55",
+        "course_group_members/EB022EEE02-y2-core/CON2026S": "2023, p. 51",
+        "course_group_members/EB809EEE01-y2-core/CON2026S": "2023, p. 48",
+        "course_group_members/EB811EEE05-y2-core/CON2026S": "2023, p. 57",
+        "course_group_members/EB822EEE02-y2-core/CON2026S": "2023, p. 53"
+      },
+      "printed": "CON2026S Project Management for Engineers ................................................. 8 6",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y2-core/CON2026S": {
+          "group_key": "EB009EEE01-y2-core",
+          "course_code": "CON2026S",
+          "category": null
+        },
+        "course_group_members/EB011EEE05-y2-core/CON2026S": {
+          "group_key": "EB011EEE05-y2-core",
+          "course_code": "CON2026S",
+          "category": null
+        },
+        "course_group_members/EB022EEE02-y2-core/CON2026S": {
+          "group_key": "EB022EEE02-y2-core",
+          "course_code": "CON2026S",
+          "category": null
+        },
+        "course_group_members/EB809EEE01-y2-core/CON2026S": {
+          "group_key": "EB809EEE01-y2-core",
+          "course_code": "CON2026S",
+          "category": null
+        },
+        "course_group_members/EB811EEE05-y2-core/CON2026S": {
+          "group_key": "EB811EEE05-y2-core",
+          "course_code": "CON2026S",
+          "category": null
+        },
+        "course_group_members/EB822EEE02-y2-core/CON2026S": {
+          "group_key": "EB822EEE02-y2-core",
+          "course_code": "CON2026S",
+          "category": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "5ee699e3e466"
+    },
+    {
+      "id": "removal/CSC3023F",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB022EEE02-y4-group-2/CSC3023F": "2023, p. 52",
+        "course_group_members/EB822EEE02-y5-group-2/CSC3023F": "2023, p. 54",
+        "courses/CSC3023F": "2023, p. 179"
+      },
+      "printed": "CSC3xxx Approved 3rd year Computer Science course ................................ 24 7",
+      "failures": [],
+      "old": {
+        "course_group_members/EB022EEE02-y4-group-2/CSC3023F": {
+          "group_key": "EB022EEE02-y4-group-2",
+          "course_code": "CSC3023F",
+          "category": null
+        },
+        "course_group_members/EB822EEE02-y5-group-2/CSC3023F": {
+          "group_key": "EB822EEE02-y5-group-2",
+          "course_code": "CSC3023F",
+          "category": null
+        },
+        "courses/CSC3023F": {
+          "code": "CSC3023F",
+          "name": "Computer Science 3023",
+          "credits": 24,
+          "nqf_level": 7,
+          "term": "sem1",
+          "entry_rule": {
+            "all": [
+              {
+                "course": "CSC2001F",
+                "need": "pass"
+              },
+              {
+                "course": "CSC2002S",
+                "need": "pass"
+              },
+              {
+                "refer": "CSC2004Z is required if CSC2002S was passed after 2017."
+              }
+            ]
+          },
+          "convener": "Associate Professor P Marais",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "0fab3bc1e0f8"
+    },
+    {
+      "id": "removal/EEE1006F",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y1-core/EEE1006F": "2023, p. 46",
+        "course_group_members/EB011EEE05-y1-core/EEE1006F": "2023, p. 55",
+        "course_group_members/EB022EEE02-y1-core/EEE1006F": "2023, p. 50",
+        "course_group_members/EB809EEE01-y1-core/EEE1006F": "2023, p. 48",
+        "course_group_members/EB811EEE05-y1-core/EEE1006F": "2023, p. 57",
+        "course_group_members/EB822EEE02-y1-core/EEE1006F": "2023, p. 53",
+        "courses/EEE1006F": "2023, p. 127"
+      },
+      "printed": "EEE1006F Introduction to Electronic Engineering ......................................... 12 5",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y1-core/EEE1006F": {
+          "group_key": "EB009EEE01-y1-core",
+          "course_code": "EEE1006F",
+          "category": null
+        },
+        "course_group_members/EB011EEE05-y1-core/EEE1006F": {
+          "group_key": "EB011EEE05-y1-core",
+          "course_code": "EEE1006F",
+          "category": null
+        },
+        "course_group_members/EB022EEE02-y1-core/EEE1006F": {
+          "group_key": "EB022EEE02-y1-core",
+          "course_code": "EEE1006F",
+          "category": null
+        },
+        "course_group_members/EB809EEE01-y1-core/EEE1006F": {
+          "group_key": "EB809EEE01-y1-core",
+          "course_code": "EEE1006F",
+          "category": null
+        },
+        "course_group_members/EB811EEE05-y1-core/EEE1006F": {
+          "group_key": "EB811EEE05-y1-core",
+          "course_code": "EEE1006F",
+          "category": null
+        },
+        "course_group_members/EB822EEE02-y1-core/EEE1006F": {
+          "group_key": "EB822EEE02-y1-core",
+          "course_code": "EEE1006F",
+          "category": null
+        },
+        "courses/EEE1006F": {
+          "code": "EEE1006F",
+          "name": "Introduction to Electronic Engineering",
+          "credits": 12,
+          "nqf_level": 5,
+          "term": "sem1",
+          "entry_rule": null,
+          "convener": "Dr P Amayo",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "9e5d536d68f6"
+    },
+    {
+      "id": "removal/EEE1007S",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y1-core/EEE1007S": "2023, p. 46",
+        "course_group_members/EB011EEE05-y1-core/EEE1007S": "2023, p. 55",
+        "course_group_members/EB022EEE02-y1-core/EEE1007S": "2023, p. 50",
+        "course_group_members/EB809EEE01-y1-core/EEE1007S": "2023, p. 48",
+        "course_group_members/EB811EEE05-y1-core/EEE1007S": "2023, p. 57",
+        "course_group_members/EB822EEE02-y1-core/EEE1007S": "2023, p. 53",
+        "courses/EEE1007S": "2023, p. 128"
+      },
+      "printed": "EEE1007S Introduction to Electrical Engineering .......................................... 12 5",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y1-core/EEE1007S": {
+          "group_key": "EB009EEE01-y1-core",
+          "course_code": "EEE1007S",
+          "category": null
+        },
+        "course_group_members/EB011EEE05-y1-core/EEE1007S": {
+          "group_key": "EB011EEE05-y1-core",
+          "course_code": "EEE1007S",
+          "category": null
+        },
+        "course_group_members/EB022EEE02-y1-core/EEE1007S": {
+          "group_key": "EB022EEE02-y1-core",
+          "course_code": "EEE1007S",
+          "category": null
+        },
+        "course_group_members/EB809EEE01-y1-core/EEE1007S": {
+          "group_key": "EB809EEE01-y1-core",
+          "course_code": "EEE1007S",
+          "category": null
+        },
+        "course_group_members/EB811EEE05-y1-core/EEE1007S": {
+          "group_key": "EB811EEE05-y1-core",
+          "course_code": "EEE1007S",
+          "category": null
+        },
+        "course_group_members/EB822EEE02-y1-core/EEE1007S": {
+          "group_key": "EB822EEE02-y1-core",
+          "course_code": "EEE1007S",
+          "category": null
+        },
+        "courses/EEE1007S": {
+          "code": "EEE1007S",
+          "name": "Introduction to Electrical Engineering",
+          "credits": 12,
+          "nqf_level": 5,
+          "term": "sem2",
+          "entry_rule": null,
+          "convener": "Associate Professor S Chowdhury",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "9132b1ee647e"
+    },
+    {
+      "id": "removal/EEE2051L",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "courses/EEE2051L": "2023, p. 131"
+      },
+      "printed": "EEE2045F",
+      "failures": [],
+      "old": {
+        "courses/EEE2051L": {
+          "code": "EEE2051L",
+          "name": "Practical Electronics: Components, Modules and Design",
+          "credits": 8,
+          "nqf_level": 6,
+          "term": "winter",
+          "entry_rule": {
+            "course": "EEE2045F",
+            "need": "pass"
+          },
+          "convener": "Mr J Pead",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "f5fed17ea3b3"
+    },
+    {
+      "id": "removal/EEE2048F",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y2-core/EEE2048F": "2023, p. 46",
+        "course_group_members/EB011EEE05-y2-core/EEE2048F": "2023, p. 55",
+        "course_group_members/EB022EEE02-y2-core/EEE2048F": "2023, p. 51",
+        "course_group_members/EB809EEE01-y3-core/EEE2048F": "2023, p. 49",
+        "course_group_members/EB811EEE05-y3-core/EEE2048F": "2023, p. 57",
+        "course_group_members/EB822EEE02-y3-core/EEE2048F": "2023, p. 53",
+        "courses/EEE2048F": "2023, p. 131"
+      },
+      "printed": "EEE2048F Professional Communication for Electrical Engineering ................ 8 6",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y2-core/EEE2048F": {
+          "group_key": "EB009EEE01-y2-core",
+          "course_code": "EEE2048F",
+          "category": null
+        },
+        "course_group_members/EB011EEE05-y2-core/EEE2048F": {
+          "group_key": "EB011EEE05-y2-core",
+          "course_code": "EEE2048F",
+          "category": null
+        },
+        "course_group_members/EB022EEE02-y2-core/EEE2048F": {
+          "group_key": "EB022EEE02-y2-core",
+          "course_code": "EEE2048F",
+          "category": null
+        },
+        "course_group_members/EB809EEE01-y3-core/EEE2048F": {
+          "group_key": "EB809EEE01-y3-core",
+          "course_code": "EEE2048F",
+          "category": null
+        },
+        "course_group_members/EB811EEE05-y3-core/EEE2048F": {
+          "group_key": "EB811EEE05-y3-core",
+          "course_code": "EEE2048F",
+          "category": null
+        },
+        "course_group_members/EB822EEE02-y3-core/EEE2048F": {
+          "group_key": "EB822EEE02-y3-core",
+          "course_code": "EEE2048F",
+          "category": null
+        },
+        "courses/EEE2048F": {
+          "code": "EEE2048F",
+          "name": "Professional Communication for Electrical Engineering",
+          "credits": 8,
+          "nqf_level": 6,
+          "term": "sem1",
+          "entry_rule": null,
+          "convener": "Dr G Nudelman",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "b9d548954e9e"
+    },
+    {
+      "id": "removal/EEE4105C",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y4-group-2/EEE4105C": "2023, p. 47",
+        "course_group_members/EB022EEE02-y4-group-2/EEE4105C": "2023, p. 52",
+        "course_group_members/EB809EEE01-y5-group-2/EEE4105C": "2023, p. 50",
+        "course_group_members/EB811EEE05-y5-group-2/EEE4105C": "2023, p. 58",
+        "course_group_members/EB822EEE02-y5-group-2/EEE4105C": "2023, p. 54",
+        "courses/EEE4105C": "2023, p. 137"
+      },
+      "printed": "EEE4105C RF & Microwave Devices & Circuits ............................................. 8 8",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y4-group-2/EEE4105C": {
+          "group_key": "EB009EEE01-y4-group-2",
+          "course_code": "EEE4105C",
+          "category": null
+        },
+        "course_group_members/EB022EEE02-y4-group-2/EEE4105C": {
+          "group_key": "EB022EEE02-y4-group-2",
+          "course_code": "EEE4105C",
+          "category": null
+        },
+        "course_group_members/EB809EEE01-y5-group-2/EEE4105C": {
+          "group_key": "EB809EEE01-y5-group-2",
+          "course_code": "EEE4105C",
+          "category": null
+        },
+        "course_group_members/EB811EEE05-y5-group-2/EEE4105C": {
+          "group_key": "EB811EEE05-y5-group-2",
+          "course_code": "EEE4105C",
+          "category": null
+        },
+        "course_group_members/EB822EEE02-y5-group-2/EEE4105C": {
+          "group_key": "EB822EEE02-y5-group-2",
+          "course_code": "EEE4105C",
+          "category": null
+        },
+        "courses/EEE4105C": {
+          "code": "EEE4105C",
+          "name": "RF & Microwave Devices & Circuits",
+          "credits": 8,
+          "nqf_level": 8,
+          "term": "q3",
+          "entry_rule": {
+            "course": "EEE3089F",
+            "need": "pass"
+          },
+          "convener": "Dr P Wild",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "56f13a67c244"
+    },
+    {
+      "id": "removal/EEE4122C",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y4-group-2/EEE4122C": "2023, p. 47",
+        "course_group_members/EB022EEE02-y4-group-2/EEE4122C": "2023, p. 52",
+        "course_group_members/EB809EEE01-y5-group-2/EEE4122C": "2023, p. 50",
+        "course_group_members/EB822EEE02-y5-group-2/EEE4122C": "2023, p. 54",
+        "courses/EEE4122C": "2023, p. 140"
+      },
+      "printed": "EEE4122C Communication Engineering .......................................................... 8 8",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y4-group-2/EEE4122C": {
+          "group_key": "EB009EEE01-y4-group-2",
+          "course_code": "EEE4122C",
+          "category": null
+        },
+        "course_group_members/EB022EEE02-y4-group-2/EEE4122C": {
+          "group_key": "EB022EEE02-y4-group-2",
+          "course_code": "EEE4122C",
+          "category": null
+        },
+        "course_group_members/EB809EEE01-y5-group-2/EEE4122C": {
+          "group_key": "EB809EEE01-y5-group-2",
+          "course_code": "EEE4122C",
+          "category": null
+        },
+        "course_group_members/EB822EEE02-y5-group-2/EEE4122C": {
+          "group_key": "EB822EEE02-y5-group-2",
+          "course_code": "EEE4122C",
+          "category": null
+        },
+        "courses/EEE4122C": {
+          "code": "EEE4122C",
+          "name": "Communication Engineering",
+          "credits": 8,
+          "nqf_level": 8,
+          "term": "q3",
+          "entry_rule": {
+            "course": "EEE3092F",
+            "need": "pass"
+          },
+          "convener": "Dr D Ramotsoela",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "68c75d3b4534"
+    },
+    {
+      "id": "removal/EEE4123C",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y4-group-2/EEE4123C": "2023, p. 47",
+        "course_group_members/EB011EEE05-y4-group-2/EEE4123C": "2023, p. 56",
+        "course_group_members/EB809EEE01-y5-group-2/EEE4123C": "2023, p. 50",
+        "course_group_members/EB811EEE05-y5-group-2/EEE4123C": "2023, p. 58",
+        "courses/EEE4123C": "2023, p. 140"
+      },
+      "printed": "EEE4123C Electrical Machines & Drives ......................................................... 8 8",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y4-group-2/EEE4123C": {
+          "group_key": "EB009EEE01-y4-group-2",
+          "course_code": "EEE4123C",
+          "category": null
+        },
+        "course_group_members/EB011EEE05-y4-group-2/EEE4123C": {
+          "group_key": "EB011EEE05-y4-group-2",
+          "course_code": "EEE4123C",
+          "category": null
+        },
+        "course_group_members/EB809EEE01-y5-group-2/EEE4123C": {
+          "group_key": "EB809EEE01-y5-group-2",
+          "course_code": "EEE4123C",
+          "category": null
+        },
+        "course_group_members/EB811EEE05-y5-group-2/EEE4123C": {
+          "group_key": "EB811EEE05-y5-group-2",
+          "course_code": "EEE4123C",
+          "category": null
+        },
+        "courses/EEE4123C": {
+          "code": "EEE4123C",
+          "name": "Electrical Machines and Drives",
+          "credits": 8,
+          "nqf_level": 8,
+          "term": "q3",
+          "entry_rule": {
+            "course": "EEE3091F",
+            "need": "pass"
+          },
+          "convener": "Professor P Barendse",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "1dffffa60263"
+    },
+    {
+      "id": "removal/HUB4045F",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y4-group-2/HUB4045F": "2023, p. 47",
+        "course_group_members/EB011EEE05-y4-group-2/HUB4045F": "2023, p. 56",
+        "course_group_members/EB022EEE02-y4-group-2/HUB4045F": "2023, p. 52",
+        "course_group_members/EB809EEE01-y5-group-2/HUB4045F": "2023, p. 50",
+        "course_group_members/EB811EEE05-y5-group-2/HUB4045F": "2023, p. 58",
+        "course_group_members/EB822EEE02-y5-group-2/HUB4045F": "2023, p. 54",
+        "courses/HUB4045F": "2023, p. 166"
+      },
+      "printed": "HUB4045F Introduction to Medical Imaging & Image Processing .................. 12 8",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y4-group-2/HUB4045F": {
+          "group_key": "EB009EEE01-y4-group-2",
+          "course_code": "HUB4045F",
+          "category": null
+        },
+        "course_group_members/EB011EEE05-y4-group-2/HUB4045F": {
+          "group_key": "EB011EEE05-y4-group-2",
+          "course_code": "HUB4045F",
+          "category": null
+        },
+        "course_group_members/EB022EEE02-y4-group-2/HUB4045F": {
+          "group_key": "EB022EEE02-y4-group-2",
+          "course_code": "HUB4045F",
+          "category": null
+        },
+        "course_group_members/EB809EEE01-y5-group-2/HUB4045F": {
+          "group_key": "EB809EEE01-y5-group-2",
+          "course_code": "HUB4045F",
+          "category": null
+        },
+        "course_group_members/EB811EEE05-y5-group-2/HUB4045F": {
+          "group_key": "EB811EEE05-y5-group-2",
+          "course_code": "HUB4045F",
+          "category": null
+        },
+        "course_group_members/EB822EEE02-y5-group-2/HUB4045F": {
+          "group_key": "EB822EEE02-y5-group-2",
+          "course_code": "HUB4045F",
+          "category": null
+        },
+        "courses/HUB4045F": {
+          "code": "HUB4045F",
+          "name": "Introduction to Medical Imaging & Image Processing",
+          "credits": 12,
+          "nqf_level": 8,
+          "term": "sem1",
+          "entry_rule": {
+            "min_year_of_study": 4
+          },
+          "convener": "Dr M Jankiewicz",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "86cf62fe7aa9"
+    },
+    {
+      "id": "removal/MEC1003F",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "course_group_members/EB009EEE01-y1-core/MEC1003F": "2023, p. 46",
+        "course_group_members/EB011EEE05-y1-core/MEC1003F": "2023, p. 55",
+        "course_group_members/EB022EEE02-y1-core/MEC1003F": "2023, p. 50"
+      },
+      "printed": "MEC1003F Engineering Drawing ...................................................................... 8 5",
+      "failures": [],
+      "old": {
+        "course_group_members/EB009EEE01-y1-core/MEC1003F": {
+          "group_key": "EB009EEE01-y1-core",
+          "course_code": "MEC1003F",
+          "category": null
+        },
+        "course_group_members/EB011EEE05-y1-core/MEC1003F": {
+          "group_key": "EB011EEE05-y1-core",
+          "course_code": "MEC1003F",
+          "category": null
+        },
+        "course_group_members/EB022EEE02-y1-core/MEC1003F": {
+          "group_key": "EB022EEE02-y1-core",
+          "course_code": "MEC1003F",
+          "category": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "6b5416c817bf"
+    },
+    {
+      "id": "removal/HUB2005F",
+      "causes": [
+        "removed"
+      ],
+      "covers": {
+        "courses/HUB2005F": "2023, p. 166"
+      },
+      "printed": "None",
+      "failures": [],
+      "old": {
+        "courses/HUB2005F": {
+          "code": "HUB2005F",
+          "name": "Introduction to Medical Engineering",
+          "credits": 8,
+          "nqf_level": 6,
+          "term": "sem1",
+          "entry_rule": null,
+          "convener": "Dr T Mutsvangwa",
+          "summary": null
+        }
+      },
+      "new": null,
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "7623f78390ce"
+    },
+    {
+      "id": "equivalence/EEE1006F/EEE1008F",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/EEE1006F/EEE1008F": "2023: 46; 2026: 48"
+      },
+      "printed": "2026's first-year first-semester slot lists EEE1008F Introduction to Electrical Engineering A where 2023's lists EEE1006F Introduction to Electronic Engineering, both 12 credits, though the titles differ. A student registered before 2025 holds EEE1006F, and the 2026 curricula name EEE1008F.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "EEE1006F",
+        "counts_as": "EEE1008F"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "ccbe18dc522b"
+    },
+    {
+      "id": "equivalence/EEE1007S/EEE1009S",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/EEE1007S/EEE1009S": "2023: 46; 2026: 48"
+      },
+      "printed": "2026's first-year second-semester slot lists EEE1009S Introduction to Electrical Engineering B where 2023's lists EEE1007S Introduction to Electrical Engineering, both 12 credits. A student registered before 2025 holds EEE1007S, and the 2026 curricula name EEE1009S.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "EEE1007S",
+        "counts_as": "EEE1009S"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "6173284f4229"
+    },
+    {
+      "id": "equivalence/EEE2048F/EEE2048S",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/EEE2048F/EEE2048S": "2023: 46; 2026: 48"
+      },
+      "printed": "2026's second-year core lists EEE2048S Professional Communication for Electrical Engineering where 2023's lists EEE2048F, with the same title and 8 credits. A student registered before 2025 holds EEE2048F, and the 2026 curricula name EEE2048S.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "EEE2048F",
+        "counts_as": "EEE2048S"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "07ed527842e6"
+    },
+    {
+      "id": "equivalence/EEE1009S/EEE1007S",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/EEE1009S/EEE1007S": "2023: 46; 2026: 48, 130"
+      },
+      "printed": "EEE2044S's 2026 requirement still names EEE1007S, the 2023 code that EEE1009S replaced in the same slot with the same 12 credits and the same title but for the B, and a 2026 student holds EEE1009S.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "EEE1009S",
+        "counts_as": "EEE1007S"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "7e4397440399"
+    },
+    {
+      "id": "equivalence/EEE1008F/EEE1006F",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/EEE1008F/EEE1006F": "2023: 46; 2026: 48, 131"
+      },
+      "printed": "EEE2045F's and EEE2046F's 2026 requirements still name EEE1006F, the 2023 code that EEE1008F replaced in the same slot with the same 12 credits, though the titles differ, and a 2026 student holds EEE1008F.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "EEE1008F",
+        "counts_as": "EEE1006F"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "e90ac5774224"
+    },
+    {
+      "id": "requirement/MEC2045S",
+      "causes": [
+        "check_failed"
+      ],
+      "covers": {
+        "courses/MEC2045S": "p. 148"
+      },
+      "printed": "MEC1009F/S and MEC2023F/S or MEC2047F/S",
+      "failures": [
+        "p. 148: MEC2045S's rule names MEC2023F, which isn't loaded, printed or equivalent",
+        "p. 148: MEC2045S's rule names MEC2023S, which isn't loaded, printed or equivalent"
+      ],
+      "old": {
+        "courses/MEC2045S": {
+          "all": [
+            {
+              "any": [
+                {
+                  "course": "MEC1009F",
+                  "need": "pass"
+                },
+                {
+                  "course": "MEC1009S",
+                  "need": "pass"
+                }
+              ]
+            },
+            {
+              "any": [
+                {
+                  "course": "MEC2023F",
+                  "need": "pass"
+                },
+                {
+                  "course": "MEC2023S",
+                  "need": "pass"
+                },
+                {
+                  "course": "MEC2047F",
+                  "need": "pass"
+                },
+                {
+                  "course": "MEC2047S",
+                  "need": "pass"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "MEC1009F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC1009S",
+                "need": "pass"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "MEC2023F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2023S",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2047F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2047S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": "MEC2023F/S has no entry in the 2026 handbook, most likely the code MEC2047F/S replaced. Kept as printed: a student who passed it meets the rule.",
+      "fingerprint": "01b484d42712"
+    },
+    {
+      "id": "requirement/CSC2001F",
+      "causes": [
+        "check_failed"
+      ],
+      "covers": {
+        "courses/CSC2001F": "p. 169",
+        "courses/CSC2004Z": "p. 170"
+      },
+      "printed": "(CSC1015F/S and CSC1016S) or (CSC1010H and CSC1011H)",
+      "failures": [
+        "p. 169: CSC2001F's rule names CSC1010H, which isn't loaded, printed or equivalent",
+        "p. 169: CSC2001F's rule names CSC1011H, which isn't loaded, printed or equivalent",
+        "p. 170: CSC2004Z's rule names CSC1010H, which isn't loaded, printed or equivalent",
+        "p. 170: CSC2004Z's rule names CSC1011H, which isn't loaded, printed or equivalent"
+      ],
+      "old": {
+        "courses/CSC2001F": {
+          "any": [
+            {
+              "all": [
+                {
+                  "course": "CSC1010H",
+                  "need": "pass"
+                },
+                {
+                  "course": "CSC1011H",
+                  "need": "pass"
+                }
+              ]
+            },
+            {
+              "all": [
+                {
+                  "course": "CSC1015F",
+                  "need": "pass"
+                },
+                {
+                  "course": "CSC1016S",
+                  "need": "pass"
+                }
+              ]
+            }
+          ]
+        },
+        "courses/CSC2004Z": {
+          "any": [
+            {
+              "all": [
+                {
+                  "course": "CSC1010H",
+                  "need": "pass"
+                },
+                {
+                  "course": "CSC1011H",
+                  "need": "pass"
+                }
+              ]
+            },
+            {
+              "all": [
+                {
+                  "course": "CSC1015F",
+                  "need": "pass"
+                },
+                {
+                  "course": "CSC1016S",
+                  "need": "pass"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "new": {
+        "any": [
+          {
+            "all": [
+              {
+                "any": [
+                  {
+                    "course": "CSC1015F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "CSC1015S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "course": "CSC1016S",
+                "need": "pass"
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "course": "CSC1010H",
+                "need": "pass"
+              },
+              {
+                "course": "CSC1011H",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": "CSC1010H and CSC1011H are Science courses with no EBE entry. Kept as printed: a student who passed them meets the rule.",
+      "fingerprint": "3ee632ca8b41"
+    }
+  ]
+}
