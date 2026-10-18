@@ -5,7 +5,6 @@ from pathlib import Path
 from uuid import UUID
 
 import pytest
-from pydantic import ValidationError
 
 from sage.adapters.memory.rules import InMemoryRuleRepository
 from sage.adapters.memory.students import InMemoryStudentRepository
@@ -70,13 +69,25 @@ def test_plan_courses_take_the_year_of_their_plan_set(seed_file, tmp_path):
         load_seed(edited_copy(seed_file, tmp_path, wrong_year), ACCOUNT)
 
 
-def test_a_misspelt_column_is_refused(seed_file, tmp_path):
-    def misspelt(data):
-        line = data["course_history"][0]
-        line["credit"] = line.pop("credits")
+def misspelt(data):
+    line = data["course_history"][0]
+    line["credit"] = line.pop("credits")
 
-    with pytest.raises(ValidationError):
-        load_seed(edited_copy(seed_file, tmp_path, misspelt), ACCOUNT)
+
+def with_rules(data):
+    # As an older seed file held them, though only sage load writes rules now
+    data["courses"] = []
+
+
+@pytest.mark.parametrize(
+    ("edit", "named"),
+    [(misspelt, "credit"), (with_rules, "courses")],
+    ids=["a misspelt column", "a rule table"],
+)
+def test_what_the_seed_doesnt_know_is_refused(seed_file, tmp_path, edit, named):
+    # A ValidationError is a ValueError too
+    with pytest.raises(ValueError, match=named):
+        load_seed(edited_copy(seed_file, tmp_path, edit), ACCOUNT)
 
 
 def test_the_fakes_give_back_what_was_seeded(seed_file, approved_2026):
