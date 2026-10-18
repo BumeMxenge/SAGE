@@ -7,16 +7,16 @@ from uuid import UUID
 import pytest
 from fpdf import FPDF
 
-from sage.domain.errors import (
+from sage.ingestion.transcript import BEGINNING, ROW, pdf_pages, read_lines
+from sage.shared.errors import (
     NoCourseHistory,
     NotATranscript,
     TranscriptIncomplete,
     TranscriptNotYours,
     TranscriptUnreadable,
 )
-from sage.domain.students import CourseHistoryLine
-from sage.ingestion.transcript import BEGINNING, ROW, pdf_pages, read_lines
-from sage.services.seed import load_seed
+from sage.shared.seed import load_seed
+from sage.shared.students import CourseHistoryLine
 
 MBALI = "DLMMBA999"
 

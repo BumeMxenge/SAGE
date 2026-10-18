@@ -15,8 +15,8 @@ from pydantic import (
     model_validator,
 )
 
-from sage.domain.base import Row
-from sage.domain.electives import ElectiveTab
+from sage.shared.base import Row
+from sage.shared.electives import ElectiveTab
 
 # The term_code domain in the rule-tables migration: every term a course or meeting can run in
 TermCode = Literal[

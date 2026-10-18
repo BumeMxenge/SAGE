@@ -4,13 +4,13 @@ from collections import defaultdict
 from typing import get_args
 from uuid import UUID
 
-from sage.domain.base import Row
-from sage.domain.electives import ElectiveTab
-from sage.domain.errors import CourseNotFound
-from sage.domain.planning import Eligibility, EligibilityChecker
-from sage.domain.repositories import StudentRepository
-from sage.domain.rules import Course
-from sage.services.rulebook import Rulebook
+from sage.shared.base import Row
+from sage.shared.electives import ElectiveTab
+from sage.shared.errors import CourseNotFound
+from sage.shared.planning import Eligibility, EligibilityChecker
+from sage.shared.repositories import StudentRepository
+from sage.shared.rulebook import Rulebook
+from sage.shared.rules import Course
 
 
 class Elective(Row):

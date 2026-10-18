@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 
 from sage.config import get_settings
 from sage.main import create_app
-from sage.services.seed import load_seed, seed
+from sage.shared.seed import load_seed, seed
 
 pytestmark = pytest.mark.integration
 

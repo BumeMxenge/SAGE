@@ -1,6 +1,6 @@
 # A token verifier for unit tests: each made-up token stands for one identity, so tests sign in by name
-from sage.domain.accounts import Identity
-from sage.domain.errors import NotSignedIn
+from sage.shared.auth import Identity
+from sage.shared.errors import NotSignedIn
 
 
 class FakeTokenVerifier:

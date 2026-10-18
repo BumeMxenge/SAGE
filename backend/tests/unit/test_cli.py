@@ -9,10 +9,14 @@ from uuid import UUID
 import pytest
 
 import sage.cli
-from sage.adapters.memory.rules import InMemoryRuleRepository
-from sage.adapters.memory.students import InMemoryStudentRepository
 from sage.config import get_settings
-from sage.domain.rules import (
+from sage.ingestion.checks import Check, Failure
+from sage.ingestion.sources import Reading
+from sage.ingestion.translate import Translations
+from sage.services.ingest import Candidate, Sitting
+from sage.shared.memory.rules import InMemoryRuleRepository
+from sage.shared.memory.students import InMemoryStudentRepository
+from sage.shared.rules import (
     AllOfGroup,
     Course,
     CurriculumRule,
@@ -22,10 +26,6 @@ from sage.domain.rules import (
     TotalCredits,
     YearRules,
 )
-from sage.ingestion.checks import Check, Failure
-from sage.ingestion.sources import Reading
-from sage.ingestion.translate import Translations
-from sage.services.ingest import Candidate, Sitting
 
 ACCOUNT = UUID("00000000-0000-4000-8000-000000000001")
 

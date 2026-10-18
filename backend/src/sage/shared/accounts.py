@@ -2,8 +2,8 @@
 # student number at myuct.ac.za, and staff use uct.ac.za. Nobody else can use SAGE.
 import re
 
-from sage.domain.accounts import Account, Identity
-from sage.domain.errors import UctAccountRequired
+from sage.shared.auth import Account, Identity
+from sage.shared.errors import UctAccountRequired
 
 STUDENT_EMAIL = re.compile(r"([a-z]{6}[0-9]{3})@myuct\.ac\.za")
 STAFF_DOMAIN = "uct.ac.za"

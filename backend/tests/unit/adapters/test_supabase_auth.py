@@ -12,9 +12,9 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from supabase import create_client
 from supabase.lib.client_options import SyncClientOptions
 
-from sage.adapters.supabase.auth import SupabaseTokenVerifier
 from sage.config import Settings
-from sage.domain.errors import NotSignedIn, UctAccountRequired
+from sage.shared.errors import NotSignedIn, UctAccountRequired
+from sage.shared.supabase.auth import SupabaseTokenVerifier
 
 KID = "made-up-key-id"
 # An elliptic-curve (ES256) key, as the hosted project signs with. Only its type is ever read here.

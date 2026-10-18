@@ -8,15 +8,15 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from sage.adapters.memory.auth import FakeTokenVerifier
-from sage.adapters.memory.rules import InMemoryRuleRepository
-from sage.adapters.memory.students import InMemoryStudentRepository
-from sage.api import deps
-from sage.domain.accounts import Identity
 from sage.main import create_app
-from sage.services.rulebook import Rulebook
-from sage.services.seed import load_seed, seed
 from sage.services.stubs import FixedAdvisor, InterimEligibility, SeededPlanGenerator
+from sage.shared.api import deps
+from sage.shared.auth import Identity
+from sage.shared.memory.auth import FakeTokenVerifier
+from sage.shared.memory.rules import InMemoryRuleRepository
+from sage.shared.memory.students import InMemoryStudentRepository
+from sage.shared.rulebook import Rulebook
+from sage.shared.seed import load_seed, seed
 from tests.unit.api.accounts import MBALI, QRTILV, ZVSORW
 
 

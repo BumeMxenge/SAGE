@@ -6,10 +6,10 @@ from uuid import UUID
 
 import pytest
 
-from sage.adapters.memory.rules import InMemoryRuleRepository
-from sage.adapters.memory.students import InMemoryStudentRepository
-from sage.domain.rules import HandbookVersion, RuleSet
-from sage.services.seed import YearNotLoaded, counts, load_seed, seed
+from sage.shared.memory.rules import InMemoryRuleRepository
+from sage.shared.memory.students import InMemoryStudentRepository
+from sage.shared.rules import HandbookVersion, RuleSet
+from sage.shared.seed import YearNotLoaded, counts, load_seed, seed
 
 # Made-up account ids, standing in for two sign-in accounts
 ACCOUNT = UUID("00000000-0000-4000-8000-000000000001")

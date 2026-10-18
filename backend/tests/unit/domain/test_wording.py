@@ -3,7 +3,7 @@
 # sits in the middle of an all. Trees are canonical, so children read in sorted order.
 import pytest
 
-from sage.domain.rules import (
+from sage.shared.rules import (
     AllOf,
     AllOfGroup,
     AnyOf,
@@ -16,7 +16,7 @@ from sage.domain.rules import (
     TotalCredits,
     YearRules,
 )
-from sage.domain.wording import in_words
+from sage.shared.wording import in_words
 
 
 def needs(code, need="pass", min_mark=None):

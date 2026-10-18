@@ -11,12 +11,12 @@ import pytest
 from fastapi.testclient import TestClient
 from fpdf import FPDF
 
-from sage.domain.rules import ResultSymbol, RuleSet
 from sage.ingestion.complementary import MEETING_COLUMNS, OFFERING_COLUMNS
 from sage.ingestion.handbook import Handbook, Page
 from sage.main import create_app
 from sage.services.ingest import approved_snapshot
-from sage.services.seed import SEED_FILE
+from sage.shared.rules import ResultSymbol, RuleSet
+from sage.shared.seed import SEED_FILE
 
 
 @pytest.hookimpl(tryfirst=True)

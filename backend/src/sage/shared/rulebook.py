@@ -5,9 +5,9 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-from sage.domain.errors import RulebookNotLoaded
-from sage.domain.repositories import RuleRepository
-from sage.domain.rules import ResultSymbol, RuleSet
+from sage.shared.errors import RulebookNotLoaded
+from sage.shared.repositories import RuleRepository
+from sage.shared.rules import ResultSymbol, RuleSet
 
 TIME_LIMIT = 600  # seconds, the same as supabase-auth keeps the token signing keys
 

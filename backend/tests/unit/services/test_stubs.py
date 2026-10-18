@@ -6,10 +6,6 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from sage.domain.advisor import Reply
-from sage.domain.rules import ResultSymbol, RuleSet
-from sage.domain.students import Chat, CourseHistoryLine, Student
-from sage.services.seed import load_seed
 from sage.services.stubs import (
     FIXED_REPLY,
     UNCHECKED,
@@ -17,6 +13,10 @@ from sage.services.stubs import (
     InterimEligibility,
     SeededPlanGenerator,
 )
+from sage.shared.advisor import Reply
+from sage.shared.rules import ResultSymbol, RuleSet
+from sage.shared.seed import load_seed
+from sage.shared.students import Chat, CourseHistoryLine, Student
 
 STUDENT = Student(id=UUID(int=7))
 

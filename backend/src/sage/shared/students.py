@@ -9,7 +9,7 @@ from uuid import UUID
 
 from pydantic import Field
 
-from sage.domain.base import Row
+from sage.shared.base import Row
 
 
 class Student(Row):

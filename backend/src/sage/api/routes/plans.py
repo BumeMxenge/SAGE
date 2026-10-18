@@ -4,8 +4,9 @@ from uuid import UUID
 
 from fastapi import APIRouter
 
-from sage.api.deps import ONBOARDED_ERRORS, Onboarded, Rules, Students
-from sage.api.models import (
+from sage.services import plans
+from sage.shared.api.deps import ONBOARDED_ERRORS, Onboarded, Rules, Students
+from sage.shared.api.models import (
     Comparison,
     Credits,
     Group,
@@ -16,17 +17,16 @@ from sage.api.models import (
     PlanSummary,
     Reason,
 )
-from sage.api.problems import errors
-from sage.domain.errors import (
+from sage.shared.api.problems import errors
+from sage.shared.errors import (
     InvalidRequest,
     PlanNotFound,
     PlansNotReady,
     RulebookNotLoaded,
     SamePlan,
 )
-from sage.domain.rules import RuleSet
-from sage.domain.students import PlanReason, PlanSetRows
-from sage.services import plans
+from sage.shared.rules import RuleSet
+from sage.shared.students import PlanReason, PlanSetRows
 
 router = APIRouter(prefix="/plans", tags=["plans"])
 

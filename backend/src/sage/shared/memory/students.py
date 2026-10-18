@@ -5,8 +5,8 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
-from sage.domain.base import Row
-from sage.domain.students import (
+from sage.shared.base import Row
+from sage.shared.students import (
     Chat,
     Citation,
     CitedMessage,

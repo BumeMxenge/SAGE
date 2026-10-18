@@ -2,8 +2,8 @@
 # 50, lines without a mark left out, and rounded half up to two decimals
 from decimal import Decimal
 
-from sage.domain.base import Row
-from sage.domain.students import average
+from sage.shared.base import Row
+from sage.shared.students import average
 
 
 class Line(Row):

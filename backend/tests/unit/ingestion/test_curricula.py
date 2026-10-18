@@ -3,7 +3,10 @@
 # core table's total is kept to check. Expected values are read off the page by hand.
 import pytest
 
-from sage.domain.rules import (
+from sage.ingestion.curricula import Listed, Subtotal, read
+from sage.ingestion.handbook import Handbook, Page
+from sage.ingestion.sources import Section, SourceError
+from sage.shared.rules import (
     AllOfGroup,
     ChooseFromGroup,
     CreditsFromGroups,
@@ -11,9 +14,6 @@ from sage.domain.rules import (
     TotalCredits,
     YearRules,
 )
-from sage.ingestion.curricula import Listed, Subtotal, read
-from sage.ingestion.handbook import Handbook, Page
-from sage.ingestion.sources import Section, SourceError
 
 DEPARTMENT = "Electrical Engineering"
 

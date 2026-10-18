@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pdfplumber
 
-from sage.domain.base import Row
-from sage.domain.rules import COURSE_CODE, Passage, TermCode
 from sage.ingestion.names import title_case
 from sage.ingestion.sources import Section, SourceError, row_id
+from sage.shared.base import Row
+from sage.shared.rules import COURSE_CODE, Passage, TermCode
 
 # Points from the top of a page. Every running header in both books ends above it (at 37.6) and every
 # body starts below it (at 57.3), so cropping here drops the header and nothing else.

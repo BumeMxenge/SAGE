@@ -8,9 +8,9 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid5
 
-from sage.domain.base import Row, canonical
-from sage.domain.repositories import RuleRepository, StudentRepository
-from sage.domain.students import (
+from sage.shared.base import Row, canonical
+from sage.shared.repositories import RuleRepository, StudentRepository
+from sage.shared.students import (
     Chat,
     CourseHistoryLine,
     Favourite,

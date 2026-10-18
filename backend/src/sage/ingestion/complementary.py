@@ -13,8 +13,11 @@ import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
 from pydantic import Field, StringConstraints, ValidationError, model_validator
 
-from sage.domain.base import Row
-from sage.domain.rules import (
+from sage.ingestion.curricula import COMPLEMENTARY
+from sage.ingestion.names import title_case
+from sage.ingestion.sources import ComplementaryFile, Reading, SourceError, row_id
+from sage.shared.base import Row
+from sage.shared.rules import (
     COURSE_CODE,
     TERM_BY_SUFFIX,
     CourseGroupMember,
@@ -22,9 +25,6 @@ from sage.domain.rules import (
     TermCode,
     TimetableSlot,
 )
-from sage.ingestion.curricula import COMPLEMENTARY
-from sage.ingestion.names import title_case
-from sage.ingestion.sources import ComplementaryFile, Reading, SourceError, row_id
 
 OFFERING_COLUMNS = {
     "Handbook course code": "code",

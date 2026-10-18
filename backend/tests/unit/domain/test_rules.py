@@ -4,7 +4,7 @@
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from sage.domain.rules import AllOf, Course, CourseGroupMember, CourseNeed, EntryRule
+from sage.shared.rules import AllOf, Course, CourseGroupMember, CourseNeed, EntryRule
 
 ENTRY_RULE = TypeAdapter(EntryRule)
 

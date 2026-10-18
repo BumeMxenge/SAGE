@@ -2,9 +2,9 @@
 # and a year that isn't there is the rulebook_not_loaded refusal rather than an empty rulebook
 import pytest
 
-from sage.adapters.memory.rules import InMemoryRuleRepository
-from sage.domain.errors import RulebookNotLoaded
-from sage.services.rulebook import TIME_LIMIT, Rulebook
+from sage.shared.errors import RulebookNotLoaded
+from sage.shared.memory.rules import InMemoryRuleRepository
+from sage.shared.rulebook import TIME_LIMIT, Rulebook
 
 
 class CountingRules(InMemoryRuleRepository):

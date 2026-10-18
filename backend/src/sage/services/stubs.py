@@ -1,14 +1,14 @@
-# The stand-ins the API runs on until the real components exist. Each fills an interface in domain/,
+# The stand-ins the API runs on until the real components exist. Each fills an interface in shared/,
 # so swapping the real one in never touches a route.
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from uuid import UUID
 
-from sage.domain.advisor import Reply
-from sage.domain.planning import Eligibility
-from sage.domain.rules import Course, Refer, ResultSymbol, RuleSet
-from sage.domain.students import Chat, CourseHistoryLine, PlanSetRows, Student
-from sage.services.seed import load_seed
+from sage.shared.advisor import Reply
+from sage.shared.planning import Eligibility
+from sage.shared.rules import Course, Refer, ResultSymbol, RuleSet
+from sage.shared.seed import load_seed
+from sage.shared.students import Chat, CourseHistoryLine, PlanSetRows, Student
 
 UNCHECKED = "SAGE can't check this requirement yet. Ask your advisor."
 FIXED_REPLY = (

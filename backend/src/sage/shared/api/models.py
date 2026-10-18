@@ -6,12 +6,12 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from sage.domain.electives import ElectiveTab
-from sage.domain.planning import EligibilityStatus
-from sage.domain.rules import COURSE_CODE, Outcome, TermCode
-from sage.domain.students import ReasonKind
 from sage.ingestion.transcript import WarningCode
 from sage.services.questionnaire import QuestionId
+from sage.shared.electives import ElectiveTab
+from sage.shared.planning import EligibilityStatus
+from sage.shared.rules import COURSE_CODE, Outcome, TermCode
+from sage.shared.students import ReasonKind
 
 
 class RequestBody(BaseModel):

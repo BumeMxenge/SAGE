@@ -5,19 +5,19 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from sage.adapters.memory.rules import InMemoryRuleRepository
-from sage.adapters.memory.students import InMemoryStudentRepository
-from sage.domain.rules import RuleSet
-from sage.domain.students import (
+from sage.services import onboarding
+from sage.shared.memory.rules import InMemoryRuleRepository
+from sage.shared.memory.students import InMemoryStudentRepository
+from sage.shared.rulebook import Rulebook
+from sage.shared.rules import RuleSet
+from sage.shared.seed import load_seed
+from sage.shared.students import (
     CourseHistoryLine,
     PlanSet,
     PlanSetRows,
     Student,
     StudentState,
 )
-from sage.services import onboarding
-from sage.services.rulebook import Rulebook
-from sage.services.seed import load_seed
 
 STUDENT = UUID(int=1)
 

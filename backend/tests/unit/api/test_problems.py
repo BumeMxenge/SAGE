@@ -8,8 +8,8 @@ import pytest
 from fastapi import APIRouter, Query
 from fastapi.testclient import TestClient
 
-from sage.domain.errors import RouteNotFound
 from sage.main import create_app
+from sage.shared.errors import RouteNotFound
 
 PROBLEM = "application/problem+json"
 

@@ -65,7 +65,10 @@ only_mutate = [
     "src/sage/domain/*",
     "src/sage/ingestion/*",
     "src/sage/services/*",
+    "src/sage/shared/*",
 ]
+# The storage adapters and their fakes stay out, as only the integration tests check them
+do_not_mutate = ["src/sage/shared/supabase/*", "src/sage/shared/memory/*"]
 pytest_add_cli_args_test_selection = ["-m", "not integration"]
 
 [tool.ruff.lint]

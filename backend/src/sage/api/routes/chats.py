@@ -4,11 +4,19 @@ from uuid import UUID
 
 from fastapi import APIRouter
 
-from sage.api.deps import ONBOARDED_ERRORS, ChatAdvisor, Onboarded, Students
-from sage.api.models import Chat, Citation, Exchange, Message, NewChat, NewMessage
-from sage.api.problems import errors
-from sage.domain import students as domain
-from sage.domain.errors import (
+from sage.services import chats
+from sage.shared import students as domain
+from sage.shared.api.deps import ONBOARDED_ERRORS, ChatAdvisor, Onboarded, Students
+from sage.shared.api.models import (
+    Chat,
+    Citation,
+    Exchange,
+    Message,
+    NewChat,
+    NewMessage,
+)
+from sage.shared.api.problems import errors
+from sage.shared.errors import (
     ChatNotFound,
     DifferentPlanSets,
     InvalidRequest,
@@ -16,7 +24,6 @@ from sage.domain.errors import (
     QuestionnairePending,
     SamePlan,
 )
-from sage.services import chats
 
 router = APIRouter(prefix="/chats", tags=["chats"])
 

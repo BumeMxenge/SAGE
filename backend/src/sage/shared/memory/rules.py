@@ -1,7 +1,7 @@
 # The rulebook in one dictionary per table, keyed like the table's primary key
 from typing import Any
 
-from sage.domain.rules import PRIMARY_KEYS, ResultSymbol, RuleSet, year_column
+from sage.shared.rules import PRIMARY_KEYS, ResultSymbol, RuleSet, year_column
 
 
 class InMemoryRuleRepository:

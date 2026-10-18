@@ -9,7 +9,7 @@
 import re
 from typing import Literal
 
-from sage.domain.rules import AllOf, AnyOf, CourseNeed, EntryRule, RefusalCause
+from sage.shared.rules import AllOf, AnyOf, CourseNeed, EntryRule, RefusalCause
 
 # Wording only a person can judge, in the order a reviewer most needs to see it: a string carrying
 # several is refused for the first

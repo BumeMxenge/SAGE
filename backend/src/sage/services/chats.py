@@ -2,16 +2,16 @@
 # opens while the questionnaire is still waiting to narrow her set.
 from uuid import UUID, uuid4
 
-from sage.domain.advisor import Advisor
-from sage.domain.errors import (
+from sage.services import plans
+from sage.shared.advisor import Advisor
+from sage.shared.errors import (
     ChatNotFound,
     DifferentPlanSets,
     QuestionnairePending,
     SamePlan,
 )
-from sage.domain.repositories import StudentRepository
-from sage.domain.students import Chat, CitedMessage, Message
-from sage.services import plans
+from sage.shared.repositories import StudentRepository
+from sage.shared.students import Chat, CitedMessage, Message
 
 
 def ensure_ready(students: StudentRepository, student_id: UUID) -> None:

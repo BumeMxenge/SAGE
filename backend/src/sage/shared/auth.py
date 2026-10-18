@@ -3,7 +3,7 @@
 from typing import Literal, Protocol
 from uuid import UUID
 
-from sage.domain.base import Row
+from sage.shared.base import Row
 
 
 class Identity(Row):

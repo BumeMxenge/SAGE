@@ -2,15 +2,15 @@
 from postgrest import APIError
 from supabase import Client
 
-from sage.adapters.supabase.tables import (
+from sage.shared.repositories import YearInUse
+from sage.shared.rules import PRIMARY_KEYS, ResultSymbol, RuleSet, year_column
+from sage.shared.supabase.tables import (
     FOREIGN_KEY_VIOLATION,
     columns,
     insert,
     row_type,
     select,
 )
-from sage.domain.repositories import YearInUse
-from sage.domain.rules import PRIMARY_KEYS, ResultSymbol, RuleSet, year_column
 
 
 class SupabaseRuleRepository:

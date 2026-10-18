@@ -11,17 +11,6 @@ from datetime import UTC, datetime, time, timedelta
 import openpyxl
 import pytest
 
-from sage.adapters.memory.rules import InMemoryRuleRepository
-from sage.domain.rules import (
-    AllOf,
-    AnyOf,
-    Course,
-    CourseNeed,
-    HandbookDelta,
-    HandbookVersion,
-    Refer,
-    RuleSet,
-)
 from sage.ingestion.review import Snapshot
 from sage.ingestion.sources import Reading
 from sage.services.ingest import (
@@ -33,6 +22,17 @@ from sage.services.ingest import (
     load,
     review_file,
     review_year,
+)
+from sage.shared.memory.rules import InMemoryRuleRepository
+from sage.shared.rules import (
+    AllOf,
+    AnyOf,
+    Course,
+    CourseNeed,
+    HandbookDelta,
+    HandbookVersion,
+    Refer,
+    RuleSet,
 )
 
 EBE = "UCT Faculty of Engineering & the Built Environment Undergraduate Handbook 2026 (Book 7a)"

@@ -14,14 +14,7 @@ from uuid import UUID
 from pydantic import JsonValue
 
 from sage.adapters.anthropic import ClaudeDrafter
-from sage.adapters.supabase import Client, connect
-from sage.adapters.supabase.auth import sign_in_token
-from sage.adapters.supabase.rules import SupabaseRuleRepository
-from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import LOCAL_HOSTS, get_settings, is_local
-from sage.domain.repositories import AccountNotFound, YearInUse
-from sage.domain.rules import DeltaTable, RuleSet
-from sage.domain.wording import in_words
 from sage.ingestion.review import DECISIONS, TREES, Review, ReviewRow, tree_fault
 from sage.ingestion.sources import SourceError
 from sage.services.ingest import (
@@ -34,7 +27,9 @@ from sage.services.ingest import (
     review_file,
     review_year,
 )
-from sage.services.seed import (
+from sage.shared.repositories import AccountNotFound, YearInUse
+from sage.shared.rules import DeltaTable, RuleSet
+from sage.shared.seed import (
     SEED_FILE,
     SeedResult,
     YearNotLoaded,
@@ -42,6 +37,11 @@ from sage.services.seed import (
     require_loaded,
     seed,
 )
+from sage.shared.supabase.auth import sign_in_token
+from sage.shared.supabase.client import Client, connect
+from sage.shared.supabase.rules import SupabaseRuleRepository
+from sage.shared.supabase.students import SupabaseStudentRepository
+from sage.shared.wording import in_words
 
 
 def main(argv: list[str] | None = None) -> None:

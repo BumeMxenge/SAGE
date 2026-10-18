@@ -2,8 +2,8 @@
 # and a signed-out browser read nothing, and nobody in a browser writes
 import pytest
 
-from sage.adapters.supabase import students
-from sage.domain.rules import RuleSet
+from sage.shared.rules import RuleSet
+from sage.shared.supabase import students
 
 pytestmark = pytest.mark.integration
 

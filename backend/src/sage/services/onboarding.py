@@ -3,19 +3,19 @@
 from collections.abc import Sequence
 from uuid import UUID
 
-from sage.domain.accounts import Account
-from sage.domain.errors import UnknownCurriculum, UnknownResult
-from sage.domain.planning import PlanGenerator
-from sage.domain.repositories import StudentRepository
-from sage.domain.rules import Curriculum
-from sage.domain.students import CourseHistoryLine, Student
 from sage.ingestion.transcript import (
     Transcript,
     TranscriptWarning,
     pdf_pages,
     read_lines,
 )
-from sage.services.rulebook import Rulebook
+from sage.shared.auth import Account
+from sage.shared.errors import UnknownCurriculum, UnknownResult
+from sage.shared.planning import PlanGenerator
+from sage.shared.repositories import StudentRepository
+from sage.shared.rulebook import Rulebook
+from sage.shared.rules import Curriculum
+from sage.shared.students import CourseHistoryLine, Student
 
 
 def read_transcript(

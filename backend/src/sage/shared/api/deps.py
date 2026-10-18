@@ -5,19 +5,19 @@ from typing import Annotated
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from sage.domain.accounts import Account, TokenVerifier
-from sage.domain.advisor import Advisor
-from sage.domain.errors import (
+from sage.shared.accounts import account_of
+from sage.shared.advisor import Advisor
+from sage.shared.auth import Account, TokenVerifier
+from sage.shared.errors import (
     NotSignedIn,
     OnboardingIncomplete,
     StudentsOnly,
     UctAccountRequired,
 )
-from sage.domain.planning import EligibilityChecker, PlanGenerator
-from sage.domain.repositories import StudentRepository
-from sage.domain.students import Student
-from sage.services.accounts import account_of
-from sage.services.rulebook import Rulebook
+from sage.shared.planning import EligibilityChecker, PlanGenerator
+from sage.shared.repositories import StudentRepository
+from sage.shared.rulebook import Rulebook
+from sage.shared.students import Student
 
 
 def verifier(request: Request) -> TokenVerifier:

@@ -9,8 +9,8 @@ from pydantic import ValidationError
 from supabase import Client
 from supabase_auth.errors import AuthApiError, AuthInvalidJwtError
 
-from sage.domain.accounts import Identity
-from sage.domain.errors import NotSignedIn, UctAccountRequired
+from sage.shared.auth import Identity
+from sage.shared.errors import NotSignedIn, UctAccountRequired
 
 
 class SupabaseTokenVerifier:

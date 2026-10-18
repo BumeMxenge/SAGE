@@ -1,11 +1,11 @@
 # Explore Electives and hearting: the courses she can add, by tab, and her favourites
 from fastapi import APIRouter
 
-from sage.api.deps import ONBOARDED_ERRORS, Checker, Onboarded, Rules, Students
-from sage.api.models import Elective, Electives, Eligibility, Tab
-from sage.api.problems import errors
-from sage.domain.errors import CourseNotFound, InvalidRequest, RulebookNotLoaded
 from sage.services import electives
+from sage.shared.api.deps import ONBOARDED_ERRORS, Checker, Onboarded, Rules, Students
+from sage.shared.api.models import Elective, Electives, Eligibility, Tab
+from sage.shared.api.problems import errors
+from sage.shared.errors import CourseNotFound, InvalidRequest, RulebookNotLoaded
 
 router = APIRouter(tags=["electives"])
 

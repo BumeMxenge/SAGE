@@ -2,12 +2,12 @@
 # holds a row that agrees beside the one that doesn't
 import pytest
 
-from sage.domain.rules import AnyOf, Course, CourseNeed, Equivalence
 from sage.ingestion import checks
 from sage.ingestion.complementary import Offering
 from sage.ingestion.curricula import Listed, Subtotal
 from sage.ingestion.handbook import Entry
 from sage.ingestion.timetable import Printed
+from sage.shared.rules import AnyOf, Course, CourseNeed, Equivalence
 
 
 def entry(code, credits=16, nqf_level=7, term=None, name="Energy Systems and Grids I"):

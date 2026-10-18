@@ -3,10 +3,10 @@
 # makes no second set is checked in tests/unit/services/test_onboarding.py.
 import pytest
 
-from sage.adapters.memory.rules import InMemoryRuleRepository
-from sage.api import deps
-from sage.services.rulebook import Rulebook
-from sage.services.seed import load_seed
+from sage.shared.api import deps
+from sage.shared.memory.rules import InMemoryRuleRepository
+from sage.shared.rulebook import Rulebook
+from sage.shared.seed import load_seed
 from tests.unit.api.accounts import QRTILV
 
 

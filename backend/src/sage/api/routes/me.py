@@ -2,10 +2,10 @@
 # telling staff their side isn't built yet.
 from fastapi import APIRouter
 
-from sage.api.deps import SIGNED_IN_ERRORS, SignedIn, Students
-from sage.api.models import Me
-from sage.api.problems import errors
-from sage.domain.accounts import Account
+from sage.shared.api.deps import SIGNED_IN_ERRORS, SignedIn, Students
+from sage.shared.api.models import Me
+from sage.shared.api.problems import errors
+from sage.shared.auth import Account
 
 router = APIRouter(tags=["account"])
 

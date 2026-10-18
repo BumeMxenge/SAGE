@@ -3,8 +3,8 @@
 import pytest
 from postgrest import CountMethod
 
-from sage.adapters.supabase import students
-from sage.services.seed import load_seed, seed
+from sage.shared.seed import load_seed, seed
+from sage.shared.supabase import students
 
 pytestmark = pytest.mark.integration
 

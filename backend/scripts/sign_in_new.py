@@ -5,9 +5,9 @@
 import argparse
 from urllib.parse import urlencode
 
-from sage.adapters.supabase import connect
-from sage.adapters.supabase.auth import sign_in_token
 from sage.config import get_settings, is_local
+from sage.shared.supabase.auth import sign_in_token
+from sage.shared.supabase.client import connect
 
 # The API tests' student who hasn't finished setup (tests/unit/api/conftest.py)
 EMAIL = "qrtilv999@myuct.ac.za"

@@ -4,8 +4,8 @@
 # no test calls one.
 import json
 
-from sage.domain.rules import AnyOf, CourseNeed, Refer
 from sage.ingestion.translate import Translation, translate
+from sage.shared.rules import AnyOf, CourseNeed, Refer
 
 # CSC2002S's requirement (2026, page 170), which the grammar refuses for its mark, and the tree a
 # person would write from the page: a final mark of at least 45 in CSC2001F, pass or not

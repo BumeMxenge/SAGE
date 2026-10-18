@@ -12,18 +12,7 @@ from pathlib import Path
 
 from pydantic import JsonValue
 
-from sage.domain.base import Row, canonical
 from sage.domain.drafting import Drafter
-from sage.domain.repositories import RuleRepository
-from sage.domain.rules import (
-    TERM_BY_SUFFIX,
-    AllOf,
-    Course,
-    EntryRule,
-    HandbookVersion,
-    Refer,
-    RuleSet,
-)
 from sage.ingestion import (
     checks,
     complementary,
@@ -36,6 +25,17 @@ from sage.ingestion import (
 )
 from sage.ingestion.names import title_case
 from sage.ingestion.review import Problem, Review, Snapshot, compare
+from sage.shared.base import Row, canonical
+from sage.shared.repositories import RuleRepository
+from sage.shared.rules import (
+    TERM_BY_SUFFIX,
+    AllOf,
+    Course,
+    EntryRule,
+    HandbookVersion,
+    Refer,
+    RuleSet,
+)
 
 # Four folders up from this file: the repo root, as for the seed file
 DATA = Path(__file__).resolve().parents[4] / "data"

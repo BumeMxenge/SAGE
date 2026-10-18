@@ -3,8 +3,8 @@
 from typing import Protocol
 from uuid import UUID
 
-from sage.domain.base import Row
-from sage.domain.students import Chat, Citation
+from sage.shared.base import Row
+from sage.shared.students import Chat, Citation
 
 
 class Reply(Row):

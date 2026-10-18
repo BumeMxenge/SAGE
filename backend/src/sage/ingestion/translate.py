@@ -12,10 +12,10 @@ from typing import Literal
 
 from pydantic import TypeAdapter, ValidationError
 
-from sage.domain.base import Row
 from sage.domain.drafting import Drafter
-from sage.domain.rules import EntryRule, Refer, RefusalCause
 from sage.ingestion import grammar
+from sage.shared.base import Row
+from sage.shared.rules import EntryRule, Refer, RefusalCause
 
 Need = Literal["pass", "concurrent"]
 DRAFT = TypeAdapter(EntryRule | None)

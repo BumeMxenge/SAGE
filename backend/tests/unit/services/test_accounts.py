@@ -3,9 +3,9 @@ from uuid import UUID
 
 import pytest
 
-from sage.domain.accounts import Identity
-from sage.domain.errors import UctAccountRequired
-from sage.services.accounts import account_of
+from sage.shared.accounts import account_of
+from sage.shared.auth import Identity
+from sage.shared.errors import UctAccountRequired
 
 
 def identity(email: str | None) -> Identity:

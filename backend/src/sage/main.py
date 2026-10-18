@@ -8,11 +8,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from sage.adapters.supabase import connect
-from sage.adapters.supabase.auth import SupabaseTokenVerifier
-from sage.adapters.supabase.rules import SupabaseRuleRepository
-from sage.adapters.supabase.students import SupabaseStudentRepository
-from sage.api import problems
 from sage.api.routes import (
     chats,
     electives,
@@ -24,10 +19,15 @@ from sage.api.routes import (
     questionnaire,
 )
 from sage.config import get_settings
-from sage.domain.errors import InternalError
-from sage.services.rulebook import Rulebook
-from sage.services.seed import SEED_FILE
 from sage.services.stubs import FixedAdvisor, InterimEligibility, SeededPlanGenerator
+from sage.shared.api import problems
+from sage.shared.errors import InternalError
+from sage.shared.rulebook import Rulebook
+from sage.shared.seed import SEED_FILE
+from sage.shared.supabase.auth import SupabaseTokenVerifier
+from sage.shared.supabase.client import connect
+from sage.shared.supabase.rules import SupabaseRuleRepository
+from sage.shared.supabase.students import SupabaseStudentRepository
 
 logger = logging.getLogger(__name__)
 

@@ -4,9 +4,9 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from sage.domain.rules import RuleSet, TimetableSlot, TimetableSlotCurriculum
-from sage.domain.students import Plan, PlanCourse, PlanSet, PlanSetRows
 from sage.services import plans
+from sage.shared.rules import RuleSet, TimetableSlot, TimetableSlotCurriculum
+from sage.shared.students import Plan, PlanCourse, PlanSet, PlanSetRows
 
 STUDENT = UUID(int=1)
 HERS, THEIRS = "EB011EEE05", "EB999XYZ99"  # her curriculum, and a made-up second one

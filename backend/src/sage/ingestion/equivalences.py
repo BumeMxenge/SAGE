@@ -3,9 +3,9 @@
 import csv
 from pathlib import Path
 
-from sage.domain.base import Row
-from sage.domain.rules import Equivalence
 from sage.ingestion.sources import Reading, SourceError
+from sage.shared.base import Row
+from sage.shared.rules import Equivalence
 
 COLUMNS = ["code", "counts_as", "reason", "page"]
 

@@ -3,9 +3,9 @@
 from collections.abc import Mapping, Sequence
 from typing import Literal, Protocol
 
-from sage.domain.base import Row
-from sage.domain.rules import Course, ResultSymbol, RuleSet
-from sage.domain.students import CourseHistoryLine, PlanSetRows, Student
+from sage.shared.base import Row
+from sage.shared.rules import Course, ResultSymbol, RuleSet
+from sage.shared.students import CourseHistoryLine, PlanSetRows, Student
 
 # Whether she may take a course, or needs to check with her advisor first
 EligibilityStatus = Literal["eligible", "check", "not_eligible"]

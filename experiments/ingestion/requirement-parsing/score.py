@@ -10,8 +10,8 @@ from math import comb
 from typing import get_args
 
 from pydantic import TypeAdapter, ValidationError
-from sage.domain.rules import EntryRule, RefusalCause
 from sage.ingestion.grammar import Refused, read
+from sage.shared.rules import EntryRule, RefusalCause
 
 from drafting import (
     HAIKU,

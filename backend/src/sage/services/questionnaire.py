@@ -7,18 +7,18 @@ from datetime import time
 from typing import Any, Literal
 from uuid import UUID
 
-from sage.domain.base import Row
-from sage.domain.errors import (
+from sage.services import plans
+from sage.shared.base import Row
+from sage.shared.errors import (
     NoPlanMatches,
     QuestionnaireAnswered,
     QuestionnaireNotNeeded,
     UnknownAnswer,
 )
-from sage.domain.repositories import StudentRepository
-from sage.domain.rules import RuleSet, TimetableSlot
-from sage.domain.students import PlanSetRows, Student
-from sage.services import plans
-from sage.services.rulebook import Rulebook
+from sage.shared.repositories import StudentRepository
+from sage.shared.rulebook import Rulebook
+from sage.shared.rules import RuleSet, TimetableSlot
+from sage.shared.students import PlanSetRows, Student
 
 QuestionId = Literal["course", "week"]
 EIGHT = time(8, 0)

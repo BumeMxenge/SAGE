@@ -2,7 +2,7 @@
 # prototype's, answers hide exactly the plans they don't keep, and it can only be answered once
 import pytest
 
-from sage.domain.rules import TimetableSlotCurriculum
+from sage.shared.rules import TimetableSlotCurriculum
 from tests.unit.api.accounts import MBALI
 
 

@@ -3,7 +3,9 @@
 from fastapi import APIRouter, Depends, Request
 from starlette.concurrency import run_in_threadpool
 
-from sage.api.deps import (
+from sage.api.routes.me import me
+from sage.services import onboarding
+from sage.shared.api.deps import (
     STUDENT_ERRORS,
     Generator,
     Rules,
@@ -11,7 +13,7 @@ from sage.api.deps import (
     Students,
     student_account,
 )
-from sage.api.models import (
+from sage.shared.api.models import (
     Catalogue,
     Course,
     Curriculum,
@@ -22,9 +24,8 @@ from sage.api.models import (
     TranscriptLine,
     TranscriptWarning,
 )
-from sage.api.problems import errors
-from sage.api.routes.me import me
-from sage.domain.errors import (
+from sage.shared.api.problems import errors
+from sage.shared.errors import (
     FileTooLarge,
     InvalidRequest,
     NoCourseHistory,
@@ -37,8 +38,7 @@ from sage.domain.errors import (
     UnknownCurriculum,
     UnknownResult,
 )
-from sage.domain.students import CourseHistoryLine
-from sage.services import onboarding
+from sage.shared.students import CourseHistoryLine
 
 MAX_TRANSCRIPT_BYTES = 10 * 1024 * 1024
 

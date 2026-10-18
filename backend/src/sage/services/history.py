@@ -4,8 +4,8 @@ from collections import defaultdict
 from collections.abc import Sequence
 from decimal import Decimal
 
-from sage.domain.base import Row
-from sage.domain.students import CourseHistoryLine, average
+from sage.shared.base import Row
+from sage.shared.students import CourseHistoryLine, average
 
 
 class HistoryYear(Row):

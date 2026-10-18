@@ -6,10 +6,10 @@ from datetime import time
 from typing import Any
 from uuid import UUID
 
-from sage.domain.errors import PlanNotFound, PlansNotReady, SamePlan
-from sage.domain.repositories import StudentRepository
-from sage.domain.rules import Course, RuleSet, TermCode, TimetableSlot
-from sage.domain.students import PlanCourse, PlanSetRows
+from sage.shared.errors import PlanNotFound, PlansNotReady, SamePlan
+from sage.shared.repositories import StudentRepository
+from sage.shared.rules import Course, RuleSet, TermCode, TimetableSlot
+from sage.shared.students import PlanCourse, PlanSetRows
 
 
 def current_set(students: StudentRepository, student_id: UUID) -> PlanSetRows:

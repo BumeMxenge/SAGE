@@ -5,8 +5,8 @@ from collections.abc import Collection, Sequence
 from typing import Any, Protocol
 from uuid import UUID
 
-from sage.domain.rules import ResultSymbol, RuleSet
-from sage.domain.students import (
+from sage.shared.rules import ResultSymbol, RuleSet
+from sage.shared.students import (
     Chat,
     Citation,
     CitedMessage,

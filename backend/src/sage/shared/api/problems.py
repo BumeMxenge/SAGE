@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from sage.domain.errors import (
+from sage.shared.errors import (
     Code,
     InternalError,
     InvalidRequest,
