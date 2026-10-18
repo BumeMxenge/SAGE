@@ -29,7 +29,11 @@ def test_her_transcript_comes_back_to_review(upload, transcript_pages):
     assert (
         transcript["programme"] == "Bachelor of Science in Engineering in Mechatronics"
     )
-    assert [row["code"] for row in transcript["curriculum_options"]] == ["EB011EEE05"]
+    # pp. 56 and 59 name both Mechatronics curricula with her programme's words first
+    assert [row["code"] for row in transcript["curriculum_options"]] == [
+        "EB011EEE05",
+        "EB811EEE05",
+    ]
     assert transcript["issued_on"] == "2026-02-05"
     # Every line as the reader reads it, in order
     read = read_lines(transcript_pages, "DLMMBA999").lines

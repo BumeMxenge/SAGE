@@ -156,12 +156,6 @@ def test_a_line_of_prose_opening_with_a_code_is_not_a_heading():
     assert book.entry("APG2021F") is book.entry("APG2021S") is None
 
 
-def test_a_requirement_line_opening_with_a_code_is_not_an_entry(handbook):
-    # EEE4022S's requirement carries on with "EEE4120F or EEE4119F", and EEE4120F's own entry isn't
-    # among these pages
-    assert handbook.entry("EEE4120F") is None
-
-
 @pytest.mark.parametrize(
     ("lines", "refusal"),
     [

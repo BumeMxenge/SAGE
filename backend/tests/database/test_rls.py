@@ -30,10 +30,12 @@ def test_a_signed_out_browser_is_refused(anon, refused, table):
 
 
 @pytest.mark.parametrize("table", READABLE_RULEBOOK)
-def test_she_reads_the_rulebook_but_cannot_change_it(her, refused, mbali_counts, table):
-    assert (
-        len(her.client.table(table).select("*").execute().data) == mbali_counts[table]
-    )
+def test_she_reads_the_rulebook_but_cannot_change_it(
+    her, refused, approved_years, table
+):
+    # Every row of both loaded years, as the snapshot files hold them
+    loaded = sum(len(getattr(snapshot.rules, table)) for snapshot in approved_years)
+    assert len(her.client.table(table).select("*").execute().data) == loaded
     refused(her.client.table(table).insert({}), PERMISSION_DENIED)
 
 
@@ -57,6 +59,6 @@ def test_an_unapproved_year_and_every_delta_stay_hidden(her, secret, refused):
     hidden = courses.execute().data
     # Deleting the year deletes its course too
     secret.table("handbook_versions").delete().eq("year", 2099).execute()
-    assert years == [{"year": 2026}]
+    assert sorted(row["year"] for row in years) == [2023, 2026]
     assert hidden == []
     refused(her.client.table("handbook_deltas").select("*"), PERMISSION_DENIED)

@@ -15,7 +15,10 @@ from supabase import Client, create_client
 from sage.adapters.supabase.rules import SupabaseRuleRepository
 from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import is_local
-from sage.services.seed import Seed, load_seed, seed
+from sage.domain.students import StudentState
+from sage.ingestion.review import Snapshot
+from sage.services.ingest import approved_snapshot, load
+from sage.services.seed import load_seed, seed
 
 
 @dataclass(frozen=True)
@@ -46,7 +49,18 @@ def anon(url) -> Client:
 
 
 @pytest.fixture(scope="session")
-def stores(secret) -> tuple[SupabaseRuleRepository, SupabaseStudentRepository]:
+def approved_years(secret) -> tuple[Snapshot, ...]:
+    # Every approved year, loaded once as make load loads it, as her plans point into 2026's rules
+    snapshots = tuple(approved_snapshot(year) for year in (2023, 2026))
+    for snapshot in snapshots:
+        load(snapshot, SupabaseRuleRepository(secret), replace=False)
+    return snapshots
+
+
+@pytest.fixture(scope="session")
+def stores(
+    secret, approved_years
+) -> tuple[SupabaseRuleRepository, SupabaseStudentRepository]:
     return SupabaseRuleRepository(secret), SupabaseStudentRepository(secret)
 
 
@@ -87,7 +101,7 @@ def stranger(new_account) -> Account:
 
 
 @pytest.fixture(scope="session")
-def mbali(her, seed_file) -> Seed:
+def mbali(her, seed_file) -> StudentState:
     # Her rows as seeded, with the ids the database holds
     return load_seed(seed_file, her.id)
 

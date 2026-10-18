@@ -12,12 +12,16 @@ def test_her_set_has_10_plans_and_7_still_visible(mbali):
     assert positions == list(range(1, 11))
     visible = [plan["position"] for plan in plan_set["plans"] if not plan["hidden"]]
     assert visible == [1, 5, 6, 7, 8, 9, 10]
+    # p. 58's fourth-year total: the five core courses' 90 credits and three 16-credit electives
     assert {plan["credits"] for plan in plan_set["plans"]} == {138}
     # The set's own reasons: the seed's six, less the one for plan 7 alone
     assert len(plan_set["reasons"]) == 5
 
 
 def test_every_plan_has_138_credits_split_by_term(mbali, plan_ids):
+    # From the entries (pp. 138 to 141, 162 and 164): semester 1 holds EEE4113F's 16, CML4607F's 10
+    # and the three electives' 48; the third quarter EEE4124C's 8 and EEE4125C's 16; semester 2
+    # EEE4022S's 40
     for plan_id in plan_ids.values():
         credits = mbali.get(f"/v1/plans/{plan_id}").json()["credits"]
         assert credits == {"total": 138, "by_term": {"sem1": 74, "q3": 24, "sem2": 40}}
@@ -36,6 +40,8 @@ def test_a_plan_shows_each_courses_groups_and_meetings(mbali, plan_ids):
         course["code"]: course
         for course in mbali.get(f"/v1/plans/{plan_ids[1]}").json()["courses"]
     }
+    # The labels p. 58 prints over her fourth-year tables, and EEE4117F's 8am lectures on the EB011
+    # sheet (C53:C54, E53:E54 and G53). The sheet prints no meeting for EEE4022S.
     assert [group["label"] for group in courses["EEE4119F"]["groups"]] == [
         "Fourth Year Elective Core Courses (ME)"
     ]
@@ -48,6 +54,18 @@ def test_a_plan_shows_each_courses_groups_and_meetings(mbali, plan_ids):
     ]
     assert eight_oclocks == [(1, "08:00:00"), (3, "08:00:00"), (5, "08:00:00")]
     assert courses["EEE4022S"]["meetings"] == []  # no contact time
+
+
+def test_her_plan_shows_the_meetings_only_her_curriculum_has(mbali, plan_ids):
+    # EEE4120F's Thursday 16:00 meeting is printed on her EB011 sheet (F61:F62) but not on EB022's,
+    # so it's linked to the Mechatronics curricula, and plan 3 shows it as the route hands the filter
+    # her curriculum. The filter itself is tested in tests/unit/services/test_plans.py.
+    courses = {
+        course["code"]: course
+        for course in mbali.get(f"/v1/plans/{plan_ids[3]}").json()["courses"]
+    }
+    meetings = [(m["day"], m["start_time"]) for m in courses["EEE4120F"]["meetings"]]
+    assert (4, "16:00:00") in meetings
 
 
 def test_a_hidden_plan_still_opens(mbali, plan_ids):

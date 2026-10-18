@@ -13,21 +13,30 @@ from tests.unit.api.accounts import QRTILV
 @pytest.fixture
 def setup(seed_file) -> dict:
     # Finish setup as the review screen sends it, with Mbali's seeded history
-    lines = load_seed(seed_file, QRTILV).student.course_history
+    lines = load_seed(seed_file, QRTILV).course_history
     return {
         "curriculum_code": "EB011EEE05",
         "lines": [line.model_dump(exclude={"student_id"}) for line in lines],
     }
 
 
-def test_the_catalogue_lists_the_current_handbook(signed_in, seed_file, result_symbols):
+def test_the_catalogue_lists_the_current_handbook(
+    signed_in, approved_2026, result_symbols
+):
     catalogue = signed_in("qrtilv").get("/v1/catalogue").json()
-    rules = load_seed(seed_file, QRTILV).rules
     assert catalogue["year"] == 2026
-    assert [row["code"] for row in catalogue["curricula"]] == ["EB011EEE05"]
+    # The department's six curricula, printed on pp. 48, 50, 52, 54, 56 and 59, by code
+    assert [row["code"] for row in catalogue["curricula"]] == [
+        "EB009EEE01",
+        "EB011EEE05",
+        "EB022EEE02",
+        "EB809EEE01",
+        "EB811EEE05",
+        "EB822EEE02",
+    ]
     # Every course in the year, by code, and every result symbol
     assert [row["code"] for row in catalogue["courses"]] == sorted(
-        row.code for row in rules.courses
+        row.code for row in approved_2026.courses
     )
     assert {row["symbol"] for row in catalogue["symbols"]} == {
         row.symbol for row in result_symbols

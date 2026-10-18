@@ -18,9 +18,9 @@ FIXED_REPLY = (
 
 class SeededPlanGenerator:
     # Gives every student Mbali's seeded plan set: her 10 plans with their courses and reasons,
-    # unanswered and with nothing hidden. The engine replaces this. It needs the seed's 2026
-    # rulebook stored already, and makes the same ids as sage seed, so a retried onboarding
-    # finishes the same set.
+    # unanswered and with nothing hidden. The engine replaces this. It needs the approved 2026
+    # stored already, and makes the same ids as sage seed, so a retried onboarding finishes the
+    # same set.
     def __init__(self, seed_file: Path) -> None:
         # Read once at startup, so a missing or broken file stops the app, not an onboarding
         load_seed(seed_file, UUID(int=0))
@@ -29,7 +29,7 @@ class SeededPlanGenerator:
     def generate(
         self, student: Student, history: Sequence[CourseHistoryLine], rules: RuleSet
     ) -> PlanSetRows:
-        seeded = load_seed(self._seed_file, student.id).student
+        seeded = load_seed(self._seed_file, student.id)
         (plan_set,) = seeded.plan_sets
         return PlanSetRows(
             plan_set=plan_set.model_copy(update={"answers": None, "complete": False}),

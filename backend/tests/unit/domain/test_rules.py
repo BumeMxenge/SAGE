@@ -1,10 +1,10 @@
 # Checks the rule trees' shapes: a tree that doesn't fit is refused, an any needs a child, a rule
 # printed in another order is the same tree, and so is one grouped differently within its own kind
-# or wrapped in an all or an any of one
+# or wrapped in an all or an any of one. An Explore Electives tab must be one the frontend has.
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from sage.domain.rules import AllOf, Course, CourseNeed, EntryRule
+from sage.domain.rules import AllOf, Course, CourseGroupMember, CourseNeed, EntryRule
 
 ENTRY_RULE = TypeAdapter(EntryRule)
 
@@ -173,3 +173,13 @@ def test_a_rule_built_with_one_child_is_stored_without_the_wrapper():
         entry_rule=AllOf(all=(need,)),
     )
     assert course.entry_rule == need
+
+
+def test_an_unknown_tab_is_refused():
+    with pytest.raises(ValidationError):
+        CourseGroupMember(
+            handbook_year=2026,
+            group_key="complementary",
+            course_code="SLL1052F",
+            category="cooking",
+        )

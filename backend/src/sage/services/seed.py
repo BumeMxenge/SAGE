@@ -1,14 +1,15 @@
 # Loads the made-up student from data/synthetic/ and stores her through the repository interfaces.
-# Her rows carry no ids in the file, so this makes them: uuid5 values, the same on every run.
+# Her rows carry no ids in the file, so this makes them: uuid5 values, the same on every run. The
+# file holds her data only: the rules her plans point into come from an approved year, which only
+# sage load writes.
 import json
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
-from uuid import NAMESPACE_URL, UUID, uuid5
+from uuid import UUID, uuid5
 
-from sage.domain.base import Row
+from sage.domain.base import Row, canonical
 from sage.domain.repositories import RuleRepository, StudentRepository
-from sage.domain.rules import RuleSet
 from sage.domain.students import (
     Chat,
     CourseHistoryLine,
@@ -27,63 +28,52 @@ from sage.domain.students import (
 # the file there for the plan stand-in
 SEED_FILE = Path(__file__).resolve().parents[4] / "data" / "synthetic" / "mbali.json"
 
-# Rulebook ids come from the row alone, not the account, so every account seeded from the file
-# shares the same timetable slots instead of adding its own copies
-RULEBOOK_IDS = uuid5(NAMESPACE_URL, "https://github.com/BumeMxenge/SAGE/rulebook")
 
-
-class Seed(Row):
-    rules: RuleSet
-    student: StudentState
+class YearNotLoaded(Exception):
+    # Her plans point into this handbook year's rules, and the database holds no approved copy
+    pass
 
 
 class SeedResult(Row):
     written: dict[str, int]  # rows per table, as in the file
-    # Rulebook rows already stored differently from the file, which seeding leaves alone
-    rulebook_differences: tuple[str, ...]
     student_differences: tuple[str, ...]  # empty when her data reads back as written
 
 
-def load_seed(path: Path, account_id: UUID) -> Seed:
+def load_seed(path: Path, account_id: UUID) -> StudentState:
     data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
     # Notes for people, and her made-up identity, which the tests and sage sign-in use: neither is
     # her data
     data.pop("_readme", None)
     data.pop("fake_account", None)
-    rules = _rulebook(data)
     student = _student(data, account_id)
     if data:
         unknown = ", ".join(sorted(data))
         raise ValueError(f"{path.name} has tables the seed doesn't know: {unknown}")
-    return Seed(rules=rules, student=student)
+    return student
 
 
-def seed(rules: RuleRepository, students: StudentRepository, data: Seed) -> SeedResult:
-    rules.add_missing(data.rules)
-    students.replace(data.student)
-    stored_rules = [rules.get(version.year) for version in data.rules.handbook_versions]
-    stored_student = students.get(data.student.student.id)
+def require_loaded(rules: RuleRepository, years: Iterable[int]) -> None:
+    # Her plans point into their year's rules, so nothing of hers is written until each year is
+    # loaded and approved
+    for year in years:
+        if not any(version.approved for version in rules.get(year).handbook_versions):
+            raise YearNotLoaded(year)
+
+
+def seed(
+    rules: RuleRepository, students: StudentRepository, data: StudentState
+) -> SeedResult:
+    require_loaded(rules, {plan_set.period for plan_set in data.plan_sets})
+    students.replace(data)
+    stored = students.get(data.student.id)
     return SeedResult(
         written=counts(data),
-        rulebook_differences=tuple(rulebook_differences(data.rules, stored_rules)),
-        student_differences=tuple(student_differences(data.student, stored_student)),
+        student_differences=tuple(student_differences(data, stored)),
     )
 
 
-def counts(data: Seed) -> dict[str, int]:
-    rules = {table: len(getattr(data.rules, table)) for table in RuleSet.model_fields}
-    student = {table: len(_rows(data.student, table)) for table in _student_tables()}
-    return rules | student
-
-
-def rulebook_differences(expected: RuleSet, stored: list[RuleSet]) -> list[str]:
-    problems = []
-    for table in RuleSet.model_fields:
-        have = {text for rules in stored for text in _canonical(getattr(rules, table))}
-        missing = sum(text not in have for text in _canonical(getattr(expected, table)))
-        if missing:
-            problems.append(f"{table}: {missing} of the file's rows stored differently")
-    return problems
+def counts(data: StudentState) -> dict[str, int]:
+    return {table: len(_rows(data, table)) for table in _student_tables()}
 
 
 def student_differences(
@@ -94,23 +84,9 @@ def student_differences(
     problems = []
     for table in _student_tables():
         want, got = _rows(expected, table), _rows(stored, table)
-        if _canonical(want) != _canonical(got):
+        if canonical(want) != canonical(got):
             problems.append(f"{table}: {len(got)} stored, {len(want)} in the file")
     return problems
-
-
-def _rulebook(data: dict[str, Any]) -> RuleSet:
-    tables = {table: data.pop(table, []) for table in RuleSet.model_fields}
-    tables["timetable_slots"] = [
-        {
-            "id": uuid5(
-                RULEBOOK_IDS, "timetable_slots/" + json.dumps(row, sort_keys=True)
-            )
-        }
-        | row
-        for row in tables["timetable_slots"]
-    ]
-    return RuleSet.model_validate(tables)
 
 
 def _student(data: dict[str, Any], account_id: UUID) -> StudentState:
@@ -221,10 +197,3 @@ def _student_tables() -> list[str]:
 
 def _rows(state: StudentState, table: str) -> tuple[Row, ...]:
     return (state.student,) if table == "students" else getattr(state, table)
-
-
-def _canonical(rows: Iterable[Row]) -> list[str]:
-    # Rows as sorted JSON text, so neither row order nor the key order jsonb stores matters
-    return sorted(
-        json.dumps(row.model_dump(mode="json"), sort_keys=True) for row in rows
-    )

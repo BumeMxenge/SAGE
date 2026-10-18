@@ -12,12 +12,6 @@ class InMemoryRuleRepository:
         # A migration stores the real symbols, so a fake is handed them
         self._symbols = symbols
 
-    def add_missing(self, rules: RuleSet) -> None:
-        for table, stored in self._tables.items():
-            for row in getattr(rules, table):
-                key = tuple(getattr(row, column) for column in PRIMARY_KEYS[table])
-                stored.setdefault(key, row)
-
     def replace_year(self, rules: RuleSet) -> None:
         # The fake holds no student rows, so nothing here refuses the removal
         (version,) = rules.handbook_versions
@@ -27,7 +21,9 @@ class InMemoryRuleRepository:
                 k for k, row in stored.items() if getattr(row, column) == version.year
             ]:
                 del stored[key]
-        self.add_missing(rules)
+            for row in getattr(rules, table):
+                key = tuple(getattr(row, part) for part in PRIMARY_KEYS[table])
+                stored[key] = row
 
     def get(self, year: int) -> RuleSet:
         def in_year(table: str, row: Any) -> bool:
