@@ -3,8 +3,7 @@ from uuid import UUID
 
 import pytest
 
-from sage.shared.accounts import account_of
-from sage.shared.auth import Identity
+from sage.shared.auth import Identity, account_of
 from sage.shared.errors import UctAccountRequired
 
 

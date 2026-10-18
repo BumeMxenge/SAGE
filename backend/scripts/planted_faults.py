@@ -51,14 +51,14 @@ FAULTS = [
     Fault(
         4,
         "accounts: staff domain matched with endswith",
-        "src/sage/shared/accounts.py",
+        "src/sage/shared/auth.py",
         'email.rpartition("@")[2] == STAFF_DOMAIN',
         "email.endswith(STAFF_DOMAIN)",
     ),
     Fault(
         5,
         "accounts: email not lower-cased",
-        "src/sage/shared/accounts.py",
+        "src/sage/shared/auth.py",
         'email = (identity.email or "").lower()',
         'email = identity.email or ""',
     ),

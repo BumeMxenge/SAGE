@@ -5,9 +5,8 @@ from typing import Annotated
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from sage.shared.accounts import account_of
 from sage.shared.advisor import Advisor
-from sage.shared.auth import Account, TokenVerifier
+from sage.shared.auth import Account, TokenVerifier, account_of
 from sage.shared.errors import (
     NotSignedIn,
     OnboardingIncomplete,
