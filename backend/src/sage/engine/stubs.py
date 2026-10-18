@@ -1,19 +1,15 @@
-# The stand-ins the API runs on until the real components exist. Each fills an interface in shared/,
-# so swapping the real one in never touches a route.
+# The engine's stand-ins, which the API runs on until the engine exists. Each fills an interface in
+# shared/planning.py, so swapping the engine in never touches a route.
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from uuid import UUID
 
-from sage.shared.advisor import Reply
 from sage.shared.planning import Eligibility
 from sage.shared.rules import Course, Refer, ResultSymbol, RuleSet
 from sage.shared.seed import load_seed
-from sage.shared.students import Chat, CourseHistoryLine, PlanSetRows, Student
+from sage.shared.students import CourseHistoryLine, PlanSetRows, Student
 
 UNCHECKED = "SAGE can't check this requirement yet. Ask your advisor."
-FIXED_REPLY = (
-    "I can't answer questions yet. Your faculty advisor can help with this one."
-)
 
 
 class SeededPlanGenerator:
@@ -76,12 +72,3 @@ class InterimEligibility:
         if isinstance(course.entry_rule, Refer):
             return Eligibility(status="check", reason=course.entry_rule.refer)
         return Eligibility(status="check", reason=UNCHECKED)
-
-
-class FixedAdvisor:
-    # One fixed reply in the final format, handing every question to a human advisor. In a pair
-    # chat its Open plan action points at the second plan. The real advisor replaces this.
-    def reply(self, chat: Chat, question: str, term: str | None) -> Reply:
-        return Reply(
-            content=FIXED_REPLY, referral=True, open_plan_id=chat.other_plan_id
-        )

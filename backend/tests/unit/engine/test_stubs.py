@@ -1,22 +1,18 @@
-# Checks the stand-ins. The plan one reads its seed file as it's built, and gives a student Mbali's
-# plan set, unanswered and with nothing hidden, with the ids sage seed would make. The eligibility
-# one applies its rules in order, and leaves a rule it can't read to her advisor. The advisor one
-# hands every question to a human advisor.
-from uuid import UUID, uuid4
+# Checks the engine's stand-ins. The plan one reads its seed file as it's built, and gives a student
+# Mbali's plan set, unanswered and with nothing hidden, with the ids sage seed would make. The
+# eligibility one applies its rules in order, and leaves a rule it can't read to her advisor.
+from uuid import UUID
 
 import pytest
 
 from sage.engine.stubs import (
-    FIXED_REPLY,
     UNCHECKED,
-    FixedAdvisor,
     InterimEligibility,
     SeededPlanGenerator,
 )
-from sage.shared.advisor import Reply
 from sage.shared.rules import ResultSymbol, RuleSet
 from sage.shared.seed import load_seed
-from sage.shared.students import Chat, CourseHistoryLine, Student
+from sage.shared.students import CourseHistoryLine, Student
 
 STUDENT = Student(id=UUID(int=7))
 
@@ -98,15 +94,3 @@ def test_a_course_that_a_pass_counts_as_is_not_eligible_either(approved_2026, sy
         "not_eligible",
         "You've already passed EEE1006F.",
     )
-
-
-@pytest.mark.stub("advisor")
-def test_the_fixed_reply_refers_her_and_offers_a_pairs_second_plan():
-    pair = Chat(
-        id=uuid4(), student_id=STUDENT.id, plan_id=uuid4(), other_plan_id=uuid4()
-    )
-    assert FixedAdvisor().reply(pair, "Which plan?", "sem1") == Reply(
-        content=FIXED_REPLY, referral=True, open_plan_id=pair.other_plan_id
-    )
-    alone = pair.model_copy(update={"other_plan_id": None})
-    assert FixedAdvisor().reply(alone, "Which plan?", "sem1").open_plan_id is None

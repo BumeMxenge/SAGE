@@ -8,7 +8,8 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from sage.engine.stubs import FixedAdvisor, InterimEligibility, SeededPlanGenerator
+from sage.advisor.stubs import FixedAdvisor
+from sage.engine.stubs import InterimEligibility, SeededPlanGenerator
 from sage.main import create_app
 from sage.shared.api import deps
 from sage.shared.auth import Identity

@@ -8,8 +8,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
+from sage.advisor.stubs import FixedAdvisor
 from sage.config import get_settings
-from sage.engine.stubs import FixedAdvisor, InterimEligibility, SeededPlanGenerator
+from sage.engine.stubs import InterimEligibility, SeededPlanGenerator
 from sage.features.accounts import routes as accounts
 from sage.features.chats import routes as chats
 from sage.features.electives import routes as electives
