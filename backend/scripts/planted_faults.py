@@ -1,7 +1,8 @@
 # Plants each of the 24 faults from my test review in a copy of the backend, runs the unit tests, and
-# reports which test caught it. The faults go into a temporary copy, so a run cut short never leaves
-# one in the real code. A fault whose text no longer matches is reported as not applied, never as
-# caught.
+# reports which test caught it. The tests first run on the copy with no fault, and any failure stops
+# the script, as a broken copy would make every fault look caught. The faults go into a temporary
+# copy, so a run cut short never leaves one in the real code. A fault whose text no longer matches is
+# reported as not applied, never as caught.
 import os
 import shutil
 import subprocess
@@ -199,6 +200,29 @@ FAULTS = [
 ]
 
 
+def run_tests(copy: Path) -> subprocess.CompletedProcess[str]:
+    # The unit tests on the copy, ahead of the real code, with no bytecode cache that could outlive a
+    # fault
+    env = os.environ | {"PYTHONPATH": str(copy / "src"), "PYTHONDONTWRITEBYTECODE": "1"}
+    return subprocess.run(
+        [sys.executable, "-m", "pytest", "-x", "-q", "-m", "not integration"],
+        cwd=copy,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,  # a failing test is the result, which the caller reads
+    )
+
+
+def failing(tests: subprocess.CompletedProcess[str]) -> list[str]:
+    # pytest's summary line for each test that failed or wouldn't import
+    return [
+        line
+        for line in tests.stdout.splitlines()
+        if line.startswith(("FAILED ", "ERROR "))
+    ]
+
+
 def plant(fault: Fault, copy: Path) -> str:
     # The fault's outcome: caught, and by which test, survived, or not applied
     path = copy / fault.file
@@ -210,18 +234,9 @@ def plant(fault: Fault, copy: Path) -> str:
         raise ValueError(
             f"Fault {fault.number} matches {matches} places in {fault.file}"
         )
-    # The copy ahead of the real code, and no bytecode cache that could outlive a fault
-    env = os.environ | {"PYTHONPATH": str(copy / "src"), "PYTHONDONTWRITEBYTECODE": "1"}
     path.write_text(original.replace(fault.find, fault.replace), encoding="utf-8")
     try:
-        tests = subprocess.run(
-            [sys.executable, "-m", "pytest", "-x", "-q", "-m", "not integration"],
-            cwd=copy,
-            env=env,
-            capture_output=True,
-            text=True,
-            check=False,  # a failing test is the result, read below
-        )
+        tests = run_tests(copy)
     finally:
         path.write_text(original, encoding="utf-8")
     if tests.returncode == 0:
@@ -231,11 +246,7 @@ def plant(fault: Fault, copy: Path) -> str:
         raise RuntimeError(
             f"pytest didn't run for fault {fault.number}:\n{tests.stdout}"
         )
-    failures = [
-        line
-        for line in tests.stdout.splitlines()
-        if line.startswith(("FAILED ", "ERROR "))
-    ]
+    failures = failing(tests)
     return f"caught by {failures[0].split()[1]}" if failures else "caught"
 
 
@@ -249,11 +260,20 @@ def main() -> None:
                 ignore=shutil.ignore_patterns("__pycache__"),
             )
         shutil.copy2(BACKEND / "pyproject.toml", copy)
-        # SEED_FILE is four folders up from seed.py, and E2's prompt four up from the drafter's test,
-        # so data/ and experiments/ go beside the copy, as in the repo. data/ is copied, not linked,
-        # so a fault that loses a function's folder can't write to the real one.
+        # SEED_FILE and DATA, where the tests find the approved 2026, are four folders up from their
+        # modules, and E2's prompt four up from the drafter's test, so data/ and experiments/ go
+        # beside the copy, as in the repo. data/ is copied, not linked, so a fault that loses a
+        # function's folder can't write to the real one.
         shutil.copytree(BACKEND.parent / "data", Path(work) / "data")
         (Path(work) / "experiments").symlink_to(BACKEND.parent / "experiments")
+        baseline = run_tests(copy)
+        if baseline.returncode != 0:
+            shown = failing(baseline) or baseline.stdout.splitlines()[-20:]
+            sys.exit(
+                "The tests fail on the copy with no fault, so the copy is broken:\n"
+                + "\n".join(shown)
+            )
+        print("The tests pass on the copy with no fault.", flush=True)
         outcomes = {}
         for fault in FAULTS:
             outcomes[fault] = plant(fault, copy)
