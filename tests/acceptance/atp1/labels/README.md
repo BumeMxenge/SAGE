@@ -3,6 +3,8 @@
 
 ATP-1 measures how well ingestion reads the printed sources, so its answers come from print alone: the handbooks, and the workbooks as Excel shows them, never anything SAGE produced. Each sheet was made naming only what to label, with every value blank, and filled from print by hand. Once a sheet was filled and passed the check, it was committed on its own, before anything ran against it.
 
+The filled sheets were checked against print by an AI assistant (Claude). It changed four complementary page numbers, to the heading-page rule below, and one line break in a requirement's text. No tree, time, day or code changed. It also labelled the 60 timetable cells on its own, and its reading agreed with the committed labels on every field.
+
 | Sheet | Rows | Label from |
 | --- | --- | --- |
 | `courses_2026.xlsx` | 60 courses: every one the six Electrical Engineering curricula print | `data/sources/2026/EBE_2026.pdf` |
