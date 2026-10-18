@@ -33,10 +33,31 @@ The eight rules above apply to the frontend too. Its tests run with Vitest and T
 | `src/components/brand/Logo/Logo.test.tsx` | Two logos on one page each get their own title id and their own name, and Microsoft's mark is hidden from screen readers | svgr's `titleProp` setting being lost, so every logo keeps its file's `id="t"` and the ids clash, or the mark being read out beside the button's own name |
 | `scripts/check-tsx.test.ts` | The custom lint check rejects `style=` beyond custom properties, re-exports and imports across feature boundaries | The check silently passing everything |
 | `scripts/stylelint-config.test.ts` | stylelint rejects raw colours, gradients and radii in a component, and accepts them in `tokens.css` | `ignoreFunctions` drifting back to its default, which lets `rgb()` and `oklch()` through |
+| `src/app/routes.test.ts` | The guard sweep, like the backend's in `test_guards.py`. Every page in the real route table is opened by every kind of visitor in a memory router: signed out, a session the API refuses, an account from outside UCT, staff, a student who hasn't finished setup, and an onboarded student. `GET /v1/me` is answered through the real client. Who may open each page, and where each visitor belongs, are written out by hand, and a page with no line there fails. `/` sends every visitor home, every redirect replaces the address, the guard asks `/v1/me` again once Finish Setup has refreshed it, and it waits for a sign-in in the address bar | A page with no rule or the wrong one, a redirect that traps the Back button, a cached `/v1/me` that sends every new student back to onboarding, or a sign-in sent away before its session exists |
+| `src/lib/api.test.ts` | A refusal reaches the caller as an `ApiError` with its code, status and extra fields, from a request that carries the session's token and keeps the PDF's body and type through the time limit. A failed fetch, a timeout and an error page in front of the API each get their client-side code | A refusal losing its code or its student numbers, a gateway's HTML page breaking the client, or a request going out unsigned or without its body |
+| `src/lib/queryKeys.test.ts` | Each refresh rule invalidates exactly the cached reads written out by hand | A hand-written key that matches no read, so its refresh silently does nothing, or a rule that refreshes too little or too much |
+| `src/lib/queryClient.test.ts` | A read is retried after a network failure, a timeout or a 5xx, three times and no more, and never after a refusal | Retrying refusals, which would hold every 4xx state back by 7 seconds, or retrying without end |
 
-Each test was checked by breaking what it guards: the old secondary grey, the audit's input border, the checkbox's dark border set to the field fill, a dark value left out, a renamed storage key, a script that ignores the system's setting or stops watching the choice, a hook without its try/catch, and `ignoreFunctions` turned back on. Each made a test fail.
+Each test was checked by breaking what it guards: the old secondary grey, the audit's input border, the checkbox's dark border set to the field fill, a dark value left out, a renamed storage key, a script that ignores the system's setting or stops watching the choice, a hook without its try/catch, and `ignoreFunctions` turned back on. Then, for the app's plumbing: `redirect()` in place of `replace()`, a guard that doesn't wait for the sign-in, a `/v1/me` cached past Finish Setup, a hand-named key, a sent message that refreshed every chat, a gateway's page passed through as data, and refusals retried. Each made a test fail.
 
-Not yet built: Playwright with axe, the keyboard walk and the parity screenshots. They need the local stack, so they arrive with app foundations as their own `make` target that CI doesn't run. The same branch adds a route-guard sweep that mirrors the backend's.
+That the error map has words for every code is TypeScript's job, not a test's: `satisfies` fails the build when one is missing. The tests that send a request run in Vitest's node environment, as Node's `Request` refuses jsdom's `AbortSignal`. Their settings are made up, on `.test` hosts that never resolve, so no test reads `frontend/.env` or reaches a real service.
+
+### UI checks
+
+`make check-ui` runs Playwright against the local stack: local Supabase, the backend (`make dev` in `~/SAGE`) and this worktree's frontend on `PORT`, 3000 by default, which Playwright starts if it isn't running. If Supabase or the backend isn't running, it stops with one plain line saying which. The first run downloads Playwright's Chromium.
+
+CI never runs it. It needs that stack, and screenshots differ between operating systems, so the parity images are compared by eye on my Mac. CI still type-checks and lints every spec and helper through `make check`.
+
+- **Projects.** Light and dark, at 1280 by 820. A setup project signs Mbali in once per run with `make sign-in`'s link, and keeps her session in the git-ignored `frontend/e2e/.auth/`.
+- **Made-up visitors.** Staff, an account from outside UCT and a student who hasn't finished setup are Mbali's session with a made-up answer from `GET /v1/me`, built from `api-types.ts`. So no check resets a real account, as every worktree runs these checks against one local database.
+- **Helpers**, in `frontend/e2e/`:
+  - `axe.ts` runs axe-core with the audit's tags: wcag2a, wcag2aa, wcag21a, wcag21aa and wcag22aa. The bar is zero violations.
+  - `keyboard.ts` tabs through a page and checks that every stop shows the focus ring. It returns the stops in order.
+  - `parity.ts` drives a prototype to a state through its own controls and writes it beside React.
+  - `visitors.ts` holds the made-up visitors and the `freshStudent` fixture.
+- **Specs.** They end `.spec.ts` and sit in feature folders beside the Vitest tests, which end `.test.ts`, so neither runner loads the other's files. `src/app/routes.spec.ts` checks every page in the route table, as its visitor, with axe and the keyboard walk.
+- **Parity images.** Each feature keeps its cases in its own folder. The images land in `frontend/parity/<feature>/<case>-<theme>.png`, with `-hover` for the hover state. Where a prototype has no dark design, the dark image shows React alone.
+- **The fresh account.** `make sign-in-new` deletes and signs in again Ilvane Qorthu (QRTILV999), a made-up student who hasn't finished setup, and `make transcript` writes `local/transcript.pdf` with her student number. A spec that goes through onboarding asks for the `freshStudent` fixture, which runs `make sign-in-new`, in a file whose tests run one at a time. Nothing else in `make check-ui` touches her account.
 
 ## How strong the tests are
 
