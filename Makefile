@@ -46,7 +46,7 @@ check: check-backend check-frontend check-contract
 check-backend: lint test
 
 check-frontend:
-	@cd frontend && npm run lint && npm test --if-present && npm run build
+	@cd frontend && npm run lint && npm test && npm run build
 
 # The frontend's types for every request and response, generated from the backend's OpenAPI schema.
 # The schema goes to a temporary file, so only api-types.ts is ever committed.
@@ -106,7 +106,7 @@ mutation:
 		trap 'rm -rf data "$$SAGE_TEST_TEMP"; rm -f experiments' EXIT && \
 		uv run --group mutation mutmut run && \
 		uv run --group mutation mutmut export-cicd-stats > /dev/null && \
-		uv run python scripts/mutation_score.py | tee mutation-score.txt
+		score=$$(uv run python scripts/mutation_score.py) && echo "$$score" | tee mutation-score.txt
 
 # The 26 planted faults, each in a copy of the backend, and the test that caught it, if any: the 24
 # from my test review, and two in the review and approval. About five minutes.
