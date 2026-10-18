@@ -11,7 +11,7 @@ from httpx2 import Response
 
 from sage.shared.seed import load_seed
 from sage.shared.students import StudentState
-from tests.unit.api.accounts import MBALI
+from tests.unit.accounts import MBALI
 
 PUBLIC = {"GET /health"}
 # Who she is, which tells the frontend where to send her, and setup itself

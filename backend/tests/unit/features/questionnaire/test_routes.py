@@ -3,7 +3,7 @@
 import pytest
 
 from sage.shared.rules import TimetableSlotCurriculum
-from tests.unit.api.accounts import MBALI
+from tests.unit.accounts import MBALI
 
 
 @pytest.fixture

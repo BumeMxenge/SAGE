@@ -8,7 +8,7 @@ import pytest
 from sage.shared.advisor import Reply
 from sage.shared.api import deps
 from sage.shared.students import Chat, Citation, Plan, PlanSet
-from tests.unit.api.accounts import MBALI
+from tests.unit.accounts import MBALI
 
 QUESTION = {"content": "Which plan has the lighter Fridays?", "term": "sem1"}
 CITATION = Citation(

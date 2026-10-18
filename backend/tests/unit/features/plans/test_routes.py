@@ -1,7 +1,7 @@
 # Checks the planner's plan reads on Mbali's seeded set: what the set shows, each plan in full, and a
 # comparison, which needs both plans to be hers. Her other plans and chats are guarded in
 # test_guards.py.
-from tests.unit.api.accounts import MBALI
+from tests.unit.accounts import MBALI
 
 
 def test_her_set_has_10_plans_and_7_still_visible(mbali):
@@ -59,7 +59,7 @@ def test_a_plan_shows_each_courses_groups_and_meetings(mbali, plan_ids):
 def test_her_plan_shows_the_meetings_only_her_curriculum_has(mbali, plan_ids):
     # EEE4120F's Thursday 16:00 meeting is printed on her EB011 sheet (F61:F62) but not on EB022's,
     # so it's linked to the Mechatronics curricula, and plan 3 shows it as the route hands the filter
-    # her curriculum. The filter itself is tested in tests/unit/services/test_plans.py.
+    # her curriculum. The filter itself is tested in tests/unit/features/plans/test_service.py.
     courses = {
         course["code"]: course
         for course in mbali.get(f"/v1/plans/{plan_ids[3]}").json()["courses"]

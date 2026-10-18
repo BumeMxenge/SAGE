@@ -4,7 +4,7 @@
 # for M3's categories.
 import pytest
 
-from tests.unit.api.accounts import MBALI
+from tests.unit.accounts import MBALI
 
 
 def electives(mbali) -> dict[str, dict]:
