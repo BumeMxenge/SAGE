@@ -28,6 +28,8 @@ import CloudUpload from '@material-symbols/svg-400/rounded/cloud_upload.svg?reac
 import CloudOff from '@material-symbols/svg-400/rounded/cloud_off.svg?react'
 import WifiOff from '@material-symbols/svg-400/rounded/wifi_off.svg?react'
 import Lock from '@material-symbols/svg-400/rounded/lock.svg?react'
+import Info from '@material-symbols/svg-400/rounded/info.svg?react'
+import ArrowDownward from '@material-symbols/svg-400/rounded/arrow_downward.svg?react'
 import FavoriteFilled from '@material-symbols/svg-400/rounded/favorite-fill.svg?react'
 export const icons = {
   // Planner: Collapse Panel on the open sidebar, and Open Sidebar on the logo of the collapsed one
@@ -68,7 +70,7 @@ export const icons = {
   // Clear Search. Error sheet: a failed step, and the toast's close.
   close: Close,
   // Planner: a chosen questionnaire chip. Onboarding: the review step's checkbox tick (drawn in CSS
-  // there; approved difference 38). Error sheet: a done step.
+  // there; approved difference 2) and Account Created's tick. Error sheet: a done step.
   check: Check,
   // Planner: the electives search. Error sheet: the search in "Electives catalogue busy".
   // Loading sheet: the electives search.
@@ -92,6 +94,11 @@ export const icons = {
   wifi_off: WifiOff,
   // Error sheet: the "Session expired" dialog
   lock: Lock,
+  // Onboarding: each note the transcript's reading sends with it, on the review step (new design,
+  // approved difference 12)
+  info: Info,
+  // Onboarding: the first sign-in highlight, between the two clashing classes and the two that work
+  arrow_downward: ArrowDownward,
 }
 
 export type IconName = keyof typeof icons
