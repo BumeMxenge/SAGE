@@ -61,10 +61,9 @@ skip_covered = true
 [tool.mutmut]
 source_paths = ["src"]
 only_mutate = [
-    "src/sage/api/*",
     "src/sage/engine/*",
+    "src/sage/features/*",
     "src/sage/ingestion/*",
-    "src/sage/services/*",
     "src/sage/shared/*",
 ]
 # The outside services' adapters and the fakes stay out, as only the integration tests check them

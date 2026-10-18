@@ -7,7 +7,7 @@ from datetime import time
 from typing import Any, Literal
 from uuid import UUID
 
-from sage.services import plans
+from sage.features.plans import service as plans
 from sage.shared.base import Row
 from sage.shared.errors import (
     NoPlanMatches,

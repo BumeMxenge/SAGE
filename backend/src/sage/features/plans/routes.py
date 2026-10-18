@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter
 
-from sage.services import plans
+from sage.features.plans import service as plans
 from sage.shared.api.deps import ONBOARDED_ERRORS, Onboarded, Rules, Students
 from sage.shared.api.models import (
     Comparison,

@@ -8,18 +8,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from sage.api.routes import (
-    chats,
-    electives,
-    health,
-    history,
-    me,
-    onboarding,
-    plans,
-    questionnaire,
-)
 from sage.config import get_settings
 from sage.engine.stubs import FixedAdvisor, InterimEligibility, SeededPlanGenerator
+from sage.features.accounts import routes as accounts
+from sage.features.chats import routes as chats
+from sage.features.electives import routes as electives
+from sage.features.health import routes as health
+from sage.features.history import routes as history
+from sage.features.onboarding import routes as onboarding
+from sage.features.plans import routes as plans
+from sage.features.questionnaire import routes as questionnaire
 from sage.shared.api import problems
 from sage.shared.errors import InternalError
 from sage.shared.rulebook import Rulebook
@@ -95,7 +93,7 @@ def create_app() -> FastAPI:
 
     # /health stays at the root, where Azure checks it. Everything a student uses is versioned.
     app.include_router(health.router)
-    for area in (me, onboarding, plans, questionnaire, electives, history, chats):
+    for area in (accounts, onboarding, plans, questionnaire, electives, history, chats):
         app.include_router(area.router, prefix="/v1")
     return app
 

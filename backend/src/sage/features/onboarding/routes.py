@@ -3,8 +3,8 @@
 from fastapi import APIRouter, Depends, Request
 from starlette.concurrency import run_in_threadpool
 
-from sage.api.routes.me import me
-from sage.services import onboarding
+from sage.features.accounts.routes import me
+from sage.features.onboarding import service as onboarding
 from sage.shared.api.deps import (
     STUDENT_ERRORS,
     Generator,

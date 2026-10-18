@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter
 
-from sage.services import chats
+from sage.features.chats import service as chats
 from sage.shared import students as domain
 from sage.shared.api.deps import ONBOARDED_ERRORS, ChatAdvisor, Onboarded, Students
 from sage.shared.api.models import (

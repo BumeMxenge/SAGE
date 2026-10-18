@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from fastapi import APIRouter
 
-from sage.services import history
+from sage.features.history import service as history
 from sage.shared.api.deps import ONBOARDED_ERRORS, Onboarded, Students
 from sage.shared.api.models import History, HistoryLine, HistoryYear
 from sage.shared.api.problems import errors

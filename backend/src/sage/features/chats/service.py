@@ -2,7 +2,7 @@
 # opens while the questionnaire is still waiting to narrow her set.
 from uuid import UUID, uuid4
 
-from sage.services import plans
+from sage.features.plans import service as plans
 from sage.shared.advisor import Advisor
 from sage.shared.errors import (
     ChatNotFound,

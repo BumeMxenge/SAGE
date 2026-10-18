@@ -6,8 +6,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from sage.features.questionnaire.service import QuestionId
 from sage.ingestion.transcript import WarningCode
-from sage.services.questionnaire import QuestionId
 from sage.shared.electives import ElectiveTab
 from sage.shared.planning import EligibilityStatus
 from sage.shared.rules import COURSE_CODE, Outcome, TermCode

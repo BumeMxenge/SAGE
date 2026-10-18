@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from sage.services import plans
+from sage.features.plans import service as plans
 from sage.shared.rules import RuleSet, TimetableSlot, TimetableSlotCurriculum
 from sage.shared.students import Plan, PlanCourse, PlanSet, PlanSetRows
 

@@ -1,7 +1,7 @@
 # Explore Electives and hearting: the courses she can add, by tab, and her favourites
 from fastapi import APIRouter
 
-from sage.services import electives
+from sage.features.electives import service as electives
 from sage.shared.api.deps import ONBOARDED_ERRORS, Checker, Onboarded, Rules, Students
 from sage.shared.api.models import Elective, Electives, Eligibility, Tab
 from sage.shared.api.problems import errors

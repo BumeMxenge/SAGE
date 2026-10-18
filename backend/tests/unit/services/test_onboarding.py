@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from sage.services import onboarding
+from sage.features.onboarding import service as onboarding
 from sage.shared.memory.rules import InMemoryRuleRepository
 from sage.shared.memory.students import InMemoryStudentRepository
 from sage.shared.rulebook import Rulebook
