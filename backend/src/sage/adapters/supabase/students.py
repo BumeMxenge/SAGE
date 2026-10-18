@@ -9,7 +9,13 @@ from uuid import UUID
 from postgrest import APIError, ReturnMethod
 from supabase import Client
 
-from sage.adapters.supabase.tables import columns, insert, row_type, select
+from sage.adapters.supabase.tables import (
+    FOREIGN_KEY_VIOLATION,
+    columns,
+    insert,
+    row_type,
+    select,
+)
 from sage.domain.repositories import AccountNotFound
 from sage.domain.students import (
     Chat,
@@ -28,8 +34,6 @@ from sage.domain.students import (
     StudentState,
     message_citations,
 )
-
-FOREIGN_KEY_VIOLATION = "23503"
 
 # The columns each table is read in order of, in the foreign-key order StudentState lists them.
 # Messages come back in the order they were written.

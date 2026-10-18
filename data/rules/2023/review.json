@@ -1,0 +1,1184 @@
+{
+  "sittings": [
+    {
+      "start": "2026-10-18T00:38:35+02:00",
+      "end": "2026-10-18T00:54:39+02:00",
+      "decided": 3
+    },
+    {
+      "start": "2026-10-18T00:56:40+02:00",
+      "end": "2026-10-18T01:26:42+02:00",
+      "decided": 30
+    },
+    {
+      "start": "2026-10-18T01:52:29+02:00",
+      "end": "2026-10-18T01:52:34+02:00",
+      "decided": 1
+    }
+  ],
+  "rows": [
+    {
+      "id": "requirement/MAM1020F",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/MAM1020F": "p. 184"
+      },
+      "printed": "A pass in NSC Mathematics with at least 70%, or at least a D symbol at A-level.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "A pass in NSC Mathematics with at least 70%, or at least a D symbol at A-level."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "53a54eceaaca"
+    },
+    {
+      "id": "requirement/CSC1015F",
+      "causes": [
+        "refused_school_result"
+      ],
+      "covers": {
+        "courses/CSC1015F": "p. 175"
+      },
+      "printed": "At least 70% for NSC Mathematics. Students registered for this course will be assessed in week 5; if it is judged that they are not coping with the level and pace of the course, and would benefit from an opportunity to strengthen foundational concepts and learn new material at a slower pace, they will be required to transfer to CSC1010H from week 7.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "At least 70% for NSC Mathematics."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "f695c59b4ebb"
+    },
+    {
+      "id": "requirement/ASL1200S",
+      "causes": [
+        "refused_programme"
+      ],
+      "covers": {
+        "courses/ASL1200S": "p. 167"
+      },
+      "printed": "This course is for non-Humanities students only and does not count towards Humanities degrees.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "This course is for non-Humanities students only and does not count towards Humanities degrees."
+      },
+      "mark": null,
+      "decision": "correct",
+      "corrected": {
+        "refer": "This course is for non-Humanities students only"
+      },
+      "note": null,
+      "fingerprint": "b98fe90170a7"
+    },
+    {
+      "id": "requirement/CML4607F",
+      "causes": [
+        "refused_programme"
+      ],
+      "covers": {
+        "courses/CML4607F": "p. 170"
+      },
+      "printed": "This course is only available to BSc(Eng) Electrical Engineering; BSc(Eng) Electrical and Computer Engineering and BSc(Eng) Mechatronics students.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "student_in": [
+          "EB009EEE01",
+          "EB011EEE05",
+          "EB022EEE02",
+          "EB809EEE01",
+          "EB811EEE05",
+          "EB822EEE02"
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "80e5682bcbb5"
+    },
+    {
+      "id": "requirement/HUB4045F",
+      "causes": [
+        "refused_year_of_study"
+      ],
+      "covers": {
+        "courses/HUB4045F": "p. 166"
+      },
+      "printed": "Students must be in their fourth year of study.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "min_year_of_study": 4
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "e2e764fc883b"
+    },
+    {
+      "id": "requirement/CSC1016S",
+      "causes": [
+        "refused_mark_threshold"
+      ],
+      "covers": {
+        "courses/CSC1016S": "p. 175"
+      },
+      "printed": "CSC1015F (At least 45% for CSC1015F or at least 70% for CSC1017F)",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "course": "CSC1015F",
+            "need": "mark",
+            "min_mark": 45
+          },
+          {
+            "course": "CSC1017F",
+            "need": "mark",
+            "min_mark": 70
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "0dbd9d4263f8"
+    },
+    {
+      "id": "requirement/CSC2002S",
+      "causes": [
+        "refused_mark_threshold"
+      ],
+      "covers": {
+        "courses/CSC2002S": "p. 177"
+      },
+      "printed": "CSC2001F (At least 45% for CSC2001F)",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course": "CSC2001F",
+        "need": "mark",
+        "min_mark": 45
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "365193a29fe7"
+    },
+    {
+      "id": "requirement/CSC3003S",
+      "causes": [
+        "refused_or_equivalent",
+        "check_failed"
+      ],
+      "covers": {
+        "courses/CSC3003S": "p. 178"
+      },
+      "printed": "CSC2001F, CSC2002S and ((MAM1004F+MAM1008S) or (MAM1000W) or (both MAM1031F & MAM1032S (or equivalent)), and either INF2009F or permission from the Head of Department to do compensation work to a satisfactory standard. CSC2004Z is required if CSC2002S was passed after 2017.",
+      "failures": [
+        "p. 178: CSC3003S's rule names MAM1000W, which isn't loaded, printed or equivalent",
+        "p. 178: CSC3003S's rule names MAM1004F, which isn't loaded, printed or equivalent",
+        "p. 178: CSC3003S's rule names MAM1008S, which isn't loaded, printed or equivalent",
+        "p. 178: CSC3003S's rule names MAM1031F, which isn't loaded, printed or equivalent",
+        "p. 178: CSC3003S's rule names MAM1032S, which isn't loaded, printed or equivalent"
+      ],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "course": "MAM1004F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1008S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "course": "MAM1031F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1032S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "course": "MAM1000W",
+                "need": "pass"
+              },
+              {
+                "refer": "or equivalent"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "INF2009F",
+                "need": "pass"
+              },
+              {
+                "refer": "permission from the Head of Department to do compensation work to a satisfactory standard"
+              }
+            ]
+          },
+          {
+            "course": "CSC2001F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2002S",
+            "need": "pass"
+          },
+          {
+            "refer": "CSC2004Z is required if CSC2002S was passed after 2017."
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": "MAM1000W, MAM1004F, MAM1008S, MAM1031F and MAM1032S are Science maths courses with no EBE entry. Kept as printed: a student who passed them meets the rule.",
+      "fingerprint": "f514187d4825"
+    },
+    {
+      "id": "requirement/CSC3002F",
+      "causes": [
+        "refused_or_equivalent",
+        "check_failed"
+      ],
+      "covers": {
+        "courses/CSC3002F": "p. 178"
+      },
+      "printed": "CSC2001F, CSC2002S and ((MAM1004F+MAM1008S) or (MAM1000W) or (both MAM1031F & MAM1032S (or equivalent)). CSC2004Z is required if CSC2002S was passed after 2017.",
+      "failures": [
+        "p. 178: CSC3002F's rule names MAM1000W, which isn't loaded, printed or equivalent",
+        "p. 178: CSC3002F's rule names MAM1004F, which isn't loaded, printed or equivalent",
+        "p. 178: CSC3002F's rule names MAM1008S, which isn't loaded, printed or equivalent",
+        "p. 178: CSC3002F's rule names MAM1031F, which isn't loaded, printed or equivalent",
+        "p. 178: CSC3002F's rule names MAM1032S, which isn't loaded, printed or equivalent"
+      ],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "course": "MAM1004F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1008S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "course": "MAM1031F",
+                    "need": "pass"
+                  },
+                  {
+                    "course": "MAM1032S",
+                    "need": "pass"
+                  }
+                ]
+              },
+              {
+                "course": "MAM1000W",
+                "need": "pass"
+              },
+              {
+                "refer": "or equivalent"
+              }
+            ]
+          },
+          {
+            "course": "CSC2001F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2002S",
+            "need": "pass"
+          },
+          {
+            "refer": "CSC2004Z is required if CSC2002S was passed after 2017."
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": "MAM1000W, MAM1004F, MAM1008S, MAM1031F and MAM1032S are Science maths courses with no EBE entry. Kept as printed: a student who passed them meets the rule.",
+      "fingerprint": "6c572608b43a"
+    },
+    {
+      "id": "requirement/PHY1015S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/PHY1015S": "p. 192"
+      },
+      "printed": "PHY1014F/S or PHY1012F/S. Co-requisites: MAM1020F/S or MAM1023F/S, or equivalent",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "MAM1020F",
+                "need": "concurrent"
+              },
+              {
+                "course": "MAM1020S",
+                "need": "concurrent"
+              },
+              {
+                "course": "MAM1023F",
+                "need": "concurrent"
+              },
+              {
+                "course": "MAM1023S",
+                "need": "concurrent"
+              },
+              {
+                "refer": "or equivalent"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "PHY1012F",
+                "need": "pass"
+              },
+              {
+                "course": "PHY1012S",
+                "need": "pass"
+              },
+              {
+                "course": "PHY1014F",
+                "need": "pass"
+              },
+              {
+                "course": "PHY1014S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "ed0f0c383f56"
+    },
+    {
+      "id": "requirement/PHY1013S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/PHY1013S": "p. 190"
+      },
+      "printed": "PHY1012F/S or PHY1014F/S Co-requisites: MAM1020F (or equivalent)",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "MAM1020F",
+                "need": "concurrent"
+              },
+              {
+                "refer": "or equivalent"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "PHY1012F",
+                "need": "pass"
+              },
+              {
+                "course": "PHY1012S",
+                "need": "pass"
+              },
+              {
+                "course": "PHY1014F",
+                "need": "pass"
+              },
+              {
+                "course": "PHY1014S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "fb6a98879554"
+    },
+    {
+      "id": "requirement/PHY1014F",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/PHY1014F": "p. 190"
+      },
+      "printed": "Co-requisites: MAM1020F/S or MAM1023F/S, or equivalent",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "course": "MAM1020F",
+            "need": "concurrent"
+          },
+          {
+            "course": "MAM1020S",
+            "need": "concurrent"
+          },
+          {
+            "course": "MAM1023F",
+            "need": "concurrent"
+          },
+          {
+            "course": "MAM1023S",
+            "need": "concurrent"
+          },
+          {
+            "refer": "or equivalent"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "97acab38cd5e"
+    },
+    {
+      "id": "requirement/MAM2084S",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/MAM2084S": "p. 188"
+      },
+      "printed": "MAM1021F/S or equivalent.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "course": "MAM1021F",
+            "need": "pass"
+          },
+          {
+            "course": "MAM1021S",
+            "need": "pass"
+          },
+          {
+            "refer": "or equivalent"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "b1044f6ff88e"
+    },
+    {
+      "id": "requirement/PHY1012F",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/PHY1012F": "p. 189"
+      },
+      "printed": "Co-requisites: MAM1020F (or equivalent)",
+      "failures": [],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "course": "MAM1020F",
+            "need": "concurrent"
+          },
+          {
+            "refer": "or equivalent"
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "70a31c3d461d"
+    },
+    {
+      "id": "requirement/MAM2083F",
+      "causes": [
+        "refused_or_equivalent"
+      ],
+      "covers": {
+        "courses/MAM2083F": "p. 186"
+      },
+      "printed": "MAM1020 or equivalent and MAM1021 or equivalent.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "MAM1020 or equivalent and MAM1021 or equivalent."
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "6f6f34a705ca"
+    },
+    {
+      "id": "requirement/MAM2085F",
+      "causes": [
+        "refused_code_without_term"
+      ],
+      "covers": {
+        "courses/MAM2085F": "p. 188"
+      },
+      "printed": "MAM1023 and MAM1024",
+      "failures": [],
+      "old": {},
+      "new": {
+        "refer": "MAM1023 and MAM1024"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "35ca547f5098"
+    },
+    {
+      "id": "rule/EB022EEE02/3",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB022EEE02/3": "p. 51"
+      },
+      "printed": "Note: (i) All three elective 3rd year core courses can be taken; however, but then the complementary studies elective should then be taken in the winter or summer term. (ii) If an EC student wants to take any CSC3xxx course, they must also register for and pass CSC2004Z Programming Assessment.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB022EEE02-y3-core"
+          },
+          {
+            "choose": 2,
+            "from_group": "EB022EEE02-y3-group-1"
+          },
+          {
+            "credits": 18,
+            "from_groups": [
+              "complementary"
+            ]
+          },
+          {
+            "total_credits": 154
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "1f95f946ca9b"
+    },
+    {
+      "id": "rule/EB822EEE02/4",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB822EEE02/4": "pp. 53-54"
+      },
+      "printed": "Note: (i) All three elective 3rd year core courses can be taken, but then the complementary studies elective must be taken in the winter or summer term. (ii) If an EC student wants to take any CSC3xxx courses, they must also register for and pass CSC2004Z Programming Assessment.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB822EEE02-y4-core"
+          },
+          {
+            "choose": 2,
+            "from_group": "EB822EEE02-y4-group-1"
+          },
+          {
+            "total_credits": 122
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "04a5f924ee01"
+    },
+    {
+      "id": "rule/EB822EEE02/3",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB822EEE02/3": "p. 53"
+      },
+      "printed": "*ASL1200S may be replaced with an approved humanities course of at least 8 credits timetable permitting",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB822EEE02-y3-core"
+          },
+          {
+            "credits": 18,
+            "from_groups": [
+              "complementary"
+            ]
+          },
+          {
+            "total_credits": 122
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "3831ef9ac0f3"
+    },
+    {
+      "id": "rule/EB009EEE01/1",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB009EEE01/1": "p. 46"
+      },
+      "printed": "*ASL1200S may be replaced with an approved humanities course of at least 8 credits timetable permitting",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB009EEE01-y1-core"
+          },
+          {
+            "total_credits": 148
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "34d14676f0d6"
+    },
+    {
+      "id": "rule/EB011EEE05/1",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB011EEE05/1": "p. 55"
+      },
+      "printed": "*ASL1200S may be replaced with an approved humanities course of at least 8 credits timetable permitting",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB011EEE05-y1-core"
+          },
+          {
+            "total_credits": 148
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "2dfea7196daf"
+    },
+    {
+      "id": "rule/EB022EEE02/1",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB022EEE02/1": "pp. 50-51"
+      },
+      "printed": "*ASL1200S may be replaced with an approved humanities course of at least 8 credits timetable permitting",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB022EEE02-y1-core"
+          },
+          {
+            "total_credits": 148
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "21106a9f0be3"
+    },
+    {
+      "id": "rule/EB809EEE01/3",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB809EEE01/3": "p. 49"
+      },
+      "printed": "*ASL1200S may be replaced with an approved humanities course of at least 8 credits timetable permitting",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB809EEE01-y3-core"
+          },
+          {
+            "total_credits": 112
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "4ccdfe272247"
+    },
+    {
+      "id": "rule/EB811EEE05/3",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "curriculum_rules/EB811EEE05/3": "pp. 57-58"
+      },
+      "printed": "*ASL1200S may be replaced with an approved humanities course of at least 8 credits timetable permitting",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "all_of_group": "EB811EEE05-y3-core"
+          },
+          {
+            "total_credits": 112
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "948c8eb3c13e"
+    },
+    {
+      "id": "requirement/CSC3023F",
+      "causes": [
+        "refused_free_text"
+      ],
+      "covers": {
+        "courses/CSC3023F": "p. 179"
+      },
+      "printed": "CSC2001F, CSC2002S. CSC2004Z is required if CSC2002S was passed after 2017.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "course": "CSC2001F",
+            "need": "pass"
+          },
+          {
+            "course": "CSC2002S",
+            "need": "pass"
+          },
+          {
+            "refer": "CSC2004Z is required if CSC2002S was passed after 2017."
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "e775c96524bc"
+    },
+    {
+      "id": "requirement/PHY2010S",
+      "causes": [
+        "refused_punctuation"
+      ],
+      "covers": {
+        "courses/PHY2010S": "p. 193"
+      },
+      "printed": "PHY1012F/S and PHY1013F/S; or PHY1014F/S and PHY1015F/S. MAM2083F/S. Co-requisites: MAM2084F/S.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1012F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1012S",
+                        "need": "pass"
+                      }
+                    ]
+                  },
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1013F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1013S",
+                        "need": "pass"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1014F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1014S",
+                        "need": "pass"
+                      }
+                    ]
+                  },
+                  {
+                    "any": [
+                      {
+                        "course": "PHY1015F",
+                        "need": "pass"
+                      },
+                      {
+                        "course": "PHY1015S",
+                        "need": "pass"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "MAM2083F",
+                "need": "pass"
+              },
+              {
+                "course": "MAM2083S",
+                "need": "pass"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "MAM2084F",
+                "need": "concurrent"
+              },
+              {
+                "course": "MAM2084S",
+                "need": "concurrent"
+              }
+            ]
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "51e41807b1b7"
+    },
+    {
+      "id": "requirement/MEC2045S",
+      "causes": [
+        "refused_mixed_and_or",
+        "check_failed"
+      ],
+      "covers": {
+        "courses/MEC2045S": "p. 147"
+      },
+      "printed": "MEC1009F/S and MEC2023F/S or MEC2047F/S",
+      "failures": [
+        "p. 147: MEC2045S's rule names MEC2023F, which isn't loaded, printed or equivalent",
+        "p. 147: MEC2045S's rule names MEC2023S, which isn't loaded, printed or equivalent"
+      ],
+      "old": {},
+      "new": {
+        "all": [
+          {
+            "any": [
+              {
+                "course": "MEC1009F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC1009S",
+                "need": "pass"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "course": "MEC2023F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2023S",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2047F",
+                "need": "pass"
+              },
+              {
+                "course": "MEC2047S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": "MEC2023F/S has no entry in the 2023 handbook, most likely the code MEC2047F/S replaced. Kept as printed: a student who passed it meets the rule.",
+      "fingerprint": "ad5c8790b30b"
+    },
+    {
+      "id": "equivalence/PHY1014F/PHY1012F",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/PHY1014F/PHY1012F": "2023: 55, 57, 148"
+      },
+      "printed": "The 5-year Mechatronics curriculum lists PHY1014F where the 4-year one lists PHY1012F, both 18 credits. MEC2047F's requirement names PHY1012F/S, which 5-year Mechatronics students take as PHY1014F.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "PHY1014F",
+        "counts_as": "PHY1012F"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "5cce0aab9bb1"
+    },
+    {
+      "id": "equivalence/MAM1020F/MAM1023F",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/MAM1020F/MAM1023F": "2023: 46, 48, 188"
+      },
+      "printed": "The 5-year curricula list MAM1023F where the 4-year curricula list MAM1020F, both 18 credits. A student who changes to the 5-year curriculum after the first semester's exams holds MAM1020F, and the 5-year curriculum and MAM2085F's requirement name MAM1023.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "MAM1020F",
+        "counts_as": "MAM1023F"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "8870e7d36b8d"
+    },
+    {
+      "id": "equivalence/MAM1024S/MAM1021S",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/MAM1024S/MAM1021S": "2023: 46, 48, 148, 188"
+      },
+      "printed": "The 5-year curricula list MAM1024S where the 4-year curricula list MAM1021S, both 18 credits. MAM2084S's and MEC2047F's requirements name MAM1021F/S, which 5-year students take as MAM1024S.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "MAM1024S",
+        "counts_as": "MAM1021S"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "ce31848a983b"
+    },
+    {
+      "id": "equivalence/MAM2085F/MAM2083F",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/MAM2085F/MAM2083F": "2023: 46, 48, 132, 134, 193"
+      },
+      "printed": "The 5-year curricula list MAM2085F where the 4-year curricula list MAM2083F, both 16 credits. EEE3089F's, EEE3092F's and PHY2010S's requirements name MAM2083F/S, which 5-year students take as MAM2085F.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "MAM2085F",
+        "counts_as": "MAM2083F"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "5da4fb6c0775"
+    },
+    {
+      "id": "equivalence/PHY1012F/PHY1014F",
+      "causes": [
+        "not_printed"
+      ],
+      "covers": {
+        "equivalences/PHY1012F/PHY1014F": "2023: 46, 48"
+      },
+      "printed": "The 5-year curricula list PHY1014F where the 4-year curricula list PHY1012F, both 18 credits. A student who changes to the 5-year curriculum after the first semester's exams holds PHY1012F, and the 5-year curriculum names PHY1014F.",
+      "failures": [],
+      "old": {},
+      "new": {
+        "course_code": "PHY1012F",
+        "counts_as": "PHY1014F"
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": null,
+      "fingerprint": "ee8fe49ce85d"
+    },
+    {
+      "id": "requirement/CSC2001F",
+      "causes": [
+        "check_failed"
+      ],
+      "covers": {
+        "courses/CSC2001F": "p. 176",
+        "courses/CSC2004Z": "p. 177"
+      },
+      "printed": "(CSC1015F and CSC1016S) or (CSC1010H and CSC1011H)",
+      "failures": [
+        "p. 176: CSC2001F's rule names CSC1010H, which isn't loaded, printed or equivalent",
+        "p. 176: CSC2001F's rule names CSC1011H, which isn't loaded, printed or equivalent",
+        "p. 177: CSC2004Z's rule names CSC1010H, which isn't loaded, printed or equivalent",
+        "p. 177: CSC2004Z's rule names CSC1011H, which isn't loaded, printed or equivalent"
+      ],
+      "old": {},
+      "new": {
+        "any": [
+          {
+            "all": [
+              {
+                "course": "CSC1010H",
+                "need": "pass"
+              },
+              {
+                "course": "CSC1011H",
+                "need": "pass"
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "course": "CSC1015F",
+                "need": "pass"
+              },
+              {
+                "course": "CSC1016S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      },
+      "mark": null,
+      "decision": "accept",
+      "corrected": null,
+      "note": "CSC1010H and CSC1011H are Science courses with no EBE entry. Kept as printed: a student who passed them meets the rule.",
+      "fingerprint": "ee5e3c4ba404"
+    }
+  ]
+}

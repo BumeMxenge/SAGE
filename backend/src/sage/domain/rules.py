@@ -2,6 +2,7 @@
 # rule on these rows except the elective tab, the delta flag and the shape of each rule tree, which
 # only the backend checks.
 from datetime import time
+from functools import partial
 from typing import Annotated, Any, Literal, Self
 from uuid import UUID
 
@@ -21,6 +22,9 @@ from sage.domain.electives import ElectiveTab
 TermCode = Literal[
     "q1", "q2", "q3", "q4", "sem1", "sem2", "full_year", "winter", "summer", "other"
 ]
+# A course code in the handbook's eight-character format, as courses.code's check in the
+# rule-tables migration gives it, such as EEE4117F
+COURSE_CODE = r"[A-Z]{3}[0-9]{4}[A-Z]"
 # The handbook's course-code suffix key, as the rule-tables migration gives it: A to D are quarters,
 # F and S semesters, H and W the whole year, L winter, U, J and P summer, and M, X and Z other
 TERM_BY_SUFFIX: dict[str, TermCode] = {
@@ -81,6 +85,24 @@ def _in_order[T: Row](children: tuple[T, ...]) -> tuple[T, ...]:
     return tuple(sorted(children, key=lambda child: child.model_dump_json()))
 
 
+def _joined[T: Row](kind: str, children: tuple[T, ...]) -> tuple[T, ...]:
+    # Nor do they depend on grouping: an all inside an all holds when its parts do, so its parts
+    # join the outer one (E2's prompt.md, rule 10). Joining a requirement to a co-requisite nests
+    # them, and a model may group by habit; flat, the same rule is the same tree however it was put
+    # together. Each inner node was joined when it was validated, so one level is enough.
+    return _in_order(
+        tuple(part for child in children for part in getattr(child, kind, (child,)))
+    )
+
+
+def _only_child(node: Row) -> Row:
+    # An all or an any with one child holds when that child does, so it is that child (E2's prompt.md,
+    # rule 10). It runs on the union, as a model can't turn into another model. Each child was
+    # unwrapped when it was validated, so a node left with one child here is the last to unwrap.
+    children = getattr(node, "all", None) or getattr(node, "any", None) or ()
+    return children[0] if len(children) == 1 else node
+
+
 # Codes or group keys whose printed order means nothing, kept sorted for the same reason
 SortedNames = Annotated[
     tuple[str, ...], AfterValidator(lambda names: tuple(sorted(names)))
@@ -89,13 +111,17 @@ SortedNames = Annotated[
 
 class AllOf(Row):
     all: Annotated[
-        tuple["EntryRule", ...], Field(min_length=1), AfterValidator(_in_order)
+        tuple["EntryRule", ...],
+        Field(min_length=1),
+        AfterValidator(partial(_joined, "all")),
     ]
 
 
 class AnyOf(Row):
     any: Annotated[
-        tuple["EntryRule", ...], Field(min_length=1), AfterValidator(_in_order)
+        tuple["EntryRule", ...],
+        Field(min_length=1),
+        AfterValidator(partial(_joined, "any")),
     ]
 
 
@@ -139,6 +165,7 @@ EntryRule = Annotated[
     | Annotated[MinYearOfStudy, Tag("min_year_of_study")]
     | Annotated[Refer, Tag("refer")],
     Discriminator(_node_key),
+    AfterValidator(_only_child),
 ]
 AllOf.model_rebuild()
 AnyOf.model_rebuild()
@@ -286,9 +313,20 @@ DeltaFlag = (
 )
 
 
+# The tables a change can be in, as handbook_deltas.entity's check in the rule-tables migration allows
+DeltaTable = Literal[
+    "curricula",
+    "curriculum_rules",
+    "courses",
+    "course_groups",
+    "course_group_members",
+    "equivalences",
+]
+
+
 class HandbookDelta(Row):
     handbook_year: int
-    entity: str
+    entity: DeltaTable
     entity_key: str
     old_value: JsonValue = None
     new_value: JsonValue = None

@@ -18,7 +18,7 @@ sha256 = "caf79a53f82b5657e8022febc9f903c66ab56955b2a1f2bf9ced2412499a969f"
 # The prose cut into passages, besides every course entry and curriculum table in scope: each
 # section by its printed heading and pages. The department's staff list isn't among them.
 [[handbook.passages]]
-section = "Term dates"
+section = "Term Dates for 2023"
 pages = [11, 11]
 
 [[handbook.passages]]
@@ -50,14 +50,21 @@ pages = [13, 13]
 section = "Rules for Undergraduate Degrees"
 pages = [14, 18]
 
-# The department's programmes: each curriculum's introduction and notes, and the transferee access
+# The department's programmes: each curriculum's introduction and tables, then the access route
+# for transferees. Each ends partway down its last page, at the heading named by until.
 [[handbook.passages]]
 section = "Electrical Engineering"
 pages = [46, 59]
+until = "Access for University of Technology Transferees"
+
+[[handbook.passages]]
+section = "Access for University of Technology Transferees"
+pages = [59, 59]
+until = "Mechanical Engineering"
 
 [[handbook.passages]]
 section = "The ASPECT Programme"
-pages = [67, 67]
+pages = [67, 68]
 
 # Drafted from the 2023 handbook alone. No handbook says "counts as" outright, so every row is
 # flagged not_printed for review.

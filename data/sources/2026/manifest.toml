@@ -18,7 +18,7 @@ sha256 = "796ffd0b5754995b8c875e2cc8912fdda818077fb8c035f2f8d1fb42a26e2e9f"
 # The prose cut into passages, besides every course entry and curriculum table in scope: each
 # section by its printed heading and pages. The department's staff list isn't among them.
 [[handbook.passages]]
-section = "Term dates"
+section = "Term Dates for 2026"
 pages = [10, 10]
 
 [[handbook.passages]]
@@ -50,10 +50,17 @@ pages = [12, 12]
 section = "Rules for Undergraduate Degrees"
 pages = [13, 21]
 
-# The department's programmes: each curriculum's introduction and notes, and the transferee access
+# The department's programmes: each curriculum's introduction and tables, then the access route
+# for transferees. Each ends partway down its last page, at the heading named by until.
 [[handbook.passages]]
 section = "Electrical Engineering"
 pages = [48, 61]
+until = "Access for University of Technology Transferees"
+
+[[handbook.passages]]
+section = "Access for University of Technology Transferees"
+pages = [61, 61]
+until = "Mechanical Engineering"
 
 [[handbook.passages]]
 section = "The ASPECT Programme"
@@ -64,6 +71,9 @@ file = "2026_timetable.xlsx"
 format = "xlsx"
 title = "2026 EEE Timetables"
 sha256 = "45de2ef0621f93b6974b06775f73d99d69ea8cec999c1d412c563b589a27181a"
+# Courses the Labs sheet prints that no EEE curriculum lists, left out at C1's Stop 1 (reading 4), so
+# the timetable check reports their cells rather than failing
+excluded = ["EEE2041F", "EEE2042S", "EEE2046S"]
 
 # The sheets read, each with the curricula it shows. Labs holds meetings for everyone on a course,
 # so it names none. The MEC and SCI sheets show other departments' programmes and aren't read.
@@ -76,13 +86,22 @@ EB811 = ["EB811EEE05"]
 EB822 = ["EB822EEE02"]
 Labs = []
 
+# Meetings printed side by side of which a student attends one, by their cells in the order of their
+# choice letters. EEE3096S's Wednesday lab is an alternative to its Friday one.
+[[timetable.alternatives]]
+course = "EEE3096S"
+group = "lab"
+cells = ["Labs!O11:O14", "Labs!M11:M14"]
+
 [complementary]
 file = "2026_Complementary_Studies_Course_Details.xlsx"
 format = "xlsx"
 title = "2026 Complementary Studies Course Details"
 sha256 = "85a1df054b9246b7c01dcb6b16bf587d78d46abda844c73a2612be96d97e829f"
-# Notes is for people, so it isn't read
-sheets = ["Courses", "Language options", "Meetings"]
+# Each sheet read, by what it holds. Notes is for people, so it isn't read.
+courses = "Courses"
+languages = "Language options"
+meetings = "Meetings"
 
 # Drafted from the 2026 handbook and the 2023 to 2026 replacements. No handbook says "counts as"
 # outright, so every row is flagged not_printed for review.

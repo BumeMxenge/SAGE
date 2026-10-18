@@ -1,9 +1,10 @@
-# Checks the rule trees' shapes: a tree that doesn't fit is refused, an any needs a child, and a
-# rule printed in another order is the same tree
+# Checks the rule trees' shapes: a tree that doesn't fit is refused, an any needs a child, a rule
+# printed in another order is the same tree, and so is one grouped differently within its own kind
+# or wrapped in an all or an any of one
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from sage.domain.rules import AnyOf, CourseNeed, EntryRule
+from sage.domain.rules import AllOf, Course, CourseNeed, EntryRule
 
 ENTRY_RULE = TypeAdapter(EntryRule)
 
@@ -24,14 +25,11 @@ def test_a_malformed_tree_is_refused(tree):
         ENTRY_RULE.validate_python(tree)
 
 
-def test_an_any_needs_one_child_at_least():
-    # Both sides of the boundary: an empty any could never hold, and one child is a valid any
-    leaf = {"course": "EEE3091F", "need": "pass"}
-    assert ENTRY_RULE.validate_python({"any": [leaf]}) == AnyOf(
-        any=(CourseNeed(course="EEE3091F", need="pass"),)
-    )
-    with pytest.raises(ValidationError):
-        ENTRY_RULE.validate_python({"any": []})
+def test_an_all_or_an_any_needs_a_child():
+    # An empty one could never hold, or always would, so it is refused. One child is the next test.
+    for kind in ("all", "any"):
+        with pytest.raises(ValidationError):
+            ENTRY_RULE.validate_python({kind: []})
 
 
 def test_a_rule_printed_in_another_order_is_the_same_tree():
@@ -79,3 +77,99 @@ def test_a_rule_printed_in_another_order_is_the_same_tree():
     }
     tree = ENTRY_RULE.validate_python(printed)
     assert ENTRY_RULE.dump_python(tree, mode="json") == expected
+
+
+def leaf(code, need="pass"):
+    return {"course": code, "need": need}
+
+
+def test_an_all_inside_an_all_is_the_same_tree_as_one_all():
+    # PHY2010S's requirement joined to its co-requisite "MAM2084F/S", as the ingest joins them: an
+    # all holding an all. E2's prompt.md rule 10 says to join them, and a model may group either way.
+    requirement = {
+        "all": [
+            {"any": [leaf("PHY1012F"), leaf("PHY1012S")]},
+            {"any": [leaf("MAM2083F"), leaf("MAM2083S")]},
+        ]
+    }
+    corequisite = {
+        "any": [leaf("MAM2084F", "concurrent"), leaf("MAM2084S", "concurrent")]
+    }
+    joined = ENTRY_RULE.validate_python({"all": [requirement, corequisite]})
+    flat = ENTRY_RULE.validate_python({"all": [*requirement["all"], corequisite]})
+    assert joined == flat
+    # Sorted by hand as above: the three anys by their first code, MAM2083F, MAM2084F, PHY1012F
+    assert ENTRY_RULE.dump_python(joined, mode="json") == {
+        "all": [
+            {"any": [leaf("MAM2083F"), leaf("MAM2083S")]},
+            {"any": [leaf("MAM2084F", "concurrent"), leaf("MAM2084S", "concurrent")]},
+            {"any": [leaf("PHY1012F"), leaf("PHY1012S")]},
+        ]
+    }
+
+
+def test_an_any_inside_an_any_joins_however_deep():
+    nested = {
+        "any": [
+            leaf("EEE3097S"),
+            {"any": [leaf("EEE3098S"), {"any": [leaf("EEE3099S")]}]},
+        ]
+    }
+    assert ENTRY_RULE.dump_python(ENTRY_RULE.validate_python(nested), mode="json") == {
+        "any": [leaf("EEE3097S"), leaf("EEE3098S"), leaf("EEE3099S")]
+    }
+
+
+def test_an_all_and_an_any_inside_each_other_stay_apart():
+    # Joining only holds within a kind: "A and (B or C)" is not "A and B and C", nor is
+    # "A or (B and C)" "A or B or C". Each node's children are only sorted, "all" and "any" before
+    # "course" by their JSON text.
+    b_or_c = {"any": [leaf("EEE3098S"), leaf("EEE3099S")]}
+    b_and_c = {"all": [leaf("EEE3098S"), leaf("EEE3099S")]}
+    for kind, inner in (("all", b_or_c), ("any", b_and_c)):
+        tree = ENTRY_RULE.validate_python({kind: [leaf("EEE3097S"), inner]})
+        assert ENTRY_RULE.dump_python(tree, mode="json") == {
+            kind: [inner, leaf("EEE3097S")]
+        }
+
+
+@pytest.mark.parametrize(
+    "tree",
+    [
+        {"all": [leaf("EEE3091F")]},
+        {"any": [leaf("EEE3091F")]},
+        # Wrapped twice, and in the other kind
+        {"all": [{"any": [leaf("EEE3091F")]}]},
+        {"any": [{"all": [{"any": [leaf("EEE3091F")]}]}]},
+    ],
+)
+def test_an_all_or_an_any_of_one_is_that_one(tree):
+    # E2's prompt.md rule 10: "A" wrapped in an all or an any is just A
+    assert ENTRY_RULE.dump_python(
+        ENTRY_RULE.validate_python(tree), mode="json"
+    ) == leaf("EEE3091F")
+
+
+def test_unwrapping_and_joining_work_together():
+    # "A or (all of (any of (C or D)))": the middle any joins its own child, C or D. The all of one
+    # around it unwraps to that any, and that any then joins the outer one, as both are anys.
+    c_or_d = {"any": [leaf("EEE3098S"), leaf("EEE3099S")]}
+    tree = {"any": [leaf("EEE3097S"), {"all": [{"any": [c_or_d]}]}]}
+    assert ENTRY_RULE.dump_python(ENTRY_RULE.validate_python(tree), mode="json") == {
+        "any": [leaf("EEE3097S"), leaf("EEE3098S"), leaf("EEE3099S")]
+    }
+
+
+def test_a_rule_built_with_one_child_is_stored_without_the_wrapper():
+    # How the ingest builds a course's rule: as an object, before it goes into the course
+    need = CourseNeed(course="EEE3091F", need="pass")
+    course = Course(
+        handbook_year=2026,
+        code="EEE3092F",
+        name="Made Up",
+        credits=8,
+        nqf_level=7,
+        term="sem1",
+        entry_rule=AllOf(all=(need,)),
+    )
+    assert course.entry_rule == need

@@ -56,3 +56,20 @@ From `experiments/ingestion/`:
 3. `uv run --env-file .env python requirement-parsing/drafting.py` fills `results/replies/`. It's the only step that calls a provider and costs money, it needs `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` in `.env`, and it won't start while a label is missing.
 4. `uv run python requirement-parsing/score.py` prints the three tables and writes them to `results/`. It never calls a provider.
 5. `uv run pytest` runs the tests, which never call a model.
+
+## Rescored on 18 October
+
+After the first scoring (17 October, `e0a7998` and `8ba82c3`) the backend's canonical form changed: an `all` inside an `all`, or an `any` inside an `any`, joins its parent, and an `all` or `any` with one child is that child (rule 10 of [prompt.md](prompt.md); `379893e` and `b6dfbd4`). `score.py` imports that form, so every table was scored again from the cached replies, with `score.py` alone: no model call, and the labels unchanged.
+
+| | First scoring, 17 Oct | Rescoring, 18 Oct |
+| --- | --- | --- |
+| Verdict | Grammar first, Claude Haiku 5.5 drafts | Grammar first, Claude Haiku 5.5 drafts |
+| Provisional drafter | Claude Haiku 5.5 | Claude Haiku 5.5 |
+| Validation strings the grammar reads | 48 of 81 | 48 of 81 |
+| Model only, wrong unseen | Haiku 5 of 71, Luna 11 of 71 | Haiku 5 of 71, Luna 11 of 71 |
+| Grammar first, Haiku drafts | 27 of 33 right, 14 leaves to fix | 27 of 33 right, 14 leaves to fix |
+| Grammar first, Luna drafts | 22 of 33 right, 21 leaves to fix | 22 of 33 right, 21 leaves to fix |
+| McNemar's exact test | 7 against 2, p = 0.180 | 7 against 2, p = 0.180 |
+| Verdict without the 14 judgement rows | The same | The same |
+
+All five files in `results/` came out the same as the first scoring's, byte for byte. The verdict doesn't change, and neither does the provisional drafter. `score.py` compares trees in its own normal form, which already joined nested nodes, unwrapped a node of one child and sorted before any comparison, so the 2 of Haiku's 243 replies and 7 of Luna's that nest were already read flat, and none of the 81 labels nests or wraps. The only measures that use the backend's form without that step count leaves and node kinds, and joining or unwrapping adds neither.
