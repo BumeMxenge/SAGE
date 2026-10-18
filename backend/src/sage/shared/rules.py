@@ -16,7 +16,6 @@ from pydantic import (
 )
 
 from sage.shared.base import Row
-from sage.shared.electives import ElectiveTab
 
 # The term_code domain in the rule-tables migration: every term a course or meeting can run in
 TermCode = Literal[
@@ -240,6 +239,24 @@ class CourseGroup(Row):
     handbook_year: int
     group_key: str
     label: str
+
+
+# The Explore Electives tabs: the one list a member's category comes from, which the frontend reads
+# and the backend checks every category against, so a tab changes here, never in a migration
+ElectiveTab = Literal[
+    "arts",
+    "business",
+    "econ",
+    "ethics",
+    "history",
+    "languages",
+    "literature",
+    "logic",
+    "media",
+    "religion",
+    "science",
+    "society",
+]
 
 
 class CourseGroupMember(Row):

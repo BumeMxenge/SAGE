@@ -5,12 +5,11 @@ from typing import get_args
 from uuid import UUID
 
 from sage.shared.base import Row
-from sage.shared.electives import ElectiveTab
 from sage.shared.errors import CourseNotFound
 from sage.shared.planning import Eligibility, EligibilityChecker
 from sage.shared.repositories import StudentRepository
 from sage.shared.rulebook import Rulebook
-from sage.shared.rules import Course
+from sage.shared.rules import Course, ElectiveTab
 
 
 class Elective(Row):

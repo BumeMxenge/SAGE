@@ -2,8 +2,8 @@
 from pydantic import BaseModel
 
 from sage.shared.api.models import Course
-from sage.shared.electives import ElectiveTab
 from sage.shared.planning import EligibilityStatus
+from sage.shared.rules import ElectiveTab
 
 
 class Eligibility(BaseModel):
