@@ -12,7 +12,6 @@ from sage.shared.rules import AnyOf, Course, CourseNeed, Equivalence
 
 def entry(code, credits=16, nqf_level=7, term=None, name="Energy Systems and Grids I"):
     return Entry(
-        codes=(code,),
         name=name,
         credits=credits,
         nqf_level=nqf_level,

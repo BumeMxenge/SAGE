@@ -58,7 +58,6 @@ class Unit(Row):
 
 
 class Entry(Row):
-    codes: tuple[str, ...]  # every code its heading prints
     name: str
     credits: int
     nqf_level: int
@@ -131,7 +130,7 @@ class Handbook:
             raise SourceError(f"{code} has an entry on each of pages {pages}")
         at = starts[0]
         page, heading = self.lines[at]
-        printed, title = HEADING.fullmatch(heading).groups()
+        _, title = HEADING.fullmatch(heading).groups()
         at += 1
         # A title too long for one line carries on in capitals
         while self.lines[at][1] and not re.search("[a-z]", self.lines[at][1]):
@@ -157,7 +156,6 @@ class Handbook:
             )
         term = PRINTED_TERM.search(credits[3])
         return Entry(
-            codes=_codes(printed),
             name=title_case(title),
             credits=int(credits[1]),
             nqf_level=int(credits[2]),

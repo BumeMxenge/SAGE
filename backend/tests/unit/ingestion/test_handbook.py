@@ -53,7 +53,6 @@ def test_a_heading_in_larger_type_is_a_break_even_at_the_top_of_a_page(
         (
             "EEE2048S",
             {
-                "codes": ("EEE2048S",),
                 "name": "Professional Communication for Electrical Engineering",
                 "credits": 8,
                 "nqf_level": 6,
@@ -70,7 +69,6 @@ def test_a_heading_in_larger_type_is_a_break_even_at_the_top_of_a_page(
         (
             "EEE4022S",
             {
-                "codes": ("EEE4022F", "EEE4022S"),
                 "name": "Research Project",
                 "credits": 40,
                 "nqf_level": 8,
@@ -89,7 +87,6 @@ def test_a_heading_in_larger_type_is_a_break_even_at_the_top_of_a_page(
         (
             "CML4607F",
             {
-                "codes": ("CML4607F",),
                 "name": "Law for Engineers",
                 "credits": 10,
                 "nqf_level": 8,
@@ -108,7 +105,6 @@ def test_a_heading_in_larger_type_is_a_break_even_at_the_top_of_a_page(
         (
             "PHY1013S",
             {
-                "codes": ("PHY1013S",),
                 "name": "Physics B for Engineers",
                 "credits": 18,
                 "nqf_level": 5,
@@ -147,8 +143,7 @@ def test_a_line_of_prose_opening_with_a_code_is_not_a_heading():
     )
     book = Handbook([Page(number=78, lines=lines)])
     entry = book.entry("APG2021W")
-    assert (entry.codes, entry.name, entry.credits, entry.requirement) == (
-        ("APG2021W",),
+    assert (entry.name, entry.credits, entry.requirement) == (
         "Technology II",
         20,
         "APG1003W",
