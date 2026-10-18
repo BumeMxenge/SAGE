@@ -2,6 +2,7 @@
 # rule on these rows except the elective tab, the delta flag and the shape of each rule tree, which
 # only the backend checks.
 from datetime import time
+from functools import partial
 from typing import Annotated, Any, Literal, Self
 from uuid import UUID
 
@@ -84,17 +85,14 @@ def _in_order[T: Row](children: tuple[T, ...]) -> tuple[T, ...]:
     return tuple(sorted(children, key=lambda child: child.model_dump_json()))
 
 
-def _flat(kind: str) -> AfterValidator:
+def _joined[T: Row](kind: str, children: tuple[T, ...]) -> tuple[T, ...]:
     # Nor do they depend on grouping: an all inside an all holds when its parts do, so its parts
     # join the outer one (E2's prompt.md, rule 10). Joining a requirement to a co-requisite nests
     # them, and a model may group by habit; flat, the same rule is the same tree however it was put
-    # together. Each inner node was flattened when it was validated, so one level is enough.
-    def join(children):
-        return _in_order(
-            tuple(part for child in children for part in getattr(child, kind, (child,)))
-        )
-
-    return AfterValidator(join)
+    # together. Each inner node was joined when it was validated, so one level is enough.
+    return _in_order(
+        tuple(part for child in children for part in getattr(child, kind, (child,)))
+    )
 
 
 def _only_child(node: Row) -> Row:
@@ -112,11 +110,19 @@ SortedNames = Annotated[
 
 
 class AllOf(Row):
-    all: Annotated[tuple["EntryRule", ...], Field(min_length=1), _flat("all")]
+    all: Annotated[
+        tuple["EntryRule", ...],
+        Field(min_length=1),
+        AfterValidator(partial(_joined, "all")),
+    ]
 
 
 class AnyOf(Row):
-    any: Annotated[tuple["EntryRule", ...], Field(min_length=1), _flat("any")]
+    any: Annotated[
+        tuple["EntryRule", ...],
+        Field(min_length=1),
+        AfterValidator(partial(_joined, "any")),
+    ]
 
 
 class CourseNeed(Row):

@@ -11,9 +11,7 @@ from sage.domain.rules import (
     CreditsFromGroups,
     EntryRule,
     MinYearOfStudy,
-    Refer,
     StudentIn,
-    TotalCredits,
     YearRule,
     YearRules,
 )
@@ -30,10 +28,11 @@ def in_words(rule: EntryRule | YearRules | None) -> str:
 def _words(node: EntryRule, nested: bool = False) -> str:
     if isinstance(node, AllOf):
         listed = any(_lists(child) for child in node.all)
+        # A tree joins an all inside an all, so a child here is never an all
         words = [
             f"({_words(child)})"
             if _commas(child) and at < len(node.all) - 1
-            else _words(child, True)
+            else _words(child)
             for at, child in enumerate(node.all)
         ]
         return f"({_all(words, listed)})" if nested else _all(words, listed)
@@ -49,9 +48,7 @@ def _words(node: EntryRule, nested: bool = False) -> str:
         return f"a student on {_one_of(list(node.student_in))}"
     if isinstance(node, MinYearOfStudy):
         return f"year of study {node.min_year_of_study} or later"
-    if isinstance(node, Refer):
-        return f'a person\'s judgement of "{node.refer}"'
-    raise TypeError(f"no words for {node!r}")
+    return f'a person\'s judgement of "{node.refer}"'
 
 
 def _part(part: YearRule) -> str:
@@ -62,9 +59,7 @@ def _part(part: YearRule) -> str:
         return f"{part.choose} {courses} from {part.from_group}"
     if isinstance(part, CreditsFromGroups):
         return f"at least {part.credits} credits from {_one_of(list(part.from_groups))}"
-    if isinstance(part, TotalCredits):
-        return f"{part.total_credits} credits in total"
-    raise TypeError(f"no words for {part!r}")
+    return f"{part.total_credits} credits in total"
 
 
 def _lists(node: EntryRule) -> bool:

@@ -27,7 +27,6 @@ from sage.domain.rules import (
     RefusalCause,
     RuleSet,
     YearRules,
-    year_column,
 )
 from sage.ingestion.checks import Check, tree_codes
 from sage.ingestion.sources import Reading
@@ -188,7 +187,7 @@ def compare(
     removed: dict[str, list[str]] = defaultdict(list)
     for key in sorted(before.keys() - after.keys()):
         table, name = key.split("/", 1)
-        if table in ("courses", "course_group_members"):
+        if table == "course_group_members":
             name = name.rsplit("/", 1)[-1]
         removed[name].append(key)
     rows += [
@@ -257,14 +256,16 @@ def compare(
     for row in rows:
         if row.decision is not None and row.id not in stuck:
             _apply(row, stored, before)
+    # Where each course was printed, for the check's failures: this year's page, or the previous
+    # approved year's for a removed course a person kept
     places = {r.key: r.place for r in readings if r.entity == "courses"}
-    places |= {
-        key.split("/", 1)[1]: place
-        for row in rows
-        if row.kind == "removal"
-        for key, place in row.covers.items()
-        if key.startswith("courses/")
-    }
+    if previous:
+        kept = {
+            r.key: f"{previous.year}, {r.place}"
+            for r in previous.readings
+            if r.entity == "courses"
+        }
+        places = kept | places
     failing = _rechecked(year, stored, places, entries)
     covered = {key: row for row in rows for key in row.covers}
     for row in rows:
@@ -399,7 +400,7 @@ def _decided(
     }
     for key, value in stored.items():
         table = key.split("/", 1)[0]
-        tables[table].append({year_column(table): year, **value})
+        tables[table].append({"handbook_year": year, **value})
     return RuleSet.model_validate({**dict(rules), **tables})
 
 
@@ -483,7 +484,7 @@ def _row(
 ) -> ReviewRow:
     # A row for table rows read this year, which share their printed words and what they read
     table, name = keys[0].split("/", 1)
-    kind, column = KINDS.get(table, ("check", None))
+    kind, column = KINDS[table]
 
     def decided(value: dict[str, JsonValue]) -> JsonValue:
         return value[column] if column else value
@@ -508,10 +509,11 @@ def _keyed(rules: RuleSet) -> dict[str, dict[str, JsonValue]]:
     # The rows a change can be in, by "table/key" as a reading names them, each without its year
     keyed = {}
     for table in get_args(DeltaTable):
-        year = year_column(table)
         for row in getattr(rules, table):
-            value = row.model_dump(mode="json", exclude={year})
-            key = "/".join(str(value[c]) for c in PRIMARY_KEYS[table] if c != year)
+            value = row.model_dump(mode="json", exclude={"handbook_year"})
+            key = "/".join(
+                str(value[c]) for c in PRIMARY_KEYS[table] if c != "handbook_year"
+            )
             keyed[f"{table}/{key}"] = value
     return keyed
 

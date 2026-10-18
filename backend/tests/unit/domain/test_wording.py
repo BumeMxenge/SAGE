@@ -45,10 +45,15 @@ def either(*codes):
         (MinYearOfStudy(min_year_of_study=4), "year of study 4 or later"),
         (Refer(refer="or equivalent"), 'a person\'s judgement of "or equivalent"'),
         (None, "no requirement"),
-        # Leaves alone in an all need no comma, but a part with a list of its own does
+        # Leaves alone in an all need no comma, nor does one curriculum, but a part with a list of
+        # its own does
         (
             AllOf(all=(needs("CSC2001F"), needs("CSC2002S"), needs("CSC2004Z"))),
             "CSC2001F, CSC2002S and CSC2004Z",
+        ),
+        (
+            AllOf(all=(needs("EEE3091F"), StudentIn(student_in=("EB009EEE01",)))),
+            "EEE3091F and a student on EB009EEE01",
         ),
         (
             AllOf(
@@ -59,15 +64,16 @@ def either(*codes):
             ),
             "EEE3091F, and a student on EB009EEE01 or EB809EEE01",
         ),
-        # An all inside an any is bracketed, and so is one of three in the middle of an all
+        # An all inside an any is bracketed, keeping its comma, and so is one of three in the middle
+        # of an all
         (
             AnyOf(
                 any=(
-                    AllOf(all=(needs("MAM1004F"), needs("MAM1008S"))),
+                    AllOf(all=(either("MAM1004F", "MAM1005H"), needs("MAM1008S"))),
                     needs("MAM1000W"),
                 )
             ),
-            "(MAM1004F and MAM1008S) or MAM1000W",
+            "(MAM1004F or MAM1005H, and MAM1008S) or MAM1000W",
         ),
         (
             AllOf(
@@ -78,7 +84,13 @@ def either(*codes):
             ),
             '(one of ECO1010F, ECO1010S or ECO1110F), and a person\'s judgement of "or later"',
         ),
-        # A curriculum's rule for a year of study
+        # A curriculum's rule for a year of study, with one demand or several
+        (
+            YearRules(
+                all=(ChooseFromGroup(choose=2, from_group="EB022EEE02-y4-group-1"),)
+            ),
+            "2 courses from EB022EEE02-y4-group-1",
+        ),
         (
             YearRules(
                 all=(

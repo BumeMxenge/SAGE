@@ -380,7 +380,8 @@ def approve(year: int, data: Path = DATA) -> tuple[Review, Snapshot | None]:
 class Sitting:
     # One sitting of a person deciding a year's pending rows. Each decision is checked as sage ingest
     # checks it and saved to review.json as it's made, with when the sitting began and last saved and
-    # the rows it decided, so stopping at any point loses nothing.
+    # the rows it decided, so stopping at any point loses nothing. One that decides nothing is saved
+    # when it ends.
     def __init__(
         self, candidate: Candidate, path: Path, clock: Callable[[], datetime]
     ) -> None:
@@ -392,7 +393,6 @@ class Sitting:
             *held["sittings"],
             {"start": started, "end": started, "decided": 0},
         ]
-        _write_review(path, self._sittings, self.review)
 
     def decide(
         self,
@@ -403,7 +403,7 @@ class Sitting:
     ) -> tuple[Problem, ...]:
         # A decision on one row, kept and saved only if it leaves the row with no problem; else the
         # problems, with the row as it was
-        rows = [row.model_dump(mode="json") for row in self.review.rows]
+        rows = [row.model_dump() for row in self.review.rows]
         for row in rows:
             if row["id"] == row_id:
                 row.update(decision=decision, corrected=corrected, note=note)
@@ -473,7 +473,7 @@ def _read_review(path: Path) -> dict[str, list]:
 
 def _write_review(path: Path, sittings: list[dict], review: Review) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    rows = [row.model_dump(mode="json") for row in review.rows]
+    rows = [row.model_dump() for row in review.rows]
     text = json.dumps(
         {"sittings": sittings, "rows": rows}, indent=2, ensure_ascii=False
     )

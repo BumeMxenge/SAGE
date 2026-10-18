@@ -384,9 +384,18 @@ def test_a_year_takes_the_drafts_of_the_years_before_it(
         drafts = {"concurrent": {co_requisite: {"model": "made up", "tree": tree}}}
         cache.write_text(json.dumps(drafts), encoding="utf-8")
     drafter = Drafter()
-    run = ingest(2026, drafter, data=tmp_path)
-    # Only the wording no earlier year drafted is asked for
+    # As sage ingest --draft runs it
+    run, _ = review_year(2026, drafter, data=tmp_path)
+    # Only the wording no earlier year drafted is asked for, and both drafts are kept where the next
+    # run and the next year read them, so neither is drafted again
     assert drafter.asked == [BEGINNERS]
+    kept = json.loads(
+        (tmp_path / "rules" / "2026" / "drafts.json").read_text(encoding="utf-8")
+    )
+    assert {need: list(drafts) for need, drafts in kept.items()} == {
+        "concurrent": [co_requisite],
+        "pass": [BEGINNERS],
+    }
     rules = {c.code: c.entry_rule for c in run.rules.courses}
     assert rules["PHY1013S"] == AllOf(
         all=(
@@ -479,7 +488,8 @@ def test_a_sitting_saves_each_decision_and_a_rerun_keeps_them(
     # A sitting from 09:00 to 09:12, by a made-up clock
     start = datetime(2026, 10, 18, 9, tzinfo=UTC)
     times = iter([start, *[start + timedelta(minutes=12)] * 9])
-    path = review_file(2026, tmp_path)
+    # Where review.json is committed
+    path = tmp_path / "rules" / "2026" / "review.json"
     sitting = Sitting(candidate, path, lambda: next(times))
     # The planted year-3 total fails a check, so accepting it needs a note, and without one the row
     # stays as it was
@@ -521,9 +531,10 @@ def test_approve_refuses_while_one_row_is_pending(
     tmp_path, handbook_pdf, complementary_xlsx, timetable_block
 ):
     sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
-    accept_all(tmp_path, but={"requirement/SLL1017F"})
+    # The one left is the code only a curriculum's notes name
+    accept_all(tmp_path, but={"no_entry/CON2026S"})
     review, snapshot = approve(2026, data=tmp_path)
-    assert (review.pending, snapshot) == (("requirement/SLL1017F",), None)
+    assert (review.pending, snapshot) == (("no_entry/CON2026S",), None)
     assert not (tmp_path / "rules" / "2026" / "rulebook.json").exists()
 
 
@@ -569,16 +580,16 @@ def test_an_approved_year_survives_the_snapshot_round_trip(
 def test_a_kept_removal_keeps_its_row_and_where_it_was_printed(
     tmp_path, handbook_pdf, complementary_xlsx, timetable_block
 ):
-    # 2023 approved a course the made-up 2026 no longer prints, and its removal is rejected
+    # 2023 approved two courses the made-up 2026 no longer prints. One's removal is rejected, and
+    # the other's accepted.
     sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block)
     path = tmp_path / "rules" / "2023" / "rulebook.json"
     path.parent.mkdir(parents=True)
-    path.write_text(
-        approved(
-            2023, {"EEE9001F": ("No requirement printed", None)}
-        ).model_dump_json(),
-        encoding="utf-8",
-    )
+    gone = {
+        "EEE9001F": ("No requirement printed", None),
+        "EEE9002F": ("No requirement printed", None),
+    }
+    path.write_text(approved(2023, gone).model_dump_json(), encoding="utf-8")
     candidate = accept_all(tmp_path, but={"removal/EEE9001F"})
     sitting = Sitting(
         candidate,
@@ -587,18 +598,17 @@ def test_a_kept_removal_keeps_its_row_and_where_it_was_printed(
     )
     assert sitting.decide("removal/EEE9001F", "reject") == ()
     _, snapshot = approve(2026, data=tmp_path)
-    kept = next(c for c in snapshot.rules.courses if c.code == "EEE9001F")
-    assert kept.handbook_year == 2026
-    # The next year reads its words from here
-    assert (
+    kept = [c for c in snapshot.rules.courses if c.code in gone]
+    assert [(c.code, c.handbook_year) for c in kept] == [("EEE9001F", 2026)]
+    # The next year reads the kept course's words from here, and nothing of the other
+    assert [r for r in snapshot.readings if r.key in gone] == [
         Reading(
             entity="courses",
             key="EEE9001F",
             place="p. 1",
             printed="No requirement printed",
         )
-        in snapshot.readings
-    )
+    ]
 
 
 def test_a_loaded_year_is_replaced_only_when_asked():
