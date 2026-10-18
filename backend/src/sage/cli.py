@@ -34,7 +34,14 @@ from sage.services.ingest import (
     review_file,
     review_year,
 )
-from sage.services.seed import SEED_FILE, SeedResult, load_seed, seed
+from sage.services.seed import (
+    SEED_FILE,
+    SeedResult,
+    YearNotLoaded,
+    load_seed,
+    require_loaded,
+    seed,
+)
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -150,12 +157,16 @@ def run_seed(account: UUID, *, yes: bool) -> None:
             f"No account {account} on {host}. Sign in once, then copy the id from "
             "Authentication > Users in the Supabase dashboard"
         ) from None
+    except YearNotLoaded as missing:
+        year = missing.args[0]
+        raise SystemExit(
+            f"{host} doesn't hold the approved {year} rules her plans use: "
+            f"sage load --year {year} loads them"
+        ) from None
 
     print(f"Seeded {SEED_FILE.name} onto account {account} on {host}:")
     for table, count in result.written.items():
         print(f"  {table}: {count}")
-    for difference in result.rulebook_differences:
-        print(f"  Already stored, left as it was: {difference}")
     check_read_back(result)
     print("Read back: her data matches the file.")
 
@@ -169,15 +180,21 @@ def run_load(year: int, *, replace: bool, yes: bool) -> None:
         ) from None
     client, host = project(yes)
     try:
-        load(snapshot, SupabaseRuleRepository(client), replace=replace)
+        written = load(snapshot, SupabaseRuleRepository(client), replace=replace)
     except YearLoaded:
         raise SystemExit(
-            f"{host} holds {year} already: --replace replaces it"
+            f"{host} holds {year} differently from its snapshot: "
+            f"sage load --year {year} --replace replaces it"
         ) from None
     except YearInUse:
         raise SystemExit(
             f"A student's plan or chat on {host} uses {year}, so the database won't remove it"
         ) from None
+    if not written:
+        print(
+            f"{host} holds {year} exactly as its snapshot already, so it's left as it is"
+        )
+        return
     print(f"Loaded {year}'s approved snapshot onto {host}:")
     for table in RuleSet.model_fields:
         print(f"  {table}: {len(getattr(snapshot.rules, table))}")
@@ -191,12 +208,20 @@ def run_sign_in(port: int) -> None:
             "sage sign-in only runs on local Supabase: `make sign-in` points it there"
         )
     client = connect(settings.supabase_url, settings.supabase_secret_key)
-    fake_account = json.loads(SEED_FILE.read_text(encoding="utf-8"))["fake_account"]
-    account, token = sign_in_token(client, fake_account["email"])
-    students = SupabaseStudentRepository(client)
+    rules, students = SupabaseRuleRepository(client), SupabaseStudentRepository(client)
+    file = json.loads(SEED_FILE.read_text(encoding="utf-8"))
+    try:
+        # Her plans need their year's rules, so nothing is written until they're loaded, not even
+        # her account
+        require_loaded(rules, {row["period"] for row in file["plan_sets"]})
+    except YearNotLoaded as missing:
+        raise SystemExit(
+            f"Local Supabase doesn't hold the approved {missing.args[0]} rules her plans use: "
+            "make load loads them"
+        ) from None
+    account, token = sign_in_token(client, file["fake_account"]["email"])
     # Her seed goes on once, so changes made while trying the app survive the next sign-in
     if students.profile(account) is None:
-        rules = SupabaseRuleRepository(client)
         check_read_back(seed(rules, students, load_seed(SEED_FILE, account)))
     # Only the link, so a script such as Playwright's setup can read it
     print(f"http://localhost:{port}/?{urlencode({'token_hash': token})}")

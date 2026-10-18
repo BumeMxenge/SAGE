@@ -56,8 +56,9 @@ Outcome = Literal[
     "not_counted",
 ]
 
-# A printed rule as a tree, in the seed's JSON shapes. Each node is told apart by its one
-# distinctive key, as in {"any": [...]}, {"course": "EEE3091F", "need": "pass"} or {"refer": "..."}.
+# A printed rule as a tree, in the JSON shapes the snapshots store. Each node is told apart by its
+# one distinctive key, as in {"any": [...]}, {"course": "EEE3091F", "need": "pass"} or
+# {"refer": "..."}.
 NODE_KEYS = (
     "all",
     "any",
@@ -358,8 +359,8 @@ class RuleSet(Row):
     handbook_deltas: tuple[HandbookDelta, ...] = ()
 
 
-# Each table's primary key. A store skips a row whose key it already holds, and reads rows in key
-# order, which gives every row one fixed place across pages
+# Each table's primary key. The fake keys its rows by it, and a store reads rows in key order,
+# which gives every row one fixed place across pages
 PRIMARY_KEYS: dict[str, tuple[str, ...]] = {
     "handbook_versions": ("year",),
     "curricula": ("handbook_year", "code"),

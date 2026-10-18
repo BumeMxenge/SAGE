@@ -96,17 +96,20 @@ check-ui:
 # backend/mutation-score.txt. It takes about ten minutes, so CI never runs it. Each run starts
 # afresh, as mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a
 # copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy
-# of data/ goes where SEED_FILE looks for it, and a link puts experiments/ where the drafter's test
-# reads E2's prompt. A copy, not a link, so a mutant that loses its folder can't write to the real one.
+# of data/ goes where SEED_FILE and DATA look for it, and a link puts experiments/ where the
+# drafter's test reads E2's prompt. A copy, not a link, so a mutant that loses its folder can't
+# write to the real one. mutmut runs several test sessions at once, so SAGE_TEST_TEMP gives each its
+# own temporary folder.
 mutation:
 	@cd backend && rm -rf mutants data && cp -R ../data data && ln -sfn ../experiments experiments && \
-		trap 'rm -rf data; rm -f experiments' EXIT && \
+		export SAGE_TEST_TEMP=$$(mktemp -d) && \
+		trap 'rm -rf data "$$SAGE_TEST_TEMP"; rm -f experiments' EXIT && \
 		uv run --group mutation mutmut run && \
 		uv run --group mutation mutmut export-cicd-stats > /dev/null && \
 		uv run python scripts/mutation_score.py | tee mutation-score.txt
 
-# The 24 faults my test review planted by hand, each in a copy of the backend, and the test that
-# caught it, if any. About five minutes.
+# The 26 planted faults, each in a copy of the backend, and the test that caught it, if any: the 24
+# from my test review, and two in the review and approval. About five minutes.
 planted-faults:
 	@cd backend && uv run python scripts/planted_faults.py
 
@@ -117,7 +120,8 @@ seed:
 		uv run sage seed --user "$(USER_ID)"
 
 # Loads every approved year, each data/rules/<year>/rulebook.json, into local Supabase, as after make
-# check-db wipes it. A year already loaded stops it, as sage load --replace is the way to replace one.
+# check-db wipes it. A year held exactly as its snapshot is passed over, so a newly approved year loads
+# beside the others. One held differently stops it, as sage load --replace is the way to replace one.
 load:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		for snapshot in ../data/rules/*/rulebook.json; do \

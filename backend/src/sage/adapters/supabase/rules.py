@@ -17,11 +17,6 @@ class SupabaseRuleRepository:
     def __init__(self, client: Client) -> None:
         self._client = client
 
-    def add_missing(self, rules: RuleSet) -> None:
-        # In RuleSet's foreign-key order
-        for table in RuleSet.model_fields:
-            insert(self._client, table, getattr(rules, table), skip_existing=True)
-
     def replace_year(self, rules: RuleSet) -> None:
         (version,) = rules.handbook_versions
         try:

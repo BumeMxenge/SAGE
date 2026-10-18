@@ -1,13 +1,10 @@
 # Checks the rulebook cache: a year is read once and reused for ten minutes, read again after that,
 # and a year that isn't there is the rulebook_not_loaded refusal rather than an empty rulebook
-from uuid import UUID
-
 import pytest
 
 from sage.adapters.memory.rules import InMemoryRuleRepository
 from sage.domain.errors import RulebookNotLoaded
 from sage.services.rulebook import TIME_LIMIT, Rulebook
-from sage.services.seed import load_seed
 
 
 class CountingRules(InMemoryRuleRepository):
@@ -31,9 +28,9 @@ class Clock:
 
 
 @pytest.fixture
-def rules(seed_file) -> CountingRules:
+def rules(approved_2026) -> CountingRules:
     rules = CountingRules()
-    rules.add_missing(load_seed(seed_file, UUID(int=1)).rules)
+    rules.replace_year(approved_2026)
     return rules
 
 

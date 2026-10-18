@@ -12,7 +12,7 @@ from pathlib import Path
 
 from pydantic import JsonValue
 
-from sage.domain.base import Row
+from sage.domain.base import Row, canonical
 from sage.domain.drafting import Drafter
 from sage.domain.repositories import RuleRepository
 from sage.domain.rules import (
@@ -45,7 +45,7 @@ WORKBOOK = "complementary workbook"
 
 
 class YearLoaded(Exception):
-    # The database holds the year already, and loading it again would replace it
+    # The database holds the year differently from its snapshot, and loading it would replace it
     pass
 
 
@@ -441,11 +441,22 @@ def approved_snapshot(year: int, data: Path = DATA) -> Snapshot:
     )
 
 
-def load(snapshot: Snapshot, rules: RuleRepository, *, replace: bool) -> None:
-    # Writes an approved year to the database, refusing one already there unless asked to replace it
-    if not replace and rules.get(snapshot.year).handbook_versions:
-        raise YearLoaded(snapshot.year)
+def load(snapshot: Snapshot, rules: RuleRepository, *, replace: bool) -> bool:
+    # Writes an approved year to the database, and says whether it wrote anything. A year already
+    # there is left as it is when it matches the snapshot row for row, and otherwise replaced only
+    # when asked to, so make load can pass over every year it loaded before.
+    if not replace:
+        stored = rules.get(snapshot.year)
+        if stored.handbook_versions:
+            if all(
+                canonical(getattr(stored, table))
+                == canonical(getattr(snapshot.rules, table))
+                for table in RuleSet.model_fields
+            ):
+                return False
+            raise YearLoaded(snapshot.year)
     rules.replace_year(snapshot.rules)
+    return True
 
 
 def _compare(candidate: Candidate, decided: list[dict[str, JsonValue]]) -> Review:
