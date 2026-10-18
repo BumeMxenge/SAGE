@@ -11,6 +11,8 @@ node_modules/
 dist/
 private_data/
 .DS_Store
+# The lock file Excel keeps beside a workbook while it's open, such as ~$courses_2026.xlsx
+~$*
 # Test reports: coverage's data, and make mutation's working copy, its links to data/ and
 # experiments/, and its score
 .coverage
