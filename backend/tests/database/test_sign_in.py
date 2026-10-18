@@ -26,6 +26,7 @@ def local_settings(url, monkeypatch):
     get_settings.cache_clear()
 
 
+@pytest.mark.usefixtures("approved_years")  # as make load runs before make sign-in
 def test_the_link_signs_mbali_in_as_a_student(
     local_settings, url, capsys, fake_account
 ):

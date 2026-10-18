@@ -9,10 +9,11 @@ import pytest
 from fastapi.testclient import TestClient
 from fpdf import FPDF
 
-from sage.domain.rules import ResultSymbol
+from sage.domain.rules import ResultSymbol, RuleSet
 from sage.ingestion.complementary import MEETING_COLUMNS, OFFERING_COLUMNS
 from sage.ingestion.handbook import Handbook, Page
 from sage.main import create_app
+from sage.services.ingest import approved_snapshot
 from sage.services.seed import SEED_FILE
 
 
@@ -37,6 +38,13 @@ def result_symbols() -> tuple[ResultSymbol, ...]:
 
 
 @pytest.fixture(scope="session")
+def approved_2026() -> RuleSet:
+    # The approved 2026 rulebook, data/rules/2026/rulebook.json, read once. A test that needs rules
+    # loads it into a store of its own, so no test can change another's.
+    return approved_snapshot(2026).rules
+
+
+@pytest.fixture(scope="session")
 def fake_account(seed_file) -> dict[str, str]:
     # Mbali's made-up email, which the seed file keeps for the tests and sage sign-in
     return json.loads(seed_file.read_text(encoding="utf-8"))["fake_account"]
@@ -46,17 +54,6 @@ def fake_account(seed_file) -> dict[str, str]:
 def mbali_counts() -> dict[str, int]:
     # The rows per table the seed file holds, written out by hand rather than counted from the file
     return {
-        "handbook_versions": 1,
-        "curricula": 1,
-        "curriculum_rules": 1,
-        "courses": 52,
-        "course_groups": 4,
-        "course_group_members": 52,
-        "equivalences": 11,
-        "timetable_slots": 25,
-        "timetable_slot_curricula": 0,
-        "passages": 0,
-        "handbook_deltas": 0,
         "students": 1,
         "course_history": 34,
         "favourites": 6,

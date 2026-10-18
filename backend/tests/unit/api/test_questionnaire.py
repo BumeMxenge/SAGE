@@ -53,12 +53,15 @@ def test_the_course_options_are_her_hearted_electives(mbali):
     assert all(
         option["hearted"] for code, option in course.items() if code != "no_preference"
     )
-    assert (
-        course["EEE4119F"]["label"] == "MECHATRONICS"
-    )  # the name as the handbook prints it
+    # p. 140 prints EEE4119F MECHATRONICS, which ingestion title-cases (CP0 answer 6)
+    assert course["EEE4119F"]["label"] == "Mechatronics"
 
 
 def test_each_option_keeps_the_prototypes_plans(mbali, positions):
+    # From the EB011 sheet's fourth-year block. Plans 8 to 10 have one 8am start, EEE4119F's on
+    # Tuesday (D53), and plans 1 to 7 all take EEE4117F, which starts at 08:00 on Monday, Wednesday
+    # and Friday (C53, E53, G53). Only HUB4049F meets in the lunch row (C58:E58), so the plans
+    # without it, all but 4, 7 and 10, keep lunch free.
     course, week = options(mbali, "course"), options(mbali, "week")
     assert kept(course["EEE4119F"], positions) == [1, 5, 6, 7, 8, 9, 10]
     assert kept(week["fewest_8am"], positions) == [8, 9, 10]

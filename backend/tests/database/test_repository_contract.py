@@ -17,24 +17,26 @@ from sage.domain.students import (
     PlanSetRows,
     Student,
     StudentRecord,
+    StudentState,
 )
-from sage.services.seed import Seed, load_seed, seed
+from sage.services.seed import load_seed, seed
 
 
 @dataclass(frozen=True)
 class Store:
     rules: RuleRepository
     students: StudentRepository
-    mbali: Seed  # seeded on her account, with the ids it was stored with
+    mbali: StudentState  # seeded on her account, with the ids it was stored with
     stranger: UUID  # an account with nothing stored
 
 
 @pytest.fixture(
     params=["memory", pytest.param("supabase", marks=pytest.mark.integration)]
 )
-def store(request, seed_file, result_symbols) -> Store:
+def store(request, seed_file, result_symbols, approved_2026) -> Store:
     if request.param == "memory":
         rules = InMemoryRuleRepository(result_symbols)
+        rules.replace_year(approved_2026)
         students = InMemoryStudentRepository()
         her, stranger = uuid4(), uuid4()
     else:
@@ -84,7 +86,7 @@ def test_replacing_a_year_leaves_exactly_its_new_rows(store, made_up_year):
 
 
 def test_profile_reads_her_row_and_nothing_for_a_stranger(store):
-    her = store.mbali.student.student
+    her = store.mbali.student
     assert store.students.profile(her.id) == her
     assert store.students.profile(store.stranger) is None
 
@@ -107,14 +109,14 @@ def test_a_saved_profile_reads_back_and_saving_again_updates_it(store):
 
 
 def test_replacing_her_history_leaves_exactly_the_new_lines(store):
-    her = store.mbali.student
+    her = store.mbali
     kept = her.course_history[:3]
     store.students.replace_history(her.student.id, kept)
     assert set(store.students.get(her.student.id).course_history) == set(kept)
 
 
 def test_her_current_set_is_her_seeded_one_and_a_stranger_has_none(store):
-    her = store.mbali.student
+    her = store.mbali
     current = store.students.current_plan_set(her.student.id)
     assert current.plan_set == her.plan_sets[0]
     assert [plan.position for plan in current.plans] == list(range(1, 11))
@@ -125,7 +127,7 @@ def test_her_current_set_is_her_seeded_one_and_a_stranger_has_none(store):
 
 def test_a_generated_set_is_written_complete_and_once(store, seed_file):
     # Mbali's seeded set, made the stranger's and marked not yet complete, as a new set arrives
-    seeded = load_seed(seed_file, store.stranger).student
+    seeded = load_seed(seed_file, store.stranger)
     rows = PlanSetRows(
         plan_set=seeded.plan_sets[0].model_copy(update={"complete": False}),
         plans=seeded.plans,
@@ -142,7 +144,7 @@ def test_a_generated_set_is_written_complete_and_once(store, seed_file):
 
 
 def test_plans_by_id_bring_their_set_and_reasons_and_only_hers(store):
-    her = store.mbali.student
+    her = store.mbali
     by_position = {plan.position: plan for plan in her.plans}
     (rows,) = store.students.plans(her.student.id, [by_position[7].id])
     assert rows.plan_set == her.plan_sets[0]
@@ -158,7 +160,7 @@ def test_plans_by_id_bring_their_set_and_reasons_and_only_hers(store):
 
 
 def test_her_record_is_her_history_and_six_hearted_electives(store):
-    her = store.mbali.student
+    her = store.mbali
     record = store.students.record(her.student.id)
     assert set(record.course_history) == set(her.course_history)
     assert record.favourites == (
@@ -173,7 +175,7 @@ def test_her_record_is_her_history_and_six_hearted_electives(store):
 
 
 def test_hearting_twice_and_unhearting_twice_change_nothing_more(store):
-    her = store.mbali.student.student.id
+    her = store.mbali.student.id
     for _ in range(2):
         store.students.add_favourite(her, "ECO1006F")
     assert store.students.record(her).favourites.count("ECO1006F") == 1
@@ -184,7 +186,7 @@ def test_hearting_twice_and_unhearting_twice_change_nothing_more(store):
 
 def test_hiding_plans_leaves_exactly_the_kept_ones_visible(store):
     # Her seeded set already hides positions 2 to 4, so keeping 2 shows it again, as a retry needs
-    her = store.mbali.student
+    her = store.mbali
     plan_set = her.plan_sets[0]
     keep = {plan.id for plan in her.plans if plan.position in (1, 2, 5)}
     store.students.hide_plans(her.student.id, plan_set.id, keep)
@@ -195,11 +197,11 @@ def test_hiding_plans_leaves_exactly_the_kept_ones_visible(store):
 
 
 def chat_titled(store: Store, title: str) -> Chat:
-    return next(chat for chat in store.mbali.student.chats if chat.title == title)
+    return next(chat for chat in store.mbali.chats if chat.title == title)
 
 
 def test_her_chats_list_under_exactly_their_plan_or_pair(store):
-    her = store.mbali.student.student.id
+    her = store.mbali.student.id
     single = chat_titled(store, "Fridays on Power & Robotics")
     pair = chat_titled(store, "Process Control or Medical Imaging")
     alone = store.students.chats(her, single.plan_id, None)
@@ -212,7 +214,7 @@ def test_her_chats_list_under_exactly_their_plan_or_pair(store):
 
 
 def test_a_new_chat_has_its_time_and_lists_first(store):
-    her = store.mbali.student.student.id
+    her = store.mbali.student.id
     single = chat_titled(store, "Fridays on Power & Robotics")
     new = store.students.add_chat(
         Chat(id=uuid4(), student_id=her, plan_id=single.plan_id)
@@ -223,7 +225,7 @@ def test_a_new_chat_has_its_time_and_lists_first(store):
 
 
 def test_a_chat_reads_back_its_messages_in_order(store):
-    her = store.mbali.student
+    her = store.mbali
     pair = chat_titled(store, "Process Control or Medical Imaging")
     question, reply = store.students.messages(her.student.id, pair.id)
     assert (question.message.role, reply.message.role) == ("user", "assistant")
@@ -234,7 +236,7 @@ def test_a_chat_reads_back_its_messages_in_order(store):
 
 
 def test_a_question_and_its_reply_are_stored_together_in_order(store):
-    her = store.mbali.student.student.id
+    her = store.mbali.student.id
     chat = chat_titled(store, "Fridays on Power & Robotics")
     asked = Message(
         id=uuid4(),
@@ -284,7 +286,7 @@ def test_a_cited_reply_reads_back_with_its_passage(
     rules.add_missing(
         RuleSet(handbook_versions=(HandbookVersion(year=2098),), passages=(passage,))
     )
-    chat = mbali.student.chats[0]
+    chat = mbali.chats[0]
     asked = Message(
         id=uuid4(), chat_id=chat.id, student_id=account.id, role="user", content="Test"
     )
@@ -309,7 +311,7 @@ def test_a_cited_reply_reads_back_with_its_passage(
 
 @pytest.mark.integration
 def test_a_year_a_plan_uses_is_never_replaced(stores, mbali):
-    # Mbali's seeded plans use the seed's 2026, so the database refuses to remove that year, and
+    # Her seeded plans use the approved 2026, so the database refuses to remove that year, and
     # nothing of it changes. sage load --replace goes through this.
     rules, _ = stores
     before = rules.get(2026)

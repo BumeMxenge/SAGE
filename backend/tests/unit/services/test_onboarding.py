@@ -38,12 +38,12 @@ class Generator:
 
 
 @pytest.fixture
-def setup(seed_file, result_symbols):
-    # Her stores with the 2026 rulebook and nothing of hers, and the lines she confirms
-    data = load_seed(seed_file, STUDENT)
+def setup(seed_file, result_symbols, approved_2026):
+    # Her stores with the approved 2026 and nothing of hers, and the lines she confirms
     rules = InMemoryRuleRepository(result_symbols)
-    rules.add_missing(data.rules)
-    return InMemoryStudentRepository(), Rulebook(rules), data.student.course_history
+    rules.replace_year(approved_2026)
+    history = load_seed(seed_file, STUDENT).course_history
+    return InMemoryStudentRepository(), Rulebook(rules), history
 
 
 def finish(setup, generator: Generator) -> None:
