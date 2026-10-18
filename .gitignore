@@ -26,3 +26,5 @@ supabase/.branches/
 CLAUDE.md
 CLAUDE.local.md
 docs/setup.md
+# Files made for local testing, such as make transcript's PDF
+local/

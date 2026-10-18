@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed sign-in load mutation planted-faults
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration seed sign-in sign-in-new transcript load mutation planted-faults
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -124,3 +124,17 @@ sign-in:
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
 		uv run sage sign-in $(if $(PORT),--port $(PORT)) && \
 		echo "Open that link in your browser to sign in as Mbali. It works once, within an hour." >&2
+
+# Prints a one-time link for Ilvane, a second made-up student, who hasn't finished setup. Each run
+# first deletes her account and everything it saved, so onboarding starts fresh, and never touches
+# Mbali's. PORT works as for sign-in, and again only the link goes to stdout.
+sign-in-new:
+	@$(LOCAL_SUPABASE) && cd backend && \
+		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
+		uv run python scripts/sign_in_new.py $(if $(PORT),--port $(PORT)) && \
+		echo "Open that link to sign in as Ilvane, with onboarding fresh. It works once, within an hour." >&2
+
+# Writes the made-up transcript as a PDF with Ilvane's student number, for her onboarding to upload:
+# local/transcript.pdf
+transcript:
+	@cd backend && uv run python scripts/transcript.py
