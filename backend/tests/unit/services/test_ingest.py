@@ -514,6 +514,46 @@ def test_a_sitting_saves_each_decision_and_a_rerun_keeps_them(
     ]
 
 
+def test_a_decision_naming_a_code_the_handbook_prints_needs_no_note(
+    tmp_path, handbook_pdf, complementary_xlsx, timetable_block
+):
+    # The handbook also prints an entry for a course no curriculum here lists, so SAGE doesn't load
+    # it. The review counts every code the handbook prints, so a correction naming it needs no
+    # note, while one naming a code nothing prints does.
+    unloaded = "EEE2999F"
+    pages = [list(page) for page in PAGES]
+    pages[1] += [
+        "",
+        f"{unloaded} CIRCUITS FOR OTHER PROGRAMMES",
+        "8 NQF credits at NQF level 6",
+        "Convener: Dr A Made-Up",
+        "Course outline:",
+        "A made-up course for students outside Electrical Engineering.",
+        "Assessment: Coursework 100%.",
+    ]
+    sources(tmp_path, handbook_pdf, complementary_xlsx, timetable_block, pages)
+    candidate = ingest(2026, data=tmp_path)
+    assert unloaded not in {course.code for course in candidate.rules.courses}
+    sitting = Sitting(
+        candidate,
+        review_file(2026, tmp_path),
+        lambda: datetime(2026, 10, 18, tzinfo=UTC),
+    )
+
+    def correct(code):
+        # A made-up correction of PHY1013S's rule, naming the code as its co-requisite
+        tree = {
+            "all": [
+                {"course": "EEE1006F", "need": "pass"},
+                {"course": code, "need": "concurrent"},
+            ]
+        }
+        return sitting.decide("requirement/PHY1013S", "correct", corrected=tree)
+
+    assert [problem.note for problem in correct("EEE2998F")] == [True]
+    assert correct(unloaded) == ()
+
+
 def accept_all(data, but=()):
     # Accepts each row of the made-up year's review but those named, with a note where a check fails
     candidate, review = review_year(2026, data=data)
