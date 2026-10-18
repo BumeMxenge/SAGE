@@ -1,8 +1,9 @@
-# Plants each of the 24 faults from my test review in a copy of the backend, runs the unit tests, and
-# reports which test caught it. The tests first run on the copy with no fault, and any failure stops
-# the script, as a broken copy would make every fault look caught. The faults go into a temporary
-# copy, so a run cut short never leaves one in the real code. A fault whose text no longer matches is
-# reported as not applied, never as caught.
+# Plants each of the 26 faults in a copy of the backend, runs the unit tests, and reports which test
+# caught it: the 24 from my test review, and two in the review and approval the thesis rests on. The
+# tests first run on the copy with no fault, and any failure stops the script, as a broken copy would
+# make every fault look caught. The faults go into a temporary copy, so a run cut short never leaves
+# one in the real code. A fault whose text no longer matches is reported as not applied, never as
+# caught.
 import os
 import shutil
 import subprocess
@@ -196,6 +197,20 @@ FAULTS = [
         "    if code not in {course.code for course in rulebook.year(year).courses}:\n"
         "        raise",
         "    if False:\n        raise",
+    ),
+    Fault(
+        25,
+        "review: a decision stays applied after its reading changes",
+        "src/sage/ingestion/review.py",
+        'if mine and mine.get("fingerprint") == row.fingerprint:',
+        "if mine:",
+    ),
+    Fault(
+        26,
+        "approve: passes with a row pending",
+        "src/sage/ingestion/review.py",
+        "return not (self.pending or self.problems)",
+        "return not self.problems",
     ),
 ]
 

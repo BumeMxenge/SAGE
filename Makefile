@@ -97,8 +97,8 @@ mutation:
 		uv run --group mutation mutmut export-cicd-stats > /dev/null && \
 		uv run python scripts/mutation_score.py | tee mutation-score.txt
 
-# The 24 faults my test review planted by hand, each in a copy of the backend, and the test that
-# caught it, if any. About five minutes.
+# The 26 planted faults, each in a copy of the backend, and the test that caught it, if any: the 24
+# from my test review, and two in the review and approval. About five minutes.
 planted-faults:
 	@cd backend && uv run python scripts/planted_faults.py
 
