@@ -18,6 +18,9 @@ function transcriptPdf(): string {
 }
 
 test('Ilvane sets up her account from her transcript and reaches her plans', async ({ freshStudent: page }) => {
+  // Two make targets and the API's reading of her PDF take about 10 s alone, and can take more than
+  // the default 30 s when a full run's other workers share the machine
+  test.slow()
   await page.getByRole('button', { name: 'Next, Your Course History' }).click()
   await page.locator('input[type=file]').setInputFiles(transcriptPdf())
   await expect(page.getByText('courses found')).toBeVisible()
