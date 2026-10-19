@@ -19,7 +19,8 @@
   --color-sign-in-hover: #22282b;
 
   /* Brand colours from the logo, for decoration only: the shapes behind the sign-in page and Account
-     Created. Never text or a control. Navy and sand change with the theme, so they are in theme.css. */
+     Created, and fills in the sign-in highlights' pictures. Never text or a control. Navy and sand
+     change with the theme, so they are in theme.css. */
   --color-brand-coral: #ea5b4c;
   --color-brand-teal: #4cae94;
 

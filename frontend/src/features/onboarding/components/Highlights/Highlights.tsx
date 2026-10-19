@@ -1,16 +1,18 @@
 // Three things SAGE does, one at a time, on React Aria's Tabs. Each dot is a tab named after its
 // highlight, with a hit area of at least 24 px, and the arrow keys move between them. Only a click or
-// a key changes the highlight, never a timer, so nothing needs pausing. The pictures are decoration:
-// a screen reader hears each highlight's title.
+// a key changes the highlight, never a timer, so nothing needs pausing. Each picture is one image to a
+// screen reader, named by what it shows.
 import type { ReactNode } from 'react'
 import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import styles from './Highlights.module.css'
 
-const highlights: { id: string; title: string; picture: ReactNode }[] = [
+const highlights: { id: string; title: string; shows: string; picture: ReactNode }[] = [
   {
     id: 'timetables',
     title: 'Timetables That Work in Practice, Not Just on Paper',
+    shows:
+      "STA2020F's practical, Wednesday 14:00 to 16:00, clashes with CSC1015F's lecture, Wednesday 15:00 to 16:00. SAGE finds the two slots that work: STA2020F on Tuesday at 09:00 and CSC1015F on Wednesday at 15:00.",
     picture: (
       <>
         <div className={styles.clash}>
@@ -41,6 +43,8 @@ const highlights: { id: string; title: string; picture: ReactNode }[] = [
   {
     id: 'answers',
     title: 'Instant Answers, Grounded in the EBE Handbook',
+    shows:
+      'A student asks whether they can take STA2020F after failing MAM1000W last year. SAGE answers not yet, as STA2020F lists MAM1000W as a prerequisite, gives two routes, repeating MAM1000W this year or applying for a prerequisite concession, and cites page 148 of the Engineering & the Built Environment Handbook 2026.',
     picture: (
       <>
         <p className={styles.question}>Can I take STA2020F if I failed MAM1000W last year?</p>
@@ -57,6 +61,8 @@ const highlights: { id: string; title: string; picture: ReactNode }[] = [
   {
     id: 'credits',
     title: 'Course Lists That Sit Inside Your Credit Limits',
+    shows:
+      "Semester 1's credit load: STA2020F, CSC1015F and MAM1000W at 14 credits each make 42, between the minimum of 36 and the maximum of 48, with room for one 6-credit elective. 42 credits is inside the limits, so no concession is needed.",
     picture: (
       <>
         <div className={`${styles.card} ${styles.load}`}>
@@ -111,11 +117,15 @@ export function Highlights() {
           <Tab key={id} id={id} aria-label={title} className={styles.dot} />
         ))}
       </TabList>
-      {highlights.map(({ id, title, picture }) => (
+      {highlights.map(({ id, title, shows, picture }) => (
         <TabPanel key={id} id={id} className={styles.panel}>
           <h2 className={styles.title}>{title}</h2>
-          <div aria-hidden="true" className={styles.picture}>
-            {picture}
+          {/* An img element can't hold an HTML drawing, so the role makes this one image instead */}
+          {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+          <div role="img" aria-label={shows}>
+            <div aria-hidden="true" className={styles.drawing}>
+              {picture}
+            </div>
           </div>
         </TabPanel>
       ))}

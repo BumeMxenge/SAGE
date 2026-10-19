@@ -1,7 +1,7 @@
-// Parity for the sign-in landing, signed out, against the onboarding prototype's Landing state: the
-// whole page with each highlight, and the controls it adds, at rest and on hover. Onboarding is light
-// only, so parity runs in light alone.
-import { type Locator, type Page, test } from '@playwright/test'
+// The sign-in landing, signed out: each highlight's picture is one image to a screen reader. Then parity
+// against the onboarding prototype's Landing state: the whole page with each highlight, and the
+// controls it adds, at rest and on hover. Onboarding is light only, so it all runs in light alone.
+import { expect, type Locator, type Page, test } from '@playwright/test'
 import { type ParityCase, parity } from '../../../e2e/parity.ts'
 import { settled, showState } from './prototype.ts'
 
@@ -54,6 +54,24 @@ function control(name: string, designed: (page: Page) => Locator, built: (page: 
 }
 
 test.skip(({ colorScheme }) => colorScheme === 'dark', 'Onboarding is light only')
+
+// White text on the prototype's teal is under 4.5:1, which WCAG 1.4.3 allows only for text that is
+// part of a picture, so each picture must reach a screen reader as one named image and nothing more
+test("each highlight's picture is one image to a screen reader", async ({ page }) => {
+  await page.goto('/sign-in')
+  await arrived(page, timetables)
+  for (const [title, picture] of [
+    [timetables, /^STA2020F's practical, Wednesday 14:00 to 16:00, clashes/],
+    [answers, /^A student asks whether they can take STA2020F/],
+    [credits, /^Semester 1's credit load/],
+  ] as const) {
+    await page.getByRole('tab', { name: title }).click()
+    await expect(page.getByRole('tabpanel')).toMatchAriaSnapshot(`
+      - heading "${title}" [level=2]
+      - img ${String(picture)}
+    `)
+  }
+})
 
 parity('onboarding', [
   {
