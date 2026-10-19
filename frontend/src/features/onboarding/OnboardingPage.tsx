@@ -1,14 +1,16 @@
 // Onboarding: Account Created, then the transcript upload and its review. The steps live in this
 // page's state: nothing is saved until Finish Setup, and a reload reads the transcript again, so no
 // step needs an address of its own.
+import { usePrefetchQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import { Logo } from '@/components/brand/Logo/Logo.tsx'
-import { PageHeader } from '@/components/content/PageHeader/PageHeader.tsx'
 import { AccountCreated } from '@/features/onboarding/components/AccountCreated/AccountCreated.tsx'
 import { OnboardingSteps } from '@/features/onboarding/components/OnboardingSteps/OnboardingSteps.tsx'
+import { ReviewStep } from '@/features/onboarding/components/ReviewStep/ReviewStep.tsx'
 import { UploadStep } from '@/features/onboarding/components/UploadStep/UploadStep.tsx'
 import type { components } from '@/lib/api-types.ts'
-import { pageNames } from '@/lib/copy.ts'
+import { queries, refresh } from '@/lib/queryKeys.ts'
 import styles from './OnboardingPage.module.css'
 
 type Step =
@@ -18,6 +20,16 @@ type Step =
 
 export function OnboardingPage() {
   const [step, setStep] = useState<Step>({ name: 'welcome' })
+  const navigate = useNavigate()
+  // The review needs the catalogue, so its read starts now, while the student uploads
+  usePrefetchQuery(queries.catalogue())
+
+  // Finish Setup completed the account: what it changed is read again, and the student's plans open
+  async function finished() {
+    await refresh.setupFinished()
+    await navigate('/plan', { replace: true })
+  }
+
   if (step.name === 'welcome') return <AccountCreated onNext={() => setStep({ name: 'upload' })} />
   return (
     <div className={styles.page}>
@@ -25,13 +37,21 @@ export function OnboardingPage() {
         <Logo variant="compact" />
         <OnboardingSteps current={step.name} />
       </header>
-      {/* Each step takes focus as it opens, so a screen reader starts reading it from its heading */}
-      <main key={step.name} ref={(main) => main?.focus()} tabIndex={-1} className={styles.main}>
+      {/* Each step takes focus as it opens, so a screen reader starts reading it from its heading, and
+          the page shows it from the top, header and all */}
+      <main
+        key={step.name}
+        ref={(main) => {
+          main?.focus({ preventScroll: true })
+          scrollTo(0, 0)
+        }}
+        tabIndex={-1}
+        className={styles.main}
+      >
         {step.name === 'upload' ? (
           <UploadStep onContinue={(transcript) => setStep({ name: 'review', transcript })} />
         ) : (
-          // The stub's heading, until the review takes its place
-          <PageHeader title={pageNames.onboarding} />
+          <ReviewStep transcript={step.transcript} onSaved={finished} />
         )}
       </main>
     </div>

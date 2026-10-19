@@ -1,0 +1,66 @@
+/* The review runs the width of the page, and the page scrolls as a whole, so the keyboard reaches all
+   of it (audit item 8) */
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: var(--width-full);
+}
+
+.programme {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+.programme dt {
+  color: var(--color-text-secondary);
+}
+
+.programme dd {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* The year's figures, and later its actions, sit at the right end of its table's caption line */
+.year {
+  display: grid;
+}
+
+.year > * {
+  grid-area: 1 / 1;
+}
+
+.year:focus {
+  outline: none;
+}
+
+.summary {
+  position: relative;
+  justify-self: end;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+}
+
+.next {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  margin-left: auto;
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
