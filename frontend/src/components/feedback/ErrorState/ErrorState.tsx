@@ -8,12 +8,11 @@
 // A blocking page is the whole page, so its title is the page's h1 and it has a larger title on a
 // round grey tile (case 02).
 import type { ReactNode } from 'react'
-import { Icon } from '@/components/brand/Icon/Icon.tsx'
-import type { IconName } from '@/components/brand/Icon/icons.ts'
+import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import styles from './ErrorState.module.css'
 
 type ErrorStateProps = {
-  icon: Exclude<IconName, 'favorite'>
+  icon: PlainIconName
   title: string
   message: string
   reference?: string

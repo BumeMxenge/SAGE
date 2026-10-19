@@ -5,17 +5,15 @@
 // sidebar and the assistant are both open.
 import type { ReactNode } from 'react'
 import { Button as AriaButton, type ButtonProps as AriaButtonProps } from 'react-aria-components'
-import { Icon } from '@/components/brand/Icon/Icon.tsx'
-import type { IconName } from '@/components/brand/Icon/icons.ts'
+import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import outline from '@/styles/outline.module.css'
 import styles from './Button.module.css'
 
 type Variant = 'primary' | 'secondary' | 'quiet' | 'sign-in' | 'danger'
-type ButtonIcon = Exclude<IconName, 'favorite'>
 
 type ButtonProps = Omit<AriaButtonProps, 'className' | 'style' | 'children' | 'isPending'> & { variant?: Variant } & (
-    | { icon?: ButtonIcon; iconOnly?: false; children: ReactNode }
-    | { icon: ButtonIcon; iconOnly: true; children: string }
+    | { icon?: PlainIconName; iconOnly?: false; children: ReactNode }
+    | { icon: PlainIconName; iconOnly: true; children: string }
   )
 
 const variantClass: Record<Variant, string> = {
