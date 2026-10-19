@@ -62,7 +62,11 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
   const lines = review.lines.filter((line) => line.academic_year === year)
   const credits = lines.reduce((total, line) => total + line.credits, 0)
   const caption = `${year} · Year ${yearIndex + 1} of ${years.length}`
-  const programme = transcript.curriculum_options.length === 1 ? transcript.curriculum_options[0] : null
+  // One programme the transcript names is theirs. Several are the ones to choose from, and none leaves
+  // the catalogue's whole list.
+  const options = transcript.curriculum_options
+  const programme = options.length === 1 ? options[0] : null
+  const choices = options.length > 1 ? options : (catalogue.data?.curricula ?? [])
   const symbols = catalogue.data?.symbols ?? []
   const words = new Map(symbols.map((symbol) => [symbol.symbol, symbol.label]))
   const wordsFor = (result: string) => words.get(result) ?? result
@@ -109,7 +113,7 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
                 if (code !== null) dispatch({ type: 'chooseCurriculum', code: String(code) })
               }}
             >
-              {catalogue.data?.curricula.map((curriculum) => (
+              {choices.map((curriculum) => (
                 <SelectItem key={curriculum.code} id={curriculum.code}>
                   {curriculum.name}
                 </SelectItem>
