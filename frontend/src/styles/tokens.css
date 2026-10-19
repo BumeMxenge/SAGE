@@ -107,6 +107,8 @@
   --duration-fast: 150ms; /* tooltips, menus and the Select list fading; a progress bar moving on */
   --duration-slow: 300ms; /* a dialog rising over its dimmed backdrop; panels opening and closing */
   --easing: cubic-bezier(0.4, 0, 0.2, 1); /* starts briskly, settles gently */
+  --duration-slide: 620ms; /* a strip sliding on by one, as the sign-in highlights do */
+  --duration-slide-slow: 1050ms; /* the same strip going back round, from its last to its first */
   --duration-loop: 1600ms; /* one sweep of the skeleton shimmer */
   --duration-loop-slow: 2200ms; /* one breath of the leaf pulse */
 
@@ -126,11 +128,13 @@
 
 /* Reduced motion: every duration becomes 0. An animation with no duration leaves its element in its
    resting style, which is each animation's fallback: a plain block, a still leaf beside its status
-   text, and overlays that simply appear. */
+   text, overlays that simply appear, and a strip that moves on at once. */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration-fast: 0ms;
     --duration-slow: 0ms;
+    --duration-slide: 0ms;
+    --duration-slide-slow: 0ms;
     --duration-loop: 0ms;
     --duration-loop-slow: 0ms;
     --gradient-shimmer: none;
