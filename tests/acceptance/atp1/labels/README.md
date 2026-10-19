@@ -98,7 +98,8 @@ The harness scores SAGE against these labels by these rules, set before its firs
 
 - **Titles** match ignoring case, as SAGE title-cases names.
 - **Trees.** A label's Requirement tree and Co-requisite tree are joined in an all, as SAGE stores one entry rule per course. A tree left blank or null adds nothing, so a course with one tree keeps it alone. Both sides are compared in the normal form of `normal` in E2's [score.py](../../../../experiments/ingestion/requirement-parsing/score.py).
-- **Timetable.** Section isn't scored, as SAGE doesn't store it. Kind is scored only where a label gives one.
+- **ASL1200S.** 2026 prints no entry for it, so its 2026 row holds only "no entry printed". That row is right when SAGE's approved 2026 holds no ASL1200S, and wrong when it holds one.
+- **Timetable.** Each cell is scored against the meeting the timetable reader reads there, found by its sheet and the first cell of its merged block. Day, Start and End come from that meeting's day and periods, and Term from the semester it's printed under. Labs D27 names EEE2041F, which the 2026 manifest leaves out, so SAGE stores no meeting from it. Its cell is still scored against the reader, and the report states the exclusion. Section isn't scored, as SAGE doesn't store it. Kind is scored only where a label gives one.
 - **Complementary.** Each Book's cover title maps to the workbook's handbook name, and each day name to the workbook's mon to fri. A Page matches if it falls within the course's printed pages in the workbook.
 - **Headline.** `held_out.xlsx` is the headline result for requirement trees. The course sheets are an in-sample check, as the grammar was written from their fields.
 - **Judgement calls.** A row is a judgement call when its Note holds anything but "no entry printed", or Ambiguous is yes. Each table is reported with and without those rows.
