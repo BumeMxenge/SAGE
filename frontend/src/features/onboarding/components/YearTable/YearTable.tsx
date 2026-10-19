@@ -1,13 +1,13 @@
 // One year of the review: its courses in a table, in the order the prototype lists them, by term and
-// then by code. Course names show exactly as the transcript prints them. A line the reading partly
-// guessed says "Check" beside its outcome, so the warning never rests on colour alone. In edit mode
-// each outcome is a Select of UCT's result symbols, and each course can be removed.
+// then by code. Course names show exactly as the transcript prints them, and each outcome in a word,
+// such as Passed. A line the reading partly guessed says "Check" beside its outcome, so the warning
+// never rests on colour alone. In edit mode each outcome is a plain Select of the seven outcomes, and
+// each course can be removed.
 import { IconButton } from '@/components/actions/IconButton/IconButton.tsx'
 import { DataTable } from '@/components/content/DataTable/DataTable.tsx'
 import { Select } from '@/components/inputs/Select/Select.tsx'
 import { SelectItem } from '@/components/inputs/Select/SelectItem.tsx'
-import type { ReviewLine } from '@/features/onboarding/review.ts'
-import type { components } from '@/lib/api-types.ts'
+import { isOutcome, type Outcome, outcomes, type ReviewLine, wordFor } from '@/features/onboarding/review.ts'
 import { termLabels } from '@/lib/copy.ts'
 import styles from './YearTable.module.css'
 
@@ -24,15 +24,14 @@ const columns = [
 type YearTableProps = {
   caption: string
   lines: ReviewLine[]
-  // UCT's result symbols, from the catalogue, with each one's words
-  symbols: components['schemas']['ResultSymbol'][]
+  // Each result symbol's outcome, from the catalogue
+  outcomeOf: Map<string, Outcome>
   editing: boolean
-  onChangeOutcome: (line: ReviewLine, result: string) => void
+  onChangeOutcome: (line: ReviewLine, outcome: Outcome) => void
   onRemove: (line: ReviewLine) => void
 }
 
-export function YearTable({ caption, lines, symbols, editing, onChangeOutcome, onRemove }: YearTableProps) {
-  const words = new Map(symbols.map((symbol) => [symbol.symbol, symbol.label]))
+export function YearTable({ caption, lines, outcomeOf, editing, onChangeOutcome, onRemove }: YearTableProps) {
   const ordered = lines.toSorted(
     (first, second) =>
       termOrder.indexOf(first.term) - termOrder.indexOf(second.term) || first.course_code.localeCompare(second.course_code),
@@ -53,19 +52,19 @@ export function YearTable({ caption, lines, symbols, editing, onChangeOutcome, o
                 <Select
                   variant="plain"
                   label={`Outcome for ${line.course_code}`}
-                  selectedKey={line.result}
-                  onSelectionChange={(result) => {
-                    if (result !== null && result !== line.result) onChangeOutcome(line, String(result))
+                  selectedKey={outcomeOf.get(line.result) ?? null}
+                  onSelectionChange={(outcome) => {
+                    if (isOutcome(outcome) && outcome !== outcomeOf.get(line.result)) onChangeOutcome(line, outcome)
                   }}
                 >
-                  {symbols.map((symbol) => (
-                    <SelectItem key={symbol.symbol} id={symbol.symbol} description={symbol.symbol}>
-                      {symbol.label}
+                  {Object.entries(outcomes).map(([outcome, { word }]) => (
+                    <SelectItem key={outcome} id={outcome}>
+                      {word}
                     </SelectItem>
                   ))}
                 </Select>
               ) : (
-                (words.get(line.result) ?? line.result)
+                wordFor(line.result, outcomeOf)
               )}
               {line.unverified && <span className={styles.check}>Check</span>}
             </span>

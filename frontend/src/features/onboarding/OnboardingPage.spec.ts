@@ -138,13 +138,13 @@ async function toConfirmAdd(page: Page): Promise<void> {
   await toPicker(page)
   await page.getByRole('option').first().click()
   await page.getByRole('dialog', { name: 'Add This Course?' }).getByRole('button', { name: /Outcome for/ }).click()
-  await page.getByRole('option', { name: 'Pass (pass or fail course)' }).click()
+  await page.getByRole('option', { name: 'Passed' }).click()
 }
 
 async function toConfirmChange(page: Page): Promise<void> {
   await toEditing(page)
   await page.getByRole('button', { name: /Outcome for/ }).first().click()
-  await page.getByRole('option', { name: 'Third class (50 to 59%)' }).click()
+  await page.getByRole('option', { name: 'Failed' }).click()
   await page.getByRole('dialog', { name: 'Change This Outcome?' }).waitFor()
 }
 

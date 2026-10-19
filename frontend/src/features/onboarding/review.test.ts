@@ -1,6 +1,7 @@
 // Finish Setup sends exactly the lines the student kept, as they left them: a removed line is absent, a
-// changed outcome is sent, and an added course carries the catalogue's name, credits and term, with
-// no NQF level or mark. The record is made up, and the expected request is written out by hand.
+// changed outcome is sent as that outcome's plain symbol with no mark, a marked pass changed to Failed
+// included, and an added course carries the catalogue's name, credits and term, with no NQF level or
+// mark. The record is made up, and the expected request is written out by hand.
 import { expect, it } from 'vitest'
 import type { components } from '@/lib/api-types.ts'
 import { type ReviewAction, reviewReducer, setupOf, startReview } from './review.ts'
@@ -45,20 +46,32 @@ const transcript: components['schemas']['Transcript'] = {
       mark: null,
       unverified: false,
     },
+    {
+      academic_year: 2025,
+      term: 'sem1',
+      course_code: 'EEE3090F',
+      course_name: 'Electronic Devices & Circuits',
+      credits: 16,
+      nqf_level: 7,
+      result: '2+',
+      mark: 72,
+      unverified: false,
+    },
   ],
 }
 
 it('sends exactly the lines the student kept, as they left them', () => {
   const start = startReview(transcript)
-  const [analogue, , design] = start.lines
+  const [analogue, , design, devices] = start.lines
   const edits: ReviewAction[] = [
     { type: 'remove', id: analogue.id },
-    { type: 'changeOutcome', id: design.id, result: '2+' },
+    { type: 'changeOutcome', id: design.id, outcome: 'pass' },
+    { type: 'changeOutcome', id: devices.id, outcome: 'fail' },
     {
       type: 'add',
       year: 2024,
       course: { code: 'EEE2044S', name: 'Introduction to Power Engineering', credits: 16, term: 'sem2' },
-      result: 'PA',
+      outcome: 'pass',
     },
   ]
   const edited = edits.reduce(reviewReducer, start)
@@ -77,7 +90,7 @@ it('sends exactly the lines the student kept, as they left them', () => {
         result: 'SP',
         mark: 50,
       },
-      // With the outcome the student chose
+      // With the outcome the student chose, as UCT's plain symbol for a pass
       {
         academic_year: 2025,
         term: 'sem1',
@@ -85,7 +98,18 @@ it('sends exactly the lines the student kept, as they left them', () => {
         course_name: 'Design Principles',
         credits: 16,
         nqf_level: 7,
-        result: '2+',
+        result: 'PA',
+        mark: null,
+      },
+      // A marked pass changed to Failed: F, and the printed mark gone with the printed result
+      {
+        academic_year: 2025,
+        term: 'sem1',
+        course_code: 'EEE3090F',
+        course_name: 'Electronic Devices & Circuits',
+        credits: 16,
+        nqf_level: 7,
+        result: 'F',
         mark: null,
       },
       // Added, as the catalogue has it

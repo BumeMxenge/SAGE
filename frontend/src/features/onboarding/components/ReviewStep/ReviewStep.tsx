@@ -15,7 +15,17 @@ import { ConfirmChange } from '@/features/onboarding/components/ConfirmChange/Co
 import { CoursePicker } from '@/features/onboarding/components/CoursePicker/CoursePicker.tsx'
 import { YearTable } from '@/features/onboarding/components/YearTable/YearTable.tsx'
 import { focusOnOpen } from '@/features/onboarding/focusOnOpen.ts'
-import { type ReviewAction, type ReviewLine, reviewReducer, setupOf, startReview } from '@/features/onboarding/review.ts'
+import {
+  isOutcome,
+  type Outcome,
+  outcomes,
+  type ReviewAction,
+  type ReviewLine,
+  reviewReducer,
+  setupOf,
+  startReview,
+  wordFor,
+} from '@/features/onboarding/review.ts'
 import { client, dataOf } from '@/lib/api.ts'
 import type { components } from '@/lib/api-types.ts'
 import { termLabels } from '@/lib/copy.ts'
@@ -35,8 +45,8 @@ const warningTitles: Record<components['schemas']['TranscriptWarning']['code'], 
 // The question open over the review, if any: picking a course, or confirming one change
 type Question =
   | { kind: 'pick' }
-  | { kind: 'add'; course: Course; result: string | null }
-  | { kind: 'change'; line: ReviewLine; result: string }
+  | { kind: 'add'; course: Course; outcome: Outcome | null }
+  | { kind: 'change'; line: ReviewLine; outcome: Outcome }
   | { kind: 'remove'; line: ReviewLine }
 
 const courses = (count: number) => `${count} ${count === 1 ? 'course' : 'courses'}`
@@ -67,9 +77,8 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
   const options = transcript.curriculum_options
   const programme = options.length === 1 ? options[0] : null
   const choices = options.length > 1 ? options : (catalogue.data?.curricula ?? [])
-  const symbols = catalogue.data?.symbols ?? []
-  const words = new Map(symbols.map((symbol) => [symbol.symbol, symbol.label]))
-  const wordsFor = (result: string) => words.get(result) ?? result
+  // Each result symbol's outcome, from the catalogue
+  const outcomeOf = new Map((catalogue.data?.symbols ?? []).map(({ symbol, outcome }) => [symbol, outcome]))
 
   function apply(action: ReviewAction) {
     dispatch(action)
@@ -156,9 +165,9 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
         <YearTable
           caption={caption}
           lines={lines}
-          symbols={symbols}
+          outcomeOf={outcomeOf}
           editing={editing}
-          onChangeOutcome={(line, result) => setQuestion({ kind: 'change', line, result })}
+          onChangeOutcome={(line, outcome) => setQuestion({ kind: 'change', line, outcome })}
           onRemove={(line) => setQuestion({ kind: 'remove', line })}
         />
       </section>
@@ -191,7 +200,7 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
           year={year}
           courses={(catalogue.data?.courses ?? []).filter((course) => !lines.some((line) => line.course_code === course.code))}
           onClose={() => setQuestion(null)}
-          onPick={(course) => setQuestion({ kind: 'add', course, result: null })}
+          onPick={(course) => setQuestion({ kind: 'add', course, outcome: null })}
         />
       )}
       {question?.kind === 'add' && (
@@ -208,14 +217,14 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
                   variant="plain"
                   label={`Outcome for ${question.course.code}`}
                   placeholder="Set the outcome for this course"
-                  selectedKey={question.result}
-                  onSelectionChange={(result) => {
-                    if (result !== null) setQuestion({ ...question, result: String(result) })
+                  selectedKey={question.outcome}
+                  onSelectionChange={(outcome) => {
+                    if (isOutcome(outcome)) setQuestion({ ...question, outcome })
                   }}
                 >
-                  {symbols.map((symbol) => (
-                    <SelectItem key={symbol.symbol} id={symbol.symbol} description={symbol.symbol}>
-                      {symbol.label}
+                  {Object.entries(outcomes).map(([outcome, { word }]) => (
+                    <SelectItem key={outcome} id={outcome}>
+                      {word}
                     </SelectItem>
                   ))}
                 </Select>
@@ -224,10 +233,10 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
           ]}
           cancelLabel="Back to List"
           confirmLabel="Add Course"
-          isConfirmDisabled={question.result === null}
+          isConfirmDisabled={question.outcome === null}
           onCancel={() => setQuestion({ kind: 'pick' })}
           onConfirm={() => {
-            if (question.result !== null) apply({ type: 'add', year, course: question.course, result: question.result })
+            if (question.outcome !== null) apply({ type: 'add', year, course: question.course, outcome: question.outcome })
           }}
         />
       )}
@@ -237,13 +246,13 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
           lead="Outcomes drive prerequisite checks."
           facts={[
             { term: 'Course', value: `${question.line.course_code}: ${question.line.course_name}` },
-            { term: 'From', value: wordsFor(question.line.result) },
-            { term: 'To', value: wordsFor(question.result) },
+            { term: 'From', value: wordFor(question.line.result, outcomeOf) },
+            { term: 'To', value: outcomes[question.outcome].word },
           ]}
           cancelLabel="Keep Outcome"
           confirmLabel="Change Outcome"
           onCancel={() => setQuestion(null)}
-          onConfirm={() => apply({ type: 'changeOutcome', id: question.line.id, result: question.result })}
+          onConfirm={() => apply({ type: 'changeOutcome', id: question.line.id, outcome: question.outcome })}
         />
       )}
       {question?.kind === 'remove' && (
@@ -253,7 +262,7 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
           facts={[
             { term: 'Removing', value: `${question.line.course_code}: ${question.line.course_name}`, danger: true },
             { term: 'Year', value: `${year}, ${termLabels[question.line.term]}` },
-            { term: 'Outcome', value: wordsFor(question.line.result) },
+            { term: 'Outcome', value: wordFor(question.line.result, outcomeOf) },
           ]}
           cancelLabel="Keep Course"
           confirmLabel="Remove Course"
