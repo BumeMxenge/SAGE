@@ -34,12 +34,16 @@ import styles from './ReviewStep.module.css'
 
 type Transcript = components['schemas']['Transcript']
 type Course = components['schemas']['Course']
+type TranscriptWarning = components['schemas']['TranscriptWarning']
 
-// A title for each note the reading can send, so a new kind of note fails the build until it has one
-const warningTitles: Record<components['schemas']['TranscriptWarning']['code'], string> = {
+// The notes the review shows. Pending results aren't one, as each such course already says In progress.
+type ShownWarning = TranscriptWarning & { code: Exclude<TranscriptWarning['code'], 'results_pending'> }
+const isShown = (warning: TranscriptWarning): warning is ShownWarning => warning.code !== 'results_pending'
+
+// A title for each note shown, so a new kind of note fails the build until it has one
+const warningTitles: Record<ShownWarning['code'], string> = {
   term_gpa_mismatch: "A Term Average Doesn't Match",
   recent_year_missing: 'No Courses Last Year',
-  results_pending: "Some Results Aren't Out Yet",
 }
 
 // The question open over the review, if any: picking a course, or confirming one change
@@ -131,7 +135,7 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
           )}
         </dd>
       </dl>
-      {transcript.warnings.map((warning) => (
+      {transcript.warnings.filter(isShown).map((warning) => (
         <ErrorState
           key={warning.code}
           variant="inline"

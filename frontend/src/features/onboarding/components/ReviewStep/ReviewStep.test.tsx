@@ -1,5 +1,6 @@
 // Finish Setup waits for the student to confirm their last year: disabled before the box is ticked,
-// enabled once it is, and disabled again when it is unticked
+// enabled once it is, and disabled again when it is unticked. And the review leaves out the note that
+// results are pending, by its code, as each such course already says In progress.
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
@@ -46,15 +47,19 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-it('keeps Finish Setup disabled until the last year is confirmed', () => {
-  // The catalogue is already read, so nothing goes to the network
+// The catalogue is already read, so nothing goes to the network
+function review(record: components['schemas']['Transcript']) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity } } })
   queryClient.setQueryData(queries.catalogue().queryKey, catalogue)
   render(
     <QueryClientProvider client={queryClient}>
-      <ReviewStep transcript={transcript} onSaved={async () => {}} />
+      <ReviewStep transcript={record} onSaved={async () => {}} />
     </QueryClientProvider>,
   )
+}
+
+it('keeps Finish Setup disabled until the last year is confirmed', () => {
+  review(transcript)
   const finish = screen.getByRole('button', { name: 'Finish Setup' })
   const confirmation = screen.getByRole('checkbox', { name: 'This reflects my current academic record' })
 
@@ -63,4 +68,18 @@ it('keeps Finish Setup disabled until the last year is confirmed', () => {
   expect(finish).toHaveProperty('disabled', false)
   fireEvent.click(confirmation)
   expect(finish).toHaveProperty('disabled', true)
+})
+
+// Each note's message is made up, so only its code can keep the pending one out
+it('leaves out the note that results are pending, by its code', () => {
+  review({
+    ...transcript,
+    warnings: [
+      { code: 'results_pending', message: 'Two made-up results are still to come.' },
+      { code: 'recent_year_missing', message: 'This made-up record has no courses for last year.' },
+    ],
+  })
+  expect(screen.getByText('No Courses Last Year')).toBeTruthy()
+  expect(screen.queryByText("Some Results Aren't Out Yet")).toBeNull()
+  expect(screen.queryByText('Two made-up results are still to come.')).toBeNull()
 })

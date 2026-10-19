@@ -24,7 +24,7 @@ const line = (
   unverified = false,
 ): TranscriptLine => ({ academic_year, term, course_code, course_name, credits, nqf_level: academic_year - 2018, result, mark, unverified })
 
-// A made-up record: three years, a note that some results are pending, and one line partly guessed
+// A made-up record: three years, a note that a term average doesn't match, and one line partly guessed
 const transcript: components['schemas']['Transcript'] = {
   student_number: 'DLMMBA999',
   programme: 'Bachelor of Science in Engineering in Electrical and Computer Engineering',
@@ -59,8 +59,8 @@ const transcript: components['schemas']['Transcript'] = {
   ],
   warnings: [
     {
-      code: 'results_pending',
-      message: "Some of your 2025 results aren't out yet, so those courses are marked in progress. Check them before you finish.",
+      code: 'term_gpa_mismatch',
+      message: "Your 2024 lines don't add up to the Term GPA printed for 2024, so check them carefully.",
     },
   ],
 }
