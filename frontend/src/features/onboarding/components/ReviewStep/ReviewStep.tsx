@@ -4,7 +4,7 @@
 // from the catalogue, each after a question that says what will change. On the last year, once they
 // tick that it reflects their record, Finish Setup sends the whole history in one request.
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useReducer, useState } from 'react'
+import { useCallback, useReducer, useState } from 'react'
 import { Button } from '@/components/actions/Button/Button.tsx'
 import { PageHeader } from '@/components/content/PageHeader/PageHeader.tsx'
 import { ErrorState } from '@/components/feedback/ErrorState/ErrorState.tsx'
@@ -15,6 +15,7 @@ import { ConfirmChange } from '@/features/onboarding/components/ConfirmChange/Co
 import { CoursePicker } from '@/features/onboarding/components/CoursePicker/CoursePicker.tsx'
 import { YearTable } from '@/features/onboarding/components/YearTable/YearTable.tsx'
 import { focusOnOpen } from '@/features/onboarding/focusOnOpen.ts'
+import { watchEnd } from '@/features/onboarding/watchEnd.ts'
 import {
   isOutcome,
   type Outcome,
@@ -63,6 +64,9 @@ export function ReviewStep({ transcript, curriculum, onSaved }: ReviewStepProps)
   const [editing, setEditing] = useState(false)
   const [question, setQuestion] = useState<Question | null>(null)
   const [confirmed, setConfirmed] = useState(false)
+  // The years, by their place in the list, whose table the student has seen to its end, or whose rows
+  // all fit. A year is read once, and stays read if they go back to it, as in the prototype.
+  const [read, setRead] = useState<ReadonlySet<number>>(() => new Set())
   const catalogue = useQuery(queries.catalogue())
   const saving = useMutation({
     mutationFn: (setup: components['schemas']['Setup']) => dataOf(client.POST('/v1/onboarding/complete', { body: setup })),
@@ -76,6 +80,17 @@ export function ReviewStep({ transcript, curriculum, onSaved }: ReviewStepProps)
   const lines = review.lines.filter((line) => line.academic_year === year)
   const credits = lines.reduce((total, line) => total + line.credits, 0)
   const caption = `${year} · Year ${yearIndex + 1} of ${years.length}`
+  const isRead = read.has(yearIndex)
+  // Each year's table takes focus as it opens, and counts as read once scrolled to its end. One
+  // function per year, so React calls it only as the year's table mounts.
+  const yearBox = useCallback(
+    (box: HTMLElement | null) => {
+      focusOnOpen(box)
+      if (!box) return
+      return watchEnd(box, () => setRead((places) => (places.has(yearIndex) ? places : new Set([...places, yearIndex]))))
+    },
+    [yearIndex],
+  )
   // Each result symbol's outcome, from the catalogue
   const outcomeOf = new Map((catalogue.data?.symbols ?? []).map(({ symbol, outcome }) => [symbol, outcome]))
 
@@ -84,12 +99,14 @@ export function ReviewStep({ transcript, curriculum, onSaved }: ReviewStepProps)
     setQuestion(null)
   }
 
-  // Moving on waits for the student to finish editing. Finish Setup also needs the box ticked and at
-  // least one course, as the API can't save an empty history. The box sits just above it; the rest say
-  // why it waits.
-  const canFinish = confirmed && !editing && review.lines.length > 0 && !saving.isPending
+  // Moving on waits for the student to finish editing and to read the year to its end. Finish Setup
+  // also needs the box ticked and at least one course, as the API can't save an empty history. The box
+  // sits just above it; the rest say why it waits.
+  const canMoveOn = !editing && isRead
+  const canFinish = canMoveOn && confirmed && review.lines.length > 0 && !saving.isPending
   function nextHint(): string | null {
     if (editing) return 'Finish editing to continue.'
+    if (!isRead) return 'Scroll to the end of the year to continue.'
     if (isLast && review.lines.length === 0) return 'Add at least one course to finish.'
     return null
   }
@@ -138,7 +155,7 @@ export function ReviewStep({ transcript, curriculum, onSaved }: ReviewStepProps)
         {/* Each year's table takes focus as it opens, so a screen reader hears which year it is, and the
             arrow keys can scroll it */}
         <YearTable
-          ref={focusOnOpen}
+          ref={yearBox}
           caption={caption}
           lines={lines}
           outcomeOf={outcomeOf}
@@ -165,7 +182,7 @@ export function ReviewStep({ transcript, curriculum, onSaved }: ReviewStepProps)
               Finish Setup
             </Button>
           ) : (
-            <Button isDisabled={editing} onPress={() => setYearIndex(yearIndex + 1)}>
+            <Button isDisabled={!canMoveOn} onPress={() => setYearIndex(yearIndex + 1)}>
               Confirm {year}
             </Button>
           )}

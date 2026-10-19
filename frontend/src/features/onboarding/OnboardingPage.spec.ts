@@ -105,15 +105,23 @@ async function toReview(page: Page): Promise<void> {
   await page.getByRole('heading', { level: 1, name: 'Review Your Course History' }).waitFor()
 }
 
+// A year's Confirm waits until its table has been scrolled to its end
+async function readYear(page: Page, year: string): Promise<void> {
+  await page.getByRole('region', { name: new RegExp(`^${year} `) }).evaluate((box) => box.scrollTo(0, box.scrollHeight))
+}
+
 async function toYear2(page: Page): Promise<void> {
   await toReview(page)
+  await readYear(page, '2023')
   await page.getByRole('button', { name: 'Confirm 2023' }).click()
   await page.getByRole('button', { name: 'Confirm 2024' }).waitFor()
 }
 
 async function toLastYear(page: Page): Promise<void> {
   await toYear2(page)
+  await readYear(page, '2024')
   await page.getByRole('button', { name: 'Confirm 2024' }).click()
+  await readYear(page, '2025')
   await page.getByText('This reflects my current academic record').click()
 }
 
@@ -384,9 +392,31 @@ test('every step fits a 1280 by 650 window with no page scroll', async ({ page }
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('heading', { level: 1, name: 'Review Your Course History' }).waitFor()
   await fits()
-  for (const year of ['2023', '2024']) await page.getByRole('button', { name: `Confirm ${year}` }).click()
+  for (const year of ['2023', '2024']) {
+    await readYear(page, year)
+    await page.getByRole('button', { name: `Confirm ${year}` }).click()
+  }
   await page.getByRole('checkbox', { name: 'This reflects my current academic record' }).waitFor()
   await fits()
+})
+
+// A year is confirmed only once its table has been seen to its end, as in the prototype: Confirm waits,
+// saying why, while the rows run on below the box, and a year whose rows all fit needs no scroll
+test('Confirm waits until the year has been scrolled to its end', async ({ page }) => {
+  await page.goto('/onboarding')
+  await toReview(page)
+  const confirm = page.getByRole('button', { name: 'Confirm 2023' })
+  const hint = page.getByText('Scroll to the end of the year to continue.')
+  await expect(confirm).toBeDisabled()
+  await expect(hint).toBeVisible()
+  await readYear(page, '2023')
+  await expect(confirm).toBeEnabled()
+  await expect(hint).toHaveCount(0)
+
+  await page.setViewportSize({ width: 1280, height: 1400 })
+  await page.goto('/onboarding')
+  await toReview(page)
+  await expect(confirm).toBeEnabled()
 })
 
 // Below that, as at 200% zoom, the page scrolls as a whole instead, so Confirm is never out of reach

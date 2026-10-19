@@ -37,8 +37,14 @@ test('Ilvane sets up her account from her transcript and reaches her plans', asy
   expect(courses.length).toBeGreaterThan(0)
   for (const course of courses) expect(kept).not.toContain(course.split(':')[0])
 
-  await page.getByRole('button', { name: 'Confirm 2023' }).click()
-  await page.getByRole('button', { name: 'Confirm 2024' }).click()
+  // Each year's Confirm, and Finish Setup on the last, waits until its table has been scrolled to its end
+  const readYear = (year: string) =>
+    page.getByRole('region', { name: new RegExp(`^${year} `) }).evaluate((box) => box.scrollTo(0, box.scrollHeight))
+  for (const year of ['2023', '2024']) {
+    await readYear(year)
+    await page.getByRole('button', { name: `Confirm ${year}` }).click()
+  }
+  await readYear('2025')
   await page.getByText('This reflects my current academic record').click()
   await page.getByRole('button', { name: 'Finish Setup' }).click()
 

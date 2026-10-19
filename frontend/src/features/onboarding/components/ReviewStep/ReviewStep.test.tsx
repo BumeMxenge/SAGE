@@ -38,13 +38,22 @@ const catalogue: components['schemas']['Catalogue'] = {
 }
 
 beforeEach(() => {
-  // Each year opens at the top of the page, which jsdom can't scroll
+  // Each year opens at the top of the page, which jsdom can't scroll. Nor does it measure sizes, so a
+  // year's table has nothing to scroll and counts as read at once.
   vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      observe() {}
+      disconnect() {}
+    },
+  )
 })
 
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 // The catalogue is already read, so nothing goes to the network
