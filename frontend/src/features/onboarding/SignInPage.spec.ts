@@ -1,7 +1,7 @@
-// The sign-in landing, signed out: one gesture moves exactly one highlight, and each highlight's picture
-// is one image to a screen reader. Then parity against the onboarding prototype's Landing state: the
-// whole page with each highlight, and the controls it adds, at rest and on hover. Onboarding is light
-// only, so it all runs in light alone.
+// The sign-in landing, signed out: one gesture moves exactly one highlight, each highlight's picture is
+// one image to a screen reader, and the page stays on one screen. Then parity against the onboarding
+// prototype's Landing state: the whole page with each highlight, and the controls it adds, at rest and
+// on hover. Onboarding is light only, so it all runs in light alone.
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import { type ParityCase, parity } from '../../../e2e/parity.ts'
 import { settled, showState } from './prototype.ts'
@@ -99,6 +99,33 @@ test("each highlight's picture is one image to a screen reader", async ({ page }
       - heading "${title}" [level=2]
       - img ${String(picture)}
     `)
+  }
+})
+
+// The landing is one screen: at 1280 by 820 nothing scrolls and nothing bounces. Shorter than `fits`,
+// where the highlights' panel no longer has room, the page scrolls instead, so nothing, Continue
+// included, is ever cut off.
+const fits = 577
+
+test('fits one screen at 1280 by 820, with no scroll and no bounce', async ({ page }) => {
+  await page.goto('/sign-in')
+  await arrived(page, timetables)
+  expect(
+    await page.evaluate(() => ({
+      height: document.documentElement.scrollHeight,
+      bounce: getComputedStyle(document.documentElement).overscrollBehaviorY,
+    })),
+  ).toEqual({ height: 820, bounce: 'none' })
+})
+
+test(`scrolls when shorter than ${fits} px, so Continue and the privacy line stay in reach`, async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: fits - 1 })
+  await page.goto('/sign-in')
+  await arrived(page, timetables)
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeGreaterThan(fits - 1)
+  for (const end of [page.getByRole('button', { name: 'Continue with UCT Email' }), page.getByRole('link', { name: 'Privacy Policy' })]) {
+    await end.scrollIntoViewIfNeeded()
+    await expect(end).toBeInViewport()
   }
 })
 

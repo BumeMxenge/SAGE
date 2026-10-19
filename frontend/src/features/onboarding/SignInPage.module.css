@@ -1,8 +1,13 @@
-/* Two halves, as the prototype draws them: the sign-in form, and the highlights on their sand panel */
+/* Two halves, as the prototype draws them: the sign-in form, and the highlights on their sand panel.
+   The page is one screen: it scrolls only in a window too short to hold it, and never bounces. */
 .page {
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: 100vh;
+}
+
+html:has(.page) {
+  overscroll-behavior: none;
 }
 
 /* The logo sits top left, as in the prototype, and the form in the middle of what's left */
