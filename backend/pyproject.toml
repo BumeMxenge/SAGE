@@ -27,6 +27,7 @@ dev = [
     "fpdf2>=2.8.9",
     "httpx>=0.28", # the token tests serve Supabase's replies through it
     "httpx2>=2.13.1", # FastAPI's TestClient calls the app through it, and two tests import it
+    "import-linter>=2.15", # make lint's check of the dependency rule, lint-imports
     "pytest>=8.0",
     "pytest-cov>=7.1", # make test's coverage report
     "ruff>=0.6",
@@ -77,6 +78,51 @@ do_not_mutate = [
     "src/sage/shared/memory/*",
 ]
 pytest_add_cli_args_test_selection = ["-m", "not integration"]
+
+# make lint's check of the dependency rule in docs/architecture.md: lint-imports keeps these contracts
+[tool.importlinter]
+root_package = "sage"
+include_external_packages = true # so the last two contracts can name outside packages
+
+[[tool.importlinter.contracts]]
+name = "Imports point inward"
+type = "layers"
+layers = [
+    "sage.main | sage.cli",
+    "sage.features",
+    "sage.advisor",
+    "sage.engine | sage.ingestion",
+    "sage.shared",
+    "sage.config",
+]
+
+[[tool.importlinter.contracts]]
+name = "Features don't import each other, except where one is built on another"
+type = "independence"
+modules = ["sage.features.*"]
+ignore_imports = [
+    "sage.features.chats.* -> sage.features.plans.*",
+    "sage.features.questionnaire.* -> sage.features.plans.*",
+    "sage.features.onboarding.* -> sage.features.accounts.*",
+]
+
+[[tool.importlinter.contracts]]
+name = "Only main.py plugs in the engine and the advisor"
+type = "protected"
+protected_modules = ["sage.engine", "sage.advisor"]
+allowed_importers = ["sage.main", "sage.advisor"]
+
+[[tool.importlinter.contracts]]
+name = "Only shared/supabase/ imports Supabase's SDK"
+type = "protected"
+protected_modules = ["supabase", "supabase_auth", "postgrest", "jwt"]
+allowed_importers = ["sage.shared.supabase"]
+
+[[tool.importlinter.contracts]]
+name = "Only ingestion/anthropic.py imports Anthropic's SDK"
+type = "protected"
+protected_modules = ["anthropic"]
+allowed_importers = ["sage.ingestion.anthropic"]
 
 [tool.ruff.lint]
 extend-select = ["I", "B", "UP"] # import order, likely bugs, outdated syntax

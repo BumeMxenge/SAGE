@@ -33,8 +33,10 @@ dev-all:
 test:
 	@cd backend && uv run pytest -m "not integration" --cov
 
+# ruff's lint and format checks, then the dependency rule's contracts in backend/pyproject.toml
 lint:
-	@cd backend && uv run ruff check && uv run ruff format --check
+	@cd backend && uv run ruff check && uv run ruff format --check && \
+		uv run lint-imports --no-cache --no-logo
 
 format:
 	@cd backend && uv run ruff check --fix && uv run ruff format
