@@ -116,6 +116,46 @@ async function toLastYear(page: Page): Promise<void> {
   await page.getByText('This reflects my current academic record').click()
 }
 
+async function toEditing(page: Page): Promise<void> {
+  await toReview(page)
+  await page.getByRole('button', { name: 'Edit Courses' }).click()
+  await page.getByRole('button', { name: 'Done Editing' }).waitFor()
+}
+
+async function toPicker(page: Page): Promise<void> {
+  await toEditing(page)
+  await page.getByRole('button', { name: 'Add a Course' }).click()
+  await page.getByRole('dialog', { name: 'Add a Course' }).waitFor()
+}
+
+async function toPickerWithNoMatch(page: Page): Promise<void> {
+  await toPicker(page)
+  await page.getByRole('searchbox').fill('zzzz')
+}
+
+async function toConfirmAdd(page: Page): Promise<void> {
+  await toPicker(page)
+  await page.getByRole('option').first().click()
+  await page.getByRole('dialog', { name: 'Add This Course?' }).getByRole('button', { name: /Outcome for/ }).click()
+  await page.getByRole('option', { name: 'Pass (pass or fail course)' }).click()
+}
+
+async function toConfirmChange(page: Page): Promise<void> {
+  await toEditing(page)
+  await page.getByRole('button', { name: /Outcome for/ }).first().click()
+  await page.getByRole('option', { name: 'Third class (50 to 59%)' }).click()
+  await page.getByRole('dialog', { name: 'Change This Outcome?' }).waitFor()
+}
+
+// A row's Remove, named after its course, such as Remove CSC1015F
+const removeRow = (page: Page) => page.getByRole('button', { name: /^Remove [A-Z]{3}\d{4}[A-Z]$/ }).first()
+
+async function toConfirmRemove(page: Page): Promise<void> {
+  await toEditing(page)
+  await removeRow(page).click()
+  await page.getByRole('dialog', { name: 'Remove This Course?' }).waitFor()
+}
+
 // The prototype unlocks each year's Confirm only once that year's list has been scrolled to its end
 async function scrollList(page: Page): Promise<void> {
   await page.mouse.move(640, 500)
@@ -137,6 +177,47 @@ async function prototypeLastYear(page: Page): Promise<void> {
   await prototypeYears(page, ['Confirm 2023', 'Confirm 2024'])
   await scrollList(page)
   await page.getByText('This reflects my current academic record').click()
+}
+
+// The prototype's review in edit mode, and its pickers and questions. Each year has its own controls,
+// side by side in the page, so the first of each is year 1's.
+async function prototypeEditing(page: Page): Promise<void> {
+  await showState(page, 'Review')
+  await settled(page)
+  await page.getByRole('button', { name: 'Edit courses' }).first().click()
+  await settled(page)
+}
+
+async function prototypePicker(page: Page): Promise<void> {
+  await prototypeEditing(page)
+  await page.getByRole('button', { name: 'Add a course' }).first().click()
+  await settled(page)
+}
+
+async function prototypePickerWithNoMatch(page: Page): Promise<void> {
+  await prototypePicker(page)
+  await page.getByPlaceholder('Search by course name or code').fill('zzzz')
+  await settled(page)
+}
+
+async function prototypeConfirmAdd(page: Page): Promise<void> {
+  await prototypePicker(page)
+  await page.getByRole('button', { name: /^EEE2044S/ }).click()
+  await settled(page)
+  await page.locator('select').filter({ hasText: 'Set the outcome' }).first().selectOption({ label: 'Passed' })
+  await settled(page)
+}
+
+async function prototypeConfirmChange(page: Page): Promise<void> {
+  await prototypeEditing(page)
+  await page.locator('select').first().selectOption({ label: 'Failed' })
+  await settled(page)
+}
+
+async function prototypeConfirmRemove(page: Page): Promise<void> {
+  await prototypeEditing(page)
+  await page.getByRole('button', { name: 'Remove course' }).first().click()
+  await settled(page)
 }
 
 const whole = (page: Page) => page.locator('body')
@@ -230,6 +311,44 @@ parity('onboarding', [
     { reach: prototypeLastYear, element: button('Finish setup') },
     { reach: toLastYear, element: button('Finish Setup') },
   ),
+  state('review-edit', prototypeEditing, toEditing),
+  control(
+    'edit-courses',
+    { reach: show('Review'), element: (page) => page.getByRole('button', { name: 'Edit courses' }).first() },
+    { reach: toReview, element: button('Edit Courses') },
+  ),
+  control('done-editing', { reach: prototypeEditing, element: button('Done editing') }, { reach: toEditing, element: button('Done Editing') }),
+  control(
+    'add-course',
+    { reach: prototypeEditing, element: (page) => page.getByRole('button', { name: 'Add a course' }).first() },
+    { reach: toEditing, element: button('Add a Course') },
+  ),
+  control(
+    'outcome-select',
+    { reach: prototypeEditing, element: (page) => page.locator('select').first() },
+    { reach: toEditing, element: (page) => page.getByRole('button', { name: /Outcome for/ }).first() },
+  ),
+  control(
+    'remove-row',
+    { reach: prototypeEditing, element: (page) => page.getByRole('button', { name: 'Remove course' }).first() },
+    { reach: toEditing, element: removeRow },
+  ),
+  state('course-picker', prototypePicker, toPicker),
+  control(
+    'picker-option',
+    { reach: prototypePicker, element: (page) => page.getByRole('button', { name: /^EEE2044S/ }) },
+    { reach: toPicker, element: (page) => page.getByRole('option').first() },
+  ),
+  state('picker-no-match', prototypePickerWithNoMatch, toPickerWithNoMatch),
+  state('confirm-add', prototypeConfirmAdd, toConfirmAdd),
+  state('confirm-change', prototypeConfirmChange, toConfirmChange),
+  state('confirm-remove', prototypeConfirmRemove, toConfirmRemove),
+  control(
+    'remove-course-button',
+    // The prototype's dialog sits last in its page, after every row's own Remove course
+    { reach: prototypeConfirmRemove, element: (page) => page.getByRole('button', { name: 'Remove course' }).last() },
+    { reach: toConfirmRemove, element: (page) => page.getByRole('dialog').getByRole('button', { name: 'Remove Course' }) },
+  ),
 ])
 
 // Each step as it stands has no axe violations and a clean keyboard walk
@@ -238,6 +357,12 @@ for (const [step, reach] of [
   ['a read transcript', toReady],
   ["the review's first year", toReview],
   ["the review's last year, confirmed", toLastYear],
+  ['editing the review', toEditing],
+  ['the course picker', toPicker],
+  ['the course picker with no match', toPickerWithNoMatch],
+  ['adding a course', toConfirmAdd],
+  ['changing an outcome', toConfirmChange],
+  ['removing a course', toConfirmRemove],
 ] as const) {
   test(`${step} has no axe violations and a clean keyboard walk`, async ({ page }) => {
     await page.goto('/onboarding')
