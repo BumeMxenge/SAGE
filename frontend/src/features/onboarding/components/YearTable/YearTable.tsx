@@ -51,6 +51,7 @@ export function YearTable({ caption, lines, symbols, editing, onChangeOutcome, o
             <span className={styles.outcome}>
               {editing ? (
                 <Select
+                  variant="plain"
                   label={`Outcome for ${line.course_code}`}
                   selectedKey={line.result}
                   onSelectionChange={(result) => {

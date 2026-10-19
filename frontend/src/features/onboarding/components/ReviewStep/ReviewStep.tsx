@@ -205,6 +205,7 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
               term: 'Outcome',
               value: (
                 <Select
+                  variant="plain"
                   label={`Outcome for ${question.course.code}`}
                   placeholder="Set the outcome for this course"
                   selectedKey={question.result}

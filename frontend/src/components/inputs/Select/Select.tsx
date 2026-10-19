@@ -2,7 +2,8 @@
 // visible label, as in the prototypes; the label is still there for screen readers. Options are
 // SelectItems. The placeholder shows until something is chosen, and then only the chosen option's
 // name: its codes and credits stay in the list. The list opens below, from the left edge, as the plan
-// switcher does.
+// switcher does. It is outlined, as the plan switcher is, or plain, as the review's outcomes are in
+// edit mode: the value and its arrow in the text around them.
 import type { ReactNode } from 'react'
 import { Button, Label, Select as AriaSelect, type SelectProps as AriaSelectProps, SelectValue } from 'react-aria-components'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
@@ -16,14 +17,15 @@ type SelectProps = Pick<
   'selectedKey' | 'defaultSelectedKey' | 'onSelectionChange' | 'placeholder' | 'name'
 > & {
   label: string
+  variant?: 'outlined' | 'plain'
   children: ReactNode
 }
 
-export function Select({ label, children, ...props }: SelectProps) {
+export function Select({ label, variant = 'outlined', children, ...props }: SelectProps) {
   return (
     <AriaSelect {...props}>
       <Label className="visually-hidden">{label}</Label>
-      <Button className={`${styles.trigger} ${outline.outline}`}>
+      <Button className={`${styles.trigger} ${variant === 'plain' ? styles.plain : outline.outline}`}>
         <SelectValue className={styles.value}>
           {({ isPlaceholder, selectedText, defaultChildren }) => (isPlaceholder ? defaultChildren : selectedText)}
         </SelectValue>
