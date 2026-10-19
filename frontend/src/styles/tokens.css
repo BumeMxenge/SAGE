@@ -98,6 +98,7 @@
   --width-reading: 760px;
   --width-wide: 860px;
   --width-full: 1080px;
+  --width-page: 1280px; /* the review, as wide as the prototype draws it */
   --width-dialog: 480px;
   --width-menu: 240px;
   --width-popover: 320px; /* the plan switcher's list */
@@ -109,6 +110,8 @@
   --easing: cubic-bezier(0.4, 0, 0.2, 1); /* starts briskly, settles gently */
   --duration-slide: 620ms; /* a strip sliding on by one, as the sign-in highlights do */
   --duration-slide-slow: 1050ms; /* the same strip going back round, from its last to its first */
+  --duration-fall: 3200ms; /* one fall of Account Created's confetti, the middle of the prototype's 2.4 to 4 s */
+  --easing-fall: cubic-bezier(0.25, 0.6, 0.4, 1); /* drops quickly, then drifts down like paper */
   --duration-loop: 1600ms; /* one sweep of the skeleton shimmer */
   --duration-loop-slow: 2200ms; /* one breath of the leaf pulse */
 
@@ -135,6 +138,7 @@
     --duration-slow: 0ms;
     --duration-slide: 0ms;
     --duration-slide-slow: 0ms;
+    --duration-fall: 0ms;
     --duration-loop: 0ms;
     --duration-loop-slow: 0ms;
     --gradient-shimmer: none;
