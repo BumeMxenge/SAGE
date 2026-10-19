@@ -7,7 +7,10 @@ import { join } from 'node:path'
 import { expect } from '@playwright/test'
 import { test } from '../../../e2e/visitors.ts'
 
-test.describe.configure({ mode: 'serial' })
+// Two make targets and the API's reading of her PDF take about 10 s alone, and can take more than the
+// default 30 s when a full run's other workers share the machine. The budget is set here, not by
+// test.slow() inside the test, so it covers the fixture that resets and signs her in, which runs first.
+test.describe.configure({ mode: 'serial', timeout: 90_000 })
 test.skip(({ colorScheme }) => colorScheme === 'dark', 'it resets Ilvane, so the light project alone runs it')
 
 // make transcript writes her PDF to local/transcript.pdf
@@ -18,9 +21,6 @@ function transcriptPdf(): string {
 }
 
 test('Ilvane sets up her account from her transcript and reaches her plans', async ({ freshStudent: page }) => {
-  // Two make targets and the API's reading of her PDF take about 10 s alone, and can take more than
-  // the default 30 s when a full run's other workers share the machine
-  test.slow()
   await page.getByRole('button', { name: 'Next, Your Course History' }).click()
   await page.locator('input[type=file]').setInputFiles(transcriptPdf())
   await expect(page.getByText('courses found')).toBeVisible()
