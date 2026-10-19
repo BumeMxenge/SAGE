@@ -24,6 +24,8 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 | 19 Oct | PUT and DELETE `/v1/favourites/{course_code}` declare `invalid_request`, which they can't send | Their only input is the course code in the path, which any string fills | None: `api-types.ts` records it | Drop it at the next change to the contract |
 | 19 Oct | An unexpected error in the browser asks the student to quote a reference, and shows none | `errors.ts` reads any error that isn't an `ApiError` as `internal_error`, whose words ask for the reference only the API's own errors carry | None yet | Words of its own for a failure in the browser |
 | 19 Oct | `frontend/public/privacy.html` follows the system's light or dark setting, not the appearance the student chose | The page is static and doesn't load `theme.js` | None yet | Load the stored choice, as the app does |
+| 19 Oct | The focus ring's outline is written 18 times in 13 stylesheets | Each component draws its own ring, so its width, style and colour repeat in each. Main had 16 in 12, and the sign-in highlights add two | None yet: left for the integration branch | Draw the ring in one place that every component uses |
+| 19 Oct | 15 of the 28 icons in `icons.ts` have no user yet | The design system brought in every icon the prototypes draw, ahead of the screens that use them. Onboarding adds `info` and `arrow_downward` and gives `add` its first user | None yet: left for the integration branch | Remove each icon still unused once every screen is built |
 
 **ATP-5 test window checklist.** Before the load test:
 
