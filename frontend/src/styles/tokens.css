@@ -90,7 +90,7 @@
   --size-target-min: 24px; /* WCAG 2.2 target size */
   --size-tile: 40px; /* the icon tile on an error state */
   --size-logo-full: 96px; /* tall enough for the tagline to read */
-  --size-logo-compact: 26px;
+  --size-logo-compact: 34px; /* the prototype's 104 by 34 */
   --size-logo-mark: 28px;
   --size-logo-microsoft: 21px;
   --width-form: 392px; /* the sign-in form, and a blocking error page */
