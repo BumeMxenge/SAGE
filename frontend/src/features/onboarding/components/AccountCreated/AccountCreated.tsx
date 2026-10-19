@@ -1,6 +1,7 @@
 // The first step of onboarding: the account exists, so SAGE welcomes the student and sends them on to
 // their course history. The greeting uses the name Microsoft gave this browser, if any (approved
-// difference 14), and waits until sign-in has said, so the name never appears late.
+// difference 14). Everything that welcomes them waits until the sign-in and the name are known, which
+// the sign-in starts finding out at once, so nothing changes or arrives late once it shows.
 import { Button } from '@/components/actions/Button/Button.tsx'
 import { Logo } from '@/components/brand/Logo/Logo.tsx'
 import { BrandShapes } from '@/features/onboarding/components/BrandShapes/BrandShapes.tsx'
@@ -14,13 +15,13 @@ export function AccountCreated({ onNext }: { onNext: () => void }) {
   return (
     <main className={styles.page}>
       <BrandShapes layout="account-created" />
-      <Confetti />
+      {!loading && <Confetti />}
       <div className={styles.logo}>
         <Logo variant="compact" />
       </div>
-      <div className={styles.content}>
-        <SuccessCheck />
-        {!loading && (
+      {!loading && (
+        <div className={styles.content}>
+          <SuccessCheck />
           <h1 className={styles.greeting}>
             {name ? (
               <>
@@ -30,12 +31,12 @@ export function AccountCreated({ onNext }: { onNext: () => void }) {
               <span className={styles.accent}>You're in.</span>
             )}
           </h1>
-        )}
-        <Button variant="sign-in" onPress={onNext}>
-          Next, Your Course History
-        </Button>
-        <p className={styles.time}>Takes about two minutes</p>
-      </div>
+          <Button variant="sign-in" onPress={onNext}>
+            Next, Your Course History
+          </Button>
+          <p className={styles.time}>Takes about two minutes</p>
+        </div>
+      )}
     </main>
   )
 }
