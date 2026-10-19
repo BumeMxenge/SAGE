@@ -1,9 +1,10 @@
 // @vitest-environment node
-// The guard sweep, like the backend's in tests/unit/api/test_guards.py: every page in the real route
-// table, opened by every kind of visitor, in a memory router. Who may open each page, and where each
-// visitor belongs, are written out by hand from the foundations brief, so a page that forgets its rule,
-// or one added without a line here, fails. GET /v1/me is answered in place of the network, through the
-// real client and its middleware. It runs in Node, because Node's Request refuses jsdom's AbortSignal.
+// The guard sweep, like the backend's in tests/unit/shared/api/test_guards.py: every page in the
+// real route table, opened by every kind of visitor, in a memory router. Who may open each page, and
+// where each visitor belongs, are written out by hand from the foundations brief, so a page that
+// forgets its rule, or one added without a line here, fails. GET /v1/me is answered in place of the
+// network, through the real client and its middleware. It runs in Node, because Node's Request
+// refuses jsdom's AbortSignal.
 import type { Session } from '@supabase/supabase-js'
 import { createMemoryRouter, type RouteObject } from 'react-router'
 import { afterEach, expect, it, vi } from 'vitest'

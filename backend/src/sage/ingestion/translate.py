@@ -1,10 +1,10 @@
 # Turns printed requirements into rule trees, grammar first. The grammar reads wording with exactly one
 # reading. A string it refuses takes its draft from the year's drafts.json, or, when a drafter is
-# given, a model drafts it and the draft is cached there. Wording an earlier year drafted takes that
-# draft instead, so the same words never get two drafts. A draft is kept only if it's a rule tree, or
-# null where the model reads no requirement, as E2's prompt asks, and it stays flagged with the
-# grammar's cause for a person to check. A refused string with no draft yet stands as a refer leaf
-# holding its printed words, flagged the same way.
+# given, a model drafts it and the draft is cached there. Then wording an earlier year drafted takes
+# that draft instead, so the same words never get two drafts. A draft is kept only if it's a rule
+# tree, or null where the model reads no requirement, as E2's prompt asks, and it stays flagged with
+# the grammar's cause for a person to check. A refused string with no draft yet stands as a refer
+# leaf holding its printed words, flagged the same way.
 import json
 from collections.abc import Iterable, Sequence
 from pathlib import Path
@@ -12,10 +12,10 @@ from typing import Literal
 
 from pydantic import TypeAdapter, ValidationError
 
-from sage.domain.base import Row
-from sage.domain.drafting import Drafter
-from sage.domain.rules import EntryRule, Refer, RefusalCause
 from sage.ingestion import grammar
+from sage.ingestion.drafting import Drafter
+from sage.shared.base import Row
+from sage.shared.rules import EntryRule, Refer, RefusalCause
 
 Need = Literal["pass", "concurrent"]
 DRAFT = TypeAdapter(EntryRule | None)
@@ -44,8 +44,8 @@ def translate(
 ) -> Translations:
     drafts = _read(cache)
     # Earlier years' caches come in year order, so wording printed before takes the latest year's
-    # draft. C2 compares a year with the one before it, and would read a different draft of the same
-    # words as a change.
+    # draft. The review compares a year with the one before it, and would read a different draft of
+    # the same words as a change.
     before = {
         (need, printed): draft
         for path in earlier

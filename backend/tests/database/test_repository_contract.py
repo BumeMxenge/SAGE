@@ -6,11 +6,12 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from sage.adapters.memory.rules import InMemoryRuleRepository
-from sage.adapters.memory.students import InMemoryStudentRepository
-from sage.domain.repositories import RuleRepository, StudentRepository, YearInUse
-from sage.domain.rules import Course, HandbookVersion, RuleSet
-from sage.domain.students import (
+from sage.shared.memory.rules import InMemoryRuleRepository
+from sage.shared.memory.students import InMemoryStudentRepository
+from sage.shared.repositories import RuleRepository, StudentRepository, YearInUse
+from sage.shared.rules import Course, HandbookVersion, RuleSet
+from sage.shared.seed import load_seed, seed
+from sage.shared.students import (
     Chat,
     Citation,
     Message,
@@ -19,7 +20,6 @@ from sage.domain.students import (
     StudentRecord,
     StudentState,
 )
-from sage.services.seed import load_seed, seed
 
 
 @dataclass(frozen=True)

@@ -2,17 +2,16 @@
 # holds a row that agrees beside the one that doesn't
 import pytest
 
-from sage.domain.rules import AnyOf, Course, CourseNeed, Equivalence
 from sage.ingestion import checks
 from sage.ingestion.complementary import Offering
 from sage.ingestion.curricula import Listed, Subtotal
 from sage.ingestion.handbook import Entry
 from sage.ingestion.timetable import Printed
+from sage.shared.rules import AnyOf, Course, CourseNeed, Equivalence
 
 
 def entry(code, credits=16, nqf_level=7, term=None, name="Energy Systems and Grids I"):
     return Entry(
-        codes=(code,),
         name=name,
         credits=credits,
         nqf_level=nqf_level,
@@ -205,7 +204,7 @@ def test_each_check_fires_on_one_planted_inconsistency(check, failure):
 
 
 def test_a_settled_exclusion_is_reported_not_failed():
-    # EEE2041F's Labs cells were left out at C1's Stop 1, so they never stop a year's approval
+    # EEE2041F's Labs cells are excluded in the manifest, so they never stop a year's approval
     check = checks.known_codes([meeting("EEE2041F")], set(), {"EEE2041F"})
     assert check.failures == ()
     assert check.reported == (

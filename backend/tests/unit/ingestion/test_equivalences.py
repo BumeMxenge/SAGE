@@ -1,8 +1,8 @@
 # Checks every equivalence is read with its reason and pages, and flagged for a person, as no
 # handbook prints one
-from sage.domain.rules import Equivalence
 from sage.ingestion.equivalences import read
 from sage.ingestion.sources import Reading
+from sage.shared.rules import Equivalence
 
 # Two rows of 2026's file, with their reasons shortened
 CSV = """code,counts_as,reason,page

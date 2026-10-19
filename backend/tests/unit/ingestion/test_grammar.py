@@ -2,8 +2,8 @@
 # reads, against trees written by hand from the page, and what it refuses, with the cause
 import pytest
 
-from sage.domain.rules import AllOf, AnyOf, CourseNeed
 from sage.ingestion.grammar import Refused, read
+from sage.shared.rules import AllOf, AnyOf, CourseNeed
 
 
 def passes(*codes):

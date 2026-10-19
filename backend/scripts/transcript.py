@@ -1,13 +1,12 @@
 # Writes the made-up transcript in tests/fixtures/transcript.txt as a PDF for Ilvane, the account make
 # sign-in-new signs in, so her onboarding has one to upload: local/transcript.pdf at the repo's root,
 # which git ignores. Only the Campus ID changes, on every page that prints it, to her student number.
-# It prints the PDF as conftest.py's pdf_of fixture does, a copy logged in docs/shortfalls.md until
-# conftest.py uses this.
+# make transcript runs it from backend/ as a module, so it prints with the tests' own printer.
 import re
 from pathlib import Path
 
-from fpdf import FPDF
-from sign_in_new import EMAIL
+from scripts.sign_in_new import EMAIL
+from tests.pdf import pdf_of, split_pages
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "backend" / "tests" / "fixtures" / "transcript.txt"
@@ -23,14 +22,6 @@ text, found = re.subn(
 if not found:
     raise SystemExit(f"{FIXTURE} holds no Campus ID line to change")
 
-pdf = FPDF()
-# Windows-1252 lets the built-in font print the record's dashes
-pdf.core_fonts_encoding = "windows-1252"
-pdf.set_font("Helvetica", size=9)
-for page in text.split("\f"):
-    pdf.add_page()
-    for line in page.strip("\n").split("\n"):
-        pdf.cell(text=line, new_x="LMARGIN", new_y="NEXT")
 OUTPUT.parent.mkdir(exist_ok=True)
-pdf.output(str(OUTPUT))
+OUTPUT.write_bytes(pdf_of(split_pages(text)))
 print(OUTPUT)

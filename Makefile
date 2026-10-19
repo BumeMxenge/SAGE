@@ -33,8 +33,10 @@ dev-all:
 test:
 	@cd backend && uv run pytest -m "not integration" --cov
 
+# ruff's lint and format checks, then the dependency rule's contracts in backend/pyproject.toml
 lint:
-	@cd backend && uv run ruff check && uv run ruff format --check
+	@cd backend && uv run ruff check && uv run ruff format --check && \
+		uv run lint-imports --no-cache --no-logo
 
 format:
 	@cd backend && uv run ruff check --fix && uv run ruff format
@@ -46,7 +48,7 @@ check: check-backend check-frontend check-contract
 check-backend: lint test
 
 check-frontend:
-	@cd frontend && npm run lint && npm test --if-present && npm run build
+	@cd frontend && npm run lint && npm test && npm run build
 
 # The frontend's types for every request and response, generated from the backend's OpenAPI schema.
 # The schema goes to a temporary file, so only api-types.ts is ever committed.
@@ -93,7 +95,7 @@ check-ui:
 	@cd frontend && npx playwright install chromium && npx playwright test
 
 # How many small faults (mutants) planted in the code the unit tests catch, written to
-# backend/mutation-score.txt. It takes about ten minutes, so CI never runs it. Each run starts
+# backend/mutation-score.txt. It's too slow for CI, which never runs it. Each run starts
 # afresh, as mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a
 # copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy
 # of data/ goes where SEED_FILE and DATA look for it, and a link puts experiments/ where the
@@ -106,10 +108,10 @@ mutation:
 		trap 'rm -rf data "$$SAGE_TEST_TEMP"; rm -f experiments' EXIT && \
 		uv run --group mutation mutmut run && \
 		uv run --group mutation mutmut export-cicd-stats > /dev/null && \
-		uv run python scripts/mutation_score.py | tee mutation-score.txt
+		score=$$(uv run python scripts/mutation_score.py) && echo "$$score" | tee mutation-score.txt
 
 # The 26 planted faults, each in a copy of the backend, and the test that caught it, if any: the 24
-# from my test review, and two in the review and approval. About five minutes.
+# from my test review, and two in the review and approval.
 planted-faults:
 	@cd backend && uv run python scripts/planted_faults.py
 
@@ -152,4 +154,4 @@ sign-in-new:
 # Writes the made-up transcript as a PDF with Ilvane's student number, for her onboarding to upload:
 # local/transcript.pdf
 transcript:
-	@cd backend && uv run python scripts/transcript.py
+	@cd backend && uv run python -m scripts.transcript

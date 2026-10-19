@@ -1,7 +1,7 @@
 // What a student reads when a request fails: a title, a message and an action for every problem code
 // the API sends, and for the three ways a request fails before the API can answer. The satisfies
 // below makes the build fail when a code has no entry. The words come from each refusal's meaning in
-// backend/src/sage/domain/errors.py and from the error sheet's copy, by the design audit's rules:
+// backend/src/sage/shared/errors.py and from the error sheet's copy, by the design audit's rules:
 // Title Case titles, sentence-case messages, and SAGE in capitals.
 import { ApiError, type ErrorCode } from './api.ts'
 
