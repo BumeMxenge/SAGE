@@ -1,14 +1,15 @@
-/* The review runs the width of the page and fills its height: the year's table takes the room the
-   heading, the notes and the buttons leave, and scrolls its rows inside, as in the prototype. Below
-   the table's minimum, room for its caption, its headers and three rows, the page scrolls as a whole
-   instead, as it does at high zoom. */
+/* The review runs the width of the page, up to the prototype's width and centred, and fills its height:
+   the year's table takes the room the heading, the notes and the buttons leave, and scrolls its rows
+   inside, as in the prototype. Only below the table's minimum, room for its caption, its headers and
+   one row, does the page scroll as a whole instead, as in a very short window or at high zoom. */
 .review {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-4);
   width: 100%;
-  max-width: var(--width-full);
+  max-width: var(--width-page);
+  margin-inline: auto;
 }
 
 /* The year's figures and its edit buttons sit at the right end of its table's caption line, over the
@@ -17,7 +18,7 @@
   display: grid;
   flex: 1 1 0;
   grid-template-rows: minmax(0, 1fr);
-  min-height: calc(var(--size-control-lg) * 5);
+  min-height: calc(var(--size-control-lg) * 3);
 }
 
 .year > * {

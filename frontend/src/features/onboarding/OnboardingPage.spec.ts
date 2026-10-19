@@ -356,8 +356,7 @@ test.describe('parity', () => {
 })
 
 // The year's table fills the room the page leaves and scrolls its rows inside its box, which a
-// screen reader names by its caption, with Confirm always on screen, as in the prototype. In a short
-// window, and at 200% zoom, the page scrolls as a whole instead, so Confirm is never out of reach.
+// screen reader names by its caption, with Confirm always on screen, as in the prototype
 test('the review scrolls its table inside its box, with Confirm on screen', async ({ page }) => {
   await page.goto('/onboarding')
   await toReview(page)
@@ -367,24 +366,43 @@ test('the review scrolls its table inside its box, with Confirm on screen', asyn
   await expect(page.getByRole('button', { name: 'Confirm 2023' })).toBeInViewport()
 })
 
-for (const [window, size] of [
-  ['a short window', { width: 1280, height: 600 }],
-  ['200% zoom', { width: 640, height: 410 }],
-] as const) {
-  test(`the review scrolls as a whole in ${window}, so Confirm stays in reach`, async ({ page }) => {
-    await page.setViewportSize(size)
-    await page.goto('/onboarding')
-    await toReview(page)
-    const scroll = await page.evaluate(() => ({
-      down: document.documentElement.scrollHeight > innerHeight,
-      sideways: document.documentElement.scrollWidth > innerWidth,
-    }))
-    expect(scroll).toEqual({ down: true, sideways: false })
-    const confirm = page.getByRole('button', { name: 'Confirm 2023' })
-    await confirm.scrollIntoViewIfNeeded()
-    await expect(confirm).toBeInViewport()
-  })
-}
+// No step scrolls in a window as short as a small laptop's, 1280 by 650, notes and the last year's
+// checkbox included: only the year's table scrolls, inside its box
+test('every step fits a 1280 by 650 window with no page scroll', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 650 })
+  const fits = async () => expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(650)
+  await page.goto('/onboarding')
+  await page.getByRole('heading', { level: 1, name: /You're in/ }).waitFor()
+  await fits()
+  await toUpload(page)
+  await fits()
+  await page
+    .locator('input[type=file]')
+    .setInputFiles({ name: 'transcript.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 made up') })
+  await page.getByText('courses found').waitFor()
+  await fits()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('heading', { level: 1, name: 'Review Your Course History' }).waitFor()
+  await fits()
+  for (const year of ['2023', '2024']) await page.getByRole('button', { name: `Confirm ${year}` }).click()
+  await page.getByRole('checkbox', { name: 'This reflects my current academic record' }).waitFor()
+  await fits()
+})
+
+// Below that, as at 200% zoom, the page scrolls as a whole instead, so Confirm is never out of reach
+test('the review scrolls as a whole at 200% zoom, so Confirm stays in reach', async ({ page }) => {
+  await page.setViewportSize({ width: 640, height: 410 })
+  await page.goto('/onboarding')
+  await toReview(page)
+  const scroll = await page.evaluate(() => ({
+    down: document.documentElement.scrollHeight > innerHeight,
+    sideways: document.documentElement.scrollWidth > innerWidth,
+  }))
+  expect(scroll).toEqual({ down: true, sideways: false })
+  const confirm = page.getByRole('button', { name: 'Confirm 2023' })
+  await confirm.scrollIntoViewIfNeeded()
+  await expect(confirm).toBeInViewport()
+})
 
 // A transcript naming several of the handbook's curricula, as each programme's 4-year and 5-year ones,
 // leaves the choice to the student: Continue waits, and says why, until one is chosen
