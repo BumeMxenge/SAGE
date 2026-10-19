@@ -69,8 +69,8 @@ export const icons = {
   // Planner: Done Comparing. Onboarding: Remove File, Remove Course, the course picker's Close and
   // Clear Search. Error sheet: a failed step, and the toast's close.
   close: Close,
-  // Planner: a chosen questionnaire chip. Onboarding: the review step's checkbox tick (drawn in CSS
-  // there; approved difference 2) and Account Created's tick. Error sheet: a done step.
+  // Planner: a chosen questionnaire chip. Onboarding: Account Created's tick, and the review step's
+  // checkbox tick, which the prototype draws in CSS (approved difference 2). Error sheet: a done step.
   check: Check,
   // Planner: the electives search. Error sheet: the search in "Electives catalogue busy".
   // Loading sheet: the electives search.
