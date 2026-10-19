@@ -1,0 +1,50 @@
+.steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  width: var(--width-message);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  padding-bottom: var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.step[aria-current='step'] {
+  color: var(--color-text);
+}
+
+/* The bar under each step: its track, then its fill over it */
+.step::before,
+.step::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: var(--space-1);
+  border-radius: var(--radius-full);
+  content: '';
+}
+
+.step::before {
+  width: 100%;
+  background: var(--color-surface-muted);
+}
+
+.step::after {
+  width: 0;
+  background: var(--color-focus);
+}
+
+.step[aria-current='step']::after {
+  width: 50%;
+}
+
+.step[data-done]::after {
+  width: 100%;
+}

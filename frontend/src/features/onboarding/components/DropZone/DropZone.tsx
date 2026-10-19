@@ -1,6 +1,7 @@
 // Where a file is dropped or chosen. There are three ways in, so nobody is shut out: drop it on the
 // zone, press the Choose button (a real button, so the keyboard works), or paste it. The picker
 // offers only the accepted types. Whatever arrives is handed to onSelect, and the caller checks it.
+// A note under the button can give the limits, such as the type and size allowed.
 import { DropZone as AriaDropZone, FileTrigger, isFileDropItem, Text } from 'react-aria-components'
 import { Button } from '@/components/actions/Button/Button.tsx'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
@@ -10,12 +11,13 @@ type DropZoneProps = {
   title: string
   hint?: string
   buttonLabel: string
+  note?: string
   acceptedFileTypes: string[]
   onSelect: (files: File[]) => void
   errorMessage?: string
 }
 
-export function DropZone({ title, hint, buttonLabel, acceptedFileTypes, onSelect, errorMessage }: DropZoneProps) {
+export function DropZone({ title, hint, buttonLabel, note, acceptedFileTypes, onSelect, errorMessage }: DropZoneProps) {
   return (
     <div className={styles.wrapper}>
       <AriaDropZone
@@ -36,6 +38,7 @@ export function DropZone({ title, hint, buttonLabel, acceptedFileTypes, onSelect
             {buttonLabel}
           </Button>
         </FileTrigger>
+        {note && <span className={styles.note}>{note}</span>}
       </AriaDropZone>
       {errorMessage && (
         <p role="alert" className={styles.message}>
