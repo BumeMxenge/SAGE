@@ -29,7 +29,7 @@ How SAGE turns a year's handbook into its rulebook was settled by the decisions 
 
 ## Rule representation
 
-- **Choice.** Typed rule trees stored as JSON in their rows, `courses.entry_rule` and `curriculum_rules.rule`, checked against the types in `backend/src/sage/domain/rules.py` on every load.
+- **Choice.** Typed rule trees stored as JSON in their rows, `courses.entry_rule` and `curriculum_rules.rule`, checked against the types in `backend/src/sage/shared/rules.py` on every load.
 - **Options.** Typed trees in the rule rows; normalised tables, with one row per node and a key to its parent; or the engine's own logic facts, stored as text.
 - **Rule.** It must express every printed requirement, with a `refer` leaf for wording only a person can judge. One meaning must have one form, so comparing two years finds only real changes. It mustn't depend on the engine, and it must share one store with the student data.
 - **Why it won.** Typed trees meet all four. The canonical form sorts the children of `all` and `any`, joins an `all` inside an `all` (and an `any` inside an `any`) and unwraps one with a single child, so a list printed in another order or grouped another way isn't a change. The engine reads the trees, never the reverse, and they sit in the same Postgres as the students' plans. Normalised tables would give foreign keys inside a tree, but one requirement would become many rows, compared as sets and read back with a recursive query. Logic facts would tie the stored rules to the engine's language, which isn't built yet. E2's labels bear the first point out: every one of its 81 strings from three other departments fits the types.
