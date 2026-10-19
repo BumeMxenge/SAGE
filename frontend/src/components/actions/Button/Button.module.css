@@ -53,8 +53,8 @@
   cursor: not-allowed;
 }
 
-/* The sign-in button is as long as the sign-in form. Onboarding is light only, so its colours
-   don't change with the theme, and its hover darkens instead of fading. */
+/* The sign-in button is as long as the sign-in form, as Account Created's Next is. Onboarding is light
+   only, so its colours don't change with the theme, and its hover darkens instead of fading. */
 .sign-in {
   width: 100%;
   max-width: var(--width-form);

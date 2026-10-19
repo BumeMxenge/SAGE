@@ -1,8 +1,8 @@
 // The button for actions. Primary is the one main action, secondary is outlined, quiet is for
 // supporting actions such as Back, danger confirms a destructive action such as Remove Course, and
-// sign-in is the Microsoft sign-in button, as long as the sign-in form. An icon can sit before the
-// label, or stand alone: then the label names the button for screen readers, as Compare does when the
-// sidebar and the assistant are both open.
+// sign-in is onboarding's long dark button, as long as the sign-in form: Continue with UCT Email, and
+// Account Created's Next. An icon can sit before the label, or stand alone: then the label names the
+// button for screen readers, as Compare does when the sidebar and the assistant are both open.
 import type { ReactNode } from 'react'
 import { Button as AriaButton, type ButtonProps as AriaButtonProps } from 'react-aria-components'
 import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'

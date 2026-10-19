@@ -31,7 +31,9 @@ export function AccountCreated({ onNext }: { onNext: () => void }) {
             )}
           </h1>
         )}
-        <Button onPress={onNext}>Next, Your Course History</Button>
+        <Button variant="sign-in" onPress={onNext}>
+          Next, Your Course History
+        </Button>
         <p className={styles.time}>Takes about two minutes</p>
       </div>
     </main>
