@@ -4,6 +4,7 @@ import json
 import re
 
 import pytest
+import transcripts
 from scoring import (
     ACCEPTED,
     BOOKS,
@@ -15,12 +16,14 @@ from scoring import (
     course_review,
     day_name,
     joined,
+    read_back,
     wilson,
     within,
 )
 
 from sage.ingestion.timetable import DAYS as SHEET_DAYS
 from sage.ingestion.timetable import Printed
+from sage.ingestion.transcript import TranscriptLine, TranscriptWarning
 from sage.shared.rules import HandbookDelta
 
 # Made-up codes, as in the labels README's examples
@@ -250,3 +253,57 @@ def delta(old: dict | None, new: dict | None, flag: str | None) -> HandbookDelta
 def test_a_change_counts_by_what_the_labels_show(before, after, found, expected):
     rows = course_changes("ABC2001S", before, after, found)
     assert [(row["field"], row["change"], row["outcome"]) for row in rows] == expected
+
+
+def printed(year: int, code: str, mark: int) -> transcripts.Row:
+    return transcripts.Row(year, code, "Signals I", 6, 16, mark, "3", "pass")
+
+
+def line(year: int, code: str, mark: int, unverified: bool = False) -> TranscriptLine:
+    return TranscriptLine(
+        academic_year=year,
+        term="sem1",
+        course_code=code,
+        course_name="Signals I",
+        credits=16,
+        nqf_level=6,
+        result="3",
+        mark=mark,
+        result_printed=True,
+        unverified=unverified,
+    )
+
+
+def test_each_printed_row_is_recovered_flagged_or_dropped():
+    rows = [
+        printed(2024, "ABC2001F", 55),  # read back as printed
+        printed(2024, "ABC2002F", 56),  # read with another mark, and marked unverified
+        printed(
+            2025, "ABC3001F", 57
+        ),  # missing, in a year whose Term GPA doesn't add up
+        printed(2024, "ABC2003F", 58),  # read with another mark and no flag
+        printed(2025, "ABC3002F", 59),  # read as printed, though its year is flagged
+    ]
+    lines = [
+        line(2024, "ABC2001F", 55),
+        line(2024, "ABC2002F", 65, unverified=True),
+        line(2024, "ABC2003F", 85),
+        line(2024, "ABC9999F", 70),
+        line(2025, "ABC3002F", 59, unverified=True),
+    ]
+    warning = TranscriptWarning(
+        code="term_gpa_mismatch",
+        message="Your 2025 lines don't add up to the Term GPA printed for 2025, so "
+        "check them carefully.",
+    )
+    found = read_back("ABCDEF999", rows, lines, [warning])
+    assert [(row["year"], row["code"], row["outcome"]) for row in found] == [
+        ("2024", "ABC2001F", "recovered"),
+        ("2024", "ABC2002F", "unverified"),
+        ("2025", "ABC3001F", "GPA warning"),
+        ("2024", "ABC2003F", "dropped"),
+        ("2025", "ABC3002F", "recovered"),
+        ("2024", "ABC2003F", "extra"),
+        ("2024", "ABC9999F", "extra"),
+        ("2025", "", "warning"),
+    ]
