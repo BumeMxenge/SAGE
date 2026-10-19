@@ -18,7 +18,7 @@ import styles from './OnboardingPage.module.css'
 type Step =
   | { name: 'welcome' }
   | { name: 'upload' }
-  | { name: 'review'; transcript: components['schemas']['Transcript'] }
+  | { name: 'review'; transcript: components['schemas']['Transcript']; curriculum: string }
 
 export function OnboardingPage() {
   useLightOnly()
@@ -43,9 +43,9 @@ export function OnboardingPage() {
       {/* Each step takes focus as it opens, so a screen reader starts reading it from its heading */}
       <main key={step.name} ref={focusOnOpen} tabIndex={-1} className={styles.main}>
         {step.name === 'upload' ? (
-          <UploadStep onContinue={(transcript) => setStep({ name: 'review', transcript })} />
+          <UploadStep onContinue={(transcript, curriculum) => setStep({ name: 'review', transcript, curriculum })} />
         ) : (
-          <ReviewStep transcript={step.transcript} onSaved={finished} />
+          <ReviewStep transcript={step.transcript} curriculum={step.curriculum} onSaved={finished} />
         )}
       </main>
     </div>

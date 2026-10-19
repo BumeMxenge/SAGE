@@ -22,6 +22,27 @@
   color: var(--color-text-secondary);
 }
 
+/* The programme the transcript names, or the list to choose it from. A long name wraps, in the list's
+   button too, so it never runs past the column. */
+.programme {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+.programme dt {
+  flex: none;
+  color: var(--color-text-secondary);
+}
+
+.programme dd {
+  min-width: 0;
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
 .continue {
   display: flex;
   gap: var(--space-4);

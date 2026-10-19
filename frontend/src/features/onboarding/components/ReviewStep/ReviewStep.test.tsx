@@ -53,7 +53,7 @@ function review(record: components['schemas']['Transcript']) {
   queryClient.setQueryData(queries.catalogue().queryKey, catalogue)
   render(
     <QueryClientProvider client={queryClient}>
-      <ReviewStep transcript={record} onSaved={async () => {}} />
+      <ReviewStep transcript={record} curriculum="MADE01" onSaved={async () => {}} />
     </QueryClientProvider>,
   )
 }

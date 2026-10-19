@@ -386,6 +386,34 @@ for (const [window, size] of [
   })
 }
 
+// A transcript naming several of the handbook's curricula, as each programme's 4-year and 5-year ones,
+// leaves the choice to the student: Continue waits, and says why, until one is chosen
+test('Continue waits for a programme when the transcript names several', async ({ page }) => {
+  await page.route('**/v1/onboarding/transcript', (route) =>
+    route.fulfill({
+      json: {
+        ...transcript,
+        curriculum_options: [
+          { code: 'EB022EEE02', name: 'Bachelor of Science in Engineering in Electrical and Computer Engineering 4-year curriculum' },
+          { code: 'EB822EEE02', name: 'Bachelor of Science in Engineering in Electrical and Computer Engineering 5-year curriculum' },
+        ],
+      },
+      headers: allowed,
+    }),
+  )
+  await page.goto('/onboarding')
+  await toReady(page)
+  const next = page.getByRole('button', { name: 'Continue' })
+  const hint = page.getByText('Choose your programme to continue.')
+  await expect(next).toBeDisabled()
+  await expect(hint).toBeVisible()
+  await expectNoAxeViolations(page)
+  await page.getByRole('button', { name: /Programme/ }).click()
+  await page.getByRole('option', { name: /4-year curriculum/ }).click()
+  await expect(next).toBeEnabled()
+  await expect(hint).toHaveCount(0)
+})
+
 // Each step as it stands has no axe violations and a clean keyboard walk
 for (const [step, reach] of [
   ['the upload', toUpload],

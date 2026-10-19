@@ -24,6 +24,9 @@ test('Ilvane sets up her account from her transcript and reaches her plans', asy
   await page.getByRole('button', { name: 'Next, Your Course History' }).click()
   await page.locator('input[type=file]').setInputFiles(transcriptPdf())
   await expect(page.getByText('courses found')).toBeVisible()
+  // Her transcript names two Mechatronics programmes, so she chooses hers before the review
+  await page.getByRole('button', { name: /Choose your programme/ }).click()
+  await page.getByRole('option', { name: 'Bachelor of Science in Engineering in Mechatronics 4-year curriculum' }).click()
   await page.getByRole('button', { name: 'Continue' }).click()
 
   // The first year's courses, as the review shows them, appear nowhere in the browser's storage
@@ -34,9 +37,6 @@ test('Ilvane sets up her account from her transcript and reaches her plans', asy
   expect(courses.length).toBeGreaterThan(0)
   for (const course of courses) expect(kept).not.toContain(course.split(':')[0])
 
-  // Her transcript names two Mechatronics programmes, so she chooses hers
-  await page.getByRole('button', { name: /Choose your programme/ }).click()
-  await page.getByRole('option', { name: 'Bachelor of Science in Engineering in Mechatronics 4-year curriculum' }).click()
   await page.getByRole('button', { name: 'Confirm 2023' }).click()
   await page.getByRole('button', { name: 'Confirm 2024' }).click()
   await page.getByText('This reflects my current academic record').click()

@@ -1,8 +1,8 @@
 // The review: the course history read from the transcript, one year at a time, for the student to
-// check, correct and confirm. Their programme comes from the transcript, or they choose it, and notes
-// that came with the reading show above. In edit mode they can change an outcome, remove a course or
-// add one from the catalogue, each after a question that says what will change. On the last year, once
-// they tick that it reflects their record, Finish Setup sends the whole history in one request.
+// check, correct and confirm, on the programme they settled when they uploaded it. Notes that came
+// with the reading show above. In edit mode they can change an outcome, remove a course or add one
+// from the catalogue, each after a question that says what will change. On the last year, once they
+// tick that it reflects their record, Finish Setup sends the whole history in one request.
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useReducer, useState } from 'react'
 import { Button } from '@/components/actions/Button/Button.tsx'
@@ -55,9 +55,9 @@ type Question =
 
 const courses = (count: number) => `${count} ${count === 1 ? 'course' : 'courses'}`
 
-type ReviewStepProps = { transcript: Transcript; onSaved: () => Promise<void> }
+type ReviewStepProps = { transcript: Transcript; curriculum: string; onSaved: () => Promise<void> }
 
-export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
+export function ReviewStep({ transcript, curriculum, onSaved }: ReviewStepProps) {
   const [review, dispatch] = useReducer(reviewReducer, transcript, startReview)
   const [yearIndex, setYearIndex] = useState(0)
   const [editing, setEditing] = useState(false)
@@ -76,11 +76,6 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
   const lines = review.lines.filter((line) => line.academic_year === year)
   const credits = lines.reduce((total, line) => total + line.credits, 0)
   const caption = `${year} · Year ${yearIndex + 1} of ${years.length}`
-  // One programme the transcript names is theirs. Several are the ones to choose from, and none leaves
-  // the catalogue's whole list.
-  const options = transcript.curriculum_options
-  const programme = options.length === 1 ? options[0] : null
-  const choices = options.length > 1 ? options : (catalogue.data?.curricula ?? [])
   // Each result symbol's outcome, from the catalogue
   const outcomeOf = new Map((catalogue.data?.symbols ?? []).map(({ symbol, outcome }) => [symbol, outcome]))
 
@@ -89,21 +84,19 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
     setQuestion(null)
   }
 
-  // Moving on waits for the student to finish editing. Finish Setup also needs the box ticked, a
-  // programme, and at least one course, as the API can't save an empty history. The box sits just
-  // above it; the rest say why it waits.
-  const canFinish = confirmed && !editing && review.curriculum !== null && review.lines.length > 0 && !saving.isPending
+  // Moving on waits for the student to finish editing. Finish Setup also needs the box ticked and at
+  // least one course, as the API can't save an empty history. The box sits just above it; the rest say
+  // why it waits.
+  const canFinish = confirmed && !editing && review.lines.length > 0 && !saving.isPending
   function nextHint(): string | null {
     if (editing) return 'Finish editing to continue.'
-    if (!isLast) return null
-    if (review.lines.length === 0) return 'Add at least one course to finish.'
-    if (!review.curriculum) return 'Choose your programme to finish.'
+    if (isLast && review.lines.length === 0) return 'Add at least one course to finish.'
     return null
   }
   const hint = nextHint()
 
   function finish() {
-    if (review.curriculum) saving.mutate(setupOf(review.curriculum, review.lines))
+    saving.mutate(setupOf(curriculum, review.lines))
   }
 
   return (
@@ -112,29 +105,6 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
         title="Review Your Course History"
         subtitle={`We pulled ${courses(transcript.lines.length)} out of your transcript. Confirm one year at a time. SAGE checks every prerequisite against this history, so anything wrong here follows you through registration.`}
       />
-      <dl className={styles.programme}>
-        <dt>Programme</dt>
-        <dd>
-          {programme ? (
-            programme.name
-          ) : (
-            <Select
-              label="Programme"
-              placeholder="Choose your programme"
-              selectedKey={review.curriculum}
-              onSelectionChange={(code) => {
-                if (code !== null) dispatch({ type: 'chooseCurriculum', code: String(code) })
-              }}
-            >
-              {choices.map((curriculum) => (
-                <SelectItem key={curriculum.code} id={curriculum.code}>
-                  {curriculum.name}
-                </SelectItem>
-              ))}
-            </Select>
-          )}
-        </dd>
-      </dl>
       {transcript.warnings.filter(isShown).map((warning) => (
         <ErrorState
           key={warning.code}

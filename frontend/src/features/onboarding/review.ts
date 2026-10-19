@@ -1,6 +1,6 @@
-// The review's working copy of the transcript: the lines the student keeps, changes or adds, and the
-// programme they are on. It lives only in the page's memory, and nothing is saved until Finish Setup
-// sends setupOf(...) in one request.
+// The review's working copy of the transcript: the lines the student keeps, changes or adds. It lives
+// only in the page's memory, and nothing is saved until Finish Setup sends setupOf(...) in one
+// request, with the programme the student settled at the upload.
 import type { components } from '@/lib/api-types.ts'
 
 type Transcript = components['schemas']['Transcript']
@@ -38,26 +38,19 @@ export function wordFor(result: string, outcomeOf: Map<string, Outcome>): string
 // A line on screen, with a key of its own for the table
 export type ReviewLine = components['schemas']['TranscriptLine'] & { id: string }
 
-type Review = { lines: ReviewLine[]; curriculum: string | null }
+type Review = { lines: ReviewLine[] }
 
 export type ReviewAction =
-  | { type: 'chooseCurriculum'; code: string }
   | { type: 'remove'; id: string }
   | { type: 'changeOutcome'; id: string; outcome: Outcome }
   | { type: 'add'; year: number; course: Course; outcome: Outcome }
 
 export function startReview(transcript: Transcript): Review {
-  return {
-    lines: transcript.lines.map((line, index) => ({ ...line, id: `read-${index}` })),
-    // A transcript that names one programme decides it; otherwise the student chooses
-    curriculum: transcript.curriculum_options.length === 1 ? transcript.curriculum_options[0].code : null,
-  }
+  return { lines: transcript.lines.map((line, index) => ({ ...line, id: `read-${index}` })) }
 }
 
 export function reviewReducer(review: Review, action: ReviewAction): Review {
   switch (action.type) {
-    case 'chooseCurriculum':
-      return { ...review, curriculum: action.code }
     case 'remove':
       return { ...review, lines: review.lines.filter((line) => line.id !== action.id) }
     // The printed mark went with the printed result, so a changed outcome has none

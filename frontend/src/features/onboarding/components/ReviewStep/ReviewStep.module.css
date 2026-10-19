@@ -11,23 +11,6 @@
   max-width: var(--width-full);
 }
 
-.programme {
-  display: flex;
-  gap: var(--space-3);
-  align-items: center;
-  margin: 0;
-  font-size: var(--font-size-md);
-}
-
-.programme dt {
-  color: var(--color-text-secondary);
-}
-
-.programme dd {
-  margin: 0;
-  font-weight: var(--font-weight-semibold);
-}
-
 /* The year's figures and its edit buttons sit at the right end of its table's caption line, over the
    table's box. They come before the table, so Tab reaches Edit Courses before the outcomes it opens. */
 .year {
