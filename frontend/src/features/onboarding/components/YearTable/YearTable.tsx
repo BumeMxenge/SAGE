@@ -2,7 +2,8 @@
 // then by code. Course names show exactly as the transcript prints them, and each outcome in a word,
 // such as Passed. A line the reading partly guessed says "Check" beside its outcome, so the warning
 // never rests on colour alone. In edit mode each outcome is a plain Select of the seven outcomes, and
-// each course can be removed.
+// each course can be removed. The table fills the height it is given and scrolls its rows inside.
+import type { Ref } from 'react'
 import { IconButton } from '@/components/actions/IconButton/IconButton.tsx'
 import { DataTable } from '@/components/content/DataTable/DataTable.tsx'
 import { Select } from '@/components/inputs/Select/Select.tsx'
@@ -29,15 +30,19 @@ type YearTableProps = {
   editing: boolean
   onChangeOutcome: (line: ReviewLine, outcome: Outcome) => void
   onRemove: (line: ReviewLine) => void
+  // The table's scroll box, so the review can move focus to it as each year opens
+  ref?: Ref<HTMLElement>
 }
 
-export function YearTable({ caption, lines, outcomeOf, editing, onChangeOutcome, onRemove }: YearTableProps) {
+export function YearTable({ caption, lines, outcomeOf, editing, onChangeOutcome, onRemove, ref }: YearTableProps) {
   const ordered = lines.toSorted(
     (first, second) =>
       termOrder.indexOf(first.term) - termOrder.indexOf(second.term) || first.course_code.localeCompare(second.course_code),
   )
   return (
     <DataTable
+      ref={ref}
+      scrollable
       caption={caption}
       columns={editing ? [...columns, { key: 'remove', header: 'Remove' }] : columns}
       rows={ordered.map((line) => ({

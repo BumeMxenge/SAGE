@@ -145,8 +145,7 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
           message={warning.message}
         />
       ))}
-      {/* Each year takes focus as it opens, so a screen reader hears which year it is */}
-      <section key={year} ref={focusOnOpen} tabIndex={-1} aria-label={caption} className={styles.year}>
+      <div key={year} className={styles.year}>
         <div className={styles.tools}>
           <p className={styles.summary}>
             {courses(lines.length)} · {credits} credits
@@ -166,7 +165,10 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
             </Button>
           )}
         </div>
+        {/* Each year's table takes focus as it opens, so a screen reader hears which year it is, and the
+            arrow keys can scroll it */}
         <YearTable
+          ref={focusOnOpen}
           caption={caption}
           lines={lines}
           outcomeOf={outcomeOf}
@@ -174,7 +176,7 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
           onChangeOutcome={(line, outcome) => setQuestion({ kind: 'change', line, outcome })}
           onRemove={(line) => setQuestion({ kind: 'remove', line })}
         />
-      </section>
+      </div>
       {isLast && (
         <Checkbox isSelected={confirmed} onChange={setConfirmed}>
           This reflects my current academic record

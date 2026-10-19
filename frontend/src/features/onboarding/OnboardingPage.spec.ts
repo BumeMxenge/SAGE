@@ -355,6 +355,37 @@ test.describe('parity', () => {
   ])
 })
 
+// The year's table fills the room the page leaves and scrolls its rows inside its box, which a
+// screen reader names by its caption, with Confirm always on screen, as in the prototype. In a short
+// window, and at 200% zoom, the page scrolls as a whole instead, so Confirm is never out of reach.
+test('the review scrolls its table inside its box, with Confirm on screen', async ({ page }) => {
+  await page.goto('/onboarding')
+  await toReview(page)
+  const box = page.getByRole('region', { name: '2023 · Year 1 of 3' })
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(820)
+  expect(await box.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true)
+  await expect(page.getByRole('button', { name: 'Confirm 2023' })).toBeInViewport()
+})
+
+for (const [window, size] of [
+  ['a short window', { width: 1280, height: 600 }],
+  ['200% zoom', { width: 640, height: 410 }],
+] as const) {
+  test(`the review scrolls as a whole in ${window}, so Confirm stays in reach`, async ({ page }) => {
+    await page.setViewportSize(size)
+    await page.goto('/onboarding')
+    await toReview(page)
+    const scroll = await page.evaluate(() => ({
+      down: document.documentElement.scrollHeight > innerHeight,
+      sideways: document.documentElement.scrollWidth > innerWidth,
+    }))
+    expect(scroll).toEqual({ down: true, sideways: false })
+    const confirm = page.getByRole('button', { name: 'Confirm 2023' })
+    await confirm.scrollIntoViewIfNeeded()
+    await expect(confirm).toBeInViewport()
+  })
+}
+
 // Each step as it stands has no axe violations and a clean keyboard walk
 for (const [step, reach] of [
   ['the upload', toUpload],
