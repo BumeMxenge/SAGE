@@ -107,7 +107,7 @@ def agrees(field: str, label: Any, sage: Any) -> bool:
     # trees in normal form, and printed text with its spacing evened out
     if field == "title":
         return label.casefold() == sage.casefold()
-    if field in ("entry_rule", "requirement_tree", "corequisite_tree"):
+    if field == "entry_rule":
         return same_tree(label, sage)
     if field in ("requirement", "corequisite"):
         return evened(label) == evened(sage)
