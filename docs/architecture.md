@@ -25,11 +25,153 @@ Folders marked (planned) don't exist yet; each arrives with its first code.
 | `supabase/` | Database migrations |
 | `data/` | `sources/<year>/`: each year's handbook, workbooks and equivalences, with `manifest.toml` holding each file's fingerprint. `rules/<year>/`: the cached model drafts (`drafts.json`), the rows a person must decide and each review sitting (`review.json`) and the approved snapshot (`rulebook.json`), which the next year is compared with and `sage load`, or `make load` for every approved year, writes to a database. These snapshots are SAGE's only source of rules. `synthetic/`: the made-up student's own data, which `sage seed` and `make sign-in` write once her plans' year is loaded. It holds no rules |
 
+## System diagram
+
+```mermaid
+flowchart TB
+    subgraph request["On every request"]
+        browser["Student's browser:<br>the React app"]
+        subgraph azure["Azure, South Africa North"]
+            website["Static website<br>on Azure Storage"]
+            subgraph backend["FastAPI backend on Azure Container Apps"]
+                features["Features: health, accounts,<br>onboarding, plans,<br>questionnaire, electives,<br>history and chats"]
+                rulebook["Rulebook cache"]
+                transcript["Transcript reader"]
+                engine["Engine stand-in<br>behind shared/planning.py"]
+                advisor["Advisor stand-in<br>behind shared/advisor.py"]
+            end
+        end
+    end
+    subgraph supabase["Supabase (EU): Auth and Postgres"]
+        auth["Auth"]
+        rules[("Rule tables")]
+        students[("Student tables")]
+    end
+    subgraph laptop["Once a year, on a laptop"]
+        sage["sage command"]
+        sources["data/sources/"]
+        ruleFiles["data/rules/: drafts.json,<br>review.json, rulebook.json"]
+    end
+    microsoft["Microsoft:<br>UCT accounts only"]
+    anthropic["Anthropic's API"]
+
+    browser -->|"loads the app"| website
+    browser -->|"signs in"| auth
+    browser -->|"reads the name<br>from Graph"| microsoft
+    microsoft -->|"confirms<br>the account"| auth
+    browser -->|"/v1 calls<br>with the token"| features
+    features -->|"checks<br>each token"| auth
+    features --> rulebook & transcript & engine & advisor
+    rulebook -->|"reads, kept<br>ten minutes"| rules
+    features -->|"reads<br>and writes"| students
+    students -.->|"point into"| rules
+    sage -->|"reads"| sources
+    sage -->|"asks for drafts,<br>--draft only"| anthropic
+    sage -->|"writes"| ruleFiles
+    sage -->|"sage load:<br>an approved year"| rules
+    %% Keeps the laptop lane under Supabase, where the two clocks meet
+    rules ~~~ sage
+```
+
+A solid arrow shows who acts on whom. Each lane is one clock, and Supabase sits between them, where they meet. On every request, the student's browser loads the React app from Azure Storage and signs in through Supabase Auth with a UCT Microsoft account. The browser also reads the student's name from Microsoft Graph, and the name stays there. Each call to the backend on Azure Container Apps carries the sign-in token, which the backend checks with Supabase Auth. The backend reads rules through the `Rulebook` cache, reads and writes the student tables, and never writes rules. The engine and the advisor are still stand-ins. The engine's stand-in gives every student Mbali's plans, from the seed file built into the image, and the advisor's refers every question to a human advisor. Once a year, on a laptop, the `sage` command reads `data/sources/`, asks Anthropic's API for drafts only on a `--draft` run, and writes `data/rules/`. Only `sage load` writes rules to the database.
+
+### How code reaches Azure
+
+```mermaid
+flowchart TB
+    subgraph github["GitHub Actions"]
+        ci["CI: every pull request<br>and push to main"]
+        deployBackend["Deploy backend"]
+        deployFrontend["Deploy frontend"]
+        keepAlive["Keep Supabase awake"]
+    end
+    registry["GitHub's container registry"]
+    subgraph azure["Azure, South Africa North"]
+        backend["FastAPI backend<br>on Azure Container Apps"]
+        website["Static website<br>on Azure Storage"]
+    end
+    heartbeat[("Heartbeat table<br>in Supabase")]
+
+    ci -->|"passes on main"| deployBackend & deployFrontend
+    deployBackend -->|"pushes the image"| registry
+    deployBackend -->|"updates the app,<br>checks /health"| backend
+    backend -->|"pulls the image"| registry
+    deployFrontend -->|"uploads the built files,<br>checks they're served"| website
+    keepAlive -->|"reads a row<br>every six hours"| heartbeat
+```
+
+An arrow shows who acts on whom. CI checks every pull request and every push to main. When it passes on main, Deploy backend builds the backend's image, pushes it to GitHub's container registry, points the container app at it and waits until `/health` reports the new commit. Deploy frontend builds the app, uploads it to Azure Storage and checks the site serves it. Keep Supabase awake reads one row every six hours, as Supabase pauses a free project after a week without database activity.
+
 ## Two clocks
 
 - **Once a year, on a laptop.** The `sage` command runs ingestion. `sage ingest`, `sage review` and `sage approve` touch only files in `data/`, until `sage load` writes the approved year into the rule tables.
 - **On every request, in the cloud.** The backend never writes rules. It reads the approved year into the `Rulebook` cache (`shared/rulebook.py`), which keeps each year for ten minutes, so a newly loaded year shows within that time with no redeploy. The engine will build plans from it, and the advisor its briefing pack from the passages and the plan reasons.
 - **Supabase is where the two meet.** Student rows point into the rule tables, so the database refuses to remove a year a student's plan uses, and `sage seed` won't write a student's data until her plans' year is loaded.
+
+The [system diagram](#system-diagram) above draws both clocks, and the [ingestion data flow](#ingestion-data-flow) below follows one handbook year from its sources to the cache.
+
+## Ingestion data flow
+
+```mermaid
+flowchart TB
+    subgraph laptop["Once a year, on a laptop"]
+        sources["data/sources/: handbook PDF, workbooks,<br>equivalences.csv and manifest.toml"]
+        subgraph ingest["sage ingest"]
+            collect["Collect: each file's SHA-256<br>against manifest.toml"]
+            stopped["Run stops,<br>naming the file"]
+            subgraph read["Read"]
+                handbook["Handbook, with its header<br>crop, and curriculum tables"]
+                timetable["Timetable workbook,<br>read strictly"]
+                workbook["Complementary workbook"]
+                equivalences["Equivalences,<br>every row flagged"]
+            end
+            subgraph translate["Translate"]
+                grammar["Grammar first"]
+                drafts["drafts.json"]
+                drafter["Drafter, on<br>--draft runs"]
+            end
+            passages["File passages,<br>one per printed unit"]
+            checks["Checks across sources"]
+            compare["Compare with the<br>latest approved year"]
+        end
+        reviewFile["review.json"]
+        review["sage review: a person<br>accepts, corrects or rejects"]
+        approve["sage approve: refuses while a<br>row is pending or a check fails"]
+        snapshot["rulebook.json:<br>the approved snapshot"]
+        load["sage load: writes the year<br>unapproved, approves it last"]
+    end
+    subgraph cloud["On every request"]
+        tables[("Rule tables<br>in Supabase")]
+        cache["Rulebook cache"]
+        upload["Transcript PDF,<br>uploaded at onboarding"]
+        reader["Transcript reader:<br>in memory, never stored"]
+        history[("Course history in<br>the student tables")]
+    end
+
+    sources --> collect
+    collect -->|"a file changed"| stopped
+    collect -->|"every file matches"| read
+    read -->|"printed requirements"| grammar
+    grammar -->|"refused"| drafts
+    drafts -->|"no draft yet"| drafter
+    drafter -->|"checked against<br>EntryRule, then cached"| drafts
+    translate --> passages
+    passages --> checks
+    checks --> compare
+    compare -->|"flagged, with each cause"| reviewFile
+    reviewFile <-->|"each decision saved"| review
+    reviewFile -->|"nothing pending"| approve
+    compare -->|"carried over by printed wording,<br>or accepted automatically"| approve
+    approve -->|"writes"| snapshot
+    snapshot -.->|"the next year<br>compares with it"| compare
+    snapshot --> load
+    load -->|"writes"| tables
+    tables -->|"read within ten minutes"| cache
+    upload --> reader
+    reader -->|"rows the student confirms,<br>saved at Finish setup"| history
+```
+
+An arrow shows where the data goes next. `sage ingest --year <year>` first checks each source's SHA-256 against `manifest.toml`, and a changed file stops the run. One reader per source then reads the handbook, the timetable workbook, the complementary workbook and the equivalences. The handbook reader crops off each page's running header, and the timetable reader is strict: a cell it can't place stops the run. Each printed requirement goes to the grammar first. A string it refuses takes its cached draft from `drafts.json`, and only a `--draft` run asks the model for a missing one, checking it against `EntryRule` before caching it. Without a draft, the string becomes a `refer` leaf. The handbook is cut into passages, one per printed unit, and the sources are checked against each other. The year is then compared with the latest approved year: a requirement printed in the same words carries over, a change read with certainty is accepted automatically, and everything else becomes a row in `review.json` with its causes. A person decides each row in `sage review`. `sage approve` reruns the reading, refuses while a row is pending or a check fails, and writes `rulebook.json`, which the next year is compared with. `sage load` writes the year unapproved and approves it last, so a load that stops partway never becomes the current year, and the `Rulebook` cache reads the new year within ten minutes. The transcript reader runs on the other clock: it reads a student's PDF in memory during onboarding and never stores it, and only the rows the student confirms are saved, at Finish setup.
 
 ## Backend dependency rule
 
@@ -59,10 +201,6 @@ Imports run one way, and `frontend/scripts/check-tsx.ts` (run by `npm run lint`)
 - Supabase Auth keeps each account's UCT email, which contains the student number. SAGE needs it to identify the account and to check that a transcript belongs to the person uploading it. Supabase Auth also keeps Microsoft's identifiers for the account, but no name: SAGE never asks Microsoft for the profile scope, which is what would bring one.
 - SAGE works the student number out from the email when it needs it, and keeps no copy of its own.
 - A student's name comes from Microsoft Graph at sign-in and stays in their browser.
-
-## System diagram
-
-To add: the black-box architecture diagram from Chapter 3.
 
 ## Future work
 
