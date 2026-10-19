@@ -1,12 +1,13 @@
-/* The highlight on screen fills the panel's height, with its dots at the foot, so the dots stay put
-   as the highlights slide */
+/* The highlights fill the sand panel, and the one on screen fills its height, with its dots at the
+   foot, so the dots stay put as the highlights slide */
 .highlights {
   position: relative;
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  max-width: var(--width-dialog);
+  min-width: 0;
+  padding-bottom: var(--space-10);
 }
 
 /* A sideways pan is the strip's to take, and an upward or downward one stays the page's */
@@ -18,34 +19,43 @@
   user-select: none;
 }
 
-/* The highlights sit side by side, and --shown slides the chosen one into place. The sign-in page's
-   panel clips the strip at its edges. */
+/* The slides sit side by side, and --shown slides the chosen one into place, timed as the prototype
+   times it. The sign-in page's panel clips the strip at its edges. The strip keeps a layer of its own,
+   drawn once, so a slide only moves it. */
 .strip {
   display: flex;
   flex: 0 0 100%;
-  gap: var(--space-16);
   min-width: 0;
-  transform: translateX(calc(var(--shown) * (-100% - var(--space-16))));
-  transition: transform var(--duration-slow) var(--easing);
+  transform: translateX(calc(var(--shown) * -100%));
+  transition: transform var(--duration-slide) var(--easing);
+  will-change: transform;
 }
 
-/* Each highlight is exactly the strip's width, however wide its content would like to be */
-.panel {
+/* Going round, from the last highlight to the first or back, passes every one in between */
+.strip[data-round] {
+  transition-duration: var(--duration-slide-slow);
+}
+
+/* Each slide is exactly the strip's width, however wide its content would like to be, with its
+   highlight in the middle */
+.slide {
   display: flex;
   flex: 0 0 100%;
+  justify-content: center;
+  min-width: 0;
+  padding: var(--space-16) var(--space-10) 0;
+}
+
+.panel {
+  display: flex;
+  flex: 1;
   flex-direction: column;
   gap: var(--space-8);
   justify-content: center;
   min-width: 0;
+  max-width: var(--width-dialog);
   border-radius: var(--radius-lg);
   outline: none;
-}
-
-/* A highlight out of view hides once the strip has slid it away, so only one shows at rest */
-.panel[data-inert] {
-  visibility: hidden;
-  transition-property: visibility;
-  transition-delay: var(--duration-slow);
 }
 
 /* With nothing to press inside it, a panel is a tab stop of its own, so it shows the focus ring */

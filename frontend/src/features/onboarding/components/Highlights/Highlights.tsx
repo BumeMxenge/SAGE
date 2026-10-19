@@ -110,17 +110,22 @@ const highlights: { id: string; title: string; shows: string; picture: ReactNode
 ]
 
 export function Highlights() {
-  const [shown, setShown] = useState(0)
-  // Round and round: on from the last highlight is the first
+  const [{ shown, round }, setView] = useState({ shown: 0, round: false })
+  // Round and round: on from the last highlight is the first, and back from the first is the last.
+  // Going round slides the strip past every highlight, so it takes longer, as in the prototype.
   const step = useCallback((by: 1 | -1) => {
-    setShown((index) => (index + by + highlights.length) % highlights.length)
+    setView((view) => {
+      const next = view.shown + by
+      return { shown: (next + highlights.length) % highlights.length, round: next < 0 || next >= highlights.length }
+    })
   }, [])
   const swipe = useSwipe(step)
   return (
     <Tabs
       selectedKey={highlights[shown].id}
       onSelectionChange={(key) => {
-        setShown(highlights.findIndex(({ id }) => id === key))
+        // A dot or an arrow key takes the usual time, however far it goes, as the prototype's dots do
+        setView({ shown: highlights.findIndex(({ id }) => id === key), round: false })
       }}
       className={styles.highlights}
     >
@@ -131,19 +136,22 @@ export function Highlights() {
         ))}
       </TabList>
       <div ref={swipe} className={styles.window}>
-        {/* Every panel stays on the strip, and React Aria makes those out of view inert */}
-        <div className={styles.strip} style={{ '--shown': shown }}>
+        {/* Every highlight stays on the strip, each on a slide as wide as the sand panel, so those out
+            of view sit wholly outside it, and React Aria makes them inert */}
+        <div className={styles.strip} data-round={round || undefined} style={{ '--shown': shown }}>
           {highlights.map(({ id, title, shows, picture }) => (
-            <TabPanel key={id} id={id} shouldForceMount className={styles.panel}>
-              <h2 className={styles.title}>{title}</h2>
-              {/* An img element can't hold an HTML drawing, so the role makes this one image instead */}
-              {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-              <div role="img" aria-label={shows}>
-                <div aria-hidden="true" className={styles.drawing}>
-                  {picture}
+            <div key={id} className={styles.slide}>
+              <TabPanel id={id} shouldForceMount className={styles.panel}>
+                <h2 className={styles.title}>{title}</h2>
+                {/* An img element can't hold an HTML drawing, so the role makes this one image instead */}
+                {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+                <div role="img" aria-label={shows}>
+                  <div aria-hidden="true" className={styles.drawing}>
+                    {picture}
+                  </div>
                 </div>
-              </div>
-            </TabPanel>
+              </TabPanel>
+            </div>
           ))}
         </div>
       </div>

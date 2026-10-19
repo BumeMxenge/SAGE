@@ -73,11 +73,10 @@ html:has(.page) {
   font-size: var(--font-size-xs);
 }
 
+/* The highlights fill the sand panel edge to edge, and it clips those out of view */
 .panel {
   position: relative;
   display: flex;
-  justify-content: center;
-  padding: var(--space-16) var(--space-10) var(--space-10);
   overflow: hidden;
   background: var(--color-brand-sand);
 }
