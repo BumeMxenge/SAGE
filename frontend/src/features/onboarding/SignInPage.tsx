@@ -14,7 +14,7 @@ export function SignInPage() {
   return (
     <main className={styles.page}>
       <div className={styles.form}>
-        <Logo variant="full" />
+        <Logo variant="compact" />
         <div className={styles.content}>
           <h1 className={styles.headline}>
             <span className={styles.accent}>Registration,</span> <span>without the guesswork.</span>
