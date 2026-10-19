@@ -1,6 +1,8 @@
 # Checks the database refuses rows that break its rules, even from the backend's secret key. A test
-# that has to add rows removes them again before it asserts anything.
+# that has to add rows removes them again before it asserts anything, in a finally, so a failure
+# never leaves them in the local database every worktree shares.
 from datetime import datetime
+from uuid import uuid4
 
 import pytest
 from postgrest import APIError
@@ -8,7 +10,7 @@ from postgrest import APIError
 pytestmark = pytest.mark.integration
 
 FOREIGN_KEY, CHECK = "23503", "23514"
-# A real 2026 course and meeting, for rows that need one
+# A real 2026 course and term, for rows that need one
 SLOT = {"handbook_year": 2026, "course_code": "EEE4113F", "term": "sem1"}
 
 
@@ -79,10 +81,12 @@ def test_a_slot_curriculum_must_be_in_its_slots_year(secret, approved_2026):
         "curriculum_code": "EB011EEE05",
     }
     secret.table("handbook_versions").insert({"year": 2099}).execute()
-    secret.table("curricula").insert(curriculum).execute()
-    with pytest.raises(APIError) as error:
-        secret.table("timetable_slot_curricula").insert(link).execute()
-    secret.table("handbook_versions").delete().eq("year", 2099).execute()
+    try:
+        secret.table("curricula").insert(curriculum).execute()
+        with pytest.raises(APIError) as error:
+            secret.table("timetable_slot_curricula").insert(link).execute()
+    finally:
+        secret.table("handbook_versions").delete().eq("year", 2099).execute()
     # Refused by the link that keeps the year equal to the slot's, not by the curriculum link
     assert error.value.code == FOREIGN_KEY
     assert "slot_id_handbook_year" in error.value.message
@@ -99,10 +103,14 @@ def test_a_reason_names_only_a_plan_in_its_own_set(secret, mbali):
         "message": "Test",
     }
     naming_a_plan = reason | {"plan_id": str(mbali.plans[0].id)}
-    with pytest.raises(APIError) as error:
-        secret.table("plan_reasons").insert(naming_a_plan).execute()
-    whole_set = secret.table("plan_reasons").insert(reason).execute().data
-    secret.table("plan_sets").delete().eq("id", other_set).execute()  # and its reasons
+    try:
+        with pytest.raises(APIError) as error:
+            secret.table("plan_reasons").insert(naming_a_plan).execute()
+        whole_set = secret.table("plan_reasons").insert(reason).execute().data
+    finally:
+        secret.table("plan_sets").delete().eq(
+            "id", other_set
+        ).execute()  # and its reasons
     assert error.value.code == FOREIGN_KEY
     assert len(whole_set) == 1
 
@@ -151,23 +159,28 @@ def test_deleting_the_plan_a_reply_offers_clears_the_offer(secret, mbali):
     student_id = str(mbali.student.id)
     plan_set = {"student_id": student_id, "period": 2026, "version": 3}
     set_id = secret.table("plan_sets").insert(plan_set).execute().data[0]["id"]
+    reply_id = str(uuid4())  # known before it's stored, so the finally can remove it
     plan = {
         "plan_set_id": set_id,
         "student_id": student_id,
         "position": 1,
         "name": "Test",
     }
-    plan_id = secret.table("plans").insert(plan).execute().data[0]["id"]
-    reply = {
-        "chat_id": str(mbali.chats[0].id),
-        "student_id": student_id,
-        "role": "assistant",
-        "content": "Test",
-        "open_plan_id": plan_id,
-    }
-    stored = secret.table("messages").insert(reply).execute().data[0]
-    secret.table("plan_sets").delete().eq("id", set_id).execute()  # and its plan
-    query = secret.table("messages").select("open_plan_id").eq("id", stored["id"])
-    after = query.execute().data
-    secret.table("messages").delete().eq("id", stored["id"]).execute()
+    try:
+        plan_id = secret.table("plans").insert(plan).execute().data[0]["id"]
+        reply = {
+            "id": reply_id,
+            "chat_id": str(mbali.chats[0].id),
+            "student_id": student_id,
+            "role": "assistant",
+            "content": "Test",
+            "open_plan_id": plan_id,
+        }
+        secret.table("messages").insert(reply).execute()
+        secret.table("plan_sets").delete().eq("id", set_id).execute()  # and its plan
+        query = secret.table("messages").select("open_plan_id").eq("id", reply_id)
+        after = query.execute().data
+    finally:
+        secret.table("plan_sets").delete().eq("id", set_id).execute()
+        secret.table("messages").delete().eq("id", reply_id).execute()
     assert after == [{"open_plan_id": None}]

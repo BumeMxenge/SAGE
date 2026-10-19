@@ -6,11 +6,14 @@ description = "SAGE backend: ingestion, constraint engine and advisor behind a F
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",
+    "pydantic>=2.0", # imported directly, not only through fastapi
+    "starlette>=1.0", # imported directly, not only through fastapi
     "uvicorn[standard]>=0.30",
     "pydantic-settings>=2.0",
     "supabase>=2.0",
     "postgrest>=2.0", # imported directly, not only through supabase
     "pyjwt>=2.0", # imported directly, not only through supabase
+    "supabase-auth>=2.0", # imported directly, not only through supabase
     "pdfplumber>=0.11.10",
     "openpyxl>=3.1.5",
     "anthropic>=1.15.0",
@@ -23,7 +26,8 @@ sage = "sage.cli:main"
 dev = [
     "fpdf2>=2.8.9",
     "httpx>=0.28", # the token tests serve Supabase's replies through it
-    "httpx2>=2.13.1", # FastAPI's TestClient uses it to call the app in tests
+    "httpx2>=2.13.1", # FastAPI's TestClient calls the app through it, and two tests import it
+    "import-linter>=2.15", # make lint's check of the dependency rule, lint-imports
     "pytest>=8.0",
     "pytest-cov>=7.1", # make test's coverage report
     "ruff>=0.6",
@@ -46,7 +50,7 @@ testpaths = ["tests"]
 addopts = ["--import-mode=importlib", "--strict-markers"]
 markers = [
     "integration: needs local Supabase (make test-integration)",
-    "stub(component): tests a stand-in in services/stubs.py, so it goes when that component lands",
+    "stub(component): tests a stand-in in engine/stubs.py or advisor/stubs.py, so it goes when that component lands",
 ]
 
 # make test's coverage report: each file's lines that no unit test runs
@@ -61,12 +65,64 @@ skip_covered = true
 [tool.mutmut]
 source_paths = ["src"]
 only_mutate = [
-    "src/sage/api/*",
-    "src/sage/domain/*",
+    "src/sage/advisor/*",
+    "src/sage/engine/*",
+    "src/sage/features/*",
     "src/sage/ingestion/*",
-    "src/sage/services/*",
+    "src/sage/shared/*",
+]
+# The outside services' adapters and the fakes stay out, as only the integration tests check them
+do_not_mutate = [
+    "src/sage/ingestion/anthropic.py",
+    "src/sage/shared/supabase/*",
+    "src/sage/shared/memory/*",
 ]
 pytest_add_cli_args_test_selection = ["-m", "not integration"]
+
+# The dependency rule in docs/architecture.md, as contracts that make lint checks with lint-imports
+[tool.importlinter]
+root_package = "sage"
+include_external_packages = true # so the last two contracts can name outside packages
+
+[[tool.importlinter.contracts]]
+name = "Imports point inward"
+type = "layers"
+layers = [
+    "sage.main | sage.cli",
+    "sage.features",
+    "sage.advisor",
+    "sage.engine | sage.ingestion",
+    "sage.shared",
+    "sage.config",
+]
+
+[[tool.importlinter.contracts]]
+name = "Features don't import each other, except where one is built on another"
+type = "independence"
+modules = ["sage.features.*"]
+ignore_imports = [
+    "sage.features.chats.* -> sage.features.plans.*",
+    "sage.features.questionnaire.* -> sage.features.plans.*",
+    "sage.features.onboarding.* -> sage.features.accounts.*",
+]
+
+[[tool.importlinter.contracts]]
+name = "Only main.py plugs in the engine and the advisor"
+type = "protected"
+protected_modules = ["sage.engine", "sage.advisor"]
+allowed_importers = ["sage.main", "sage.advisor"]
+
+[[tool.importlinter.contracts]]
+name = "Only shared/supabase/ imports Supabase's SDK"
+type = "protected"
+protected_modules = ["supabase", "supabase_auth", "postgrest", "jwt"]
+allowed_importers = ["sage.shared.supabase"]
+
+[[tool.importlinter.contracts]]
+name = "Only ingestion/anthropic.py imports Anthropic's SDK"
+type = "protected"
+protected_modules = ["anthropic"]
+allowed_importers = ["sage.ingestion.anthropic"]
 
 [tool.ruff.lint]
 extend-select = ["I", "B", "UP"] # import order, likely bugs, outdated syntax

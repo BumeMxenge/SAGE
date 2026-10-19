@@ -5,9 +5,9 @@ import json
 
 import pytest
 
-from sage.adapters.supabase.auth import SupabaseTokenVerifier
-from sage.domain.accounts import Identity
-from sage.domain.errors import NotSignedIn
+from sage.shared.auth import Identity
+from sage.shared.errors import NotSignedIn
+from sage.shared.supabase.auth import SupabaseTokenVerifier
 
 pytestmark = pytest.mark.integration
 

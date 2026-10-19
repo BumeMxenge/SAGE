@@ -1,5 +1,5 @@
 // The keyboard walk: Tab from the top of the page until focus leaves it, checking that every stop shows
-// SAGE's focus ring, a solid outline at least 2 px wide. Two shared components draw it beside the
+// SAGE's focus ring, a solid outline at least 2 px wide. Two components draw it beside the
 // focused element rather than on it: the chat box rings its wrapper and the checkbox its box, so the
 // ring may sit on the element, around it or inside it. It returns each stop's role and name, as the
 // accessibility tree gives them, in order, for a spec to check the order.

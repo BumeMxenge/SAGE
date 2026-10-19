@@ -13,8 +13,11 @@ import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
 from pydantic import Field, StringConstraints, ValidationError, model_validator
 
-from sage.domain.base import Row
-from sage.domain.rules import (
+from sage.ingestion.curricula import COMPLEMENTARY
+from sage.ingestion.names import title_case
+from sage.ingestion.sources import ComplementaryFile, Reading, SourceError, row_id
+from sage.shared.base import Row
+from sage.shared.rules import (
     COURSE_CODE,
     TERM_BY_SUFFIX,
     CourseGroupMember,
@@ -22,9 +25,6 @@ from sage.domain.rules import (
     TermCode,
     TimetableSlot,
 )
-from sage.ingestion.curricula import COMPLEMENTARY
-from sage.ingestion.names import title_case
-from sage.ingestion.sources import ComplementaryFile, Reading, SourceError, row_id
 
 OFFERING_COLUMNS = {
     "Handbook course code": "code",
@@ -189,7 +189,8 @@ def members(
     read: Complementary, year: int
 ) -> tuple[tuple[CourseGroupMember, ...], tuple[Reading, ...]]:
     # Every offering joins the complementary group, with the row it's typed in. Language options
-    # are the languages category; the other categories, which a model would pick, wait for M3.
+    # are the languages category; the other categories, which a model would pick, aren't read yet
+    # (docs/shortfalls.md, 11 Oct).
     rows = tuple(
         CourseGroupMember(
             handbook_year=year,
@@ -237,8 +238,8 @@ def slots(read: Complementary, year: int) -> tuple[TimetableSlot, ...]:
 
 def passages(read: Complementary, year: int, skip: set[str]) -> tuple[Passage, ...]:
     # One passage per offering, from the workbook's copy of its entry, under the handbook that
-    # prints it and its first printed page. Each handbook's passages are numbered by page, then
-    # row. An offering in skip is read from the faculty handbook itself.
+    # prints it and its first printed page. Each handbook's passages are numbered by page, the
+    # languages sheet first, then row. An offering in skip is read from the faculty handbook itself.
     by_source: dict[str, list[Offering]] = defaultdict(list)
     for offering in read.offerings:
         if offering.code not in skip:

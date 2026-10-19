@@ -11,12 +11,13 @@ import pytest
 from fastapi.testclient import TestClient
 from fpdf import FPDF
 
-from sage.domain.rules import ResultSymbol, RuleSet
 from sage.ingestion.complementary import MEETING_COLUMNS, OFFERING_COLUMNS
 from sage.ingestion.handbook import Handbook, Page
+from sage.ingestion.ingest import approved_snapshot
 from sage.main import create_app
-from sage.services.ingest import approved_snapshot
-from sage.services.seed import SEED_FILE
+from sage.shared.rules import ResultSymbol, RuleSet
+from sage.shared.seed import SEED_FILE
+from tests.pdf import split_pages
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -86,7 +87,7 @@ def transcript_pages() -> list[list[str]]:
     text = (Path(__file__).parent / "fixtures" / "transcript.txt").read_text(
         encoding="utf-8"
     )
-    return [page.strip("\n").split("\n") for page in text.split("\f")]
+    return split_pages(text)
 
 
 @pytest.fixture
@@ -97,7 +98,7 @@ def handbook_pages() -> list[list[str]]:
     text = (Path(__file__).parent / "fixtures" / "handbook.txt").read_text(
         encoding="utf-8"
     )
-    return [page.strip("\n").split("\n") for page in text.split("\f")]
+    return split_pages(text)
 
 
 @pytest.fixture
@@ -186,22 +187,5 @@ def complementary_xlsx() -> Callable:
             book[name][cell] = value
         book.save(path)
         return path
-
-    return make
-
-
-@pytest.fixture(scope="session")
-def pdf_of() -> Callable[[list[list[str]]], bytes]:
-    # Prints pages of lines into a PDF, one line per row. Windows-1252 lets the built-in font print
-    # the record's dashes.
-    def make(pages: list[list[str]]) -> bytes:
-        pdf = FPDF()
-        pdf.core_fonts_encoding = "windows-1252"
-        pdf.set_font("Helvetica", size=9)
-        for page in pages:
-            pdf.add_page()
-            for line in page:
-                pdf.cell(text=line, new_x="LMARGIN", new_y="NEXT")
-        return bytes(pdf.output())
 
     return make

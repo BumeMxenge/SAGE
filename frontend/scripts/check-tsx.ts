@@ -7,7 +7,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import ts from 'typescript'
 
-export type Violation = { file: string; line: number; message: string }
+type Violation = { file: string; line: number; message: string }
 
 const sharedFolders = ['components', 'lib', 'styles']
 

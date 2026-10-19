@@ -9,16 +9,16 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 2. Expected values come from an independent source: the handbook, the printed transcript, my report, a hand calculation shown in a comment, or an independent oracle. Never paste in what the code returned.
 3. Test boundaries on both sides, for example 5 and 6 plans, and meetings that touch as well as overlap.
 4. Test each rule once, at the lowest level that can see it. A refusal the transcript reader raises is tested in the reader's tests, and the API tests check only that one reaches the client as its problem code.
-5. Guards (signed out, outside UCT, staff, setup unfinished, questionnaire pending and another student's data) are checked once, in a sweep over every route the app serves, in `backend/tests/unit/api/test_guards.py`. A new route that forgets a guard fails it automatically.
+5. Guards (signed out, outside UCT, staff, setup unfinished, questionnaire pending and another student's data) are checked once, in a sweep over every route the app serves, in `backend/tests/unit/shared/api/test_guards.py`. A new route that forgets a guard fails it automatically.
 6. No count snapshots of seed data unless the number is a stated requirement. The seed's own counts are checked once, in the seed tests.
-7. Tests of a stand-in in `services/stubs.py` are marked `@pytest.mark.stub("engine")` or `("advisor")`, naming the component that replaces it. They prove wiring, never correctness, and are deleted when the real component lands.
+7. Tests of a stand-in in `engine/stubs.py` or `advisor/stubs.py` are marked `@pytest.mark.stub("engine")` or `("advisor")`, naming the component that replaces it. They prove wiring, never correctness, and are deleted when the real component lands.
 8. Every workaround, cut or known limitation goes in [shortfalls.md](shortfalls.md) as it's found.
 
 ## Levels
 
 | Level | What it checks | Where | How to run |
 | --- | --- | --- | --- |
-| Unit | Each rule, on in-memory stores holding the approved 2026 rulebook, with no network | `backend/tests/unit`, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every pull request and every push to main |
+| Unit | Each rule, on in-memory stores holding the approved 2026 rulebook, with no network | `backend/tests/unit`, whose folders mirror the source's, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every pull request and every push to main |
 | Integration | The Supabase adapters, the migrations, row level security and real sign-in tokens, against a rebuilt local database holding both approved years | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every pull request and every push to main |
 | Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened | `tests/acceptance` (planned: ATP-1's label sheets and harness arrive from branch E) | `make atp1`, and their own workflow on demand, which holds the model key, as held-out wording needs fresh drafts |
 
@@ -30,10 +30,14 @@ The yearly job's tests build each source inside the test: typed page text in the
 | --- | --- | --- |
 | Collect | `ingestion/test_sources.py` | A source read although its fingerprint changed |
 | Read | `ingestion/test_handbook.py`, `test_curricula.py`, `test_timetable.py`, `test_complementary.py`, `test_equivalences.py`, `test_names.py` | A running header leaking into an entry, prose taken for a heading or an entry, a passage cut at the wrong heading, a curriculum table read into the wrong groups or totals, a meeting timed off the period key or stored twice, a cell or row that fits no reading let through, an equivalence not flagged for a person, and a name cased against CP0's rule |
-| Translate | `ingestion/test_grammar.py`, `test_translate.py`, `adapters/test_anthropic.py` | Wording with more than one reading accepted, a refusal without its cause, a draft that isn't a rule tree kept, a cached draft asked for again, and a model's answer misread or not asked for as E2 asked |
+| Translate | `ingestion/test_grammar.py`, `test_translate.py`, `test_anthropic.py` | Wording with more than one reading accepted, a refusal without its cause, a draft that isn't a rule tree kept, a cached draft asked for again, and a model's answer misread or not asked for as E2 asked |
 | Check | `ingestion/test_checks.py` | A check that misses its one planted inconsistency, fires on the row that agrees, or fails a settled exclusion |
 | Review | `ingestion/test_review.py` | A first year that isn't all new, an unchanged row not carried over, a removal let through unseen, a decision kept after its reading changed or counted before it's usable, and a check that fails on the year as decided without stopping approval |
-| Approve and load | `services/test_ingest.py` | Approval with a row pending, a snapshot that doesn't survive its round trip, a kept removal lost, and a load that rewrites a year held exactly or replaces one held differently unasked |
+| Approve and load | `ingestion/test_ingest.py` | Approval with a row pending, a snapshot that doesn't survive its round trip, a kept removal lost, and a load that rewrites a year held exactly or replaces one held differently unasked |
+
+## The dependency check
+
+`make lint`, which `make check` and CI run, also runs import-linter's `lint-imports`. It reads every import in `backend/src/sage` without running the code, and checks the five contracts in `backend/pyproject.toml` that hold [the backend's dependency rule](architecture.md#backend-dependency-rule). Each contract was broken once by hand to see it fail: shared code importing a feature, one feature importing another, a feature importing the engine's stand-in, a feature importing Supabase's SDK, and the `sage` command importing Anthropic's. An exception a contract lists that no import still uses fails the check too, so the list can't go stale.
 
 ## Frontend
 
@@ -80,25 +84,25 @@ CI never runs it. It needs that stack, and screenshots differ between operating 
 | `make mutation` | The share of mutants the unit tests catch, written to `backend/mutation-score.txt` | 12 minutes |
 | `make planted-faults` | Which of the 26 planted faults the unit tests catch, and the test that caught each: the 24 from my test review, and two in the review and approval the thesis rests on | 7 minutes |
 
-Line coverage counts the lines that ran during the tests, not whether anything checked what they did, so it overstates. Mutation testing checks the checking. mutmut makes 5,247 copies of the code in `api/`, `domain/`, `ingestion/` and `services/`, each with one small change, such as `<` to `<=` or `5` to `6`. It runs the unit tests against each copy and counts the copies that make a test fail. A copy that makes the tests time out counts as caught. The 26 planted faults are plausible bugs chosen by hand, while mutmut makes every small change it can, most of them easy to catch, so its score runs higher.
+Line coverage counts the lines that ran during the tests, not whether anything checked what they did, so it overstates. Mutation testing checks the checking. mutmut makes 5,244 copies of the code in `features/`, `shared/`, `ingestion/`, `engine/` and `advisor/`, each with one small change, such as `<` to `<=` or `5` to `6`. It runs the unit tests against each copy and counts the copies that make a test fail. A copy that makes the tests time out counts as caught. The 26 planted faults are plausible bugs chosen by hand, while mutmut makes every small change it can, most of them easy to catch, so its score runs higher.
 
-The score leaves out the integration tests, code outside functions (such as the transcript reader's patterns), and the storage adapters, where student isolation is enforced. The mutants that survive are listed below.
+The score leaves out the integration tests, code outside functions (such as the transcript reader's patterns), the adapters to outside services (the storage adapters, where student isolation is enforced, their in-memory fakes, and Claude's drafter), and the entry points, `main.py`, `cli.py` and `config.py`. The mutants that survive are listed below.
 
 ## Numbers
 
-| | 12 Oct (e60bca0) | 18 Oct (fb4a050) | Branch D (de6b976) |
-| --- | --- | --- | --- |
-| Test functions | 167 | 237 | 241 |
-| Cases: unit and integration | 177 and 76 | 337 and 78 | 343 and 78 |
-| Line coverage, unit tests | 92.8% (1,746 of 1,882 lines) | Not measured | 91.4% (3,417 of 3,738 lines) |
-| Mutation score | 90.8% (1,542 of 1,699 mutants) | 93.0% (4,917 of 5,286 mutants) | 93.4% (4,901 of 5,247 mutants) |
-| Planted faults caught | 24 of 24 | 24 of 24 | 26 of 26 |
+| | 12 Oct (e60bca0) | 18 Oct (fb4a050) | Branch D (de6b976) | Clean-up (bc8db10) |
+| --- | --- | --- | --- | --- |
+| Test functions | 167 | 237 | 241 | 236 |
+| Cases: unit and integration | 177 and 76 | 337 and 78 | 343 and 78 | 340 and 76 |
+| Line coverage, unit tests | 92.8% (1,746 of 1,882 lines) | Not measured | 91.4% (3,417 of 3,738 lines) | 91.5% (3,450 of 3,772 lines) |
+| Mutation score | 90.8% (1,542 of 1,699 mutants) | 93.0% (4,917 of 5,286 mutants) | 93.4% (4,901 of 5,247 mutants) | 93.4% (4,898 of 5,244 mutants) |
+| Planted faults caught | 24 of 24 | 24 of 24 | 26 of 26 | 26 of 26 |
 
-Between 12 and 18 Oct, C1 and C2 added the ingestion code and its tests, which trebled the mutants. On 18 Oct three test runs crashed in pytest's clean-up and counted as caught, so that score was at worst 4,914; each test session now has a temporary folder of its own. Branch D moved the tests onto the approved 2026, removed the seed's rulebook code and two tests that caught nothing alone, and added five. Line coverage counts the Supabase adapters and the `sage` command too, which only the integration tests run. Planted faults 17 and 18 are in the eligibility stand-in, and leave the count when the engine replaces it, as do the 10 tests marked `stub`. Faults 25 and 26 are in the review and approval.
+Between 12 and 18 Oct, C1 and C2 added the ingestion code and its tests, which trebled the mutants. On 18 Oct three test runs crashed in pytest's clean-up and counted as caught, so that score was at worst 4,914; each test session now has a temporary folder of its own. Branch D moved the tests onto the approved 2026, removed the seed's rulebook code and two tests that caught nothing alone, and added six. The clean-up of 19 Oct organised the backend by feature, which renames the mutants but not what they change, and removed five tests that caught nothing alone and the handbook reader's unused `Entry.codes`, whose three mutants were all caught. The 346 survivors are the same, function by function. Line coverage counts the Supabase adapters and the `sage` command too, which the unit tests run only in part. Planted faults 17 and 18 are in the eligibility stand-in, and leave the count when the engine replaces it, as do the 9 tests marked `stub`. Faults 25 and 26 are in the review and approval.
 
 ## Mutants that survive
 
-346 of the 5,247 mutants survive. 96 only change wording a student or developer reads (a prompt, a label, a check's name, a refusal's detail, a log line) or the text inside a made-up id or cache key, which no test should pin. 119 are equivalent: no realistic input tells them apart from the code, such as a file read with this Mac's default encoding, a path given in other capitals on its case-blind disk, a reader's state set before it's ever used, or zip's strict flag where both sides always match. 17 only change how `drafts.json`, `review.json` or `rulebook.json` is laid out. Every survivor in the code the thesis's claims rest on (the transcript reader's statuses, the averages, questionnaire narrowing, student isolation, and a year's review and approval) was closed with a test. The other 114 are future work. The readers' gaps are layouts the test pages don't print, which ATP-1 measures on the real sources instead:
+346 of the 5,244 mutants survive. 96 only change wording a student or developer reads (a prompt, a label, a check's name, a refusal's detail, a log line) or the text inside a made-up id or cache key, which no test should pin. 119 are equivalent: no realistic input tells them apart from the code, such as a file read with this Mac's default encoding, a path given in other capitals on its case-blind disk, a reader's state set before it's ever used, or zip's strict flag where both sides always match. 17 only change how `drafts.json`, `review.json` or `rulebook.json` is laid out. Every survivor in the code the thesis's claims rest on (the transcript reader's statuses, the averages, questionnaire narrowing, student isolation, and a year's review and approval) was closed with a test. The other 114 are future work. The readers' gaps are layouts the test pages don't print, which ATP-1 measures on the real sources instead:
 
 | Where | What no unit test checks | Mutants |
 | --- | --- | --- |

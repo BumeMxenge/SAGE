@@ -14,8 +14,10 @@ from typing import Literal, get_args
 
 from pydantic import JsonValue, TypeAdapter, ValidationError, computed_field
 
-from sage.domain.base import Row
-from sage.domain.rules import (
+from sage.ingestion.checks import Check, tree_codes
+from sage.ingestion.sources import Reading
+from sage.shared.base import Row
+from sage.shared.rules import (
     NODE_KEYS,
     PRIMARY_KEYS,
     Course,
@@ -28,8 +30,6 @@ from sage.domain.rules import (
     RuleSet,
     YearRules,
 )
-from sage.ingestion.checks import Check, tree_codes
-from sage.ingestion.sources import Reading
 
 # Every flag in DeltaFlag's order, the order rows are sorted in
 FLAGS = tuple(flag for flags in get_args(DeltaFlag) for flag in get_args(flags))

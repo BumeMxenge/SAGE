@@ -2,7 +2,10 @@
 # here: the first year is all new, an unchanged row carries over, a removal is always flagged, one row
 # covers every course printing the same words, like trees sit together, a DP draft is marked and a
 # failed check is always a reason to look. Then that decisions hold, are checked and set the year.
-from sage.domain.rules import (
+from sage.ingestion.checks import Check, Failure
+from sage.ingestion.review import Snapshot, compare
+from sage.ingestion.sources import Reading
+from sage.shared.rules import (
     AllOf,
     AllOfGroup,
     AnyOf,
@@ -18,9 +21,6 @@ from sage.domain.rules import (
     TotalCredits,
     YearRules,
 )
-from sage.ingestion.checks import Check, Failure
-from sage.ingestion.review import Snapshot, compare
-from sage.ingestion.sources import Reading
 
 TREE_CODES = "Every code a rule names is loaded, printed or equivalent"
 

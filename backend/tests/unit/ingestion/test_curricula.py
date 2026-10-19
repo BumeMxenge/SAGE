@@ -3,7 +3,10 @@
 # core table's total is kept to check. Expected values are read off the page by hand.
 import pytest
 
-from sage.domain.rules import (
+from sage.ingestion.curricula import Listed, Subtotal, read
+from sage.ingestion.handbook import Handbook, Page
+from sage.ingestion.sources import Section, SourceError
+from sage.shared.rules import (
     AllOfGroup,
     ChooseFromGroup,
     CreditsFromGroups,
@@ -11,9 +14,6 @@ from sage.domain.rules import (
     TotalCredits,
     YearRules,
 )
-from sage.ingestion.curricula import Listed, Subtotal, read
-from sage.ingestion.handbook import Handbook, Page
-from sage.ingestion.sources import Section, SourceError
 
 DEPARTMENT = "Electrical Engineering"
 
@@ -138,7 +138,7 @@ def test_a_curriculum_reads_as_printed(handbook):
             ),
         )
     ]
-    # Year 2: 7 × 16 + 2 × 8 = 128 + 16 = 144. Year 3: 7 × 16 + 2 × 8 + 18 for the slot + 0 = 146.
+    # Year 2: 8 × 16 + 2 × 8 = 128 + 16 = 144. Year 3: 7 × 16 + 2 × 8 + 18 for the slot + 0 = 146.
     # Year 4's core: 16 + 10 + 16 + 8 + 40 = 90.
     assert curricula.subtotals == (
         Subtotal(curriculum="EB009EEE01", year=2, page=48, printed=144, summed=144),

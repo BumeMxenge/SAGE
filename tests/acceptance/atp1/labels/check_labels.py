@@ -17,7 +17,7 @@ from typing import Any, NamedTuple, get_args
 from openpyxl import load_workbook
 from pydantic import TypeAdapter, ValidationError
 
-from sage.domain.rules import EntryRule, TermCode
+from sage.shared.rules import EntryRule, TermCode
 
 Row = dict[str, Any]
 
