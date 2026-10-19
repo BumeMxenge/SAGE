@@ -91,16 +91,17 @@ export function UploadStep({ onContinue }: { onContinue: (transcript: Transcript
         <Card
           level={2}
           title={upload.stage === 'read' ? upload.name : upload.file.name}
+          meta={
+            upload.stage === 'read' ? (
+              <p className={styles.found}>
+                PDF · {sizeOf(upload.size)} · {courses(upload.transcript.lines.length)} found
+              </p>
+            ) : (
+              <p className={styles.status}>Reading your transcript…</p>
+            )
+          }
           actions={<IconButton label="Remove File" icon="close" onPress={remove} />}
-        >
-          {upload.stage === 'read' ? (
-            <p className={styles.found}>
-              PDF · {sizeOf(upload.size)} · {courses(upload.transcript.lines.length)} found
-            </p>
-          ) : (
-            <p className={styles.status}>Reading your transcript…</p>
-          )}
-        </Card>
+        />
       )}
       <div className={styles.continue}>
         <Button isDisabled={upload.stage !== 'read'} onPress={() => upload.stage === 'read' && onContinue(upload.transcript)}>
