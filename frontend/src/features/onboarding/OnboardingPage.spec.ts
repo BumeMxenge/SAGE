@@ -1,8 +1,9 @@
 // Parity, axe and the keyboard walk for onboarding's steps, as a student who hasn't finished setup:
 // Mbali's session with a made-up answer from GET /v1/me, so no check resets a real account. The
 // transcript's reading is answered here with a made-up transcript, as her session can't read
-// Ilvane's PDF. Onboarding has no dark design, so dark images show React alone.
-import { type Locator, type Page, test } from '@playwright/test'
+// Ilvane's PDF. Onboarding is light only, so parity runs in light alone, and a dark browser is checked
+// to show it light.
+import { expect, type Locator, type Page, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../../e2e/axe.ts'
 import { walkKeyboard } from '../../../e2e/keyboard.ts'
 import { type ParityCase, parity } from '../../../e2e/parity.ts'
@@ -229,8 +230,7 @@ function state(name: string, designed: Reach, built: Reach): ParityCase {
   return {
     name,
     prototype: 'onboarding',
-    reach: async (page, theme) => {
-      if (theme === 'dark') return null
+    reach: async (page) => {
       await designed(page)
       await settled(page)
       return whole(page)
@@ -256,8 +256,8 @@ function control(
   return {
     name,
     prototype: 'onboarding',
-    reach: async (page, theme) => {
-      if (theme === 'dark' || !designed) return null
+    reach: async (page) => {
+      if (!designed) return null
       await designed.reach(page)
       return designed.element(page)
     },
@@ -266,90 +266,94 @@ function control(
   }
 }
 
-parity('onboarding', [
-  state('account-created', show('Account created'), async (page) => {
-    // The confetti falls once, then the page is still
-    await page.getByRole('heading', { level: 1 }).waitFor()
-  }),
-  control(
-    'next-button',
-    { reach: show('Account created'), element: button('Next, your course history') },
-    { element: button('Next, Your Course History') },
-  ),
-  state('upload', show('Upload'), toUpload),
-  control(
-    'drop-zone',
-    { reach: show('Upload'), element: (page) => page.locator('[data-dc-tpl="227"]') },
-    { reach: toUpload, element: (page) => page.locator('div[data-rac]').filter({ has: page.getByRole('button', { name: 'Choose PDF' }) }) },
-  ),
-  control('choose-pdf', null, { reach: toUpload, element: button('Choose PDF') }),
-  state('ready', show('Ready'), toReady),
-  control('remove-file', { reach: show('Ready'), element: button('Remove file') }, { reach: toReady, element: button('Remove File') }),
-  control('continue', { reach: show('Ready'), element: button('Continue') }, { reach: toReady, element: button('Continue') }),
-  state('review', show('Review'), toReview),
-  state('review-year-2', (page) => prototypeYears(page, ['Confirm 2023']), toYear2),
-  state('review-last-year', prototypeLastYear, toLastYear),
-  control(
-    'back',
-    // The prototype keeps every year in the page, side by side, so its first Back is year 2's
-    { reach: (page) => prototypeYears(page, ['Confirm 2023']), element: (page) => page.getByRole('button', { name: 'Back' }).first() },
-    { reach: toYear2, element: button('Back') },
-  ),
-  control(
-    'confirm-year',
-    {
-      reach: async (page) => {
-        await prototypeYears(page, ['Confirm 2023'])
-        await scrollList(page)
+test.describe('parity', () => {
+  test.skip(({ colorScheme }) => colorScheme === 'dark', 'Onboarding is light only')
+
+  parity('onboarding', [
+    state('account-created', show('Account created'), async (page) => {
+      // The confetti falls once, then the page is still
+      await page.getByRole('heading', { level: 1 }).waitFor()
+    }),
+    control(
+      'next-button',
+      { reach: show('Account created'), element: button('Next, your course history') },
+      { element: button('Next, Your Course History') },
+    ),
+    state('upload', show('Upload'), toUpload),
+    control(
+      'drop-zone',
+      { reach: show('Upload'), element: (page) => page.locator('[data-dc-tpl="227"]') },
+      { reach: toUpload, element: (page) => page.locator('div[data-rac]').filter({ has: page.getByRole('button', { name: 'Choose PDF' }) }) },
+    ),
+    control('choose-pdf', null, { reach: toUpload, element: button('Choose PDF') }),
+    state('ready', show('Ready'), toReady),
+    control('remove-file', { reach: show('Ready'), element: button('Remove file') }, { reach: toReady, element: button('Remove File') }),
+    control('continue', { reach: show('Ready'), element: button('Continue') }, { reach: toReady, element: button('Continue') }),
+    state('review', show('Review'), toReview),
+    state('review-year-2', (page) => prototypeYears(page, ['Confirm 2023']), toYear2),
+    state('review-last-year', prototypeLastYear, toLastYear),
+    control(
+      'back',
+      // The prototype keeps every year in the page, side by side, so its first Back is year 2's
+      { reach: (page) => prototypeYears(page, ['Confirm 2023']), element: (page) => page.getByRole('button', { name: 'Back' }).first() },
+      { reach: toYear2, element: button('Back') },
+    ),
+    control(
+      'confirm-year',
+      {
+        reach: async (page) => {
+          await prototypeYears(page, ['Confirm 2023'])
+          await scrollList(page)
+        },
+        element: button('Confirm 2024'),
       },
-      element: button('Confirm 2024'),
-    },
-    { reach: toYear2, element: button('Confirm 2024') },
-  ),
-  control(
-    'finish-setup',
-    { reach: prototypeLastYear, element: button('Finish setup') },
-    { reach: toLastYear, element: button('Finish Setup') },
-  ),
-  state('review-edit', prototypeEditing, toEditing),
-  control(
-    'edit-courses',
-    { reach: show('Review'), element: (page) => page.getByRole('button', { name: 'Edit courses' }).first() },
-    { reach: toReview, element: button('Edit Courses') },
-  ),
-  control('done-editing', { reach: prototypeEditing, element: button('Done editing') }, { reach: toEditing, element: button('Done Editing') }),
-  control(
-    'add-course',
-    { reach: prototypeEditing, element: (page) => page.getByRole('button', { name: 'Add a course' }).first() },
-    { reach: toEditing, element: button('Add a Course') },
-  ),
-  control(
-    'outcome-select',
-    { reach: prototypeEditing, element: (page) => page.locator('select').first() },
-    { reach: toEditing, element: (page) => page.getByRole('button', { name: /Outcome for/ }).first() },
-  ),
-  control(
-    'remove-row',
-    { reach: prototypeEditing, element: (page) => page.getByRole('button', { name: 'Remove course' }).first() },
-    { reach: toEditing, element: removeRow },
-  ),
-  state('course-picker', prototypePicker, toPicker),
-  control(
-    'picker-option',
-    { reach: prototypePicker, element: (page) => page.getByRole('button', { name: /^EEE2044S/ }) },
-    { reach: toPicker, element: (page) => page.getByRole('option').first() },
-  ),
-  state('picker-no-match', prototypePickerWithNoMatch, toPickerWithNoMatch),
-  state('confirm-add', prototypeConfirmAdd, toConfirmAdd),
-  state('confirm-change', prototypeConfirmChange, toConfirmChange),
-  state('confirm-remove', prototypeConfirmRemove, toConfirmRemove),
-  control(
-    'remove-course-button',
-    // The prototype's dialog sits last in its page, after every row's own Remove course
-    { reach: prototypeConfirmRemove, element: (page) => page.getByRole('button', { name: 'Remove course' }).last() },
-    { reach: toConfirmRemove, element: (page) => page.getByRole('dialog').getByRole('button', { name: 'Remove Course' }) },
-  ),
-])
+      { reach: toYear2, element: button('Confirm 2024') },
+    ),
+    control(
+      'finish-setup',
+      { reach: prototypeLastYear, element: button('Finish setup') },
+      { reach: toLastYear, element: button('Finish Setup') },
+    ),
+    state('review-edit', prototypeEditing, toEditing),
+    control(
+      'edit-courses',
+      { reach: show('Review'), element: (page) => page.getByRole('button', { name: 'Edit courses' }).first() },
+      { reach: toReview, element: button('Edit Courses') },
+    ),
+    control('done-editing', { reach: prototypeEditing, element: button('Done editing') }, { reach: toEditing, element: button('Done Editing') }),
+    control(
+      'add-course',
+      { reach: prototypeEditing, element: (page) => page.getByRole('button', { name: 'Add a course' }).first() },
+      { reach: toEditing, element: button('Add a Course') },
+    ),
+    control(
+      'outcome-select',
+      { reach: prototypeEditing, element: (page) => page.locator('select').first() },
+      { reach: toEditing, element: (page) => page.getByRole('button', { name: /Outcome for/ }).first() },
+    ),
+    control(
+      'remove-row',
+      { reach: prototypeEditing, element: (page) => page.getByRole('button', { name: 'Remove course' }).first() },
+      { reach: toEditing, element: removeRow },
+    ),
+    state('course-picker', prototypePicker, toPicker),
+    control(
+      'picker-option',
+      { reach: prototypePicker, element: (page) => page.getByRole('button', { name: /^EEE2044S/ }) },
+      { reach: toPicker, element: (page) => page.getByRole('option').first() },
+    ),
+    state('picker-no-match', prototypePickerWithNoMatch, toPickerWithNoMatch),
+    state('confirm-add', prototypeConfirmAdd, toConfirmAdd),
+    state('confirm-change', prototypeConfirmChange, toConfirmChange),
+    state('confirm-remove', prototypeConfirmRemove, toConfirmRemove),
+    control(
+      'remove-course-button',
+      // The prototype's dialog sits last in its page, after every row's own Remove course
+      { reach: prototypeConfirmRemove, element: (page) => page.getByRole('button', { name: 'Remove course' }).last() },
+      { reach: toConfirmRemove, element: (page) => page.getByRole('dialog').getByRole('button', { name: 'Remove Course' }) },
+    ),
+  ])
+})
 
 // Each step as it stands has no axe violations and a clean keyboard walk
 for (const [step, reach] of [
@@ -376,3 +380,92 @@ for (const [step, reach] of [
     await walkKeyboard(page)
   })
 }
+
+// Onboarding is light only. With the browser set to dark and a saved choice of Dark, each page, and the
+// picker, a Select's list and a dialog over it, show light from the first frame, and leaving for the
+// plans puts the student's own choice back.
+test.describe('light only', () => {
+  test.skip(({ colorScheme }) => colorScheme === 'light', 'the dark project sets the browser to dark')
+
+  // A saved choice of Dark, and a record of every theme the page shows, from before its first frame
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('sage-appearance', 'dark')
+      const shown: (string | null)[] = []
+      Object.assign(window, { shown })
+      new MutationObserver((records) => {
+        for (const record of records) shown.push((record.target as Element).getAttribute('data-theme'))
+      }).observe(document, { subtree: true, attributeFilter: ['data-theme'] })
+    })
+  })
+
+  const themesShown = (page: Page) => page.evaluate(() => (window as unknown as { shown: (string | null)[] }).shown)
+  const white = 'rgb(255, 255, 255)'
+
+  async function expectLight(page: Page, surface: Locator): Promise<void> {
+    await settled(page)
+    expect(await themesShown(page)).not.toContain('dark')
+    await expect(surface).toHaveCSS('background-color', white)
+  }
+
+  test.describe('signed out', () => {
+    test.use({ storageState: { cookies: [], origins: [] } })
+
+    test('/sign-in shows light', async ({ page }) => {
+      await page.goto('/sign-in')
+      await page.getByRole('heading', { level: 1 }).waitFor()
+      await expectLight(page, page.locator('body'))
+    })
+  })
+
+  test('/wrong-account shows light', async ({ page }) => {
+    await visitAs(page, 'refused')
+    await page.goto('/wrong-account')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+    await expectLight(page, page.locator('body'))
+  })
+
+  test('/onboarding, its lists and its dialogs show light', async ({ page }) => {
+    await page.goto('/onboarding')
+    await toEditing(page)
+    await expectLight(page, page.locator('body'))
+
+    const outcome = page.getByRole('button', { name: /Outcome for/ }).first()
+    await outcome.focus()
+    await page.keyboard.press('Enter')
+    await expectLight(page, page.locator('[data-trigger=Select]'))
+    await page.keyboard.press('Escape')
+
+    await page.getByRole('button', { name: 'Add a Course' }).click()
+    await expectLight(page, page.locator('[role=dialog]').locator('..'))
+    await page.keyboard.press('Escape')
+
+    await removeRow(page).click()
+    await expectLight(page, page.locator('[role=dialog]').locator('..'))
+  })
+
+  test('leaving for the plans puts the dark choice back', async ({ page }) => {
+    // Once Finish Setup has saved, the account is set up, as the API would then say
+    let finished = false
+    await page.route('**/v1/me', (route) =>
+      route.fulfill({
+        json: { email: 'dlmmba999@myuct.ac.za', account: 'student', student_number: 'DLMMBA999', onboarding_complete: finished },
+        headers: allowed,
+      }),
+    )
+    await page.route('**/v1/onboarding/complete', (route) => {
+      finished = true
+      return route.fulfill({
+        json: { email: 'dlmmba999@myuct.ac.za', account: 'student', student_number: 'DLMMBA999', onboarding_complete: true },
+        headers: allowed,
+      })
+    })
+    await page.goto('/onboarding')
+    await toLastYear(page)
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('light')
+    await page.getByRole('button', { name: 'Finish Setup' }).click()
+    await page.waitForURL('**/plan')
+    // The address changes a moment before the plans replace onboarding on screen
+    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark')
+  })
+})

@@ -1,7 +1,7 @@
 // Parity for the sign-in landing, signed out, against the onboarding prototype's Landing state: the
-// whole page with each highlight, and the controls it adds, at rest and on hover. Onboarding has no
-// dark design, so dark images show React alone.
-import type { Locator, Page } from '@playwright/test'
+// whole page with each highlight, and the controls it adds, at rest and on hover. Onboarding is light
+// only, so parity runs in light alone.
+import { type Locator, type Page, test } from '@playwright/test'
 import { type ParityCase, parity } from '../../../e2e/parity.ts'
 import { settled, showState } from './prototype.ts'
 
@@ -22,8 +22,7 @@ function highlight(name: string, dot: number, tab: string): ParityCase {
   return {
     name,
     prototype: 'onboarding',
-    reach: async (page, theme) => {
-      if (theme === 'dark') return null
+    reach: async (page) => {
       await showState(page, 'Landing')
       await page.getByRole('button', { name: 'Highlight' }).nth(dot).click()
       await settled(page)
@@ -45,8 +44,7 @@ function control(name: string, designed: (page: Page) => Locator, built: (page: 
   return {
     name,
     prototype: 'onboarding',
-    reach: async (page, theme) => {
-      if (theme === 'dark') return null
+    reach: async (page) => {
       await showState(page, 'Landing')
       return designed(page)
     },
@@ -55,12 +53,13 @@ function control(name: string, designed: (page: Page) => Locator, built: (page: 
   }
 }
 
+test.skip(({ colorScheme }) => colorScheme === 'dark', 'Onboarding is light only')
+
 parity('onboarding', [
   {
     name: 'landing',
     prototype: 'onboarding',
-    reach: async (page, theme) => {
-      if (theme === 'dark') return null
+    reach: async (page) => {
       await showState(page, 'Landing')
       await settled(page)
       return whole(page)

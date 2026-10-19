@@ -4,10 +4,12 @@ import { Button } from '@/components/actions/Button/Button.tsx'
 import { Logo } from '@/components/brand/Logo/Logo.tsx'
 import { BrandShapes } from '@/features/onboarding/components/BrandShapes/BrandShapes.tsx'
 import { Highlights } from '@/features/onboarding/components/Highlights/Highlights.tsx'
+import { useLightOnly } from '@/features/onboarding/useLightOnly.ts'
 import { useAuth } from '@/lib/auth/useAuth.ts'
 import styles from './SignInPage.module.css'
 
 export function SignInPage() {
+  useLightOnly()
   const { signIn } = useAuth()
   return (
     <main className={styles.page}>

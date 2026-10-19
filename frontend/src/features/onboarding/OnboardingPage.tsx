@@ -10,6 +10,7 @@ import { OnboardingSteps } from '@/features/onboarding/components/OnboardingStep
 import { ReviewStep } from '@/features/onboarding/components/ReviewStep/ReviewStep.tsx'
 import { UploadStep } from '@/features/onboarding/components/UploadStep/UploadStep.tsx'
 import { focusOnOpen } from '@/features/onboarding/focusOnOpen.ts'
+import { useLightOnly } from '@/features/onboarding/useLightOnly.ts'
 import type { components } from '@/lib/api-types.ts'
 import { queries, refresh } from '@/lib/queryKeys.ts'
 import styles from './OnboardingPage.module.css'
@@ -20,6 +21,7 @@ type Step =
   | { name: 'review'; transcript: components['schemas']['Transcript'] }
 
 export function OnboardingPage() {
+  useLightOnly()
   const [step, setStep] = useState<Step>({ name: 'welcome' })
   const navigate = useNavigate()
   // The review needs the catalogue, so its read starts now, while the student uploads
