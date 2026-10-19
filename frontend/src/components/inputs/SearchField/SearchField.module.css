@@ -29,6 +29,11 @@
   color: var(--color-text-secondary);
 }
 
+/* Chrome and Safari draw a clear button of their own in a search input, beside the one below */
+.input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
 .input[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
