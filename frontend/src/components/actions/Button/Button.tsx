@@ -29,8 +29,9 @@ const variantClass: Record<Variant, string> = {
 export function Button({ variant = 'primary', icon, iconOnly, children, ...props }: ButtonProps) {
   return (
     <AriaButton
-      {...props}
+      // A label the caller gives wins over the one an icon-only button takes from its children
       aria-label={iconOnly ? children : undefined}
+      {...props}
       className={`${styles.button} ${variantClass[variant]} ${iconOnly ? styles.iconOnly : ''}`}
     >
       {icon && <Icon name={icon} />}
