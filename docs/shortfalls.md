@@ -67,6 +67,7 @@ Defects caught before acceptance testing, for Section 5.2.
 | 18 Oct | mutmut counted a mutant as caught when its test run crashed in pytest's clean-up | mutmut runs several mutants' tests at once, and their pytest sessions raced to tidy the `pytest-current` link in one shared temporary folder. 3 of the 5,286 runs on 18 Oct crashed this way, so that score was at worst 4,914 of 5,286 rather than 4,917, which still rounds to 93.0% | `make mutation` gives each test session a temporary folder of its own, through a conftest hook, so no link is shared (branch D, 18 Oct) | None |
 | 19 Oct | The real onboarding run in `make check-ui` ran out of its 30 s twice in a full run, and passed alone in 10 to 11 s | It alone runs two make targets and has the real API read a PDF, which slow the most while the run's four workers share the machine. A throwaway check chose a programme 100 times, with the CPU slowed six-fold, and its list closed every time | Marked the test slow, which gives it three times the budget | None |
 | 19 Oct | Typing in the course picker's search showed two clear buttons | Chrome and Safari draw their own clear button inside a search input, and SearchField draws one too | SearchField hides the browser's own | None |
+| 19 Oct | The warning icon reached only 2.89:1 on its tint in light, under 3:1 | It took `--color-warning` (`#C07B54`), a lighter orange than the warning text | The icon takes the warning text colour, 6.30:1 on the tint, and the token nothing else used is gone | None |
 
 ## Lasting: for the thesis
 

@@ -61,7 +61,8 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
     '--color-link',
     '--color-link-hover',
   ].map((token) => ({ token, against: surfaces, minimum: 4.5 })),
-  // An inline error's words on its tinted row, as in the sign-in highlights' callout
+  // An inline error's words on its tinted row, as in the sign-in highlights' callout. The warning icon
+  // takes the warning text colour, so the warning check covers it too.
   { token: '--color-text-danger', against: ['--color-danger-tint'], minimum: 4.5 },
   { token: '--color-text-warning', against: ['--color-warning-tint'], minimum: 4.5 },
   // ErrorState's danger icon, on its tile or its inline row

@@ -28,8 +28,9 @@
   background: var(--color-danger-tint);
 }
 
+/* The warning icon takes the warning text colour, the one warning colour that reaches 3:1 on the tint */
 .error-state[data-tone='warning'] .tile {
-  color: var(--color-warning);
+  color: var(--color-text-warning);
   background: var(--color-warning-tint);
 }
 
