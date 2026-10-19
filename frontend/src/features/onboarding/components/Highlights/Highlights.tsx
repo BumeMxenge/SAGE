@@ -63,17 +63,17 @@ const highlights: { id: string; title: string; shows: string; picture: ReactNode
     id: 'credits',
     title: 'Course Lists That Sit Inside Your Credit Limits',
     shows:
-      "Semester 1's credit load: STA2020F, CSC1015F and MAM1000W at 14 credits each make 42, between the minimum of 36 and the maximum of 48, with room for one 6-credit elective. 42 credits is inside the limits, so no concession is needed.",
+      "Year 4 of Mechatronics in the 2026 handbook: the five core courses make 90 credits, and two 16-credit electives, EEE4119F and EEE4118F, bring the year to 122. One more 16-credit elective makes 138, the year's minimum, with the 48 elective credits it asks for.",
     picture: (
       <>
         <div className={`${styles.card} ${styles.load}`}>
           <p className={styles.loadTitle}>
-            <strong>Credit load, Semester 1</strong>
-            <span className={styles.total}>42 / 48</span>
+            <strong>Credit load, Year 4</strong>
+            <span className={styles.total}>122 / 138</span>
           </p>
           <p className={styles.limits}>
-            <span>Min 36</span>
-            <span>Max 48</span>
+            <span>Electives min 48</span>
+            <span>Total min 138</span>
           </p>
           <p className={styles.bar}>
             <span className={styles.navy} />
@@ -84,25 +84,25 @@ const highlights: { id: string; title: string; shows: string; picture: ReactNode
           <ul className={styles.legend}>
             <li>
               <span className={`${styles.swatch} ${styles.navy}`} />
-              STA2020F <span className={styles.credits}>14</span>
+              Core courses <span className={styles.credits}>90</span>
             </li>
             <li>
               <span className={`${styles.swatch} ${styles.teal}`} />
-              CSC1015F <span className={styles.credits}>14</span>
+              EEE4119F <span className={styles.credits}>16</span>
             </li>
             <li>
               <span className={`${styles.swatch} ${styles.darkTeal}`} />
-              MAM1000W <span className={styles.credits}>14</span>
+              EEE4118F <span className={styles.credits}>16</span>
             </li>
             <li className={styles.free}>
               <span className={`${styles.swatch} ${styles.room}`} />
-              Room for one 6-credit elective
+              Room for one 16-credit elective
             </li>
           </ul>
         </div>
         <p className={`${styles.card} ${styles.verdict}`}>
           <span className={styles.tick} />
-          42 credits: inside the limits, no concession needed.
+          One more 16-credit elective makes 138, with 48 in electives.
         </p>
       </>
     ),

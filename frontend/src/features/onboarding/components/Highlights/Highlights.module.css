@@ -216,7 +216,7 @@
   color: var(--color-text-secondary);
 }
 
-/* The semester's credit load: a bar in the courses' colours, with room left for an elective */
+/* The year's credit load: a bar in the courses' colours, with room left for an elective */
 .load {
   display: flex;
   flex-direction: column;
@@ -239,10 +239,11 @@
   color: var(--color-text-secondary);
 }
 
-/* Three courses of 14 credits each, and 6 credits of room up to the 48 maximum */
+/* The core courses' 90 credits, two 16-credit electives, and 16 credits of room up to the year's
+   minimum of 138 */
 .bar {
   display: grid;
-  grid-template-columns: 14fr 14fr 14fr 6fr;
+  grid-template-columns: 90fr 16fr 16fr 16fr;
   gap: var(--space-1);
   height: var(--space-3);
 }

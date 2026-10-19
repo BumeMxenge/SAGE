@@ -92,7 +92,7 @@ test("each highlight's picture is one image to a screen reader", async ({ page }
   for (const [title, picture] of [
     [timetables, /^STA2020F's practical, Wednesday 14:00 to 16:00, clashes/],
     [answers, /^A student asks whether they can take STA2020F/],
-    [credits, /^Semester 1's credit load/],
+    [credits, /^Year 4 of Mechatronics/],
   ] as const) {
     await page.getByRole('tab', { name: title }).click()
     await expect(page.getByRole('tabpanel')).toMatchAriaSnapshot(`
