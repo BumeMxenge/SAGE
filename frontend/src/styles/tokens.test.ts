@@ -1,5 +1,5 @@
 // Reads tokens.css and theme.css and checks WCAG 2.2 AA in both themes: 4.5:1 for text, and 3:1 for
-// the focus ring, the control border and, in light, the field border. In dark, fields have no border
+// the focus ring, the control border, the danger icon and, in light, the field border. In dark, fields have no border
 // and are identified by their placeholder, icon or label (approved difference 2). Decorative borders
 // and disabled text are left out, as WCAG allows.
 import { describe, expect, it } from 'vitest'
@@ -61,8 +61,11 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
     '--color-link',
     '--color-link-hover',
   ].map((token) => ({ token, against: surfaces, minimum: 4.5 })),
+  // An inline error's words on its tinted row, as in the sign-in highlights' callout
   { token: '--color-text-danger', against: ['--color-danger-tint'], minimum: 4.5 },
   { token: '--color-text-warning', against: ['--color-warning-tint'], minimum: 4.5 },
+  // ErrorState's danger icon, on its tile or its inline row
+  { token: '--color-danger', against: ['--color-danger-tint'], minimum: 3 },
   // The danger button's fill is the danger text colour
   { token: '--color-on-primary', against: ['--color-primary', '--color-surface-inverse', '--color-text-danger'], minimum: 4.5 },
   { token: '--color-on-fill', against: ['--color-sign-in', '--color-accent-fill', ...courseColours], minimum: 4.5 },
