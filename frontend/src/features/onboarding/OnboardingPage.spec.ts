@@ -367,7 +367,12 @@ for (const [step, reach] of [
   test(`${step} has no axe violations and a clean keyboard walk`, async ({ page }) => {
     await page.goto('/onboarding')
     await reach(page)
+    // A dialog fades in, and axe would measure its colours half faded
+    await settled(page)
     await expectNoAxeViolations(page)
+    // Tab carries on from the last control used, so a page's walk starts from a click on its header.
+    // A dialog keeps focus inside itself, and a click outside would close it.
+    if ((await page.getByRole('dialog').count()) === 0) await page.mouse.click(0, 0)
     await walkKeyboard(page)
   })
 }
