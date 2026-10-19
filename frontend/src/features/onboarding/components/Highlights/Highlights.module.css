@@ -1,5 +1,5 @@
 /* The highlight on screen fills the panel's height, with its dots at the foot, so the dots stay put
-   as the pictures change */
+   as the highlights slide */
 .highlights {
   position: relative;
   display: flex;
@@ -9,29 +9,49 @@
   max-width: var(--width-dialog);
 }
 
-.panel {
+/* A sideways pan is the strip's to take, and an upward or downward one stays the page's */
+.window {
   display: flex;
   flex: 1;
+  align-self: stretch;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+/* The highlights sit side by side, and --shown slides the chosen one into place. The sign-in page's
+   panel clips the strip at its edges. */
+.strip {
+  display: flex;
+  flex: 0 0 100%;
+  gap: var(--space-16);
+  min-width: 0;
+  transform: translateX(calc(var(--shown) * (-100% - var(--space-16))));
+  transition: transform var(--duration-slow) var(--easing);
+}
+
+/* Each highlight is exactly the strip's width, however wide its content would like to be */
+.panel {
+  display: flex;
+  flex: 0 0 100%;
   flex-direction: column;
   gap: var(--space-8);
   justify-content: center;
-  width: 100%;
+  min-width: 0;
   border-radius: var(--radius-lg);
   outline: none;
-  animation: arrive var(--duration-slow) var(--easing);
+}
+
+/* A highlight out of view hides once the strip has slid it away, so only one shows at rest */
+.panel[data-inert] {
+  visibility: hidden;
+  transition-property: visibility;
+  transition-delay: var(--duration-slow);
 }
 
 /* With nothing to press inside it, a panel is a tab stop of its own, so it shows the focus ring */
 .panel[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
-}
-
-@keyframes arrive {
-  from {
-    opacity: 0;
-    transform: translateY(var(--space-2));
-  }
 }
 
 .title {

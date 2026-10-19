@@ -1,6 +1,7 @@
-// The sign-in landing, signed out: each highlight's picture is one image to a screen reader. Then parity
-// against the onboarding prototype's Landing state: the whole page with each highlight, and the
-// controls it adds, at rest and on hover. Onboarding is light only, so it all runs in light alone.
+// The sign-in landing, signed out: one gesture moves exactly one highlight, and each highlight's picture
+// is one image to a screen reader. Then parity against the onboarding prototype's Landing state: the
+// whole page with each highlight, and the controls it adds, at rest and on hover. Onboarding is light
+// only, so it all runs in light alone.
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import { type ParityCase, parity } from '../../../e2e/parity.ts'
 import { settled, showState } from './prototype.ts'
@@ -54,6 +55,34 @@ function control(name: string, designed: (page: Page) => Locator, built: (page: 
 }
 
 test.skip(({ colorScheme }) => colorScheme === 'dark', 'Onboarding is light only')
+
+const shown = (page: Page) => page.getByRole('tab', { selected: true })
+
+test('one swipe, drag or trackpad gesture moves exactly one highlight, round and round', async ({ page }) => {
+  await page.goto('/sign-in')
+  await arrived(page, timetables)
+  // A trackpad's sideways scroll arrives as a burst of wheel events, its momentum included. Twelve,
+  // as a step on every event past the first would make eleven, which can't land on the next highlight.
+  await page.getByRole('tabpanel').evaluate((panel) => {
+    for (let event = 0; event < 12; event++) {
+      panel.dispatchEvent(new WheelEvent('wheel', { deltaX: 40, bubbles: true, cancelable: true }))
+    }
+  })
+  await expect(shown(page)).toHaveAccessibleName(answers)
+  // A drag to the left moves on one, and on from the last highlight is the first. Each drag waits for
+  // the strip to finish sliding, so it starts on the highlight at rest.
+  for (const next of [credits, timetables]) {
+    await settled(page)
+    const panel = await page.getByRole('tabpanel').boundingBox()
+    if (!panel) throw new Error('no highlight on screen')
+    const middle = panel.y + panel.height / 2
+    await page.mouse.move(panel.x + panel.width - 40, middle)
+    await page.mouse.down()
+    await page.mouse.move(panel.x + 40, middle, { steps: 8 })
+    await page.mouse.up()
+    await expect(shown(page)).toHaveAccessibleName(next)
+  }
+})
 
 // White text on the prototype's teal is under 4.5:1, which WCAG 1.4.3 allows only for text that is
 // part of a picture, so each picture must reach a screen reader as one named image and nothing more

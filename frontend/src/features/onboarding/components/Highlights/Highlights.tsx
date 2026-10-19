@@ -1,11 +1,12 @@
-// Three things SAGE does, one at a time, on React Aria's Tabs. Each dot is a tab named after its
-// highlight, with a hit area of at least 24 px, and the arrow keys move between them. Only a click or
-// a key changes the highlight, never a timer, so nothing needs pausing. Each picture is one image to a
-// screen reader, named by what it shows.
-import type { ReactNode } from 'react'
+// Three things SAGE does, side by side on a strip that slides one highlight into view at a time, on
+// React Aria's Tabs. A dot, the arrow keys, a swipe, a drag or a sideways trackpad scroll moves it,
+// never a timer, so nothing needs pausing. Each dot is a tab named after its highlight, with a hit
+// area of at least 24 px. Each picture is one image to a screen reader, named by what it shows.
+import { type ReactNode, useCallback, useState } from 'react'
 import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import styles from './Highlights.module.css'
+import { useSwipe } from './useSwipe.ts'
 
 const highlights: { id: string; title: string; shows: string; picture: ReactNode }[] = [
   {
@@ -109,26 +110,43 @@ const highlights: { id: string; title: string; shows: string; picture: ReactNode
 ]
 
 export function Highlights() {
+  const [shown, setShown] = useState(0)
+  // Round and round: on from the last highlight is the first
+  const step = useCallback((by: 1 | -1) => {
+    setShown((index) => (index + by + highlights.length) % highlights.length)
+  }, [])
+  const swipe = useSwipe(step)
   return (
-    <Tabs className={styles.highlights}>
+    <Tabs
+      selectedKey={highlights[shown].id}
+      onSelectionChange={(key) => {
+        setShown(highlights.findIndex(({ id }) => id === key))
+      }}
+      className={styles.highlights}
+    >
       {/* The dots come first, as the panels take their ids from them; CSS shows them underneath */}
       <TabList aria-label="Highlights" className={styles.dots}>
         {highlights.map(({ id, title }) => (
           <Tab key={id} id={id} aria-label={title} className={styles.dot} />
         ))}
       </TabList>
-      {highlights.map(({ id, title, shows, picture }) => (
-        <TabPanel key={id} id={id} className={styles.panel}>
-          <h2 className={styles.title}>{title}</h2>
-          {/* An img element can't hold an HTML drawing, so the role makes this one image instead */}
-          {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-          <div role="img" aria-label={shows}>
-            <div aria-hidden="true" className={styles.drawing}>
-              {picture}
-            </div>
-          </div>
-        </TabPanel>
-      ))}
+      <div ref={swipe} className={styles.window}>
+        {/* Every panel stays on the strip, and React Aria makes those out of view inert */}
+        <div className={styles.strip} style={{ '--shown': shown }}>
+          {highlights.map(({ id, title, shows, picture }) => (
+            <TabPanel key={id} id={id} shouldForceMount className={styles.panel}>
+              <h2 className={styles.title}>{title}</h2>
+              {/* An img element can't hold an HTML drawing, so the role makes this one image instead */}
+              {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+              <div role="img" aria-label={shows}>
+                <div aria-hidden="true" className={styles.drawing}>
+                  {picture}
+                </div>
+              </div>
+            </TabPanel>
+          ))}
+        </div>
+      </div>
     </Tabs>
   )
 }
