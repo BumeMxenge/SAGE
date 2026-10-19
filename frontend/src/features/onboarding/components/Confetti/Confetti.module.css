@@ -1,0 +1,76 @@
+/* The pieces start along the top and fall once, over --duration-loop, each a little after the last,
+   drifting and turning as they fade */
+.confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.piece {
+  position: absolute;
+  top: 0;
+  left: var(--across);
+  width: var(--space-2);
+  height: var(--space-1);
+  opacity: 0;
+  animation: fall var(--duration-loop) var(--easing) calc(var(--duration-loop) * var(--delay)) forwards;
+}
+
+/* Every third piece is a dot */
+.piece:nth-child(3n) {
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+/* The course colours, in turn */
+.piece:nth-child(8n + 1) {
+  background: var(--color-course-teal);
+}
+
+.piece:nth-child(8n + 2) {
+  background: var(--color-course-orange);
+}
+
+.piece:nth-child(8n + 3) {
+  background: var(--color-course-navy);
+}
+
+.piece:nth-child(8n + 4) {
+  background: var(--color-course-pink);
+}
+
+.piece:nth-child(8n + 5) {
+  background: var(--color-course-blue);
+}
+
+.piece:nth-child(8n + 6) {
+  background: var(--color-course-ochre);
+}
+
+.piece:nth-child(8n + 7) {
+  background: var(--color-course-purple);
+}
+
+.piece:nth-child(8n) {
+  background: var(--color-course-dark-teal);
+}
+
+@keyframes fall {
+  from {
+    opacity: 1;
+    transform: translate(0, -10vh) rotate(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(var(--drift), 70vh) rotate(var(--turn));
+  }
+}
+
+/* Not drawn at all under reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    display: none;
+  }
+}
