@@ -1,5 +1,6 @@
 /* The highlights fill the sand panel, and the one on screen fills its height, with its dots at the
-   foot, so the dots stay put as the highlights slide */
+   foot, so the dots stay put as the highlights slide. A sideways pan anywhere on them is theirs to
+   take, and an upward or downward one stays the page's. */
 .highlights {
   position: relative;
   display: flex;
@@ -8,15 +9,14 @@
   align-items: center;
   min-width: 0;
   padding-bottom: var(--space-10);
+  touch-action: pan-y;
+  user-select: none;
 }
 
-/* A sideways pan is the strip's to take, and an upward or downward one stays the page's */
 .window {
   display: flex;
   flex: 1;
   align-self: stretch;
-  touch-action: pan-y;
-  user-select: none;
 }
 
 /* The slides sit side by side, and --shown slides the chosen one into place, timed as the prototype

@@ -1,6 +1,6 @@
 // Three things SAGE does, side by side on a strip that slides one highlight into view at a time, on
-// React Aria's Tabs. A dot, the arrow keys, a swipe, a drag or a sideways trackpad scroll moves it,
-// never a timer, so nothing needs pausing. Each dot is a tab named after its highlight, with a hit
+// React Aria's Tabs. A dot, the arrow keys, or a swipe, a drag or a sideways trackpad scroll anywhere on
+// the highlights moves it, never a timer, so nothing needs pausing. Each dot is a tab named after its highlight, with a hit
 // area of at least 24 px. Each picture is one image to a screen reader, named by what it shows.
 import { type ReactNode, useCallback, useState } from 'react'
 import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components'
@@ -122,6 +122,7 @@ export function Highlights() {
   const swipe = useSwipe(step)
   return (
     <Tabs
+      ref={swipe}
       selectedKey={highlights[shown].id}
       onSelectionChange={(key) => {
         // A dot or an arrow key takes the usual time, however far it goes, as the prototype's dots do
@@ -135,7 +136,7 @@ export function Highlights() {
           <Tab key={id} id={id} aria-label={title} className={styles.dot} />
         ))}
       </TabList>
-      <div ref={swipe} className={styles.window}>
+      <div className={styles.window}>
         {/* Every highlight stays on the strip, each on a slide as wide as the sand panel, so those out
             of view sit wholly outside it, and React Aria makes them inert */}
         <div className={styles.strip} data-round={round || undefined} style={{ '--shown': shown }}>
