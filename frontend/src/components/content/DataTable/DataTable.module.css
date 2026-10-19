@@ -1,8 +1,7 @@
-/* The border belongs to the table, so the caption sits above it, outside, as a title */
+/* No outline: the header row's fill and the lines between rows mark the table out, as in the
+   prototype. The caption sits above it as its title. */
 .table {
   width: 100%;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
   border-spacing: 0;
   border-collapse: separate;
   font-size: var(--font-size-md);
@@ -27,7 +26,7 @@
   background: var(--color-surface-muted);
 }
 
-/* The header row's fill follows the table's rounded top corners */
+/* The header row's fill has rounded top corners, as the prototype's has */
 .table th:first-child {
   border-top-left-radius: var(--radius-xl);
 }
