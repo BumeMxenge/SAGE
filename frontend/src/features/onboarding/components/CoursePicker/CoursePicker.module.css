@@ -4,6 +4,13 @@
   gap: var(--space-4);
 }
 
+/* Room for eight courses; a longer list scrolls inside it */
+.results {
+  display: flex;
+  flex-direction: column;
+  height: calc(var(--size-control-lg) * 8);
+}
+
 .lead {
   margin: 0;
   font-size: var(--font-size-md);

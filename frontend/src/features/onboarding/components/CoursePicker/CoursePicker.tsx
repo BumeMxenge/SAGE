@@ -36,17 +36,20 @@ export function CoursePicker({ year, courses, onClose, onPick }: CoursePickerPro
       <div className={styles.picker}>
         <p className={styles.lead}>Pick a course to add to {year}.</p>
         <SearchField label="Search courses" placeholder="Search by course name or code" value={search} onChange={setSearch} />
-        {matches.length > 0 ? (
-          <OptionList aria-label={`Courses to add to ${year}`} onAction={(code) => onPick(byCode.get(String(code))!)}>
-            {matches.map((course) => (
-              <SelectItem key={course.code} id={course.code} description={course.name} detail={`${course.credits} credits`}>
-                {course.code}
-              </SelectItem>
-            ))}
-          </OptionList>
-        ) : (
-          <EmptyState title="No Matching Courses" message="Try another course name or code." />
-        )}
+        {/* The results keep one height, so the dialog stays one size whether courses match or not */}
+        <div className={styles.results}>
+          {matches.length > 0 ? (
+            <OptionList aria-label={`Courses to add to ${year}`} onAction={(code) => onPick(byCode.get(String(code))!)}>
+              {matches.map((course) => (
+                <SelectItem key={course.code} id={course.code} description={course.name} detail={`${course.credits} credits`}>
+                  {course.code}
+                </SelectItem>
+              ))}
+            </OptionList>
+          ) : (
+            <EmptyState title="No Matching Courses" message="Try another course name or code." />
+          )}
+        </div>
       </div>
     </Dialog>
   )
