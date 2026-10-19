@@ -108,6 +108,69 @@ CI checks every pull request and every push to main. When it passes on main, Dep
 - **On every request, in the cloud.** The backend never writes rules. It reads the approved year into the `Rulebook` cache (`shared/rulebook.py`), which keeps each year for ten minutes, so a newly loaded year shows within that time with no redeploy. The engine will build plans from it, and the advisor its briefing pack from the passages and the plan reasons.
 - **Supabase is where the two meet.** Student rows point into the rule tables, so the database refuses to remove a year a student's plan uses, and `sage seed` won't write a student's data until her plans' year is loaded.
 
+## Ingestion data flow
+
+```mermaid
+flowchart TB
+    subgraph laptop["Once a year, on a laptop"]
+        sources["data/sources/: handbook PDF, workbooks,<br>equivalences.csv and manifest.toml"]
+        subgraph ingest["sage ingest"]
+            collect["Collect: each file's SHA-256<br>against manifest.toml"]
+            stopped["Run stops,<br>naming the file"]
+            subgraph read["Read"]
+                handbook["Handbook, with its header<br>crop, and curriculum tables"]
+                timetable["Timetable workbook,<br>read strictly"]
+                workbook["Complementary workbook"]
+                equivalences["Equivalences,<br>every row flagged"]
+            end
+            subgraph translate["Translate"]
+                grammar["Grammar first"]
+                drafts["drafts.json"]
+                drafter["Drafter, on<br>--draft runs"]
+            end
+            passages["File passages,<br>one per printed unit"]
+            checks["Checks across sources"]
+            compare["Compare with the<br>latest approved year"]
+        end
+        reviewFile["review.json"]
+        review["sage review: a person<br>accepts, corrects or rejects"]
+        approve["sage approve: refuses while a<br>row is pending or a check fails"]
+        snapshot["rulebook.json:<br>the approved snapshot"]
+        load["sage load: writes the year<br>unapproved, approves it last"]
+    end
+    subgraph cloud["On every request"]
+        tables[("Rule tables<br>in Supabase")]
+        cache["Rulebook cache"]
+        upload["Transcript PDF,<br>uploaded at onboarding"]
+        reader["Transcript reader:<br>in memory, never stored"]
+        history[("Course history in<br>the student tables")]
+    end
+
+    sources --> collect
+    collect -->|"a file changed"| stopped
+    collect -->|"every file matches"| read
+    read -->|"printed requirements"| grammar
+    grammar -->|"refused"| drafts
+    drafts -->|"no draft yet"| drafter
+    drafter -->|"checked against<br>EntryRule, then cached"| drafts
+    translate --> passages
+    passages --> checks
+    checks --> compare
+    compare -->|"flagged, with each cause"| reviewFile
+    reviewFile <-->|"each decision saved"| review
+    reviewFile -->|"nothing pending"| approve
+    compare -->|"carried over by printed wording,<br>or accepted automatically"| approve
+    approve -->|"writes"| snapshot
+    snapshot -.->|"the next year<br>compares with it"| compare
+    snapshot --> load
+    load -->|"writes"| tables
+    tables -->|"read within ten minutes"| cache
+    upload --> reader
+    reader -->|"rows the student confirms,<br>saved at Finish setup"| history
+```
+
+`sage ingest --year <year>` first checks each source's SHA-256 against `manifest.toml`, and a changed file stops the run. One reader per source then reads the handbook, the timetable workbook, the complementary workbook and the equivalences. The handbook reader crops off each page's running header, and the timetable reader is strict: a cell it can't place stops the run. Each printed requirement goes to the grammar first. A string it refuses takes its cached draft from `drafts.json`, and only a `--draft` run asks the model for a missing one, checking it against `EntryRule` before caching it. Without a draft, the string becomes a `refer` leaf. The handbook is cut into passages, one per printed unit, and the sources are checked against each other. The year is then compared with the latest approved year: a requirement printed in the same words carries over, a change read with certainty is accepted automatically, and everything else becomes a row in `review.json` with its causes. A person decides each row in `sage review`. `sage approve` reruns the reading, refuses while a row is pending or a check fails, and writes `rulebook.json`, which the next year is compared with. `sage load` writes the year unapproved and approves it last, so a load that stops partway never becomes the current year, and the `Rulebook` cache reads the new year within ten minutes. The transcript reader runs on the other clock: it reads a student's PDF in memory during onboarding and never stores it, and only the rows the student confirms are saved, at Finish setup.
+
 ## Backend dependency rule
 
 Imports point inward, and `make check` enforces it: `make lint` checks import-linter's contracts in `backend/pyproject.toml`.
