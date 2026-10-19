@@ -4,7 +4,7 @@ import json
 
 import jsonschema
 from pydantic import TypeAdapter
-from sage.domain.rules import EntryRule
+from sage.shared.rules import EntryRule
 
 from drafting import HAIKU, PROMPT, SCHEMA, answer, reply
 

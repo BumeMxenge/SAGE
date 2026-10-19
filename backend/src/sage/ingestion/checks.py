@@ -3,8 +3,13 @@
 # settled is reported, not failed, so it never stops a year being approved.
 from collections.abc import Iterable, Mapping
 
-from sage.domain.base import Row
-from sage.domain.rules import (
+from sage.ingestion.complementary import NOT_STATED, Offering
+from sage.ingestion.curricula import Listed, Subtotal
+from sage.ingestion.handbook import Entry
+from sage.ingestion.names import title_case
+from sage.ingestion.timetable import WITHIN, Printed
+from sage.shared.base import Row
+from sage.shared.rules import (
     TERM_BY_SUFFIX,
     AllOf,
     AnyOf,
@@ -13,11 +18,6 @@ from sage.domain.rules import (
     EntryRule,
     Equivalence,
 )
-from sage.ingestion.complementary import NOT_STATED, Offering
-from sage.ingestion.curricula import Listed, Subtotal
-from sage.ingestion.handbook import Entry
-from sage.ingestion.names import title_case
-from sage.ingestion.timetable import WITHIN, Printed
 
 
 class Failure(Row):

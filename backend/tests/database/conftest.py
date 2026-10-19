@@ -12,13 +12,13 @@ import pytest
 from postgrest import APIError
 from supabase import Client, create_client
 
-from sage.adapters.supabase.rules import SupabaseRuleRepository
-from sage.adapters.supabase.students import SupabaseStudentRepository
 from sage.config import is_local
-from sage.domain.students import StudentState
+from sage.ingestion.ingest import approved_snapshot, load
 from sage.ingestion.review import Snapshot
-from sage.services.ingest import approved_snapshot, load
-from sage.services.seed import load_seed, seed
+from sage.shared.seed import load_seed, seed
+from sage.shared.students import StudentState
+from sage.shared.supabase.rules import SupabaseRuleRepository
+from sage.shared.supabase.students import SupabaseStudentRepository
 
 
 @dataclass(frozen=True)

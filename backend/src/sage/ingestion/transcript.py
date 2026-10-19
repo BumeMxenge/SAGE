@@ -12,16 +12,16 @@ from typing import Literal
 
 import pdfplumber
 
-from sage.domain.base import Row
-from sage.domain.errors import (
+from sage.shared.base import Row
+from sage.shared.errors import (
     NoCourseHistory,
     NotATranscript,
     TranscriptIncomplete,
     TranscriptNotYours,
     TranscriptUnreadable,
 )
-from sage.domain.rules import TERM_BY_SUFFIX, TermCode
-from sage.domain.students import average
+from sage.shared.rules import TERM_BY_SUFFIX, TermCode
+from sage.shared.students import average
 
 logger = logging.getLogger(__name__)
 

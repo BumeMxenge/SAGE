@@ -8,8 +8,8 @@ from collections.abc import Mapping
 from pathlib import Path
 from uuid import NAMESPACE_URL, UUID, uuid5
 
-from sage.domain.base import Row
-from sage.domain.rules import DeltaFlag
+from sage.shared.base import Row
+from sage.shared.rules import DeltaFlag
 
 # Rows that need an id get one made from what they hold, so a row read again gets the same id
 ROW_IDS = uuid5(NAMESPACE_URL, "https://github.com/BumeMxenge/SAGE/ingestion")

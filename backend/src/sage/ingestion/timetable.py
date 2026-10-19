@@ -16,14 +16,14 @@ from openpyxl.cell.cell import Cell
 from openpyxl.worksheet.cell_range import CellRange
 from openpyxl.worksheet.worksheet import Worksheet
 
-from sage.domain.base import Row
-from sage.domain.rules import (
+from sage.ingestion.sources import Alternatives, SourceError, row_id
+from sage.shared.base import Row
+from sage.shared.rules import (
     TERM_BY_SUFFIX,
     TermCode,
     TimetableSlot,
     TimetableSlotCurriculum,
 )
-from sage.ingestion.sources import Alternatives, SourceError, row_id
 
 Semester = Literal["sem1", "sem2"]
 

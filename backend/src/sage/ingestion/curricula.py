@@ -5,8 +5,10 @@
 import re
 from collections import defaultdict
 
-from sage.domain.base import Row
-from sage.domain.rules import (
+from sage.ingestion.handbook import Handbook, Unit
+from sage.ingestion.sources import Reading, Section, SourceError
+from sage.shared.base import Row
+from sage.shared.rules import (
     COURSE_CODE,
     AllOfGroup,
     ChooseFromGroup,
@@ -19,8 +21,6 @@ from sage.domain.rules import (
     YearRule,
     YearRules,
 )
-from sage.ingestion.handbook import Handbook, Unit
-from sage.ingestion.sources import Reading, Section, SourceError
 
 YEARS = {"First": 1, "Second": 2, "Third": 3, "Fourth": 4, "Fifth": 5}
 COUNTS = {"one": 1, "two": 2}

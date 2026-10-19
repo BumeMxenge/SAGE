@@ -5,7 +5,7 @@ import json
 import sys
 
 from pydantic import TypeAdapter, ValidationError
-from sage.domain.rules import EntryRule
+from sage.shared.rules import EntryRule
 
 from extract import labels
 

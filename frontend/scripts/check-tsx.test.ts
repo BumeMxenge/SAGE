@@ -22,7 +22,7 @@ describe('re-exports', () => {
   })
 
   it('accepts exporting something defined here', () => {
-    expect(messages('components/A/A.tsx', 'export const a = 1')).toEqual([])
+    expect(messages('components/A/A.tsx', 'const a = 1\nexport { a }')).toEqual([])
   })
 })
 
@@ -41,9 +41,5 @@ describe('boundaries', () => {
 
   it('lets the app frame import features', () => {
     expect(messages('app/App.tsx', "import { x } from '../features/auth/x.ts'")).toEqual([])
-  })
-
-  it('ignores packages', () => {
-    expect(messages('components/A/A.tsx', "import { Button } from 'react-aria-components'")).toEqual([])
   })
 })

@@ -1,9 +1,9 @@
 // The keyboard walk: Tab from the top of the page until focus leaves it, checking that every stop shows
-// SAGE's focus ring, a solid outline at least 2 px wide. Two shared components draw it beside the
-// focused element rather than on it: the chat box rings its wrapper, and the checkbox its box, beside
-// its hidden input in the same label. So the ring may sit on the element, around it, inside it or in
-// its label. It returns each stop's role and name, as the accessibility tree gives them, in order, for
-// a spec to check the order.
+// SAGE's focus ring, a solid outline at least 2 px wide. Two components draw it beside the focused
+// element rather than on it: the chat box rings its wrapper, and the checkbox its box, beside its
+// hidden input in the same label. So the ring may sit on the element, around it, inside it or in its
+// label. It returns each stop's role and name, as the accessibility tree gives them, in order, for a
+// spec to check the order.
 import { expect, type JSHandle, type Page } from '@playwright/test'
 
 export async function walkKeyboard(page: Page): Promise<string[]> {
