@@ -20,8 +20,8 @@ SHEETS = {
     "complementary": "Complementary",
 }
 TEXTS = ("requirement", "corequisite")
-# The labelled changes recall counts: a course's rule, and a course added or removed
-RECALLED = ("entry_rule", "course")
+# The labelled changes recall counts: each rule field a course sheet labels, and a course added or removed
+RECALLED = ("title", "credits", "nqf_level", "term", "entry_rule", "course")
 FLAGGED = ("wording change", "false alarm")
 
 Row = dict[str, str]
@@ -157,7 +157,10 @@ def verdicts(
             met(not any(row["match"] == "no" for row in accepted(held))),
         ),
         (
-            "Delta recall: rules changed, and courses added or removed",
+            (
+                "Delta recall: titles, credits, NQF levels, terms and rules changed, and courses "
+                "added or removed"
+            ),
             recalled(recall),
             recalled(without(recall)),
             "100%",
@@ -351,11 +354,6 @@ def changed(changes: list[Row]) -> list[str]:
         for r in changes
         if r["field"] in RECALLED and r["outcome"] in ("recalled", "missed")
     ]
-    apart = [
-        r
-        for r in changes
-        if r["field"] not in RECALLED and r["outcome"] in ("recalled", "missed")
-    ]
     flagged = [r for r in changes if r["outcome"] in FLAGGED]
     header = (
         "Course",
@@ -390,17 +388,13 @@ def changed(changes: list[Row]) -> list[str]:
         "",
         (
             "Labelled changes come from the two course sheets alone, on the courses they hold. Recall "
-            "counts a course's rule, compared in normal form, and a course added or removed. A change "
-            "is recalled when SAGE's 2026 review records a delta for that course and field, flagged or "
-            f"not: {recalled(recall)} of all, and {recalled(without(recall))} without judgement calls."
+            "counts each rule field a course sheet labels: the title, ignoring case, the credits, the NQF "
+            "level, the term and the rule, compared in normal form, and a course added or removed. A "
+            "change is recalled when SAGE's 2026 review records a delta for that course and field, "
+            f"flagged or not: {recalled(recall)} of all, and {recalled(without(recall))} without "
+            "judgement calls."
         ),
         *shown(recall),
-        "",
-        (
-            "Changes of title, credits, NQF level or term, counted apart: "
-            f"{recalled(apart)} recorded."
-        ),
-        *shown(apart),
         "",
         (
             "Flagged 2026 deltas where the labels show no change of rule: a wording change where the "

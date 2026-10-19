@@ -19,7 +19,7 @@ Values are compared by the labels README's Scoring section, with these readings,
 - Trees go through the canonical and normal forms of E2's [score.py](../../../experiments/ingestion/requirement-parsing/score.py). The course sheets join a label's two trees, as SAGE stores one rule per course. A held-out entry's requirement and co-requisite are scored apart, as each string is translated and reviewed on its own.
 - No timetable label gives a Kind, so Kind isn't scored there.
 - A held-out string the grammar refuses takes the drafter's tree, or a refer leaf holding the printed words where the reply isn't a rule tree, as SAGE does.
-- Delta recall counts a course's rule, compared in normal form, and a course added or removed. A change of title, credits, NQF level or term is counted apart. A flagged 2026 delta where the labels show no change of rule is a wording change if the labelled requirement or co-requisite text changed, and a false alarm if not.
+- Delta recall counts each rule field a course sheet labels: the title, ignoring case, the credits, the NQF level, the term and the rule, compared in normal form, and a course added or removed. A flagged 2026 delta where the labels show no change of rule is a wording change if the labelled requirement or co-requisite text changed, and a false alarm if not.
 - A transcript row is recovered when a line gives back its name, NQF level, credits, mark and result. It's flagged when its line is marked unverified, or when only its year's Term GPA warning covers it. Otherwise it's dropped, and a line with its year and code but other values is listed as extra. A made-up record should raise no warning, so any warning is a disagreement.
 
 ## Accepted without review
