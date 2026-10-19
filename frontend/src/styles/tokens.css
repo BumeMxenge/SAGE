@@ -10,6 +10,10 @@
   --color-accent-fill: #2a6e5a; /* the avatar */
   --color-danger: #ea5b4c; /* error icons, never text */
 
+  /* Large accent text, as "You're in" is, and the success tick's tile: a teal near the brand's that
+     reaches 3:1 on white, enough for text of 24 px or more and for the white tick, never smaller text */
+  --color-accent-large: #48a48c;
+
   /* The sign-in button. Onboarding is designed in light only, so it has no dark version. */
   --color-sign-in: #333b3f;
   --color-sign-in-hover: #22282b;

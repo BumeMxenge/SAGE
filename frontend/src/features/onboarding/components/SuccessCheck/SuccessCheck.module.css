@@ -8,7 +8,7 @@
   height: var(--space-12);
   border-radius: var(--radius-full);
   color: var(--color-on-fill);
-  background: var(--color-accent-fill);
+  background: var(--color-accent-large);
   animation: appear var(--duration-slow) var(--easing) both;
 }
 

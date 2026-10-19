@@ -73,6 +73,10 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
   { token: '--color-border-field', against: surfaces, minimum: 3, theme: 'light' },
   { token: '--color-border-control', against: surfaces, minimum: 3 },
   { token: '--color-focus', against: surfaces, minimum: 3 },
+  // Large accent text on the page, and the white tick on the tile it fills: 3:1, as text of 24 px or
+  // more and a graphic need
+  { token: '--color-accent-large', against: ['--color-surface'], minimum: 3 },
+  { token: '--color-on-fill', against: ['--color-accent-large'], minimum: 3 },
 ]
 
 describe.each(['light', 'dark'] as const)('%s theme', (theme) => {

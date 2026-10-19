@@ -34,7 +34,7 @@
 
 .accent {
   font-weight: var(--font-weight-regular);
-  color: var(--color-text-accent);
+  color: var(--color-accent-large);
 }
 
 .time {
