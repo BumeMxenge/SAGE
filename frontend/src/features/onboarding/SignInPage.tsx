@@ -1,21 +1,39 @@
-// The sign-in page, a stub until the onboarding branch builds the landing. Its button signs in with
-// Microsoft, so sign-in keeps working until then, and a refused sign-in still says why.
+// The sign-in landing: SAGE's promise and the one button that signs in with Microsoft, new and
+// returning students alike, beside three highlights of what SAGE does
 import { Button } from '@/components/actions/Button/Button.tsx'
 import { Logo } from '@/components/brand/Logo/Logo.tsx'
-import { PageHeader } from '@/components/content/PageHeader/PageHeader.tsx'
+import { BrandShapes } from '@/features/onboarding/components/BrandShapes/BrandShapes.tsx'
+import { Highlights } from '@/features/onboarding/components/Highlights/Highlights.tsx'
 import { useAuth } from '@/lib/auth/useAuth.ts'
-import { pageNames } from '@/lib/copy.ts'
+import styles from './SignInPage.module.css'
 
 export function SignInPage() {
-  const { signIn, error } = useAuth()
+  const { signIn } = useAuth()
   return (
-    <>
-      <PageHeader title={pageNames.signIn} />
-      <Button variant="sign-in" onPress={() => void signIn()}>
-        <Logo variant="microsoft" />
-        Continue with UCT Email
-      </Button>
-      {error && <p role="alert">Sign-in failed: {error}</p>}
-    </>
+    <main className={styles.page}>
+      <div className={styles.form}>
+        <Logo variant="full" />
+        <div className={styles.content}>
+          <h1 className={styles.headline}>
+            <span className={styles.accent}>Registration,</span> <span>without the guesswork.</span>
+          </h1>
+          <p className={styles.lead}>Your courses, your rules, your clashes, all sorted in one place.</p>
+          <Button variant="sign-in" onPress={() => void signIn()}>
+            <Logo variant="microsoft" />
+            Continue with UCT Email
+          </Button>
+          <p className={styles.helper}>
+            Sign in with your UCT Microsoft account. New and returning students use the same button.
+          </p>
+        </div>
+        <p className={styles.legal}>
+          By continuing you agree to our <a href="/privacy.html">Privacy Policy</a>.
+        </p>
+      </div>
+      <div className={styles.panel}>
+        <BrandShapes layout="sign-in" />
+        <Highlights />
+      </div>
+    </main>
   )
 }

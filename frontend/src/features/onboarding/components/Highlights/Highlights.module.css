@@ -1,0 +1,302 @@
+/* The highlight on screen fills the panel's height, with its dots at the foot, so the dots stay put
+   as the pictures change */
+.highlights {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: var(--width-dialog);
+}
+
+.panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-8);
+  justify-content: center;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  outline: none;
+  animation: arrive var(--duration-slow) var(--easing);
+}
+
+/* With nothing to press inside it, a panel is a tab stop of its own, so it shows the focus ring */
+.panel[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-2));
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--tracking-title);
+  color: var(--color-text);
+  text-align: center;
+}
+
+.picture {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+}
+
+.picture p {
+  margin: 0;
+}
+
+/* A white card on the panel, raised a little */
+.card {
+  padding: var(--space-5);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+/* A class on the timetable, in its course's colour */
+.block {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-on-fill);
+}
+
+.block strong {
+  display: block;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* The two clashing classes overlap, the second below and to the right of the first */
+.clash {
+  display: grid;
+  margin-bottom: var(--space-12);
+}
+
+.clash .block {
+  grid-area: 1 / 1;
+  width: 58%;
+  box-shadow: var(--shadow-raised);
+}
+
+.clash .block + .block {
+  translate: 47% var(--space-12);
+}
+
+.finds {
+  --icon-size: var(--size-icon-sm);
+
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: var(--size-control-sm);
+  height: var(--size-control-sm);
+  border-radius: var(--radius-full);
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.orange {
+  background: var(--color-course-orange);
+}
+
+.pink {
+  background: var(--color-course-pink);
+}
+
+.teal {
+  background: var(--color-course-teal);
+}
+
+.dark-teal {
+  background: var(--color-course-dark-teal);
+}
+
+.navy {
+  background: var(--color-course-navy);
+}
+
+.room {
+  background: var(--color-surface-muted);
+}
+
+/* The student's question on the right, and SAGE's answer with its sources */
+.question {
+  align-self: flex-end;
+  max-width: 80%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  color: var(--color-on-fill);
+  background: var(--color-accent-fill);
+}
+
+.answer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.routes {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-text-danger);
+  background: var(--color-danger-tint);
+}
+
+.routes::before {
+  flex: none;
+  width: var(--space-2);
+  height: var(--space-2);
+  margin-top: calc((1lh - var(--space-2)) / 2);
+  border-radius: var(--radius-full);
+  content: '';
+  background: var(--color-brand-coral);
+}
+
+.source {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+/* The semester's credit load: a bar in the courses' colours, with room left for an elective */
+.load {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.load-title,
+.limits {
+  display: flex;
+  justify-content: space-between;
+}
+
+.total {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-accent);
+}
+
+.limits {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+/* Three courses of 14 credits each, and 6 credits of room up to the 48 maximum */
+.bar {
+  display: grid;
+  grid-template-columns: 14fr 14fr 14fr 6fr;
+  gap: var(--space-1);
+  height: var(--space-3);
+}
+
+.bar span {
+  border-radius: var(--radius-full);
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  font-size: var(--font-size-sm);
+  list-style: none;
+}
+
+.legend li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.legend .credits {
+  margin-left: auto;
+}
+
+.free {
+  color: var(--color-text-secondary);
+}
+
+.swatch {
+  flex: none;
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+.verdict {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.tick {
+  flex: none;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-full);
+  background: var(--color-accent-fill);
+}
+
+/* The dots: each a tab with a hit area of at least 24 px. Unselected dots take the control border
+   colour, which reaches 3:1 on the panel; the chosen one is a longer pill. */
+.dots {
+  display: flex;
+  order: 1;
+  gap: var(--space-1);
+  margin-top: var(--space-10);
+}
+
+.dot {
+  display: grid;
+  place-items: center;
+  min-width: var(--size-target-min);
+  height: var(--size-target-min);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  outline: none;
+}
+
+.dot::before {
+  width: var(--space-3);
+  height: var(--space-3);
+  border-radius: var(--radius-full);
+  content: '';
+  background: var(--color-border-control);
+  transition: width var(--duration-fast) var(--easing);
+}
+
+.dot[data-selected]::before {
+  width: var(--space-8);
+  background: var(--color-primary);
+}
+
+.dot[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
