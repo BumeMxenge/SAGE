@@ -60,6 +60,11 @@
   color: var(--color-text-danger);
 }
 
+/* An option's label holds all of its text, but lays none of it out */
+.content {
+  display: contents;
+}
+
 .text {
   display: flex;
   flex-direction: column;
