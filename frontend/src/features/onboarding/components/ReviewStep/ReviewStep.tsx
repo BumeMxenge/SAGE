@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/inputs/Checkbox/Checkbox.tsx'
 import { Select } from '@/components/inputs/Select/Select.tsx'
 import { SelectItem } from '@/components/inputs/Select/SelectItem.tsx'
 import { YearTable } from '@/features/onboarding/components/YearTable/YearTable.tsx'
+import { focusOnOpen } from '@/features/onboarding/focusOnOpen.ts'
 import { setupOf, startReview } from '@/features/onboarding/review.ts'
 import { client, dataOf } from '@/lib/api.ts'
 import type { components } from '@/lib/api-types.ts'
@@ -104,18 +105,8 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
           message={warning.message}
         />
       ))}
-      {/* Each year takes focus as it opens, so a screen reader hears which year it is, and the page
-          shows it from the top */}
-      <section
-        key={year}
-        ref={(section) => {
-          section?.focus({ preventScroll: true })
-          scrollTo(0, 0)
-        }}
-        tabIndex={-1}
-        aria-label={caption}
-        className={styles.year}
-      >
+      {/* Each year takes focus as it opens, so a screen reader hears which year it is */}
+      <section key={year} ref={focusOnOpen} tabIndex={-1} aria-label={caption} className={styles.year}>
         <p className={styles.summary}>
           {courses(lines.length)} · {credits} credits
         </p>
