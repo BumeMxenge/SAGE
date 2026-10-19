@@ -28,10 +28,15 @@ dev-web:
 dev-all:
 	@$(MAKE) --no-print-directory -j2 dev dev-web
 
-# The unit tests, then each file's lines they never run. --cov sits here rather than in pytest's own
-# settings, so mutmut's runs and a plain uv run pytest stay fast.
+# The folders ATP-1's harness imports from, none of them a package: its own, and E2's, whose score.py
+# compares rule trees and gives the zero-failure bound. Paths are from backend/.
+ATP1_PATH = PYTHONPATH=../tests/acceptance/atp1:../experiments/ingestion/requirement-parsing
+
+# The unit tests and ATP-1's scoring tests, then each file's lines they never run. --cov sits here
+# rather than in pytest's own settings, so mutmut's runs and a plain uv run pytest stay fast.
 test:
-	@cd backend && uv run pytest -m "not integration" --cov
+	@cd backend && $(ATP1_PATH) uv run pytest -m "not integration" \
+		tests ../tests/acceptance/atp1/test_scoring.py --cov
 
 # ruff's lint and format checks on the backend and the acceptance tests' scripts, then the
 # dependency rule's contracts in backend/pyproject.toml
