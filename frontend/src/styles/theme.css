@@ -46,7 +46,7 @@
 
   /* Borders */
   --color-border: #e6e6e8; /* decorative */
-  --color-border-field: #7b8286; /* the search field and chat box: 3:1 */
+  --color-border-field: #83898d; /* the search field and chat box: the lightest at 3:1 on every surface */
   --color-border-control: #7b8286; /* the checkbox, which is only its edge: 3:1 */
 
   /* Focus ring */
