@@ -57,17 +57,19 @@
   outline-offset: var(--focus-ring-offset);
 }
 
-/* The caption is one control tall, so the headers stick just below it */
+/* The caption is one large control tall, its text centred on a row of buttons a page may set beside
+   it, with room below them as in the prototype. The headers stick just below it. */
 .scroll .caption {
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  height: var(--size-control-md);
+  height: var(--size-control-lg);
+  line-height: var(--size-control-md);
   background: var(--color-surface);
 }
 
 .scroll .table th {
   position: sticky;
-  top: var(--size-control-md);
+  top: var(--size-control-lg);
   z-index: var(--z-sticky);
 }
