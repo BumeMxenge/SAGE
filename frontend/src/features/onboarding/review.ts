@@ -24,6 +24,11 @@ export const outcomes: Record<Outcome, { word: string; symbol: string }> = {
   not_counted: { word: 'Not counted', symbol: 'EXC' },
 }
 
+// The outcomes a student can set, in the add question and in edit mode. Credited and Not counted are
+// left out, as credit from other universities and courses is out of SAGE's scope; a line the transcript
+// printed with one still shows it, and keeps it in its own list.
+export const offeredOutcomes: Outcome[] = ['pass', 'fail', 'in_progress', 'supp_pending', 'dp_refused']
+
 // Whether a list's key is an outcome, as every list of outcomes keys its options by outcome
 export function isOutcome(key: unknown): key is Outcome {
   return typeof key === 'string' && Object.hasOwn(outcomes, key)

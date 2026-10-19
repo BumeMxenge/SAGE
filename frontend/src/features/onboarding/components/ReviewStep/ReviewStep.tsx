@@ -19,6 +19,7 @@ import { watchEnd } from '@/features/onboarding/watchEnd.ts'
 import {
   isOutcome,
   type Outcome,
+  offeredOutcomes,
   outcomes,
   type ReviewAction,
   type ReviewLine,
@@ -215,9 +216,9 @@ export function ReviewStep({ transcript, curriculum, onSaved }: ReviewStepProps)
                     if (isOutcome(outcome)) setQuestion({ ...question, outcome })
                   }}
                 >
-                  {Object.entries(outcomes).map(([outcome, { word }]) => (
+                  {offeredOutcomes.map((outcome) => (
                     <SelectItem key={outcome} id={outcome}>
-                      {word}
+                      {outcomes[outcome].word}
                     </SelectItem>
                   ))}
                 </Select>
