@@ -4,7 +4,7 @@
 # and a model drafts that tree for a person to check.
 #
 # Developed only from the requirements of the courses the six EEE curricula list, in the 2023 and
-# 2026 handbooks. It is frozen once branch B's E2 has run: a later change is logged in
+# 2026 handbooks. It is frozen since E2 ran: a later change is logged in
 # docs/shortfalls.md with its date and reason, and E2 is rerun.
 import re
 from typing import Literal

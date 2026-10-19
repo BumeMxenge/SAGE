@@ -19,7 +19,7 @@ defaults:
 jobs:
   ping:
     name: Read the heartbeat row
-    runs-on: ubuntu-24.04 # pinned, like CI: ubuntu-latest moves to Ubuntu 26 on 19 October
+    runs-on: ubuntu-24.04 # pinned, like CI, so the runner changes only when this line does
     timeout-minutes: 5
     steps:
       - name: Read the heartbeat row

@@ -92,7 +92,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # /health stays at the root, where Azure checks it. Everything a student uses is versioned.
+    # /health stays at the root, where the deploy checks it. Everything a student uses is versioned.
     app.include_router(health.router)
     for area in (accounts, onboarding, plans, questionnaire, electives, history, chats):
         app.include_router(area.router, prefix="/v1")

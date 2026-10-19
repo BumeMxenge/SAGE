@@ -93,7 +93,7 @@ check-ui:
 	@cd frontend && npx playwright install chromium && npx playwright test
 
 # How many small faults (mutants) planted in the code the unit tests catch, written to
-# backend/mutation-score.txt. It takes about ten minutes, so CI never runs it. Each run starts
+# backend/mutation-score.txt. It's too slow for CI, which never runs it. Each run starts
 # afresh, as mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a
 # copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy
 # of data/ goes where SEED_FILE and DATA look for it, and a link puts experiments/ where the
@@ -109,7 +109,7 @@ mutation:
 		score=$$(uv run python scripts/mutation_score.py) && echo "$$score" | tee mutation-score.txt
 
 # The 26 planted faults, each in a copy of the backend, and the test that caught it, if any: the 24
-# from my test review, and two in the review and approval. About five minutes.
+# from my test review, and two in the review and approval. Too slow for CI too.
 planted-faults:
 	@cd backend && uv run python scripts/planted_faults.py
 

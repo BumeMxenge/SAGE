@@ -1,7 +1,8 @@
 # Checks Supabase access tokens with supabase-auth's get_claims. It checks the signature against the
 # project's published keys (JWKS), cached for ten minutes, or for an HS256 token, such as local
 # Supabase may issue, asks the Auth server. It doesn't check who a token is for, or which provider
-# signed it in, so this does. sign_in_token makes the one-time sign-in that `sage sign-in` prints.
+# signed it in, so this does. sign_in_token makes the one-time sign-in that `sage sign-in` and make
+# sign-in-new print.
 from uuid import UUID
 
 from jwt import PyJWTError

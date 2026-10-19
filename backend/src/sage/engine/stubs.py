@@ -18,7 +18,7 @@ class SeededPlanGenerator:
     # stored already, and makes the same ids as sage seed, so a retried onboarding finishes the
     # same set.
     def __init__(self, seed_file: Path) -> None:
-        # Read once at startup, so a missing or broken file stops the app, not an onboarding
+        # Read at startup too, so a missing or broken file stops the app, not an onboarding
         load_seed(seed_file, UUID(int=0))
         self._seed_file = seed_file
 

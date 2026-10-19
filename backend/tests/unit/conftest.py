@@ -58,7 +58,7 @@ def app(stores, fake_account, seed_file) -> FastAPI:
 
 @pytest.fixture
 def signed_in(app) -> Callable[[str], TestClient]:
-    # A client that sends the named account's token, as the frontend will
+    # A client that sends the named account's token, as the frontend does
     def client(token: str) -> TestClient:
         return TestClient(app, headers={"Authorization": f"Bearer {token}"})
 

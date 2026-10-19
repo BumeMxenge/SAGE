@@ -8,7 +8,7 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never
 
-# Dependencies first, so this layer is cached until uv.lock changes
+# Dependencies first, so this layer is cached until one of these three files changes
 COPY pyproject.toml uv.lock .python-version ./
 RUN uv sync --frozen --no-dev --no-install-project
 

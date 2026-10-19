@@ -1,4 +1,4 @@
-# Checks the /health route answers and names the running commit, so CI proves the app boots
+# Checks /health answers and names the running commit, so CI proves the app builds and answers
 def test_health(client):
     response = client.get("/health")
     assert response.status_code == 200

@@ -16,7 +16,7 @@ it('brings a refusal back as its code, with its status and extra fields, from a 
     data: { session: { access_token: 'made-up-token' } as Session },
     error: null,
   })
-  // A made-up refusal, written out in the shape backend/src/sage/api/problems.py sends
+  // A made-up refusal, written out in the shape backend/src/sage/shared/api/problems.py sends
   const notYours: Problem = {
     type: 'about:blank',
     title: 'Unprocessable Content',

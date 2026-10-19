@@ -22,7 +22,8 @@ from sage.shared.students import (
 )
 
 # Where the fake's clock starts. Each stored chat and message gets the next microsecond, so they
-# keep the order they were written in, as Postgres's clock_timestamp() gives them.
+# keep the order they were written in, as in Postgres, where messages take clock_timestamp() so two
+# sent together still differ.
 EPOCH = datetime(2026, 1, 1, tzinfo=UTC)
 
 

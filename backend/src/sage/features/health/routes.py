@@ -1,5 +1,5 @@
-# Liveness check for Azure Container Apps and quick smoke tests.
-# Also reports the running commit, so a deploy can confirm its new version is the one answering.
+# Whether the backend is up, and the commit it runs, so a deploy can confirm its new version is the
+# one answering
 from typing import Annotated
 
 from fastapi import APIRouter, Depends

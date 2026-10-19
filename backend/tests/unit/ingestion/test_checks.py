@@ -204,7 +204,7 @@ def test_each_check_fires_on_one_planted_inconsistency(check, failure):
 
 
 def test_a_settled_exclusion_is_reported_not_failed():
-    # EEE2041F's Labs cells were left out at C1's Stop 1, so they never stop a year's approval
+    # EEE2041F's Labs cells are excluded in the manifest, so they never stop a year's approval
     check = checks.known_codes([meeting("EEE2041F")], set(), {"EEE2041F"})
     assert check.failures == ()
     assert check.reported == (

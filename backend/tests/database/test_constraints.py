@@ -10,7 +10,7 @@ from postgrest import APIError
 pytestmark = pytest.mark.integration
 
 FOREIGN_KEY, CHECK = "23503", "23514"
-# A real 2026 course and meeting, for rows that need one
+# A real 2026 course and term, for rows that need one
 SLOT = {"handbook_year": 2026, "course_code": "EEE4113F", "term": "sem1"}
 
 
