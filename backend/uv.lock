@@ -1716,9 +1716,12 @@ dependencies = [
     { name = "openpyxl" },
     { name = "pdfplumber" },
     { name = "postgrest" },
+    { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "pyjwt" },
+    { name = "starlette" },
     { name = "supabase" },
+    { name = "supabase-auth" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -1743,9 +1746,12 @@ requires-dist = [
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "pdfplumber", specifier = ">=0.11.10" },
     { name = "postgrest", specifier = ">=2.0" },
+    { name = "pydantic", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.0" },
     { name = "pyjwt", specifier = ">=2.0" },
+    { name = "starlette", specifier = ">=1.0" },
     { name = "supabase", specifier = ">=2.0" },
+    { name = "supabase-auth", specifier = ">=2.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
 ]
 
