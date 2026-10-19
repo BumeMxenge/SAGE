@@ -8,7 +8,7 @@ type PageHeaderProps = { title: string; subtitle?: string; actions?: ReactNode }
 export function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
   return (
     <header className={styles.pageHeader}>
-      <div className={styles.text}>
+      <div>
         <h1 className={styles.title}>{title}</h1>
         {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
       </div>
