@@ -143,7 +143,7 @@ export function ReviewStep({ transcript, onSaved }: ReviewStepProps) {
               <Button variant="quiet" icon="add" onPress={() => setQuestion({ kind: 'pick' })}>
                 Add a Course
               </Button>
-              <Button variant="secondary" onPress={() => setEditing(false)}>
+              <Button variant="dark" onPress={() => setEditing(false)}>
                 Done Editing
               </Button>
             </>

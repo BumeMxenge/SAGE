@@ -20,6 +20,7 @@
 /* Borderless variants keep a clear border, so every button is the same height as an outlined one */
 .primary,
 .sign-in,
+.dark,
 .quiet {
   border: 1px solid transparent;
 }
@@ -53,8 +54,20 @@
   cursor: not-allowed;
 }
 
-/* The sign-in button is as long as the sign-in form, as Account Created's Next is. Onboarding is light
-   only, so its colours don't change with the theme, and its hover darkens instead of fading. */
+/* The sign-in button is as long as the sign-in form, as Account Created's Next is, and dark is the same
+   button at a secondary button's size, as Done Editing is. Onboarding is light only, so their colours
+   don't change with the theme, and their hover darkens instead of fading. */
+.sign-in,
+.dark {
+  color: var(--color-on-fill);
+  background: var(--color-sign-in);
+}
+
+.sign-in[data-hovered],
+.dark[data-hovered] {
+  background: var(--color-sign-in-hover);
+}
+
 .sign-in {
   width: 100%;
   max-width: var(--width-form);
@@ -62,16 +75,11 @@
   padding: 0 var(--space-5);
   border-radius: var(--radius-md);
   font-size: var(--font-size-lg);
-  color: var(--color-on-fill);
-  background: var(--color-sign-in);
   box-shadow: var(--shadow-raised);
 }
 
-.sign-in[data-hovered] {
-  background: var(--color-sign-in-hover);
-}
-
-.secondary {
+.secondary,
+.dark {
   min-height: var(--size-control-md);
   padding: 0 var(--space-4);
   border-radius: var(--radius-md);
