@@ -108,6 +108,8 @@ CI checks every pull request and every push to main. When it passes on main, Dep
 - **On every request, in the cloud.** The backend never writes rules. It reads the approved year into the `Rulebook` cache (`shared/rulebook.py`), which keeps each year for ten minutes, so a newly loaded year shows within that time with no redeploy. The engine will build plans from it, and the advisor its briefing pack from the passages and the plan reasons.
 - **Supabase is where the two meet.** Student rows point into the rule tables, so the database refuses to remove a year a student's plan uses, and `sage seed` won't write a student's data until her plans' year is loaded.
 
+The [system diagram](#system-diagram) above draws both clocks, and the [ingestion data flow](#ingestion-data-flow) below follows one handbook year from its sources to the cache.
+
 ## Ingestion data flow
 
 ```mermaid
