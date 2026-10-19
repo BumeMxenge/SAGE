@@ -111,7 +111,7 @@ mutation:
 		score=$$(uv run python scripts/mutation_score.py) && echo "$$score" | tee mutation-score.txt
 
 # The 26 planted faults, each in a copy of the backend, and the test that caught it, if any: the 24
-# from my test review, and two in the review and approval. Too slow for CI too.
+# from my test review, and two in the review and approval.
 planted-faults:
 	@cd backend && uv run python scripts/planted_faults.py
 

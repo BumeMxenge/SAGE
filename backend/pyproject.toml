@@ -79,7 +79,7 @@ do_not_mutate = [
 ]
 pytest_add_cli_args_test_selection = ["-m", "not integration"]
 
-# make lint's check of the dependency rule in docs/architecture.md: lint-imports keeps these contracts
+# The dependency rule in docs/architecture.md, as contracts that make lint checks with lint-imports
 [tool.importlinter]
 root_package = "sage"
 include_external_packages = true # so the last two contracts can name outside packages
