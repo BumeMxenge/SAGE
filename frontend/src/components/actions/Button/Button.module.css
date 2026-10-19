@@ -80,9 +80,10 @@
 
 /* The outline and its teal hover come from styles/outline.module.css */
 
+/* Its hover fill keeps some room beside the label, so the button never fits it tightly */
 .quiet {
   min-height: var(--size-control-md);
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-5);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
