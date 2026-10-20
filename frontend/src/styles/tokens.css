@@ -104,6 +104,8 @@
   --width-menu: 240px;
   --width-popover: 320px; /* the plan switcher's list */
   --width-tooltip: 240px;
+  --width-sidebar: 266px; /* the open sidebar, as measured */
+  --width-rail: 62px; /* the collapsed sidebar, a rail of icons */
 
   /* Motion. Hover changes are instant, as in the prototypes; these time everything that moves. */
   --duration-fast: 150ms; /* tooltips, menus and the Select list fading; a progress bar moving on */
