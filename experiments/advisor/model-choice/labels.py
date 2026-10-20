@@ -58,9 +58,12 @@ class Sheet(Row):
     @classmethod
     def _no_empty_fields(cls, verdicts: dict) -> dict:
         # A field left empty in the file is one not given, so an eligible verdict's empty reason
-        # becomes none, as the engine gives an eligible course no reason
+        # becomes none, as the engine gives an eligible course no reason. A verdict built
+        # already, rather than read from the file, has no empty fields.
         return {
             code: {name: value for name, value in fields.items() if value != ""}
+            if isinstance(fields, dict)
+            else fields
             for code, fields in verdicts.items()
         }
 
