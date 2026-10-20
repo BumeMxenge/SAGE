@@ -1,6 +1,6 @@
 // The frame around the student's pages: the sidebar, and beside it the page, which React Router swaps
 // as the address changes while the sidebar stays as it is. The sidebar is the page's banner, holding
-// the logo and the main navigation (audit §5). It folds to a rail of icons and opens
+// the logo, the main navigation (audit §5) and the account. It folds to a rail of icons and opens
 // again. Folded, the labels stay in the page, clipped from view, so each link keeps its name, and a
 // tooltip shows it beside the icon instead.
 import { useEffect, useState } from 'react'
@@ -11,6 +11,7 @@ import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import { Logo } from '@/components/brand/Logo/Logo.tsx'
 import { Tooltip } from '@/components/overlays/Tooltip/Tooltip.tsx'
 import { nav } from '@/lib/copy.ts'
+import { AccountMenu } from './AccountMenu.tsx'
 import styles from './AppLayout.module.css'
 
 const pages: { href: string; label: string; icon: PlainIconName }[] = [
@@ -28,7 +29,7 @@ export function AppLayout() {
   const { pathname } = useLocation()
   const [collapsed, setCollapsed] = useState(() => !window.matchMedia(wideWindow).matches)
   // A pressed toggle disappears as the sidebar changes shape, so the one that replaces it takes focus.
-  // Only a press sets this: the window's width moves no focus.
+  // Only a press sets this: the window's width, or the account menu opening the sidebar, moves no focus.
   const [moveFocus, setMoveFocus] = useState(false)
 
   // Narrowing the window past the width folds the sidebar, and widening it opens it again
@@ -45,6 +46,11 @@ export function AppLayout() {
   function toggle() {
     setCollapsed(!collapsed)
     setMoveFocus(true)
+  }
+
+  function openForMenu() {
+    setCollapsed(false)
+    setMoveFocus(false)
   }
 
   // A plan's own address, /plan/:planId, is still the Plan page
@@ -96,6 +102,7 @@ export function AppLayout() {
             </Tooltip>
           ))}
         </nav>
+        <AccountMenu collapsed={collapsed} onOpen={openForMenu} />
       </header>
       <main className={styles.main}>
         <Outlet />
