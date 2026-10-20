@@ -21,9 +21,6 @@ class Fault(NamedTuple):
     file: str  # under backend/
     find: str
     replace: str
-    stand_in: bool = (
-        False  # in engine/stubs.py, so it goes when the engine replaces the stand-ins
-    )
 
 
 FAULTS = [
@@ -141,19 +138,17 @@ FAULTS = [
     ),
     Fault(
         17,
-        "eligibility (stand-in): failed course counts as passed",
-        "src/sage/engine/stubs.py",
-        'if symbols[line.result].outcome in ("pass", "credited")',
-        'if symbols[line.result].outcome != "credited"',
-        stand_in=True,
+        "evaluator: failed course counts as passed",
+        "src/sage/engine/evaluator.py",
+        'PASSED: tuple[Outcome, ...] = ("pass", "credited")',
+        'PASSED: tuple[Outcome, ...] = ("pass", "credited", "fail")',
     ),
     Fault(
         18,
-        "eligibility (stand-in): equivalences ignored",
-        "src/sage/engine/stubs.py",
-        "covered.setdefault(rule.counts_as, rule.course_code)",
+        "evaluator: equivalences ignored",
+        "src/sage/engine/evaluator.py",
+        "self._counts_as[rule.course_code].add(rule.counts_as)",
         "pass",
-        stand_in=True,
     ),
     Fault(
         19,
@@ -296,9 +291,7 @@ def main() -> None:
 
     applied = [fault for fault, outcome in outcomes.items() if outcome != "not applied"]
     caught = [fault for fault in applied if outcomes[fault].startswith("caught")]
-    stand_ins = " and ".join(str(fault.number) for fault in applied if fault.stand_in)
-    print(f"\nCaught {len(caught)} of {len(applied)} planted faults.", end="")
-    print(f" {stand_ins} are in the eligibility stand-in." if stand_ins else "")
+    print(f"\nCaught {len(caught)} of {len(applied)} planted faults.")
     if len(applied) < len(FAULTS):
         print(
             f"{len(FAULTS) - len(applied)} no longer match the code and weren't applied."
