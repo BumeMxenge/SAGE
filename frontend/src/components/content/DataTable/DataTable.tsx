@@ -12,6 +12,10 @@ export type DataTableRow = { id: string; cells: Record<string, ReactNode> }
 
 type DataTableProps = {
   caption: string
+  // Figures at the end of the caption's line, such as a year's average and credits. Being in the
+  // caption, they are part of the table's name. Only for a table that doesn't scroll: they wrap under
+  // the caption in a narrow window, and a scrollable table's caption has a fixed height.
+  detail?: ReactNode
   columns: DataTableColumn[]
   rows: DataTableRow[]
   scrollable?: boolean
@@ -19,12 +23,19 @@ type DataTableProps = {
   ref?: Ref<HTMLElement>
 }
 
-export function DataTable({ caption, columns, rows, scrollable = false, ref }: DataTableProps) {
+export function DataTable({ caption, detail, columns, rows, scrollable = false, ref }: DataTableProps) {
   const captionId = useId()
   const table = (
     <table className={styles.table}>
+      {/* A space between the title and its figures, so the table's name never runs them together */}
       <caption id={captionId} className={styles.caption}>
-        {caption}
+        {detail ? (
+          <span className={styles.captionLine}>
+            <span>{caption}</span> <span className={styles.detail}>{detail}</span>
+          </span>
+        ) : (
+          caption
+        )}
       </caption>
       <thead>
         <tr>

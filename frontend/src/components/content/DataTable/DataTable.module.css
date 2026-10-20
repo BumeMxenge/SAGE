@@ -10,11 +10,31 @@
   background: var(--color-surface);
 }
 
+/* One tight line, as the prototype draws a year's title. A scrollable table's caption sets its own
+   height below. */
 .caption {
   padding-bottom: var(--space-3);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
   text-align: start;
+}
+
+/* Figures at the end of the caption's line, on its baseline. In a narrow window they wrap under it. */
+.caption-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.detail {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
 }
 
 /* No hover change: the parity file leaves table rows as they are */
