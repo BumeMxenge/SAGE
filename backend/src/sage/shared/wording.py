@@ -21,7 +21,7 @@ def in_words(rule: EntryRule | YearRules | None) -> str:
     if rule is None:
         return "no requirement"
     if isinstance(rule, YearRules):
-        return _all([_part(part) for part in rule.all], listed=True)
+        return all_of([_part(part) for part in rule.all], listed=True)
     return _words(rule)
 
 
@@ -35,7 +35,7 @@ def _words(node: EntryRule, nested: bool = False) -> str:
             else _words(child)
             for at, child in enumerate(node.all)
         ]
-        return f"({_all(words, listed)})" if nested else _all(words, listed)
+        return f"({all_of(words, listed)})" if nested else all_of(words, listed)
     if isinstance(node, AnyOf):
         return _one_of([_words(child, True) for child in node.any])
     if isinstance(node, CourseNeed):
@@ -76,7 +76,7 @@ def _commas(node: EntryRule) -> bool:
     return isinstance(node, AnyOf) and len(node.any) > 2
 
 
-def _all(words: list[str], listed: bool) -> str:
+def all_of(words: list[str], listed: bool = False) -> str:
     # Parts that must all hold: "A and B", or "X, and Y" where a part holds a list of its own
     if len(words) == 1:
         return words[0]

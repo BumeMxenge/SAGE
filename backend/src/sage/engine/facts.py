@@ -9,7 +9,15 @@ from typing import Literal
 
 from sage.engine.evaluator import Plan, Record, Verdict, evaluate, leaf
 from sage.shared.base import Row
-from sage.shared.rules import AllOf, AnyOf, CourseNeed, EntryRule, RuleSet, meetings_on
+from sage.shared.rules import (
+    AllOf,
+    AnyOf,
+    CourseNeed,
+    EntryRule,
+    RuleSet,
+    TimetableSlot,
+    meetings_on,
+)
 
 # Where each term starts and ends in the year, so a course can follow one that ends before it starts.
 # Winter falls between the semesters and summer after them. "Other", such as practical training, has
@@ -164,7 +172,7 @@ def meetings(code: str, rules: RuleSet, curriculum: str) -> Iterator[str]:
     for slot in meetings_on(rules, curriculum, code):
         if slot.choice_group:
             yield f'option("{code}", "{slot.choice_group}", "{slot.choice}").'
-        if slot.day is None or slot.start_time is None or slot.end_time is None:
+        if not placed(slot):
             yield f'untimed("{code}").'
             continue
         meeting = f'"{slot.id}"'
@@ -174,6 +182,15 @@ def meetings(code: str, rules: RuleSet, curriculum: str) -> Iterator[str]:
         )
         if slot.choice_group:
             yield f'alternative({meeting}, "{slot.choice_group}", "{slot.choice}").'
+
+
+def untimed(code: str, rules: RuleSet, curriculum: str) -> bool:
+    # Whether a meeting of the course on her timetable has no printed day or time
+    return not all(placed(slot) for slot in meetings_on(rules, curriculum, code))
+
+
+def placed(slot: TimetableSlot) -> bool:
+    return None not in (slot.day, slot.start_time, slot.end_time)
 
 
 def minutes(at: time) -> int:

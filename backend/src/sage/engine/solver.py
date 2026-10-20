@@ -16,9 +16,11 @@ Assumption = tuple[clingo.Symbol, bool]
 
 
 class Found(Row):
-    # One plan, by its courses, and the courses it holds only conditionally
+    # One plan, by its courses, the courses it holds only conditionally, and those of them whose
+    # entry rule only possibly holds
     courses: tuple[str, ...]
     conditional: tuple[str, ...]
+    unsure: tuple[str, ...]
 
 
 class Solver:
@@ -38,6 +40,7 @@ class Solver:
                 Found(
                     courses=named(atoms, "take"),
                     conditional=named(atoms, "conditional"),
+                    unsure=named(atoms, "unsure"),
                 )
             )
 

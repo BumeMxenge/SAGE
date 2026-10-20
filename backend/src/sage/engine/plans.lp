@@ -44,8 +44,10 @@ possible(N) :- node(N, all), possible(M) : child(N, M).
 possible(N) :- node(N, any), child(N, M), possible(M).
 :- take(C), entry(C, N), not possible(N).
 
-% A course is conditional when its rule only possibly holds, or a meeting of it has no printed time
-conditional(C) :- take(C), entry(C, N), not met(N).
+% A course is conditional when its rule only possibly holds (unsure), or a meeting of it has no
+% printed time
+unsure(C) :- take(C), entry(C, N), not met(N).
+conditional(C) :- unsure(C).
 conditional(C) :- take(C), untimed(C).
 
 % The year rules she still has to meet: so many more courses, or credits, from those that count
@@ -92,6 +94,7 @@ overlap(T, full_year) :- overlap(full_year, T).
 
 #show take/1.
 #show conditional/1.
+#show unsure/1.
 #show pick/3.
 #show add/1.
 

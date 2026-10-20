@@ -57,6 +57,9 @@ class Record:
         for line in sorted(history, key=lambda line: (line.academic_year, line.term)):
             for code in self.covers(line.course_code, line.credits):
                 self._lines[code].append(line)
+        self.passed_credits = sum(
+            line.credits for line in history if self._outcomes[line.result] in PASSED
+        )
         # One more than the highest year whose own core she has done, practical training aside, as
         # FB5 sets her year by when she's expected to graduate
         done = [
@@ -96,15 +99,20 @@ class Record:
             None,
         )
 
-    def pending(self, code: str) -> bool:
-        # Not passed, with a result still to come
-        return self.passed(code) is None and any(
-            self._outcomes[line.result] in PENDING for line in self._lines[code]
-        )
+    def pending(self, code: str) -> Outcome | None:
+        # A course not passed whose result is still to come, with what's to come
+        if self.passed(code) is not None:
+            return None
+        found = [self._outcomes[line.result] for line in self._lines[code]]
+        return next((outcome for outcome in found if outcome in PENDING), None)
 
     def done(self, code: str) -> bool:
         # Passed, or with a result still to come, which a plan assumes she passes
-        return self.passed(code) is not None or self.pending(code)
+        return self.passed(code) is not None or self.pending(code) is not None
+
+    def repeated(self, code: str) -> bool:
+        # Taken before and not passed, so taking it again repeats it (FB3.4)
+        return not self.done(code) and bool(self._lines[code])
 
     def meets(self, need: CourseNeed) -> Value:
         # Whether any of her attempts at the course, or at one that covers it, meets the leaf
