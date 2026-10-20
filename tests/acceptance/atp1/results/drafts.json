@@ -1,0 +1,71 @@
+{
+  "pass": {
+    "3 years of engineering or science studies at university level": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "3 years of engineering or science studies at university level"
+      }
+    },
+    "All core third year courses, CHE4048F, CHE4049F.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "refer": "All core third year courses"
+          },
+          {
+            "course": "CHE4048F",
+            "need": "pass"
+          },
+          {
+            "course": "CHE4049F",
+            "need": "pass"
+          }
+        ]
+      }
+    },
+    "All core third year courses.": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "All core third year courses."
+      }
+    },
+    "CON2033F,CML1001F/L/P or CML1004S": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "all": [
+          {
+            "course": "CON2033F",
+            "need": "pass"
+          },
+          {
+            "any": [
+              {
+                "course": "CML1001F",
+                "need": "pass"
+              },
+              {
+                "course": "CML1001L",
+                "need": "pass"
+              },
+              {
+                "course": "CML1001P",
+                "need": "pass"
+              },
+              {
+                "course": "CML1004S",
+                "need": "pass"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "DP obtained in CHE3008S": {
+      "model": "claude-haiku-5-5",
+      "tree": {
+        "refer": "DP obtained in CHE3008S"
+      }
+    }
+  }
+}

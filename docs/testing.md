@@ -20,7 +20,7 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 | --- | --- | --- | --- |
 | Unit | Each rule, on in-memory stores holding the approved 2026 rulebook, with no network | `backend/tests/unit`, whose folders mirror the source's, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every pull request and every push to main |
 | Integration | The Supabase adapters, the migrations, row level security and real sign-in tokens, against a rebuilt local database holding both approved years | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every pull request and every push to main |
-| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened | `tests/acceptance` (planned: ATP-1's label sheets and harness arrive from branch E) | `make atp1`, and their own workflow on demand, which holds the model key, as held-out wording needs fresh drafts |
+| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened | `tests/acceptance/atp1`: its label sheets, its harness and its first result | `make atp1`, on the laptop, from the held-out drafts its first run cached, so it calls no model. The harness's own tests run in `make test` |
 
 ## Ingestion tests
 
@@ -34,6 +34,15 @@ The yearly job's tests build each source inside the test: typed page text in the
 | Check | `ingestion/test_checks.py` | A check that misses its one planted inconsistency, fires on the row that agrees, or fails a settled exclusion |
 | Review | `ingestion/test_review.py` | A first year that isn't all new, an unchanged row not carried over, a removal let through unseen, a decision kept after its reading changed or counted before it's usable, and a check that fails on the year as decided without stopping approval |
 | Approve and load | `ingestion/test_ingest.py` | Approval with a row pending, a snapshot that doesn't survive its round trip, a kept removal lost, and a load that rewrites a year held exactly or replaces one held differently unasked |
+
+## Acceptance tests
+
+ATP-1 asks how well ingestion reads print, and whether anything wrong gets into SAGE without a person seeing it. Its label sheets, in `tests/acceptance/atp1/labels/`, were filled from print and committed before any run. Its harness compares SAGE's readers, grammar, drafts and approved years with them, field by field, and its report gives each measure with a 95% Wilson interval, with and without the labeller's judgement calls. [The harness's README](../tests/acceptance/atp1/README.md) says what it compares and how to read the report.
+
+- `make atp1` runs it from the held-out drafts its first run cached, so it calls no model and needs no key. A rerun reproduces the report byte for byte.
+- `make atp1 DRAFT=yes` made those drafts once, with the key in `backend/.env`, and refuses to draft again.
+- The harness's own tests, in `tests/acceptance/atp1/test_scoring.py`, check its scoring with values worked out by hand. `make test` collects them, so CI runs them. None reads a source or calls a model.
+- `tests/acceptance/atp1/results/` keeps the first result. A fault it finds is fixed on its own branch, and the retest goes beside the first result, never over it.
 
 ## The dependency check
 
