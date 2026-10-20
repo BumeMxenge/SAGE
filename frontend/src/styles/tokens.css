@@ -91,6 +91,7 @@
   --size-tile: 40px; /* the icon tile on an error state */
   --size-logo-full: 96px; /* tall enough for the tagline to read */
   --size-logo-compact: 34px; /* the prototype's 104 by 34 */
+  --size-logo-compact-small: 26px; /* the sidebar's, 80 by 26, as the planner draws it */
   --size-logo-mark: 28px;
   --size-logo-microsoft: 21px;
   --width-form: 392px; /* the sign-in form, and a blocking error page */
