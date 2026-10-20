@@ -1,0 +1,154 @@
+/* The page scrolls as a whole, as the audit asks, and the sidebar stays beside it */
+.frame {
+  display: flex;
+  min-height: 100dvh;
+}
+
+/* The prototype's pages keep 24 px from the sidebar and the window's edge */
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-10) var(--space-6);
+}
+
+/* The page's own colour, set apart by one line, never a grey panel (parity file). It stays in view
+   as the page scrolls. Folding narrows it to the rail over the slow motion token, clipping what no
+   longer fits. */
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: var(--width-sidebar);
+  height: 100dvh;
+  padding: var(--space-3);
+  overflow: hidden;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition: width var(--duration-slow) var(--easing);
+}
+
+.sidebar[data-collapsed] {
+  width: var(--width-rail);
+}
+
+/* The logo and Collapse Sidebar, or Open Sidebar alone, one control high. The rail leaves more room
+   under its leaf, as the prototype does, easing there as the sidebar folds. */
+.top {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--size-control-md);
+  margin-bottom: var(--space-4);
+  padding-left: var(--space-2);
+  transition: margin-bottom var(--duration-slow) var(--easing);
+}
+
+.sidebar[data-collapsed] .top {
+  margin-bottom: var(--space-6);
+  padding-left: 0;
+}
+
+/* The leaf at rest, and the icon that says what it does on hover or keyboard focus */
+.open {
+  --icon-size: var(--size-icon-md);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--size-control-md);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  background: transparent;
+  cursor: pointer;
+}
+
+.open[data-hovered],
+.open[data-focus-visible] {
+  background: var(--color-hover);
+}
+
+.open[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.open-icon,
+.open[data-hovered] .mark,
+.open[data-focus-visible] .mark {
+  display: none;
+}
+
+.open[data-hovered] .open-icon,
+.open[data-focus-visible] .open-icon {
+  display: flex;
+}
+
+/* Takes the height left under the logo, so whatever follows sits at the sidebar's foot. The rail
+   spaces its icons further apart, as the prototype does, easing there as the sidebar folds. */
+.nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  transition: gap var(--duration-slow) var(--easing);
+}
+
+.sidebar[data-collapsed] .nav {
+  gap: var(--space-2);
+}
+
+/* A row in the text colour, as the parity file says, where base.css draws every link navy and
+   underlined */
+.link {
+  --icon-size: var(--size-icon-md);
+
+  display: flex;
+  flex: none;
+  gap: var(--space-3);
+  align-items: center;
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-2);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* base.css turns a hovered link teal. A nav item's hover is its fill alone. */
+.link:hover {
+  color: var(--color-text);
+}
+
+.link[data-hovered] {
+  background: var(--color-hover);
+}
+
+.link[data-current] {
+  background: var(--color-surface-muted);
+}
+
+.link[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* On the rail each link is a round icon, quieter at rest, as the prototype draws it. The open page
+   keeps its fill there too, which the prototype's rail doesn't show. */
+.sidebar[data-collapsed] .link {
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+}
+
+.sidebar[data-collapsed] .link[data-hovered],
+.sidebar[data-collapsed] .link[data-current] {
+  color: var(--color-text);
+}

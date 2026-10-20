@@ -1,5 +1,15 @@
 /* A menu is never narrower than this, even when it opens from a small icon button, as chat history
-   does */
+   does. The popover's padding and 1 px border sit outside the list, so they come off here, and a menu
+   from a wider button is exactly as wide as it, as the account menu keeps its button's width. */
 .list {
-  min-width: var(--width-menu);
+  min-width: calc(var(--width-menu) - 2 * (var(--space-2) + 1px));
+}
+
+/* What sits above the items, such as who is signed in. It isn't an item, so it takes no focus, and a
+   line keeps it apart from the items, as the prototype's account menu draws it. */
+.header {
+  flex: none;
+  margin-bottom: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
 }

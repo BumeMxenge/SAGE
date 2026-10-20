@@ -91,6 +91,7 @@
   --size-tile: 40px; /* the icon tile on an error state */
   --size-logo-full: 96px; /* tall enough for the tagline to read */
   --size-logo-compact: 34px; /* the prototype's 104 by 34 */
+  --size-logo-compact-small: 26px; /* the sidebar's, 80 by 26, as the planner draws it */
   --size-logo-mark: 28px;
   --size-logo-microsoft: 21px;
   --width-form: 392px; /* the sign-in form, and a blocking error page */
@@ -103,6 +104,8 @@
   --width-menu: 240px;
   --width-popover: 320px; /* the plan switcher's list */
   --width-tooltip: 240px;
+  --width-sidebar: 266px; /* the open sidebar, as measured */
+  --width-rail: 62px; /* the collapsed sidebar, a rail of icons */
 
   /* Motion. Hover changes are instant, as in the prototypes; these time everything that moves. */
   --duration-fast: 150ms; /* tooltips, menus and the Select list fading; a progress bar moving on */

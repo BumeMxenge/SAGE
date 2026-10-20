@@ -1,0 +1,42 @@
+/* At the foot of the sidebar, under a line, as the prototype draws it */
+.account {
+  flex: none;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+
+/* A row as wide as the sidebar, marked out only by its hover fill and focus ring */
+.button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-md);
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.button[data-hovered] {
+  background: var(--color-hover);
+}
+
+.button[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* On the rail only the avatar shows, round and centred under the links' icons, with no line above
+   it, as the prototype's rail draws it */
+.account[data-collapsed] {
+  border-top-color: transparent;
+}
+
+.account[data-collapsed] .button {
+  height: var(--size-control-md);
+  padding: 0 calc((var(--size-control-md) - var(--size-control-sm)) / 2);
+  border-radius: var(--radius-full);
+}
