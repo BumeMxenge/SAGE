@@ -7,9 +7,10 @@ import { expect, type Locator, type Page, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../../e2e/axe.ts'
 import { walkKeyboard } from '../../../e2e/keyboard.ts'
 import { type ParityCase, parity } from '../../../e2e/parity.ts'
+import { settled } from '../../../e2e/settled.ts'
 import { mbali, visitAs } from '../../../e2e/visitors.ts'
 import type { components } from '../../lib/api-types.ts'
-import { settled, showState } from './prototype.ts'
+import { showState } from './prototype.ts'
 
 type TranscriptLine = components['schemas']['TranscriptLine']
 

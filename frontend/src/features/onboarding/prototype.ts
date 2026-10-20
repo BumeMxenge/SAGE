@@ -12,13 +12,3 @@ export async function showState(page: Page, state: string): Promise<void> {
       switcher.style.visibility = 'hidden'
     })
 }
-
-// Waits until whatever is arriving on the page, in a prototype or in React, has arrived. A looping
-// animation, such as a loader's, never ends, so it doesn't count.
-export async function settled(page: Page): Promise<void> {
-  await page.waitForFunction(() =>
-    document
-      .getAnimations()
-      .every((animation) => animation.playState !== 'running' || animation.effect?.getComputedTiming().iterations === Infinity),
-  )
-}

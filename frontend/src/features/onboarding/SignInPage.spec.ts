@@ -4,7 +4,8 @@
 // on hover. Onboarding is light only, so it all runs in light alone.
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import { type ParityCase, parity } from '../../../e2e/parity.ts'
-import { settled, showState } from './prototype.ts'
+import { settled } from '../../../e2e/settled.ts'
+import { showState } from './prototype.ts'
 
 const timetables = 'Timetables That Work in Practice, Not Just on Paper'
 const answers = 'Instant Answers, Grounded in the EBE Handbook'
