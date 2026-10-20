@@ -5,7 +5,7 @@ import tomllib
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from sage.shared.base import Row
 from sage.shared.planning import Eligibility, EligibilityStatus
 from sage.shared.rules import TermCode
@@ -53,6 +53,16 @@ class Sheet(Row):
     prompts: tuple[Prompt, ...]
     # By course code, each written from print
     verdicts: dict[str, Eligibility] = Field(default_factory=dict)
+
+    @field_validator("verdicts", mode="before")
+    @classmethod
+    def _no_empty_fields(cls, verdicts: dict) -> dict:
+        # A field left empty in the file is one not given, so an eligible verdict's empty reason
+        # becomes none, as the engine gives an eligible course no reason
+        return {
+            code: {name: value for name, value in fields.items() if value != ""}
+            for code, fields in verdicts.items()
+        }
 
 
 def raw(path: Path = FILE) -> dict:

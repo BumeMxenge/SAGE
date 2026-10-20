@@ -80,11 +80,12 @@ def _label(prompt: Prompt, sheet: Sheet) -> list[str]:
         found.append("plan is filled on a plan action, and only there")
     if prompt.plan and prompt.plan != "none" and prompt.plan not in evidence.PLANS:
         found.append(f"no plan {prompt.plan}")
+    # A plan question, or the practical-training reason, is answered from the plan context alone
     if not prompt.tool:
-        if prompt.stressor != "control" or prompt.arguments or prompt.verdict:
-            found.append(
-                "only a Part B control may need no tool, and then has no arguments"
-            )
+        if prompt.stressor not in ("control", "conditional"):
+            found.append("only a Part B control or conditional may need no tool")
+        if prompt.arguments or prompt.verdict:
+            found.append("a label with no tool has no arguments or verdict")
         return found
     issues, result = _call(prompt, sheet)
     if issues:
