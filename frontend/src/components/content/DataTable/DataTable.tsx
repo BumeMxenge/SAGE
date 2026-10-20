@@ -7,7 +7,8 @@
 import { type ReactNode, type Ref, useId } from 'react'
 import styles from './DataTable.module.css'
 
-export type DataTableColumn = { key: string; header: string; align?: 'start' | 'end' }
+// A column that fits is as wide as its widest cell, and the other columns share the rest of the row
+export type DataTableColumn = { key: string; header: string; align?: 'start' | 'end'; fit?: boolean }
 export type DataTableRow = { id: string; cells: Record<string, ReactNode> }
 
 type DataTableProps = {
@@ -21,6 +22,11 @@ type DataTableProps = {
   scrollable?: boolean
   // A scrollable table's box, so a page can move focus to it
   ref?: Ref<HTMLElement>
+}
+
+// A cell's classes, from its column's alignment and whether the column fits its content
+function cellClass({ align, fit }: DataTableColumn): string | undefined {
+  return [align === 'end' && styles.end, fit && styles.fit].filter(Boolean).join(' ') || undefined
 }
 
 export function DataTable({ caption, detail, columns, rows, scrollable = false, ref }: DataTableProps) {
@@ -40,7 +46,7 @@ export function DataTable({ caption, detail, columns, rows, scrollable = false, 
       <thead>
         <tr>
           {columns.map((column) => (
-            <th key={column.key} scope="col" className={column.align === 'end' ? styles.end : undefined}>
+            <th key={column.key} scope="col" className={cellClass(column)}>
               {column.header}
             </th>
           ))}
@@ -50,7 +56,7 @@ export function DataTable({ caption, detail, columns, rows, scrollable = false, 
         {rows.map((row) => (
           <tr key={row.id}>
             {columns.map((column) => (
-              <td key={column.key} className={column.align === 'end' ? styles.end : undefined}>
+              <td key={column.key} className={cellClass(column)}>
                 {row.cells[column.key]}
               </td>
             ))}

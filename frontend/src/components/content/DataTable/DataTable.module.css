@@ -65,6 +65,13 @@
   text-align: end;
 }
 
+/* A column that fits never wraps, and its width asks for less than its cells need, so it stays as
+   narrow as its widest cell while the other columns share the rest of the row */
+.table .fit {
+  width: 1%;
+  white-space: nowrap;
+}
+
 /* A scrollable table's box. Its caption and headers stick to its top as the rows scroll beneath them,
    and isolation keeps them under anything a page lays over the box. */
 .scroll {
