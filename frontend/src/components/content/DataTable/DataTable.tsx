@@ -19,6 +19,8 @@ type DataTableProps = {
   detail?: ReactNode
   columns: DataTableColumn[]
   rows: DataTableRow[]
+  // In a box with rounded corners, as Course History's years are
+  outlined?: boolean
   scrollable?: boolean
   // A scrollable table's box, so a page can move focus to it
   ref?: Ref<HTMLElement>
@@ -29,10 +31,10 @@ function cellClass({ align, fit }: DataTableColumn): string | undefined {
   return [align === 'end' && styles.end, fit && styles.fit].filter(Boolean).join(' ') || undefined
 }
 
-export function DataTable({ caption, detail, columns, rows, scrollable = false, ref }: DataTableProps) {
+export function DataTable({ caption, detail, columns, rows, outlined = false, scrollable = false, ref }: DataTableProps) {
   const captionId = useId()
   const table = (
-    <table className={styles.table}>
+    <table className={outlined ? `${styles.table} ${styles.outlined}` : styles.table}>
       {/* A space between the title and its figures, so the table's name never runs them together */}
       <caption id={captionId} className={styles.caption}>
         {detail ? (
