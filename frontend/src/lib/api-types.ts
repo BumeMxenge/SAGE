@@ -264,9 +264,25 @@ export interface components {
             /** Curricula */
             curricula: components["schemas"]["Curriculum"][];
             /** Courses */
-            courses: components["schemas"]["Course"][];
+            courses: components["schemas"]["CatalogueCourse"][];
             /** Symbols */
             symbols: components["schemas"]["ResultSymbol"][];
+        };
+        /** CatalogueCourse */
+        CatalogueCourse: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** Credits */
+            credits: number;
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+            /** Complementary */
+            complementary: boolean;
         };
         /** Chat */
         Chat: {
@@ -340,20 +356,6 @@ export interface components {
             result: string;
             /** Mark */
             mark: number | null;
-        };
-        /** Course */
-        Course: {
-            /** Code */
-            code: string;
-            /** Name */
-            name: string;
-            /** Credits */
-            credits: number;
-            /**
-             * Term
-             * @enum {string}
-             */
-            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
         };
         /** Credits */
         Credits: {
