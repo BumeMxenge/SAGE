@@ -158,13 +158,18 @@ class Graded(Protocol):
     result: str
 
 
+def final_mark(line: Graded) -> int | None:
+    # A line's final mark as the transcript's Term GPA reads it: a supplementary pass (SP) counts as
+    # 50, and any other line printed without a mark has none
+    return 50 if line.result == "SP" else line.mark
+
+
 def average(lines: Iterable[Graded]) -> Decimal | None:
-    # The credit-weighted mean of marks, worked out as the transcript's Term GPA is. A supplementary
-    # pass (SP) counts as 50, and any other line without a mark is left out. Two decimals, half up,
-    # and None when no line counts.
+    # The credit-weighted mean of final marks, worked out as the transcript's Term GPA is. A line
+    # without one is left out. Two decimals, half up, and None when no line counts.
     total = weight = 0
     for line in lines:
-        mark = 50 if line.result == "SP" else line.mark
+        mark = final_mark(line)
         if mark is not None:
             total += mark * line.credits
             weight += line.credits

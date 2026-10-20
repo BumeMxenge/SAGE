@@ -31,8 +31,8 @@ FAULTS = [
         1,
         "average: SP counts as 40",
         "src/sage/shared/students.py",
-        'mark = 50 if line.result == "SP"',
-        'mark = 40 if line.result == "SP"',
+        'return 50 if line.result == "SP"',
+        'return 40 if line.result == "SP"',
     ),
     Fault(
         2,
@@ -128,7 +128,7 @@ FAULTS = [
     Fault(
         15,
         "plans: curriculum-only meetings shown to everyone",
-        "src/sage/features/plans/service.py",
+        "src/sage/shared/rules.py",
         "and (slot.id not in only_for or curriculum in only_for[slot.id])",
         "",
     ),

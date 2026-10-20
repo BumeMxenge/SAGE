@@ -16,7 +16,6 @@ from sage.features.onboarding.models import (
     TranscriptLine,
     TranscriptWarning,
 )
-from sage.ingestion.curricula import COMPLEMENTARY
 from sage.shared.api.deps import (
     STUDENT_ERRORS,
     Generator,
@@ -40,6 +39,7 @@ from sage.shared.errors import (
     UnknownCurriculum,
     UnknownResult,
 )
+from sage.shared.rules import COMPLEMENTARY
 from sage.shared.students import CourseHistoryLine
 
 MAX_TRANSCRIPT_BYTES = 10 * 1024 * 1024

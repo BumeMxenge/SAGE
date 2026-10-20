@@ -8,7 +8,7 @@ from uuid import UUID
 
 from sage.shared.errors import PlanNotFound, PlansNotReady, SamePlan
 from sage.shared.repositories import StudentRepository
-from sage.shared.rules import Course, RuleSet, TermCode, TimetableSlot
+from sage.shared.rules import Course, RuleSet, TermCode, TimetableSlot, meetings_on
 from sage.shared.students import PlanCourse, PlanSetRows
 
 
@@ -91,19 +91,12 @@ def meetings(
     course: PlanCourse, rules: RuleSet, curriculum: str
 ) -> list[TimetableSlot]:
     # The meetings she attends: the compulsory ones, and the chosen alternative of each choice
-    # group, or every alternative while none is chosen. A meeting linked to curricula is theirs alone.
-    only_for: dict[UUID, set[str]] = defaultdict(set)
-    for link in rules.timetable_slot_curricula:
-        only_for[link.slot_id].add(link.curriculum_code)
+    # group, or every alternative while none is chosen
     chosen = course.choices or {}
     attended = [
         slot
-        for slot in rules.timetable_slots
-        if slot.course_code == course.course_code
-        and (slot.id not in only_for or curriculum in only_for[slot.id])
-        and (
-            slot.choice_group not in chosen or chosen[slot.choice_group] == slot.choice
-        )
+        for slot in meetings_on(rules, curriculum, course.course_code)
+        if slot.choice_group not in chosen or chosen[slot.choice_group] == slot.choice
     ]
     # Unknown days and times last
     return sorted(
