@@ -5,15 +5,16 @@
 import type { ReactNode } from 'react'
 import styles from './PageHeader.module.css'
 
-// The end of the title's row has room for actions or a figure, not both
-type PageHeaderProps = { title: string; subtitle?: string } & (
+// The end of the title's row has room for actions or a figure, not both. A sticky header stays at the
+// top of the window as the page scrolls beneath it.
+type PageHeaderProps = { title: string; subtitle?: string; sticky?: boolean } & (
   | { actions?: ReactNode; figure?: never }
   | { figure?: ReactNode; actions?: never }
 )
 
-export function PageHeader({ title, subtitle, actions, figure }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, sticky = false, actions, figure }: PageHeaderProps) {
   return (
-    <header className={styles.pageHeader}>
+    <header className={sticky ? `${styles.pageHeader} ${styles.sticky}` : styles.pageHeader}>
       <div className={styles.heading}>
         <h1 className={styles.title}>{title}</h1>
         {subtitle && <p className={styles.subtitle}>{subtitle}</p>}

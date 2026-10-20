@@ -45,3 +45,20 @@
   flex: none;
   text-align: end;
 }
+
+/* A sticky header stays at the top of the window as the page scrolls beneath it, as Course History's
+   does. It reaches up over the main area's 40 px top margin, so its title never moves and nothing
+   shows above it, and its own background hides what passes beneath. A window under 400 px tall, as at
+   300% zoom, keeps it in the page instead, as it would cover too much of the screen. */
+@media (height >= 400px) {
+  .sticky {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    margin-top: calc(var(--space-10) * -1);
+    margin-bottom: 0;
+    padding-top: var(--space-10);
+    padding-bottom: var(--space-6);
+    background: var(--color-surface);
+  }
+}
