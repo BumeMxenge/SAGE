@@ -27,6 +27,7 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 | 19 Oct | The focus ring's outline is written 18 times in 13 stylesheets | Each component draws its own ring, so its width, style and colour repeat in each. Main had 16 in 12, and the sign-in highlights add two | None yet: left for the integration branch | Draw the ring in one place that every component uses |
 | 19 Oct | 15 of the 28 icons in `icons.ts` have no user yet | The design system brought in every icon the prototypes draw, ahead of the screens that use them. Onboarding adds `info` and `arrow_downward` and gives `add` its first user | None yet: left for the integration branch | Remove each icon still unused once every screen is built |
 | 19 Oct | The full logo, with its strapline, has no user | The sign-in landing now shows the compact logo, as the prototype does | None yet: left for the integration branch | Remove it and its two SVG files if no screen takes it up |
+| 20 Oct | Onboarding has no loading or error states yet: a transcript that fails to read leaves the upload on "Reading your transcript…" with nothing said, and a failed Finish Setup shows nothing | My decision: the loading and error stops come after the rest of the app works end to end | None yet | Build onboarding's loading and error states with the rest of the app's |
 
 **ATP-5 test window checklist.** Before the load test:
 
