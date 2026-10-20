@@ -62,11 +62,12 @@ export function useAuth() {
   }
 
   // The caller then goes to /sign-in. Everything read for this account leaves the cache with it, so
-  // the next person to sign in on this browser never sees it.
+  // the next person to sign in on this browser never sees it. It goes whatever Supabase answers: the
+  // student has asked to leave, and supabase-js drops the session even when its logout request fails.
   async function signOut() {
     const { error } = await supabase.auth.signOut()
+    queryClient.clear()
     if (error) setError(error.message)
-    else queryClient.clear()
   }
 
   return { session, name, loading, error, signIn, signOut }
