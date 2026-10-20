@@ -4,9 +4,13 @@
 import { filledFavorite, type IconName, icons } from './icons.ts'
 import styles from './Icon.module.css'
 
+// Every icon but favorite, the only one with a filled version. A component that draws its icon one way
+// takes one of these.
+export type PlainIconName = Exclude<IconName, 'favorite'>
+
 type IconProps =
   | { name: 'favorite'; filled?: boolean }
-  | { name: Exclude<IconName, 'favorite'>; filled?: never }
+  | { name: PlainIconName; filled?: never }
 
 export function Icon({ name, filled }: IconProps) {
   const Svg = filled ? filledFavorite : icons[name]

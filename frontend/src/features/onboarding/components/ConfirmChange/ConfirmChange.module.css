@@ -1,0 +1,39 @@
+.lead {
+  margin: 0 0 var(--space-5);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}
+
+/* The facts line up in two columns, each name beside its value */
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-3) var(--space-6);
+  align-items: center;
+  margin: 0 0 var(--space-6);
+  font-size: var(--font-size-md);
+}
+
+.fact {
+  display: contents;
+}
+
+.fact dt {
+  color: var(--color-text-secondary);
+}
+
+.fact dd {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.fact dd[data-tone='danger'] {
+  color: var(--color-text-danger);
+}
+
+.buttons {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+}

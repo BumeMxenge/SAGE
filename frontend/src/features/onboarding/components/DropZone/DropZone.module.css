@@ -44,6 +44,10 @@
   font-size: var(--font-size-md);
 }
 
+.note {
+  font-size: var(--font-size-xs);
+}
+
 .message {
   --icon-size: var(--size-icon-sm);
 

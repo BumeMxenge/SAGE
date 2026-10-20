@@ -4,16 +4,13 @@ import type { Session } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { queryClient } from '@/lib/queryClient.ts'
 import { supabase } from '@/lib/supabase.ts'
-import { forgetName, keepName, type Name, nameFromGraph, storedName } from './name.ts'
+import { forgetName, lookUpName, type Name } from './name.ts'
 import { signInFinished } from './session.ts'
-
-// Accounts whose name Graph was asked for on this page, so React's second subscription in
-// development, or a later event carrying the same Microsoft token, never asks again
-const askedGraph = new Set<string>()
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null)
   const [name, setName] = useState<Name>() // none for Mbali's link, which brings no Microsoft token
+  // Until both the sign-in and the name are known, so a greeting never changes once it shows
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -27,24 +24,22 @@ export function useAuth() {
     // Runs once with the current session, then on every sign-in, sign-out and token refresh
     const { data } = supabase.auth.onAuthStateChange((event, newSession) => {
       if (event === 'SIGNED_OUT' && accountId) forgetName(accountId)
-      const id = newSession?.user.id
-      accountId = id
+      accountId = newSession?.user.id
       setSession(newSession)
-      setName(id ? storedName(id) : undefined)
-      setLoading(false)
-      // Microsoft's token rides on the session only until its first refresh, and the sign-in can
-      // finish before this subscribes, so whichever event first carries it is used
-      const microsoftToken = newSession?.provider_token
-      if (id && microsoftToken && !askedGraph.has(id) && !storedName(id)) {
-        askedGraph.add(id)
-        void nameFromGraph(microsoftToken).then((fetched) => {
-          // Kept only if the same account is still signed in when Graph answers
-          if (fetched && accountId === id) {
-            keepName(id, fetched)
-            setName(fetched)
-          }
-        })
+      if (!newSession) {
+        setName(undefined)
+        setLoading(false)
+        return
       }
+      // Usually answered already, as the sign-in started the lookup. Microsoft's token rides on the
+      // session only until its first refresh, so an event that still carries it can start one too.
+      const id = newSession.user.id
+      void lookUpName(id, newSession.provider_token).then((found) => {
+        // Used only if the same account is still signed in when the name arrives
+        if (accountId !== id) return
+        setName(found)
+        setLoading(false)
+      })
     })
     return () => data.subscription.unsubscribe()
   }, [])

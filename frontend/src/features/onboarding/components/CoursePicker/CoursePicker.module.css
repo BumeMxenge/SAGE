@@ -1,0 +1,21 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* A fixed height, so the dialog stays one size; a longer list scrolls inside it. It clips at its own
+   edges, which the list's scrolling already does, as axe takes only overflow hidden for clipping, and
+   would otherwise read a course scrolled out of the box but still in the window as half shown. */
+.results {
+  display: flex;
+  flex-direction: column;
+  height: calc(var(--size-control-lg) * 8);
+  overflow: hidden;
+}
+
+.lead {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}

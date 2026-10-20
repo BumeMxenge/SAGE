@@ -1,8 +1,7 @@
-/* The border belongs to the table, so the caption sits above it, outside, as a title */
+/* No outline: the header row's fill and the lines between rows mark the table out, as in the
+   prototype. The caption sits above it as its title. */
 .table {
   width: 100%;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
   border-spacing: 0;
   border-collapse: separate;
   font-size: var(--font-size-md);
@@ -27,7 +26,7 @@
   background: var(--color-surface-muted);
 }
 
-/* The header row's fill follows the table's rounded top corners */
+/* The header row's fill has rounded top corners, as the prototype's has */
 .table th:first-child {
   border-top-left-radius: var(--radius-xl);
 }
@@ -44,4 +43,33 @@
 
 .table .end {
   text-align: end;
+}
+
+/* A scrollable table's box. Its caption and headers stick to its top as the rows scroll beneath them,
+   and isolation keeps them under anything a page lays over the box. */
+.scroll {
+  isolation: isolate;
+  overflow-y: auto;
+}
+
+.scroll:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* The caption is one large control tall, its text centred on a row of buttons a page may set beside
+   it, with room below them as in the prototype. The headers stick just below it. */
+.scroll .caption {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  height: var(--size-control-lg);
+  line-height: var(--size-control-md);
+  background: var(--color-surface);
+}
+
+.scroll .table th {
+  position: sticky;
+  top: var(--size-control-lg);
+  z-index: var(--z-sticky);
 }

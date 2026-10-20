@@ -6,6 +6,7 @@
 import type { AuthError } from '@supabase/supabase-js'
 import { env } from '@/lib/env.ts'
 import { supabase } from '@/lib/supabase.ts'
+import { lookUpName } from './name.ts'
 
 const localSupabase = ['127.0.0.1', 'localhost'].includes(new URL(env.supabaseUrl).hostname)
 const linkToken = localSupabase ? new URLSearchParams(window.location.search).get('token_hash') : null
@@ -13,3 +14,10 @@ const linkToken = localSupabase ? new URLSearchParams(window.location.search).ge
 export const signInFinished: Promise<{ error: AuthError | null }> = linkToken
   ? supabase.auth.verifyOtp({ token_hash: linkToken, type: 'magiclink' })
   : supabase.auth.initialize()
+
+// The name's lookup starts as soon as the sign-in finishes, alongside the guard's own reads, so the
+// first screen to greet the student usually finds the name waiting
+void signInFinished.then(async () => {
+  const { data } = await supabase.auth.getSession()
+  if (data.session) void lookUpName(data.session.user.id, data.session.provider_token)
+})

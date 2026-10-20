@@ -19,6 +19,19 @@
   justify-content: space-between;
 }
 
+/* With a meta line, the actions centre beside the heading and the line together */
+.header[data-meta] {
+  align-items: center;
+}
+
+/* The heading, with any meta line close under it */
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
 .title {
   margin: 0;
   font-size: var(--font-size-lg);

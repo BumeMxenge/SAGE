@@ -16,7 +16,9 @@ export type ParityCase = {
   // The prototype's own controls, from the page as it opens, to the state in this theme. It returns
   // the element to photograph, or null where the prototype has no design for the theme.
   reach: (page: Page, theme: Theme) => Promise<Locator | null>
-  react: { path: string; element: (page: Page) => Locator }
+  // The React page's address, the clicks from there to a state that has no address of its own, such
+  // as an onboarding step, and the element to photograph
+  react: { path: string; reach?: (page: Page) => Promise<void>; element: (page: Page) => Locator }
   hover?: boolean
 }
 
@@ -36,6 +38,7 @@ export function parity(feature: string, cases: ParityCase[]): void {
       await designedPage.goto(pathToFileURL(join(prototypes, `${prototype}.html`)).href)
       const designed = await reach(designedPage, theme)
       await page.goto(react.path)
+      await react.reach?.(page)
       const built = react.element(page)
 
       const folder = join(images, feature)

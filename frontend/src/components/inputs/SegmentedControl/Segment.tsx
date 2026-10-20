@@ -2,11 +2,10 @@
 // icon it shows only the icon, as Calendar and Course List do when the sidebar and the assistant are
 // both open, and the label still names it for screen readers.
 import { ToggleButton } from 'react-aria-components'
-import { Icon } from '@/components/brand/Icon/Icon.tsx'
-import type { IconName } from '@/components/brand/Icon/icons.ts'
+import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import styles from './SegmentedControl.module.css'
 
-type SegmentProps = { id: string; icon?: Exclude<IconName, 'favorite'>; children: string }
+type SegmentProps = { id: string; icon?: PlainIconName; children: string }
 
 export function Segment({ id, icon, children }: SegmentProps) {
   return (

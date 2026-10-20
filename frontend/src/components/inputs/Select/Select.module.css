@@ -17,6 +17,23 @@
 
 /* The outline and its teal hover come from styles/outline.module.css */
 
+/* Plain: the value and its arrow in the size and weight of the text around them, with no outline,
+   and a fill on hover. The negative margin lines the value up with the text above and below it. */
+.plain {
+  min-height: var(--size-control-sm);
+  margin-inline-start: calc(var(--space-2) * -1);
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  color: var(--color-text);
+  background: transparent;
+}
+
+.plain[data-hovered] {
+  background: var(--color-hover);
+}
+
 .trigger[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
@@ -29,8 +46,4 @@
 
 .trigger:not([data-hovered]) .value[data-placeholder] {
   color: var(--color-text-secondary);
-}
-
-.list {
-  min-width: var(--width-popover);
 }

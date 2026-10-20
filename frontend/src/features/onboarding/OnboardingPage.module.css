@@ -1,0 +1,28 @@
+/* The upload and the review: the header with the logo and the steps, then the step itself */
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  gap: var(--space-12);
+  align-items: center;
+  padding: var(--space-8) var(--space-10);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Each step sets its own column inside: the upload's in the middle, the review's across the page. The
+   padding above and below is the prototype's at a laptop's height, so every step fits a 650 px window. */
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: var(--space-8) var(--space-10);
+}
+
+/* Focus comes here only so a screen reader starts at the new step. It isn't a control, so no ring. */
+.main:focus {
+  outline: none;
+}

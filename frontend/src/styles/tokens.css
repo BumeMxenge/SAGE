@@ -10,9 +10,19 @@
   --color-accent-fill: #2a6e5a; /* the avatar */
   --color-danger: #ea5b4c; /* error icons, never text */
 
+  /* Large accent text, as "You're in" is, and the success tick's tile: a teal near the brand's that
+     reaches 3:1 on white, enough for text of 24 px or more and for the white tick, never smaller text */
+  --color-accent-large: #48a48c;
+
   /* The sign-in button. Onboarding is designed in light only, so it has no dark version. */
   --color-sign-in: #333b3f;
   --color-sign-in-hover: #22282b;
+
+  /* Brand colours from the logo, for decoration only: the shapes behind the sign-in page and Account
+     Created, and fills in the sign-in highlights' pictures. Never text or a control. Navy and sand
+     change with the theme, so they are in theme.css. */
+  --color-brand-coral: #ea5b4c;
+  --color-brand-teal: #4cae94;
 
   /* Course colours, in the order the timetable gives them out. White text on each reaches 4.5:1. */
   --color-course-teal: #1e846a;
@@ -80,7 +90,7 @@
   --size-target-min: 24px; /* WCAG 2.2 target size */
   --size-tile: 40px; /* the icon tile on an error state */
   --size-logo-full: 96px; /* tall enough for the tagline to read */
-  --size-logo-compact: 26px;
+  --size-logo-compact: 34px; /* the prototype's 104 by 34 */
   --size-logo-mark: 28px;
   --size-logo-microsoft: 21px;
   --width-form: 392px; /* the sign-in form, and a blocking error page */
@@ -88,6 +98,7 @@
   --width-reading: 760px;
   --width-wide: 860px;
   --width-full: 1080px;
+  --width-page: 1280px; /* the review, as wide as the prototype draws it */
   --width-dialog: 480px;
   --width-menu: 240px;
   --width-popover: 320px; /* the plan switcher's list */
@@ -97,6 +108,10 @@
   --duration-fast: 150ms; /* tooltips, menus and the Select list fading; a progress bar moving on */
   --duration-slow: 300ms; /* a dialog rising over its dimmed backdrop; panels opening and closing */
   --easing: cubic-bezier(0.4, 0, 0.2, 1); /* starts briskly, settles gently */
+  --duration-slide: 620ms; /* a strip sliding on by one, as the sign-in highlights do */
+  --duration-slide-slow: 1050ms; /* the same strip going back round, from its last to its first */
+  --duration-fall: 3200ms; /* one fall of Account Created's confetti, the middle of the prototype's 2.4 to 4 s */
+  --easing-fall: cubic-bezier(0.25, 0.6, 0.4, 1); /* drops quickly, then drifts down like paper */
   --duration-loop: 1600ms; /* one sweep of the skeleton shimmer */
   --duration-loop-slow: 2200ms; /* one breath of the leaf pulse */
 
@@ -116,11 +131,14 @@
 
 /* Reduced motion: every duration becomes 0. An animation with no duration leaves its element in its
    resting style, which is each animation's fallback: a plain block, a still leaf beside its status
-   text, and overlays that simply appear. */
+   text, overlays that simply appear, and a strip that moves on at once. */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration-fast: 0ms;
     --duration-slow: 0ms;
+    --duration-slide: 0ms;
+    --duration-slide-slow: 0ms;
+    --duration-fall: 0ms;
     --duration-loop: 0ms;
     --duration-loop-slow: 0ms;
     --gradient-shimmer: none;

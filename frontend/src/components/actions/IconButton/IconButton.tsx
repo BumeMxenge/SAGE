@@ -6,14 +6,13 @@ import {
   type ButtonProps as AriaButtonProps,
   ToggleButton as AriaToggleButton,
 } from 'react-aria-components'
-import { Icon } from '@/components/brand/Icon/Icon.tsx'
-import type { IconName } from '@/components/brand/Icon/icons.ts'
+import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import { Tooltip } from '@/components/overlays/Tooltip/Tooltip.tsx'
 import styles from './IconButton.module.css'
 
 type ActionProps = Omit<AriaButtonProps, 'className' | 'style' | 'children' | 'aria-label' | 'isDisabled'> & {
   label: string
-  icon: Exclude<IconName, 'favorite'>
+  icon: PlainIconName
 }
 
 type ToggleProps = { label: string; icon: 'favorite'; isSelected: boolean; onChange: (isSelected: boolean) => void }

@@ -1,0 +1,80 @@
+/* The shapes fill the area behind the content and never catch a click. Each one's size and place are
+   shares of that area, as the prototype lays them out at 1280 by 820, so the composition holds at any
+   size. */
+.shapes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shapes > span {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: var(--radius-full);
+}
+
+.coral {
+  background: var(--color-brand-coral);
+}
+
+.teal {
+  background: var(--color-brand-teal);
+}
+
+/* A petal: two opposite corners round, two square, like the logo's leaves */
+.petal {
+  background: var(--color-brand-navy);
+}
+
+.ring {
+  border: var(--space-6) solid var(--color-brand-navy);
+  opacity: 0.12;
+}
+
+/* On the sign-in page's panel */
+.shapes[data-layout='sign-in'] .coral {
+  top: -22%;
+  left: -28.5%;
+  width: 49.5%;
+}
+
+.shapes[data-layout='sign-in'] .petal {
+  top: 19.5%;
+  left: 86.5%;
+  width: 34.5%;
+  border-radius: 0 var(--radius-full);
+}
+
+.shapes[data-layout='sign-in'] .ring {
+  top: 67%;
+  left: 6.6%;
+  width: 22.5%;
+}
+
+.shapes[data-layout='sign-in'] .teal {
+  top: 72%;
+  left: 65.5%;
+  width: 60%;
+}
+
+/* On the whole of Account Created */
+.shapes[data-layout='account-created'] .petal {
+  top: 77%;
+  left: 8.4%;
+  width: 26%;
+  border-radius: var(--radius-full) 0;
+}
+
+.shapes[data-layout='account-created'] .ring {
+  top: -16%;
+  left: 76.9%;
+  width: 34.6%;
+  opacity: 0.14;
+}
+
+.shapes[data-layout='account-created'] .teal {
+  top: 62%;
+  left: -17.5%;
+  width: 36.3%;
+}

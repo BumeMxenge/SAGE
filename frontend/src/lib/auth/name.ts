@@ -6,6 +6,10 @@ export type Name = { givenName: string; surname: string }
 // One entry per account, so a shared browser never shows one student another's name
 const key = (accountId: string) => `sage-name-${accountId}`
 
+// Each account's lookup on this page, so however many screens ask, and React's second subscription in
+// development, Graph is asked once
+const lookups = new Map<string, Promise<Name | undefined>>()
+
 export function storedName(accountId: string): Name | undefined {
   try {
     const stored = localStorage.getItem(key(accountId))
@@ -24,6 +28,7 @@ export function keepName(accountId: string, name: Name): void {
 }
 
 export function forgetName(accountId: string): void {
+  lookups.delete(accountId)
   try {
     localStorage.removeItem(key(accountId))
   } catch {
@@ -31,12 +36,16 @@ export function forgetName(accountId: string): void {
   }
 }
 
-// Asks Graph once, with the Microsoft token the sign-in brought. Any failure gives no name, on
-// purpose: screens show the student number instead, and a sign-in never fails over a name.
-export async function nameFromGraph(microsoftToken: string): Promise<Name | undefined> {
+// How long Graph has to answer, in milliseconds, before a screen goes on without the name
+const graphLimit = 3000
+
+// Asks Graph with the Microsoft token the sign-in brought. Any failure, or no answer in time, gives no
+// name, on purpose: screens show the student number instead, and a sign-in never fails over a name.
+async function nameFromGraph(microsoftToken: string): Promise<Name | undefined> {
   try {
     const response = await fetch('https://graph.microsoft.com/v1.0/me?$select=givenName,surname', {
       headers: { Authorization: `Bearer ${microsoftToken}` },
+      signal: AbortSignal.timeout(graphLimit),
     })
     if (!response.ok) return undefined
     const { givenName, surname } = (await response.json()) as Partial<Name>
@@ -44,4 +53,22 @@ export async function nameFromGraph(microsoftToken: string): Promise<Name | unde
   } catch {
     return undefined
   }
+}
+
+// The account's name: the one this browser keeps, or Graph's. The sign-in starts the lookup as soon as
+// it finishes, so a screen that asks later usually finds the answer waiting.
+export function lookUpName(accountId: string, microsoftToken: string | null | undefined): Promise<Name | undefined> {
+  const stored = storedName(accountId)
+  if (stored) return Promise.resolve(stored)
+  const asked = lookups.get(accountId)
+  if (asked) return asked
+  // Mbali's link brings no Microsoft token, so she has no name
+  if (!microsoftToken) return Promise.resolve(undefined)
+  const lookup: Promise<Name | undefined> = nameFromGraph(microsoftToken).then((name) => {
+    // A sign-out while Graph was answering forgot the lookup, so its answer isn't kept
+    if (name && lookups.get(accountId) === lookup) keepName(accountId, name)
+    return name
+  })
+  lookups.set(accountId, lookup)
+  return lookup
 }
