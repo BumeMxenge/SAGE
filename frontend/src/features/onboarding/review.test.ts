@@ -70,7 +70,7 @@ it('sends exactly the lines the student kept, as they left them', () => {
     {
       type: 'add',
       year: 2024,
-      course: { code: 'EEE2044S', name: 'Introduction to Power Engineering', credits: 16, term: 'sem2' },
+      course: { code: 'EEE2044S', name: 'Introduction to Power Engineering', credits: 16, term: 'sem2', complementary: false },
       outcome: 'pass',
     },
   ]

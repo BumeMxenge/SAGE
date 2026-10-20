@@ -16,7 +16,7 @@ export const appearanceOptions: Record<Appearance, string> = {
 
 // Each term a course runs in, as the prototypes write it. A Record over the API's terms, so a term the
 // API adds fails the build until it has words here.
-export const termLabels: Record<components['schemas']['Course']['term'], string> = {
+export const termLabels: Record<components['schemas']['CatalogueCourse']['term'], string> = {
   q1: 'Q1',
   q2: 'Q2',
   q3: 'Q3',

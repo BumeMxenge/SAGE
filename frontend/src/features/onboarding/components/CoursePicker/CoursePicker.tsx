@@ -10,7 +10,7 @@ import { Dialog } from '@/components/overlays/Dialog/Dialog.tsx'
 import type { components } from '@/lib/api-types.ts'
 import styles from './CoursePicker.module.css'
 
-type Course = components['schemas']['Course']
+type Course = components['schemas']['CatalogueCourse']
 
 type CoursePickerProps = {
   year: number

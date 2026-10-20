@@ -4,7 +4,7 @@
 import type { components } from '@/lib/api-types.ts'
 
 type Transcript = components['schemas']['Transcript']
-type Course = components['schemas']['Course']
+type Course = components['schemas']['CatalogueCourse']
 type Setup = components['schemas']['Setup']
 export type Outcome = components['schemas']['ResultSymbol']['outcome']
 

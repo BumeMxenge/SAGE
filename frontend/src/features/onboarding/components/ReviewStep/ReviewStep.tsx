@@ -35,7 +35,7 @@ import { queries } from '@/lib/queryKeys.ts'
 import styles from './ReviewStep.module.css'
 
 type Transcript = components['schemas']['Transcript']
-type Course = components['schemas']['Course']
+type Course = components['schemas']['CatalogueCourse']
 type TranscriptWarning = components['schemas']['TranscriptWarning']
 
 // The notes the review shows. Pending results aren't one, as each such course already says In progress.
