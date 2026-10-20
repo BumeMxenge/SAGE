@@ -1,6 +1,7 @@
-// Course History as Mbali: its title and cumulative average stay in view as the page scrolls, its tables
-// fill the page beside the sidebar, open or folded, and parity beside the planner prototype in both
-// themes, the page as it opens and her newest year in full, as a photograph stops at the window's edge.
+// Course History as Mbali: its title and cumulative average stay in view as the page scrolls, the page
+// stands in from its margins beside the sidebar, open or folded, and parity beside the planner prototype
+// in both themes, the page as it opens and her newest year in full, as a photograph stops at the
+// window's edge.
 // routes.spec.ts already runs axe and the keyboard walk on this page once its h1 shows, and the page
 // shows nothing until her record has arrived, so those checks see her tables. Nothing here is
 // interactive, so there is no hover.
@@ -32,30 +33,46 @@ test('the title and cumulative average stay in view to the foot of the page, fro
   await expect(average).not.toBeInViewport()
 })
 
-// How far the newest year's table stands in from the page's margins, on each side
-async function gaps(page: Page): Promise<{ left: number; right: number }> {
+// How far the title and the newest year's table stand in from the page area's left margin, and the
+// cumulative average and that table from its right. Each edge is rounded on its own, so an exact fit
+// reads 0, never the -0 that toEqual tells apart from it.
+async function insets(page: Page): Promise<{ title: number; tableLeft: number; tableRight: number; average: number }> {
   const margins = await page.getByRole('main').evaluate((main) => {
     const { left, right } = main.getBoundingClientRect()
     const style = getComputedStyle(main)
     return { left: left + parseFloat(style.paddingLeft), right: right - parseFloat(style.paddingRight) }
   })
-  const table = await page
-    .getByRole('table')
-    .first()
-    .evaluate((element) => {
+  const edges = (locator: Locator) =>
+    locator.evaluate((element) => {
       const { left, right } = element.getBoundingClientRect()
       return { left, right }
     })
-  return { left: Math.abs(Math.round(table.left - margins.left)), right: Math.abs(Math.round(margins.right - table.right)) }
+  const title = await edges(page.getByRole('heading', { level: 1 }))
+  const table = await edges(page.getByRole('table').first())
+  const average = await edges(page.getByText('Cumulative Average:'))
+  return {
+    title: Math.round(title.left) - Math.round(margins.left),
+    tableLeft: Math.round(table.left) - Math.round(margins.left),
+    tableRight: Math.round(margins.right) - Math.round(table.right),
+    average: Math.round(margins.right) - Math.round(average.right),
+  }
 }
 
-test('the tables run from one margin of the page to the other, beside the sidebar open or folded', async ({ page }) => {
+// From 768 px wide the page keeps 24 px more at each side, its title and cumulative average in line
+// with its tables, as the sidebar opens and folds. A narrower window, as at 200% zoom, gives the
+// tables that room.
+test('the title and tables stand 24 px inside the margins from 768 px wide, beside the sidebar open or folded', async ({ page }) => {
+  const inset = { title: 24, tableLeft: 24, tableRight: 24, average: 24 }
   await page.goto('/history')
   await page.getByRole('heading', { level: 1 }).waitFor()
-  expect(await gaps(page)).toEqual({ left: 0, right: 0 })
+  expect(await insets(page)).toEqual(inset)
   await page.getByRole('button', { name: 'Collapse Sidebar' }).click()
   await settled(page)
-  expect(await gaps(page)).toEqual({ left: 0, right: 0 })
+  expect(await insets(page)).toEqual(inset)
+  await page.setViewportSize({ width: 768, height: 820 })
+  expect(await insets(page)).toEqual(inset)
+  await page.setViewportSize({ width: 767, height: 820 })
+  expect(await insets(page)).toEqual({ title: 0, tableLeft: 0, tableRight: 0, average: 0 })
 })
 
 // The prototype opens at the empty plan and reads its theme from its address. Its open sidebar is the

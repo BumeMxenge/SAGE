@@ -35,7 +35,7 @@ export function HistoryPage() {
   if (!history) return null
   const cumulative = history.cumulative_average
   return (
-    <>
+    <div className={styles.page}>
       <PageHeader
         title={pageNames.history}
         sticky
@@ -72,6 +72,6 @@ export function HistoryPage() {
           />
         ))}
       </div>
-    </>
+    </div>
   )
 }

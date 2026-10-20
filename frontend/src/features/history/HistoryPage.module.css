@@ -1,3 +1,12 @@
+/* From 768 px wide the page stands 24 px further in than the page area's margins, its title and
+   cumulative average in line with its tables, so the tables don't run from edge to edge. A narrower
+   window, as at 200% zoom, gives the tables that room instead. */
+@media (width >= 768px) {
+  .page {
+    padding-inline: var(--space-6);
+  }
+}
+
 .years {
   display: flex;
   flex-direction: column;
