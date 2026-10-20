@@ -1,6 +1,7 @@
 // Course History: the courses on the record the student confirmed at onboarding, a table for each
 // year, newest first, with each year's average and credits and the average across them all. The API
-// works out every figure, and the page shows each average as a whole percent, as the prototype does.
+// works out every figure, and the page shows each average to one decimal, as the record does. The
+// title and the cumulative average stay at the top of the window while the tables scroll beneath.
 import { useQuery } from '@tanstack/react-query'
 import { DataTable, type DataTableColumn } from '@/components/content/DataTable/DataTable.tsx'
 import { PageHeader } from '@/components/content/PageHeader/PageHeader.tsx'
@@ -16,8 +17,10 @@ function yearOfStudy(year: number): string {
   return word ? `${word} Year` : `Year ${year}`
 }
 
-// A whole percent, rounded half up as the backend rounds, so 72.5 shows as 73%
-const percent = (average: number) => `${Math.round(average)}%`
+// One decimal, rounded half up from the API's two. The formatter rounds the decimal digits, not the
+// computer's binary copy of them, so 63.15, held as 63.1499…, shows as 63.2%.
+const oneDecimal = new Intl.NumberFormat('en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+const percent = (average: number) => `${oneDecimal.format(average)}%`
 
 // Result is the transcript's heading for the column that holds a mark, or a symbol where there is none
 const columns: DataTableColumn[] = [
@@ -32,14 +35,14 @@ export function HistoryPage() {
   if (!history) return null
   const cumulative = history.cumulative_average
   return (
-    <div className={styles.page}>
+    <>
       <PageHeader
         title={pageNames.history}
+        sticky
         figure={
           cumulative !== null && (
             <p className={styles.cumulative}>
-              <span className={styles.value}>{percent(cumulative)}</span>{' '}
-              <span className={styles.label}>Cumulative Average</span>
+              Cumulative Average: <span className={styles.value}>{percent(cumulative)}</span>
             </p>
           )
         }
@@ -69,6 +72,6 @@ export function HistoryPage() {
           />
         ))}
       </div>
-    </div>
+    </>
   )
 }

@@ -1,45 +1,31 @@
-/* The prototype's 760 px column, centred beside the sidebar */
-.page {
-  width: 100%;
-  max-width: var(--width-reading);
-  margin-inline: auto;
-}
-
 .years {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
 }
 
-/* The cumulative average: the figure over its label */
+/* The cumulative average on one line, its figure in the text's own colour */
 .cumulative {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
   margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
 }
 
 .value {
-  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
   font-variant-numeric: tabular-nums;
   color: var(--color-text);
-}
-
-.label {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-tight);
-  color: var(--color-text-secondary);
 }
 
 .average {
   font-weight: var(--font-weight-medium);
 }
 
-/* Each course's code, smaller and grey beside its name, and its result, as the prototype sets them */
+/* Each course's code, smaller and grey beside its name, in a column as wide in every year, so the names
+   line up from one table to the next */
 .code {
+  display: inline-block;
+  min-width: var(--width-course-code);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
