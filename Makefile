@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -28,18 +28,24 @@ dev-web:
 dev-all:
 	@$(MAKE) --no-print-directory -j2 dev dev-web
 
-# The unit tests, then each file's lines they never run. --cov sits here rather than in pytest's own
-# settings, so mutmut's runs and a plain uv run pytest stay fast.
-test:
-	@cd backend && uv run pytest -m "not integration" --cov
+# The folders ATP-1's harness imports from, none of them a package: its own, and E2's, whose score.py
+# compares rule trees and gives the zero-failure bound. Paths are from backend/.
+ATP1_PATH = PYTHONPATH=../tests/acceptance/atp1:../experiments/ingestion/requirement-parsing
 
-# ruff's lint and format checks, then the dependency rule's contracts in backend/pyproject.toml
+# The unit tests and ATP-1's scoring tests, then each file's lines they never run. --cov sits here
+# rather than in pytest's own settings, so mutmut's runs and a plain uv run pytest stay fast.
+test:
+	@cd backend && $(ATP1_PATH) uv run pytest -m "not integration" \
+		tests ../tests/acceptance/atp1/test_scoring.py --cov
+
+# ruff's lint and format checks on the backend and the acceptance tests' scripts, then the
+# dependency rule's contracts in backend/pyproject.toml
 lint:
-	@cd backend && uv run ruff check && uv run ruff format --check && \
+	@cd backend && uv run ruff check . ../tests && uv run ruff format --check . ../tests && \
 		uv run lint-imports --no-cache --no-logo
 
 format:
-	@cd backend && uv run ruff check --fix && uv run ruff format
+	@cd backend && uv run ruff check --fix . ../tests && uv run ruff format . ../tests
 
 # Everything CI's backend, frontend and contract jobs check. The database check is separate because
 # it needs Docker.
@@ -114,6 +120,15 @@ mutation:
 # from my test review, and two in the review and approval.
 planted-faults:
 	@cd backend && uv run python scripts/planted_faults.py
+
+# ATP-1: SAGE against labels written from print, then the report, in tests/acceptance/atp1/results/.
+# It runs from the held-out drafts its first run cached, so it calls no model. DRAFT=yes makes them
+# first, once, with the key in backend/.env. The run also imports count_changes.py and the tests'
+# PDF printer, so their folders join Python's path.
+atp1:
+	@cd backend && $(ATP1_PATH):../experiments/ingestion:. \
+		uv run python ../tests/acceptance/atp1/run.py $(if $(DRAFT),--draft) && \
+		$(ATP1_PATH) uv run python ../tests/acceptance/atp1/report.py
 
 # Loads the made-up student onto one local account: make seed USER_ID=<account id>
 seed:

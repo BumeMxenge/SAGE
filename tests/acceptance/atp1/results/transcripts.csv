@@ -1,0 +1,67 @@
+student,year,code,kind,printed,read,outcome
+ATPONE999,2023,MAM1020F,fail,Mathematics 1A for Engineers | 5 | 18 | 44 | F,Mathematics 1A for Engineers | 5 | 18 | 44 | F,recovered
+ATPONE999,2023,CSC1015F,dp_refused,Computer Science 1015 | 5 | 18 |  | DPR,Computer Science 1015 | 5 | 18 |  | DPR,recovered
+ATPONE999,2023,EEE1000X,in_progress,Practical Training | 5 | 0 |  | GIP,Practical Training | 5 | 0 |  | GIP,recovered
+ATPONE999,2023,EEE1007S,pass,Intro Electrical Engineering | 5 | 12 | 62 | 2-,Intro Electrical Engineering | 5 | 12 | 62 | 2-,recovered
+ATPONE999,2023,EEE1006F,pass,Intro Electronic Engineering | 5 | 12 | 73 | 2+,Intro Electronic Engineering | 5 | 12 | 73 | 2+,recovered
+ATPONE999,2023,PHY1012F,pass,Physics A for Engineers | 5 | 18 | 59 | 3,Physics A for Engineers | 5 | 18 | 59 | 3,recovered
+ATPONE999,2023,CSC1016S,pass,Computer Science 1016 | 5 | 18 | 84 | 1,Computer Science 1016 | 5 | 18 | 84 | 1,recovered
+ATPONE999,2023,MAM1021S,pass,Mathematics 1B for Engineers | 5 | 18 | 57 | 3,Mathematics 1B for Engineers | 5 | 18 | 57 | 3,recovered
+ATPONE999,2024,MAM1020F,repeat,Mathematics 1A for Engineers | 5 | 18 | 83 | 1,Mathematics 1A for Engineers | 5 | 18 | 83 | 1,recovered
+ATPONE999,2024,PHY2010S,supp_pending,Electromagnetism for Engineers | 6 | 16 | 49 | FS,Electromagnetism for Engineers | 6 | 16 | 49 | FS,recovered
+ATPONE999,2024,EEE1000X,in_progress,Practical Training | 5 | 0 |  | GIP,Practical Training | 5 | 0 |  | GIP,recovered
+ATPONE999,2024,MAM2084S,pass,Linear Alg & De for Engineers | 6 | 16 | 68 | 2-,Linear Alg & De for Engineers | 6 | 16 | 68 | 2-,recovered
+ATPONE999,2024,EEE2044S,pass,Introduction to Power Eng | 6 | 16 | 82 | 1,Introduction to Power Eng | 6 | 16 | 82 | 1,recovered
+ATPONE999,2024,MAM2083F,pass,Vector Calculus for Engineers | 6 | 16 | 59 | 3,Vector Calculus for Engineers | 6 | 16 | 59 | 3,recovered
+ATPONE999,2024,MEC1009F,pass,Intro to Engineering Mechanics | 5 | 16 | 64 | 2-,Intro to Engineering Mechanics | 5 | 16 | 64 | 2-,recovered
+ATPONE999,2024,EEE2047S,pass,Signals and Systems I | 6 | 16 | 53 | 3,Signals and Systems I | 6 | 16 | 53 | 3,recovered
+ATPONE999,2025,EEE3099S,pass,Engineering Design: ME | 7 | 8 | 79 | 1,Engineering Design: ME | 7 | 8 | 79 | 1,recovered
+ATPONE999,2025,EEE3096S,pass,Embedded Systems II | 7 | 16 | 71 | 2+,Embedded Systems II | 7 | 16 | 71 | 2+,recovered
+ATPONE999,2025,MEC2047F,pass,Engineering Dynamics | 6 | 16 | 62 | 2-,Engineering Dynamics | 6 | 16 | 62 | 2-,recovered
+ATPONE999,2025,EEE3094S,pass,Control Systems Engineering | 7 | 16 | 66 | 2-,Control Systems Engineering | 7 | 16 | 66 | 2-,recovered
+ATPONE999,2025,EEE3091F,pass,Energy Conversion I | 7 | 16 | 50 | 3,Energy Conversion I | 7 | 16 | 50 | 3,recovered
+ATPONE999,2025,EEE3090F,pass,Electronic Devices & Circuits | 7 | 16 | 80 | 1,Electronic Devices & Circuits | 7 | 16 | 80 | 1,recovered
+ATPTWO999,2024,MEC1003F,fail,Engineering Drawing | 5 | 8 | 35 | F,Engineering Drawing | 5 | 8 | 35 | F,recovered
+ATPTWO999,2024,PHY1013S,dp_refused,Physics B for Engineers | 5 | 18 |  | DPR,Physics B for Engineers | 5 | 18 |  | DPR,recovered
+ATPTWO999,2024,EEE1000X,in_progress,Practical Training | 5 | 0 |  | GIP,Practical Training | 5 | 0 |  | GIP,recovered
+ATPTWO999,2024,ASL1200S,pass,"Africa: Culture, ID & Glblsn | 5 | 8 | 54 | 3","Africa: Culture, ID & Glblsn | 5 | 8 | 54 | 3",recovered
+ATPTWO999,2024,EEE1007S,pass,Intro Electrical Engineering | 5 | 12 | 50 | 3,Intro Electrical Engineering | 5 | 12 | 50 | 3,recovered
+ATPTWO999,2024,CSC1015F,pass,Computer Science 1015 | 5 | 18 | 71 | 2+,Computer Science 1015 | 5 | 18 | 71 | 2+,recovered
+ATPTWO999,2024,CSC1016S,pass,Computer Science 1016 | 5 | 18 | 65 | 2-,Computer Science 1016 | 5 | 18 | 65 | 2-,recovered
+ATPTWO999,2024,MAM1021S,pass,Mathematics 1B for Engineers | 5 | 18 | 59 | 3,Mathematics 1B for Engineers | 5 | 18 | 59 | 3,recovered
+ATPTWO999,2025,MEC1003F,repeat,Engineering Drawing | 5 | 8 | 67 | 2-,Engineering Drawing | 5 | 8 | 67 | 2-,recovered
+ATPTWO999,2025,MAM2084S,supp_pending,Linear Alg & De for Engineers | 6 | 16 | 46 | FS,Linear Alg & De for Engineers | 6 | 16 | 46 | FS,recovered
+ATPTWO999,2025,EEE1000X,in_progress,Practical Training | 5 | 0 |  | GIP,Practical Training | 5 | 0 |  | GIP,recovered
+ATPTWO999,2025,EEE2048F,pass,Prof Comm for Elec Eng | 6 | 8 | 58 | 3,Prof Comm for Elec Eng | 6 | 8 | 58 | 3,recovered
+ATPTWO999,2025,CON2026S,pass,Project Management | 6 | 8 | 79 | 1,Project Management | 6 | 8 | 79 | 1,recovered
+ATPTWO999,2025,MEC1009F,pass,Intro to Engineering Mechanics | 5 | 16 | 63 | 2-,Intro to Engineering Mechanics | 5 | 16 | 63 | 2-,recovered
+ATPTWO999,2025,EEE2045F,pass,Analogue Electronics | 6 | 16 | 64 | 2-,Analogue Electronics | 6 | 16 | 64 | 2-,recovered
+ATPTWO999,2025,PHY2010S,pass,Electromagnetism for Engineers | 6 | 16 | 81 | 1,Electromagnetism for Engineers | 6 | 16 | 81 | 1,recovered
+ATPTWO999,2026,EEE3088F,pass,Design Principles | 7 | 8 | 61 | 2-,Design Principles | 7 | 8 | 61 | 2-,recovered
+ATPTWO999,2026,EEE3092F,pass,Signals & Systems II | 7 | 16 | 82 | 1,Signals & Systems II | 7 | 16 | 82 | 1,recovered
+ATPTWO999,2026,MEC2047F,pass,Engineering Dynamics | 6 | 16 | 68 | 2-,Engineering Dynamics | 6 | 16 | 68 | 2-,recovered
+ATPTWO999,2026,MEC2045S,in_progress,Applied Engineering Mechanics |  | 0 |  | GIP,Applied Engineering Mechanics |  | 0 |  | GIP,recovered
+ATPTWO999,2026,EEE3094S,in_progress,Control Systems Engineering |  | 0 |  | GIP,Control Systems Engineering |  | 0 |  | GIP,recovered
+ATPTWO999,2026,ECO2007S,in_progress,Cooperation and Competition |  | 0 |  | GIP,Cooperation and Competition |  | 0 |  | GIP,recovered
+ATPTRE999,2023,PHY1012F,fail,Physics A for Engineers | 5 | 18 | 32 | F,Physics A for Engineers | 5 | 18 | 32 | F,recovered
+ATPTRE999,2023,MAM1021S,dp_refused,Mathematics 1B for Engineers | 5 | 18 |  | DPR,Mathematics 1B for Engineers | 5 | 18 |  | DPR,recovered
+ATPTRE999,2023,EEE1000X,in_progress,Practical Training | 5 | 0 |  | GIP,Practical Training | 5 | 0 |  | GIP,recovered
+ATPTRE999,2023,EEE1006F,pass,Intro Electronic Engineering | 5 | 12 | 90 | 1,Intro Electronic Engineering | 5 | 12 | 90 | 1,recovered
+ATPTRE999,2023,ASL1200S,pass,"Africa: Culture, ID & Glblsn | 5 | 8 | 90 | 1","Africa: Culture, ID & Glblsn | 5 | 8 | 90 | 1",recovered
+ATPTRE999,2023,MAM1020F,pass,Mathematics 1A for Engineers | 5 | 18 | 90 | 1,Mathematics 1A for Engineers | 5 | 18 | 90 | 1,recovered
+ATPTRE999,2023,PHY1013S,pass,Physics B for Engineers | 5 | 18 | 69 | 2-,Physics B for Engineers | 5 | 18 | 69 | 2-,recovered
+ATPTRE999,2023,EEE1007S,pass,Intro Electrical Engineering | 5 | 12 | 81 | 1,Intro Electrical Engineering | 5 | 12 | 81 | 1,recovered
+ATPTRE999,2024,PHY1012F,repeat,Physics A for Engineers | 5 | 18 | 85 | 1,Physics A for Engineers | 5 | 18 | 85 | 1,recovered
+ATPTRE999,2024,PHY2010S,supp_pending,Electromagnetism for Engineers | 6 | 16 | 45 | FS,Electromagnetism for Engineers | 6 | 16 | 45 | FS,recovered
+ATPTRE999,2024,EEE1000X,in_progress,Practical Training | 5 | 0 |  | GIP,Practical Training | 5 | 0 |  | GIP,recovered
+ATPTRE999,2024,MEC1009F,pass,Intro to Engineering Mechanics | 5 | 16 | 92 | 1,Intro to Engineering Mechanics | 5 | 16 | 92 | 1,recovered
+ATPTRE999,2024,MAM2084S,pass,Linear Alg & De for Engineers | 6 | 16 | 86 | 1,Linear Alg & De for Engineers | 6 | 16 | 86 | 1,recovered
+ATPTRE999,2024,CON2026S,pass,Project Management | 6 | 8 | 61 | 2-,Project Management | 6 | 8 | 61 | 2-,recovered
+ATPTRE999,2024,EEE2044S,pass,Introduction to Power Eng | 6 | 16 | 68 | 2-,Introduction to Power Eng | 6 | 16 | 68 | 2-,recovered
+ATPTRE999,2024,EEE2046F,pass,Embedded Systems I | 6 | 16 | 59 | 3,Embedded Systems I | 6 | 16 | 59 | 3,recovered
+ATPTRE999,2025,ECO2007S,pass,Cooperation and Competition | 6 | 18 | 81 | 1,Cooperation and Competition | 6 | 18 | 81 | 1,recovered
+ATPTRE999,2025,EEE3099S,pass,Engineering Design: ME | 7 | 8 | 66 | 2-,Engineering Design: ME | 7 | 8 | 66 | 2-,recovered
+ATPTRE999,2025,EEE3096S,pass,Embedded Systems II | 7 | 16 | 58 | 3,Embedded Systems II | 7 | 16 | 58 | 3,recovered
+ATPTRE999,2025,MEC2047F,pass,Engineering Dynamics | 6 | 16 | 84 | 1,Engineering Dynamics | 6 | 16 | 84 | 1,recovered
+ATPTRE999,2025,EEE3090F,pass,Electronic Devices & Circuits | 7 | 16 | 78 | 1,Electronic Devices & Circuits | 7 | 16 | 78 | 1,recovered
+ATPTRE999,2025,EEE3088F,pass,Design Principles | 7 | 8 | 83 | 1,Design Principles | 7 | 8 | 83 | 1,recovered
