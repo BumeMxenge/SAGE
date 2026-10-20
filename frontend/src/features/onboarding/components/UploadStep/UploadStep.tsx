@@ -34,6 +34,10 @@ const hints = {
 
 const courses = (count: number) => `${count} ${count === 1 ? 'course' : 'courses'}`
 
+// A curriculum as the programme field names it, short enough for one line: "BSc Eng Mechatronics
+// 4-year" for the handbook's "Bachelor of Science in Engineering in Mechatronics 4-year curriculum"
+const shortName = (name: string) => name.replace('Bachelor of Science in Engineering in ', 'BSc Eng ').replace(/ curriculum$/, '')
+
 // As the prototype writes a file's size: kilobytes below a megabyte, then megabytes to one place
 function sizeOf(bytes: number): string {
   const megabyte = 1024 * 1024
@@ -123,9 +127,10 @@ export function UploadStep({ onContinue }: UploadStepProps) {
           <dt>Programme</dt>
           <dd>
             {options.length === 1 ? (
-              options[0].name
+              shortName(options[0].name)
             ) : (
               <Select
+                variant="plain"
                 label="Programme"
                 placeholder="Choose your programme"
                 selectedKey={upload.curriculum}
@@ -135,7 +140,7 @@ export function UploadStep({ onContinue }: UploadStepProps) {
               >
                 {choices.map((curriculum) => (
                   <SelectItem key={curriculum.code} id={curriculum.code}>
-                    {curriculum.name}
+                    {shortName(curriculum.name)}
                   </SelectItem>
                 ))}
               </Select>

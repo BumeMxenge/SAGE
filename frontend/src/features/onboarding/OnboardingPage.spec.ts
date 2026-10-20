@@ -457,7 +457,7 @@ test('Continue waits for a programme when the transcript names several', async (
   await expect(hint).toBeVisible()
   await expectNoAxeViolations(page)
   await page.getByRole('button', { name: /Programme/ }).click()
-  await page.getByRole('option', { name: /4-year curriculum/ }).click()
+  await page.getByRole('option', { name: 'BSc Eng Electrical and Computer Engineering 4-year' }).click()
   await expect(next).toBeEnabled()
   await expect(hint).toHaveCount(0)
 })

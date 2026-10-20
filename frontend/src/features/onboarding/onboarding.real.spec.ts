@@ -26,7 +26,7 @@ test('Ilvane sets up her account from her transcript and reaches her plans', asy
   await expect(page.getByText('courses found')).toBeVisible()
   // Her transcript names two Mechatronics programmes, so she chooses hers before the review
   await page.getByRole('button', { name: /Choose your programme/ }).click()
-  await page.getByRole('option', { name: 'Bachelor of Science in Engineering in Mechatronics 4-year curriculum' }).click()
+  await page.getByRole('option', { name: 'BSc Eng Mechatronics 4-year' }).click()
   await page.getByRole('button', { name: 'Continue' }).click()
 
   // The first year's courses, as the review shows them, appear nowhere in the browser's storage
