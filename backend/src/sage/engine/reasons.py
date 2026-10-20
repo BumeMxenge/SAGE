@@ -203,7 +203,8 @@ class Reasons:
             message = f"{ask}: {len(fits)} fit this plan's timetable{marked}."
         else:
             message = (
-                f"{ask}, though none fits this plan's timetable, so see your advisor."
+                f"{ask}, though none on the approved list fits this plan's timetable, so see "
+                "your advisor."
             )
         details: dict[str, Any] = {
             "credits": credits,
