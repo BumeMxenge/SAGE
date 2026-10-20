@@ -4,11 +4,14 @@
   gap: var(--space-4);
 }
 
-/* Room for eight courses; a longer list scrolls inside it */
+/* A fixed height, so the dialog stays one size; a longer list scrolls inside it. It clips at its own
+   edges, which the list's scrolling already does, as axe takes only overflow hidden for clipping, and
+   would otherwise read a course scrolled out of the box but still in the window as half shown. */
 .results {
   display: flex;
   flex-direction: column;
   height: calc(var(--size-control-lg) * 8);
+  overflow: hidden;
 }
 
 .lead {

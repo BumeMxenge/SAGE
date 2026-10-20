@@ -462,6 +462,24 @@ test('Continue waits for a programme when the transcript names several', async (
   await expect(hint).toHaveCount(0)
 })
 
+// The picker lists programme courses and complementary studies apart, programme courses first. In the
+// handbook EEE4119F is one of Mechatronics' elective core courses (p. 58), and AGE1002S an approved
+// complementary studies course, so each shows on its own side only.
+test('the course picker keeps programme courses and complementary studies apart', async ({ page }) => {
+  await page.goto('/onboarding')
+  await toPicker(page)
+  const search = page.getByRole('searchbox')
+  const option = (code: string) => page.getByRole('option', { name: new RegExp(`^${code}`) })
+  await search.fill('EEE4119F')
+  await expect(option('EEE4119F')).toBeVisible()
+  await search.fill('AGE1002S')
+  await expect(option('AGE1002S')).toHaveCount(0)
+  await page.getByRole('radio', { name: 'Complementary Studies' }).click()
+  await expect(option('AGE1002S')).toBeVisible()
+  await search.fill('EEE4119F')
+  await expect(option('EEE4119F')).toHaveCount(0)
+})
+
 // Each step as it stands has no axe violations and a clean keyboard walk
 for (const [step, reach] of [
   ['the upload', toUpload],
