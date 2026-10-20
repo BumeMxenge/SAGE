@@ -41,6 +41,10 @@ def test_the_catalogue_lists_the_current_handbook(
     assert {row["symbol"] for row in catalogue["symbols"]} == {
         row.symbol for row in result_symbols
     }
+    # AGE1002S is on the handbook's approved complementary studies list, and EEE4119F is one of
+    # Mechatronics' fourth-year elective core courses (p. 58)
+    complementary = {row["code"]: row["complementary"] for row in catalogue["courses"]}
+    assert (complementary["AGE1002S"], complementary["EEE4119F"]) == (True, False)
 
 
 def test_no_approved_year_means_the_rulebook_isnt_loaded(app, signed_in):
