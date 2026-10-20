@@ -106,6 +106,7 @@
   --width-tooltip: 240px;
   --width-sidebar: 266px; /* the open sidebar, as measured */
   --width-rail: 62px; /* the collapsed sidebar, a rail of icons */
+  --width-course-code: 80px; /* a course code's column, so each year's table starts its names alike */
 
   /* Motion. Hover changes are instant, as in the prototypes; these time everything that moves. */
   --duration-fast: 150ms; /* tooltips, menus and the Select list fading; a progress bar moving on */
