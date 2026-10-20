@@ -1,11 +1,16 @@
+/* The header spans its page, so actions or a figure sit at its far end, while the title and subtitle
+   keep the reading width */
 .page-header {
   display: flex;
   gap: var(--space-4);
   align-items: flex-start;
   justify-content: space-between;
   width: 100%;
-  max-width: var(--width-reading);
   margin-bottom: var(--space-6);
+}
+
+.heading {
+  max-width: var(--width-reading);
 }
 
 .title {
@@ -31,11 +36,9 @@
   align-items: center;
 }
 
-/* A headline figure ends the title's row, and the row lines up along its foot, as the prototype's
-   Course History header does. The figure is the taller of the two, so its own alignment alone would
-   leave the title at the top. */
+/* A headline figure ends the title's row, its words on the title's baseline */
 .page-header:has(> .figure) {
-  align-items: flex-end;
+  align-items: baseline;
 }
 
 .figure {

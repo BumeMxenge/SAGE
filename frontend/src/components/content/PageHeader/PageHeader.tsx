@@ -1,6 +1,7 @@
-// The top of a page in the app, holding its h1: a title, an optional subtitle, and either actions or
-// the page's headline figure, such as Course History's cumulative average, always left-aligned at the
-// reading width. A blocking error page has none: its ErrorState holds the h1.
+// The top of a page in the app, holding its h1: a title and an optional subtitle, always left-aligned
+// at the reading width, and either actions or the page's headline figure, such as Course History's
+// cumulative average, at the far end of the page. A blocking error page has none: its ErrorState holds
+// the h1.
 import type { ReactNode } from 'react'
 import styles from './PageHeader.module.css'
 
@@ -13,7 +14,7 @@ type PageHeaderProps = { title: string; subtitle?: string } & (
 export function PageHeader({ title, subtitle, actions, figure }: PageHeaderProps) {
   return (
     <header className={styles.pageHeader}>
-      <div>
+      <div className={styles.heading}>
         <h1 className={styles.title}>{title}</h1>
         {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
       </div>
