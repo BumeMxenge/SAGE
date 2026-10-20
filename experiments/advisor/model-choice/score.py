@@ -43,7 +43,9 @@ ARGUED = RESULTS / "argued.csv"
 # 2026: platform.claude.com/docs/en/about-claude/pricing and developers.openai.com/api/docs/pricing
 PRICES = {"fresh": 0.10, "read": 0.01, "written": 0.125, "out": 0.50}
 COPIED = 8  # words in a row that count as copied
-# Words in a kept quote whose loss can change a condition, besides its numbers and course codes
+# Limiting words in a kept quote whose loss from the reply can change a condition. A quote's
+# numbers aren't checked: a right reply often leaves out the ones beside its answer, and the key and
+# trap catch a wrong number instead.
 CONDITIONS = ("at least", "only", "not", "except", "unless", "minimum", "maximum")
 CODE = re.compile(r"\b[A-Z]{3}\d{4}[A-Z]\b")
 TIME = re.compile(r"\b\d{1,2}:\d{2}\b")
@@ -173,13 +175,11 @@ def _flags(ask: Ask, kept: list[Quote], heard: str) -> list[str]:
         for mark in sorted(marks(content) - SLICE_MARKS - marks(heard))
     ]
     for quote in kept:
-        lost = [mark for mark in sorted(marks(quote.quote)) if not holds(content, mark)]
-        lost += [
-            word
+        found += [
+            f'leaves out "{word}" from its quote'
             for word in CONDITIONS
             if holds(quote.quote, word) and not holds(content, word)
         ]
-        found += [f'leaves out "{mark}" from its quote' for mark in lost]
     found += [
         f'misses the key "{mark}"' for mark in prompt.key if not holds(content, mark)
     ]

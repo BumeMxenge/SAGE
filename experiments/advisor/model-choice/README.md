@@ -90,8 +90,8 @@ The citation check runs first, as SAGE will run it. A quote counts only if it ap
 
 **Flags for my reading.** The evidence is the slice, the plan context and that turn's tool results.
 1. A course code, time or number in the content that isn't in the evidence or the question.
-2. A number, course code, "at least", "only", "not", "except", "unless", "minimum" or "maximum" in a kept quote that the content leaves out.
-3. Content that holds a trap mark, or misses a key mark.
+2. "At least", "only", "not", "except", "unless", "minimum" or "maximum" in a kept quote that the content leaves out. A quote's numbers aren't checked: a right reply often leaves out the ones beside its answer, and flag 3 catches a wrong one.
+3. Content that misses a key mark or holds a trap mark, which Part A labels carry.
 4. In Part B, a reply that isn't a referral, from a turn that never called the labelled tool.
 
 ## Blind reading
