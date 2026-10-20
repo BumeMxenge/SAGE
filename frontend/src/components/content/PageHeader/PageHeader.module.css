@@ -30,3 +30,15 @@
   gap: var(--space-3);
   align-items: center;
 }
+
+/* A headline figure ends the title's row, and the row lines up along its foot, as the prototype's
+   Course History header does. The figure is the taller of the two, so its own alignment alone would
+   leave the title at the top. */
+.page-header:has(> .figure) {
+  align-items: flex-end;
+}
+
+.figure {
+  flex: none;
+  text-align: end;
+}
