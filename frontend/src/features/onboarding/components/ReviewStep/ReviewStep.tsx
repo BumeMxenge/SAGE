@@ -101,14 +101,15 @@ export function ReviewStep({ transcript, curriculum, onSaved }: ReviewStepProps)
   }
 
   // Moving on waits for the student to finish editing and to read the year to its end. Finish Setup
-  // also needs the box ticked and at least one course, as the API can't save an empty history. The box
-  // sits just above it; the rest say why it waits.
+  // also needs the box ticked and at least one course, as the API can't save an empty history. A hint
+  // beside the button says what it waits for.
   const canMoveOn = !editing && isRead
   const canFinish = canMoveOn && confirmed && review.lines.length > 0 && !saving.isPending
   function nextHint(): string | null {
     if (editing) return 'Finish editing to continue.'
     if (!isRead) return 'Scroll to the end of the year to continue.'
     if (isLast && review.lines.length === 0) return 'Add at least one course to finish.'
+    if (isLast && !confirmed) return 'Tick the box above to finish.'
     return null
   }
   const hint = nextHint()

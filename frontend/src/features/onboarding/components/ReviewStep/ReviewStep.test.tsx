@@ -1,6 +1,7 @@
 // Finish Setup waits for the student to confirm their last year: disabled before the box is ticked,
-// enabled once it is, and disabled again when it is unticked. And the review leaves out the note that
-// results are pending, by its code, as each such course already says In progress.
+// saying so beside it, enabled once it is, and disabled again when it is unticked. And the review
+// leaves out the note that results are pending, by its code, as each such course already says In
+// progress.
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
@@ -72,9 +73,13 @@ it('keeps Finish Setup disabled until the last year is confirmed', () => {
   const finish = screen.getByRole('button', { name: 'Finish Setup' })
   const confirmation = screen.getByRole('checkbox', { name: 'This reflects my current academic record' })
 
+  const hint = 'Tick the box above to finish.'
+
   expect(finish).toHaveProperty('disabled', true)
+  expect(screen.getByText(hint)).toBeTruthy()
   fireEvent.click(confirmation)
   expect(finish).toHaveProperty('disabled', false)
+  expect(screen.queryByText(hint)).toBeNull()
   fireEvent.click(confirmation)
   expect(finish).toHaveProperty('disabled', true)
 })
