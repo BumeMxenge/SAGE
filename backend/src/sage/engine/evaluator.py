@@ -1,9 +1,10 @@
 # Whether her record meets an entry rule: met, not met, or left open. A pass counts through its
 # covers: the course itself, each course its equivalences say it counts as, and the same course's
 # other semester offering at the same credits. What her record can't decide is left open: printed
-# words only a person can judge, and a result still to come.
+# words only a person can judge, a result still to come, and, when there's a plan, a course the plan
+# itself might take.
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import Literal
 
 from sage.shared.base import Row
@@ -26,8 +27,11 @@ from sage.shared.students import CourseHistoryLine, Student, final_mark
 PASSED: tuple[Outcome, ...] = ("pass", "credited")
 PENDING: tuple[Outcome, ...] = ("in_progress", "supp_pending")
 
-# What one leaf of a rule comes to
-Value = Literal["met", "not_met", "unknown"]
+# What one leaf of a rule comes to: decided by her record, unknown, or left to a plan whose courses
+# meet it when taken (planned) or only make it possible (maybe)
+Value = Literal["met", "not_met", "unknown", "planned", "maybe"]
+# The plan's courses that could meet a leaf, each in a term that comes in time for the leaf's course
+Plan = Callable[[CourseNeed], tuple[str, ...]]
 
 
 class Record:
@@ -135,32 +139,36 @@ class Verdict(Row):
     rest: EntryRule | None = None
 
 
-def evaluate(rule: EntryRule | None, record: Record) -> Verdict:
+def evaluate(
+    rule: EntryRule | None, record: Record, plan: Plan | None = None
+) -> Verdict:
     # all is met when every part is and fails when any part does; any is met when any part is and
     # fails when every part does; anything else is open
     if rule is None:
         return Verdict(value="met")
     if isinstance(rule, AllOf):
-        parts = [evaluate(child, record) for child in rule.all]
+        parts = [evaluate(child, record, plan) for child in rule.all]
         failed = [part.rest for part in parts if part.value == "not_met"]
         if failed:
             return Verdict(value="not_met", rest=together(AllOf, failed))
         return still_open(AllOf, parts)
     if isinstance(rule, AnyOf):
-        parts = [evaluate(child, record) for child in rule.any]
+        parts = [evaluate(child, record, plan) for child in rule.any]
         if any(part.value == "met" for part in parts):
             return Verdict(value="met")
         if all(part.value == "not_met" for part in parts):
             return Verdict(value="not_met", rest=rule)
         return still_open(AnyOf, parts)
-    value = leaf(rule, record)
+    value = leaf(rule, record, plan)
     if value == "met":
         return Verdict(value="met")
     return Verdict(value="not_met" if value == "not_met" else "open", rest=rule)
 
 
 def leaf(
-    node: CourseNeed | StudentIn | MinYearOfStudy | Refer, record: Record
+    node: CourseNeed | StudentIn | MinYearOfStudy | Refer,
+    record: Record,
+    plan: Plan | None = None,
 ) -> Value:
     if isinstance(node, Refer):
         return "unknown"
@@ -169,10 +177,16 @@ def leaf(
     if isinstance(node, MinYearOfStudy):
         return "met" if record.year >= node.min_year_of_study else "not_met"
     found = record.meets(node)
-    # She could still take a co-requisite alongside
-    if found == "not_met" and node.need == "concurrent":
-        return "unknown"
-    return found
+    if found != "not_met":
+        return found
+    if plan is None:
+        # She could still take a co-requisite alongside
+        return "unknown" if node.need == "concurrent" else "not_met"
+    if not plan(node):
+        return "not_met"
+    # Passing a course the plan takes earlier gives her at least 50, so a higher mark is only
+    # possible
+    return "maybe" if node.need == "mark" and node.min_mark > 50 else "planned"
 
 
 def still_open(kind: type[AllOf] | type[AnyOf], parts: list[Verdict]) -> Verdict:

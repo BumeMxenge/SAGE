@@ -1,9 +1,9 @@
-# Plants each of the 26 faults in a copy of the backend, runs the unit tests, and reports which test
-# caught it: the 24 from my test review, and two in the review and approval the thesis rests on. The
-# tests first run on the copy with no fault, and any failure stops the script, as a broken copy would
-# make every fault look caught. The faults go into a temporary copy, so a run cut short never leaves
-# one in the real code. A fault whose text no longer matches is reported as not applied, never as
-# caught.
+# Plants each of the 30 faults in a copy of the backend, runs the unit tests, and reports which test
+# caught it: the 24 from my test review, two in the review and approval the thesis rests on, and four
+# in the plan encoding, which mutmut can't reach as it isn't Python. The tests first run on the copy
+# with no fault, and any failure stops the script, as a broken copy would make every fault look
+# caught. The faults go into a temporary copy, so a run cut short never leaves one in the real code.
+# A fault whose text no longer matches is reported as not applied, never as caught.
 import os
 import shutil
 import subprocess
@@ -206,6 +206,34 @@ FAULTS = [
         "src/sage/ingestion/review.py",
         "return not (self.pending or self.problems)",
         "return not self.problems",
+    ),
+    Fault(
+        27,
+        "encoding: meetings that touch clash",
+        "src/sage/engine/plans.lp",
+        "overlap(T1, T2), S1 < E2, S2 < E1.",
+        "overlap(T1, T2), S1 <= E2, S2 <= E1.",
+    ),
+    Fault(
+        28,
+        "encoding: the first quarter outside the first semester",
+        "src/sage/engine/plans.lp",
+        "inside(q1, sem1).",
+        "",
+    ),
+    Fault(
+        29,
+        "encoding: a spare elective allowed",
+        "src/sage/engine/plans.lp",
+        ":- take(C), elective(C), not needed(C).",
+        "",
+    ),
+    Fault(
+        30,
+        "encoding: plans not projected onto their courses",
+        "src/sage/engine/plans.lp",
+        "#project take/1.",
+        "",
     ),
 ]
 
