@@ -164,6 +164,7 @@ class Year:
         self.dropped: set[str] = set()  # current-year courses an FB3.4 clash leaves out
         self.total = 0
         self.slots: list[Slot] = []
+        self.met = 0  # her year's complementary credits that her passes already meet
         self.grouped: set[str] = set()
         if self.finished:
             return
@@ -181,7 +182,7 @@ class Year:
                     self._owe(number, part)
                 elif isinstance(part, TotalCredits) and number == self.number:
                     self.total = part.total_credits
-        self.slots = self._slots(complementary)
+        self.slots, self.met = self._slots(complementary)
         self.grouped = {
             code
             for code in self._candidates()
@@ -239,10 +240,11 @@ class Year:
                 )
             )
 
-    def _slots(self, complementary: list[tuple[int, int]]) -> list[Slot]:
-        # Complementary credits and 576-credit places still to fill. Her passed complementary
-        # courses meet the years' complementary credits first, largest first so the fewest are
-        # used, and each one left over fills a place, earliest first.
+    def _slots(self, complementary: list[tuple[int, int]]) -> tuple[list[Slot], int]:
+        # Complementary credits and 576-credit places still to fill, and the complementary credits
+        # of her own year that her passes already meet. Her passed complementary courses meet the
+        # years' complementary credits first, largest first so the fewest are used, and each one
+        # left over fills a place, earliest first.
         passed = sorted(
             (
                 self._credits[code]
@@ -251,15 +253,18 @@ class Year:
             ),
             reverse=True,
         )
-        slots = []
+        slots, met = [], 0
         for number, credits in complementary:
-            while credits > 0 and passed:
-                credits -= passed.pop(0)
-            if credits > 0:
-                slots.append(Slot(credits=credits, table=self._core_table(number)))
+            left = credits
+            while left > 0 and passed:
+                left -= passed.pop(0)
+            if number == self.number:
+                met += credits - max(left, 0)
+            if left > 0:
+                slots.append(Slot(credits=left, table=self._core_table(number)))
         (version,) = self.rules.handbook_versions
         if version.year != printed.PLACES_YEAR or not self._before_change():
-            return slots
+            return slots, met
         for place in printed.PLACES.get(self.curriculum or "", ()):
             if place.year > self.number or self.record.done(place.code):
                 continue
@@ -268,7 +273,7 @@ class Year:
                 passed.pop(filling[0])
             else:
                 slots.append(Slot(credits=place.credits, place=place))
-        return slots
+        return slots, met
 
     def _before_change(self) -> bool:
         # Registered before the 560-credit curriculum started
@@ -279,9 +284,9 @@ class Year:
         return list(dict.fromkeys([*self.required, *electives]))
 
     def minimum(self) -> int:
-        # The year's total, less the credits of her year's courses she has done or can't take, and
-        # in her final year at least what's left of the degree. It needs no check against the core,
-        # which every plan holds.
+        # The year's total, less the credits of her year's courses she has done or can't take and
+        # the complementary credits her passes already meet, and in her final year at least what's
+        # left of the degree. It needs no check against the core, which every plan holds.
         named = {
             code
             for part in self._by_year[self.number]
@@ -295,7 +300,7 @@ class Year:
             for code in self.current
             if code in self.left_out or code in self.dropped
         )
-        least = self.total - done - gone
+        least = self.total - done - self.met - gone
         (version,) = self.rules.handbook_versions
         degree = printed.DEGREE_CREDITS.get(version.year, {}).get(self.curriculum or "")
         if degree and self.number == max(self._by_year):

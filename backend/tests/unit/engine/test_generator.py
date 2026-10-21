@@ -268,6 +268,24 @@ def test_a_core_course_she_cant_take_yet_is_left_out_and_her_minimum_drops(symbo
     )
 
 
+def test_complementary_credits_she_has_met_come_off_her_minimum(symbols):
+    # Her first year's KKK1000F already meets its 18 complementary credits, so her year's 50 drops
+    # by AAA1000F's 16 and those 18 to 16, which AAA1001F makes. Had the 18 stayed, she'd need 34.
+    rules = rulebook(
+        {
+            1: (
+                core("y1"),
+                CreditsFromGroups(credits=18, from_groups=("complementary",)),
+                total(50),
+            )
+        },
+        {"y1": ("AAA1000F", "AAA1001F"), "complementary": ("KKK1000F",)},
+        [course("AAA1000F"), course("AAA1001F"), course("KKK1000F", 18)],
+    )
+    history = (line("AAA1000F"), line("KKK1000F", credits=18))
+    assert plans(generate(rules, symbols, history)) == [("AAA1001F",)]
+
+
 def test_a_slot_lists_the_complementary_courses_that_fit_marking_untimed_ones(symbols):
     # AAA1000F meets on Monday at 10:00. KKK1000F clashes with it, KKK1001F has no printed time
     # and KKK1002F meets on Tuesday.
