@@ -1,8 +1,8 @@
 # Whether her record meets an entry rule: met, not met, or left open. A pass counts through its
 # covers: the course itself, each course its equivalences say it counts as, and the same course's
-# other semester offering at the same credits. What her record can't decide is left open: printed
-# words only a person can judge, a result still to come, and, when there's a plan, a course the plan
-# itself might take.
+# other semester offering at the same credits, one step of each, in either order. What her record
+# can't decide is left open: printed words only a person can judge, a result still to come, and,
+# when there's a plan, a course the plan itself might take.
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from typing import Literal
@@ -86,16 +86,25 @@ class Record:
         self.year = max(done, default=0) + 1
 
     def covers(self, code: str, credits: int) -> set[str]:
-        # The codes a pass in this course counts for
+        # The codes a pass in this course counts for: itself, and at most one step of each kind, in
+        # either order, so PHY1014S reaches PHY1012F through PHY1014F
+        counted = self._counts_as[code]
+        offered = self._offered(code, credits)
         return (
             {code}
-            | self._counts_as[code]
-            | {
-                other
-                for other, worth in self._credits.items()
-                if other[:7] == code[:7] and worth == credits
-            }
+            | counted
+            | offered
+            | {far for near in counted for far in self._offered(near, credits)}
+            | {far for near in offered for far in self._counts_as[near]}
         )
+
+    def _offered(self, code: str, credits: int) -> set[str]:
+        # The year's offerings of the same course at the same credits
+        return {
+            other
+            for other, worth in self._credits.items()
+            if other[:7] == code[:7] and worth == credits
+        }
 
     def passed(self, code: str) -> CourseHistoryLine | None:
         # Her first line that passes this course, if any

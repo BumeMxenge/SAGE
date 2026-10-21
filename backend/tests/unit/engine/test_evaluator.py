@@ -135,6 +135,66 @@ def test_one_semesters_offering_covers_the_other_at_the_same_credits(
     assert value(need("ECO1010S"), lines, symbols, rules) == expected
 
 
+def offering(code: str, term: str) -> Course:
+    return Course(
+        handbook_year=2026,
+        code=code,
+        name="Made Up",
+        credits=18,
+        nqf_level=5,
+        term=term,
+    )
+
+
+def counts(code: str, counts_as: str) -> Equivalence:
+    return Equivalence(handbook_year=2026, course_code=code, counts_as=counts_as)
+
+
+@pytest.mark.parametrize(
+    ("taken", "rules", "leaf", "expected"),
+    [
+        # The approved 2026 holds PHY1014F, PHY1014S's other offering, at 18 credits, as her pass
+        # was, and has it count as PHY1012F
+        (
+            "PHY1014S",
+            RuleSet(
+                courses=(offering("PHY1014F", "sem1"),),
+                equivalences=(counts("PHY1014F", "PHY1012F"),),
+            ),
+            "PHY1012F",
+            "met",
+        ),
+        # The other way round: an equivalence, then the other offering of what it counts as
+        (
+            "AAA1000F",
+            RuleSet(
+                courses=(offering("BBB1000S", "sem2"),),
+                equivalences=(counts("AAA1000F", "BBB1000F"),),
+            ),
+            "BBB1000S",
+            "met",
+        ),
+        # Never two equivalences
+        (
+            "AAA1000F",
+            RuleSet(
+                equivalences=(
+                    counts("AAA1000F", "BBB1000F"),
+                    counts("BBB1000F", "CCC1000F"),
+                )
+            ),
+            "CCC1000F",
+            "not_met",
+        ),
+    ],
+)
+def test_a_cover_takes_one_equivalence_and_one_offering_step(
+    taken, rules, leaf, expected, symbols
+):
+    lines = [line(taken, "1", 72, credits=18)]
+    assert value(need(leaf), lines, symbols, rules) == expected
+
+
 @pytest.mark.parametrize(
     ("curricula", "expected"),
     [(("EB000AAA01", "EB000BBB01"), "met"), (("EB000BBB01",), "not_met")],
