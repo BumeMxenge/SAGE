@@ -24,6 +24,7 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 | 19 Oct | PUT and DELETE `/v1/favourites/{course_code}` declare `invalid_request`, which they can't send | Their only input is the course code in the path, which any string fills | None: `api-types.ts` records it | Drop it at the next change to the contract |
 | 19 Oct | An unexpected error in the browser asks the student to quote a reference, and shows none | `errors.ts` reads any error that isn't an `ApiError` as `internal_error`, whose words ask for the reference only the API's own errors carry | None yet | Words of its own for a failure in the browser |
 | 19 Oct | `frontend/public/privacy.html` follows the system's light or dark setting, not the appearance the student chose | The page is static and doesn't load `theme.js` | None yet | Load the stored choice, as the app does |
+| 21 Oct | In E4, GPT-6 Luna's 95th-percentile turn time was 14.9 s (95% interval 10.9 to 18.3), over NF-4's 10 s. Haiku's was 7.4 s | Luna reasoned at its default effort, medium, and its turns ran slower than Haiku's. E4's rule reaches turn time only on a tie (rule 4), so a breach alone doesn't change the choice | None yet | Two fixes in the advisor build: show a progress signal straight away, and test Luna at reasoning effort low on the 32-prompt check set before adopting that setting |
 
 **ATP-5 test window checklist.** Before the load test:
 
