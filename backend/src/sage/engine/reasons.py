@@ -181,10 +181,13 @@ class Reasons:
         table: str | None,
         fits: Sequence[str],
         untimed: Sequence[str],
+        fewer: Sequence[str],
         place: Place | None = None,
     ) -> Reason:
-        # Complementary credits, or a 576-credit place, the plan leaves to her, with the approved
-        # complementary courses that fit its timetable
+        # A complementary line, or a 576-credit place, the plan leaves to her, with the approved
+        # complementary courses that fit its timetable. One course fills a line, and one worth
+        # fewer credits than the line needs a check, so a plan that fills it with one is
+        # conditional.
         if place:
             ask = (
                 f"Your 576-credit curriculum still needs {place.code}. Take an approved "
@@ -192,7 +195,7 @@ class Reasons:
             )
             passage = self.table(place.table)
         else:
-            ask = f"Add approved complementary studies courses worth at least {credits} credits"
+            ask = "Add one approved complementary studies course"
             passage = self.table(table)
         if fits:
             marked = (
@@ -206,15 +209,21 @@ class Reasons:
                 f"{ask}, though none on the approved list fits this plan's timetable, so see "
                 "your advisor."
             )
+        if fewer:
+            message += (
+                f" {len(fewer)} of them are worth fewer than the table's {credits} credits, so "
+                "a plan that takes one is conditional: confirm it with your advisor."
+            )
         details: dict[str, Any] = {
             "credits": credits,
             "fits": list(fits),
             "untimed": list(untimed),
+            "fewer_credits": list(fewer),
         }
         if place:
             details["owed"] = place.code
         return Reason(
-            kind="included" if fits else "conditional",
+            kind="included" if set(fits) - set(fewer) else "conditional",
             message=message,
             passage_id=passage,
             details=details,

@@ -242,26 +242,23 @@ class Year:
             )
 
     def _slots(self, complementary: list[tuple[int, int]]) -> tuple[list[Slot], int]:
-        # Complementary credits and 576-credit places still to fill, and the complementary credits
-        # of her own year that her passes already meet. Her passed complementary courses meet the
-        # years' complementary credits first, largest first so the fewest are used, and each one
-        # left over fills a place, earliest first.
+        # Complementary lines and 576-credit places still to fill, and the credits of her own year's
+        # lines that her passes already fill. One approved course fills a line, whatever its
+        # credits, as pp. 42 and 44 ask for "at least one course from a list of approved
+        # electives". Her passed complementary courses fill the lines first, smallest first so the
+        # larger are left for places, and each one left over fills a place, earliest first.
         passed = sorted(
-            (
-                self._credits[code]
-                for code in self.record.counted(self.record.members[COMPLEMENTARY])
-            ),
-            reverse=True,
+            self._credits[code]
+            for code in self.record.counted(self.record.members[COMPLEMENTARY])
         )
         slots, met = [], 0
         for number, credits in complementary:
-            left = credits
-            while left > 0 and passed:
-                left -= passed.pop(0)
+            if not passed:
+                slots.append(Slot(credits=credits, table=self._core_table(number)))
+                continue
+            passed.pop(0)
             if number == self.number:
-                met += credits - max(left, 0)
-            if left > 0:
-                slots.append(Slot(credits=left, table=self._core_table(number)))
+                met += credits
         (version,) = self.rules.handbook_versions
         if version.year != printed.PLACES_YEAR or not self._before_change():
             return slots, met
@@ -418,8 +415,9 @@ class Year:
                     if not slot.place or self._credits[code] >= slot.place.credits
                 ]
                 late = [c for c in fit if untimed(c, self.rules, self.curriculum)]
+                fewer = [c for c in fit if self._credits[c] < slot.credits]
                 found[plan.courses].append(
-                    said.slot(slot.credits, slot.table, fit, late, slot.place)
+                    said.slot(slot.credits, slot.table, fit, late, fewer, slot.place)
                 )
         return found
 

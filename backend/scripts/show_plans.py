@@ -99,6 +99,8 @@ def show(rows: PlanSetRows, rules: RuleSet, took: float) -> None:
             print(
                 f"{indent}  untimed: {', '.join(reason.details['untimed']) or 'none'}"
             )
+            fewer = reason.details["fewer_credits"]
+            print(f"{indent}  fewer credits: {', '.join(fewer) or 'none'}")
 
     print(f"{len(rows.plans)} plans in {took:.2f} s\n")
     for reason in rows.plan_reasons:

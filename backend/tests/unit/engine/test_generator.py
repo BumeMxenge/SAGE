@@ -328,7 +328,43 @@ def test_a_slot_lists_the_complementary_courses_that_fit_marking_untimed_ones(sy
     assert (slot.kind, slot.course_code, slot.details) == (
         "included",
         None,
-        {"credits": 18, "fits": ["KKK1001F", "KKK1002F"], "untimed": ["KKK1001F"]},
+        {
+            "credits": 18,
+            "fits": ["KKK1001F", "KKK1002F"],
+            "untimed": ["KKK1001F"],
+            "fewer_credits": [],
+        },
+    )
+
+
+def test_a_15_credit_course_fills_an_18_credit_line_and_needs_a_check(symbols):
+    # One approved course fills a line, as pp. 42 and 44 ask for "at least one course from a list
+    # of approved electives", so her first year's 15-credit KKK1000F leaves nothing of its 18 for
+    # her second year. There, the 15-credit KKK1001F is listed as needing a check.
+    line_of_18 = CreditsFromGroups(credits=18, from_groups=("complementary",))
+    rules = rulebook(
+        {
+            1: (core("y1"), line_of_18, total(34)),
+            2: (core("y2"), line_of_18, total(34)),
+        },
+        {
+            "y1": ("AAA1000F",),
+            "y2": ("AAA2000F",),
+            "complementary": ("KKK1000F", "KKK1001F", "KKK1002F"),
+        },
+        [course("AAA1000F"), course("AAA2000F")]
+        + [course("KKK1000F", 15), course("KKK1001F", 15), course("KKK1002F", 18)],
+    )
+    rows = generate(rules, symbols, (line("AAA1000F"), line("KKK1000F", credits=15)))
+    (slot,) = [r for r in rows.plan_reasons if r.details]
+    assert (slot.kind, slot.details) == (
+        "included",
+        {
+            "credits": 18,
+            "fits": ["KKK1001F", "KKK1002F"],
+            "untimed": [],
+            "fewer_credits": ["KKK1001F"],
+        },
     )
 
 
