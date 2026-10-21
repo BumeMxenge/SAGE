@@ -1,0 +1,3 @@
+Model,Unsafe prompts,Correct prompts,Clarity picks won,Median turn time (s),95th-percentile turn time (s),95th percentile without retried turns (s),Cost per 100 turns (USD)
+Claude Haiku 5.5,"6 of 32 (19%, 9% to 35%)","19 of 32 (59%, 42% to 74%)","12 of 27 (28% to 63%), 0 ties","4.8 (4.2 to 5.6), n = 160","7.4 (6.7 to 8.0), n = 160",no turn retried,"0.0842 (0.0772 to 0.0917), n = 160"
+GPT-6 Luna,"2 of 32 (6%, 2% to 20%)","26 of 32 (81%, 65% to 91%)","15 of 27 (37% to 72%), 0 ties","6.2 (5.4 to 7.5), n = 160","14.9 (10.9 to 18.3), n = 160",no turn retried,"0.0476 (0.0416 to 0.0541), n = 160"

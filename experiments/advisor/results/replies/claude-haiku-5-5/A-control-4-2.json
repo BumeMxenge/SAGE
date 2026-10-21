@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T03:03:50+00:00",
+ "calls": [
+  {
+   "request": "33556ff9ec1144bf9328d821ade39693ae5177715a3549d0489dc576c9889af6",
+   "seconds": 1.64,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEe5ZQUPh8yuXdGeqh31",
+    "container": null,
+    "content": [
+     {
+      "signature": "CAQSqQcKEAgTGAI4AUIIdGhpbmtpbmcSDHUTgLqnfaxVcS4+4hoMYkHtd5aLuGXEYxNfIjCMNnD42jAPUtgnGQXKPx6oChGOb9AZzwS5UB31BPK7VcrMB7T51KpUjGsX58WkFVkqxgYMsq8IjG/I6p4tMlTNYk4s/az6eMvJ/uuj3kEDc3gDN4y4qRzu7AJaroJ8089d8GWJ88dg6UVchKPRXCumVlh+RoBeQQVBG/qCQlJM2hsRkCD4rwhuBadOCAbgkRW2g8RFlV+P5n+/SNoqbYszw46DulVyZkcE3fLjUSpBZwtG8KQjs1YIC5b+MOBXNBEMz/5YhSiiXDkc3WKiBZvTwduCdGueXIKho15iTVXi7OIkynQOS+ELWFuqhyIJH8pmQrd715RLw29++hmi1KGa+M0bysCrrYSkE7ZC73uQVJ9gQbAgx28vFHy0+n5+585fmee9bYdI3ckYdYteei/FVLKWCJGro2Vv9TA0VyIyMpiQiGZ22saOpFQWXvJCK3/5dLKe9g24YkMUZbdJRCsqJhAV9kevG2cM2b0vK8rrdO9pZpP0MI2SiOaoTYWz1gnveCTIwlJX+hVi8glPAg/0LDkwAfyvfEtWBNFKrf2t7VIhooSLRhYYuP5qfF4aCC+XF6cCzlhgBmPCSB7neUw3rMNvctjPOdJfkBG6XB2hQdQKXo8eziaiBLC1i59VXYL/FglXBxilIZ25W7HG5/tV/b1cqPLqpun4FqB0Dhx8f4OUCg5wqwXRvH9v3FN/U9UNIH8vTqmbGgwGChTtke77mRbe0+hNELlOIOuy3Jez6dLzUg8Ub2x531CzQ0uR1gGvzDYISyQCbKzlpsEZs25zz4jW69xuecNkp6vYThr94GVGvBQD6HKANLfGCztPToRA6v8pOv4RsxIvKXxX48TUV6UGNo3u4SdUCaTUOSOu98dgEA0sLGsc/crh1CCaZ2e6bc15LfviqC/5Dg93E8+t7BuDgylJUhZjfKDIUGZKlaSuDXhmPVKE26vE9xhVwzMOO4frq5K/YdBeR/XRoDadob0EXLqaMckusa5PHQdFlaFomb5ei5bLh27oUTCP3xdmoGCP32AjcT7uYChysf6fk7976FeiUD6E20XXAPABiZSF8butmxXUiUWFQyrlq49eZWIrmWSsqCEYPOBrFuYOMWvgyfE5rBqHpcR/eO17XTK08crvnBCI+rkdUbW5mqtCVEAYaMtcfdk1TwTN1aEzleJHCc+bhRHvGAE=",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"Lecture period 6 starts at 14:00 and runs to 14:45.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P02\", \"quote\": \"6 14:00 to 14:45\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 965,
+     "output_tokens": 260,
+     "output_tokens_details": {
+      "thinking_tokens": 175
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

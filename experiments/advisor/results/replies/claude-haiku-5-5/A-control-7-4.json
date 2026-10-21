@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:53:13+00:00",
+ "calls": [
+  {
+   "request": "f056ea47c1e3d9570dfd2f5139095ea640eadc4fe9c75ee97c4bd6601e2c642c",
+   "seconds": 3.86,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEdGcatxeEywUJUJx2hm",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"A prerequisite must be completed before you can take a course, while a co-requisite must be taken at the same time as another course. Handbook courses are not all listed with co-requisites, so check a course's entry requirements before you add it to a plan.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P06\", \"quote\": \"A prerequisite course is one which a student must have completed in order to gain admission to a specific other course.\"}, {\"passage_id\": \"P06\", \"quote\": \"A co-requisite course is one for which a student must be registered\"}, {\"passage_id\": \"P06\", \"quote\": \"together with (i.e. concurrently) another specified course.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 965,
+     "output_tokens": 627,
+     "output_tokens_details": {
+      "thinking_tokens": 405
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

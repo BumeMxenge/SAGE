@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:56:46+00:00",
+ "calls": [
+  {
+   "request": "23d2dde95331868456d08c408ef875c480b962c2ea256f4616557680c6725086",
+   "seconds": 5.9,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEdYLS123KHtkmeaXfox",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\":\"You need to pass at least 116 credits this year to be allowed to renew your registration next year. Your 2023 first registration puts you on the 576-credit curriculum, so this is the threshold that applies. The 138 credits in your open plan V01 would clear it if you pass them all. Only the Senate can grant an exception to this rule.\",\"referral\":false,\"open_plan_id\":null,\"citations\":[{\"passage_id\":\"P36\",\"quote\":\"candidates on the 576-credit curriculum in any subsequent year of registration, fail in the courses recognised for the degree to obtain at least 116 credits\"},{\"passage_id\":\"P45\",\"quote\":\"A candidate who registered before 2025 shall complete approved courses of a value not less than 576 credits\"},{\"passage_id\":\"P36\",\"quote\":\"Except by permission of the Senate candidates may not renew their registration if:\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 970,
+     "output_tokens": 1170,
+     "output_tokens_details": {
+      "thinking_tokens": 882
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

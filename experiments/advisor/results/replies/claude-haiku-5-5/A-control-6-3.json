@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:58:57+00:00",
+ "calls": [
+  {
+   "request": "b77427190add1286efc0c29056b2fe34be1c97a3b0a3cbcef38d802062e2756c",
+   "seconds": 3.44,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEdi1FMrhyubyCe445zY",
+    "container": null,
+    "content": [
+     {
+      "signature": "CAQS7QoKEAgTGAI4AUIIdGhpbmtpbmcSDJNG9tu4dvfq3TY6thoMz5UNqGEvY7ZpwHTCIjBx3FPdOwuToSroDm4Mjw02lwNh/7Zq5lgYWlWCRkSyL0BxAgAyoocs9tGDqcq8QyMqigqfwHwEPq8o1EtzvbX5v7ZF7i8W+OOTcj0zbnwfKQzCqpvS5xoW4RIOm+lrYqoGbm/R1wzw7uSHZCst4J07zohi1pzePLRIXp4sBWm3UNr6Y3Oop1lomgt9gutruyaWYUhZp9SvWq3GU4EBOmalEAWctkQoivQ6DcN8piDNKf0WDYrNMc0dmvAx5JNGyY67+/P5iTTPh2qwavTKQwMqTaQ4cM5oz2smPNhhufXkwReGg5mX2PbelNovk/eBIhBR/nL8c4lB9dJfMknuq7fMDnyFYa08YBvloXVDsux6E5Y7AVl0ktRRSNMTgUcykxL65dNk+87SWae8ZphimFk1MGWLkBw3Lp4+SVOIiM4fMtnIzEpFV7v35JWu5GJfq2AhDMh0qAR6oY4MQNr/PccPq746byQj2FZD9O//bNsba4LHduw7gb/47slLMdqKnFaJmTp5cE0I+yR0zJdggc22WWpDNTybUqsrHSnDnjgCK6ezekvBptdqQI6GWZdKX4vz7U6v5J+6p9uMyU0d5lrnRSqJrBvQc2N2SHsqneyXbIwh56EeGIm/gV7A9Xs3nR58aStTTWJp/7hi1ReFsf+rPhvBXmGRDGxmutD09WlchZF+pV5A78u4ZL5Bw75f9Lv1fSeQXMabX3KTGYDOH2/6rkAvMGrAqHfp987ULIjundZ49gt2F0ze9Fanl+npcf1yR7gzBhgY0CVTH0HCXFjWE0/E5OONyWVOOpkdnApudlwH+RD2FIJ7oSRo2v3pkXzL0BRo5bHMS/VYe1VsU2zm+u/1gb1S7YYE2qBHwhUhg1t7pwGWn2CwSfF2hmmnRuNg9BqC1riZQOZuOUv54dJ52XgMH9WI4XbYlk/G5C4PLjRbEP0pN/B3t7sUUCBOqMbiABXhXUv21fAz2lVDPHv0Q+gYIVyeu8VG6veCNyxlZFkNsvPR+cg0D5u2VXNu+EqibawafVUUxwOLEDGLCubrgdL6dmZcUA8KZvzfMMAqs5fBXtJQFk+prhtj4NWxXIZxaKqaZOya2yFujrmmPczDC4vWl7PsFsLeyXDeKpVteNfoYGTVp11DOPvPprP/6XNAkx6L3LZpcWfCTy/OqjLN3sNGVxwNxx2hJGvNWl/rEg1u56NKpOthN+4QGDOKR3Jd7uwNDCtRUdDW0DDKqdOnov6g7FlEPrGNTt6QgW64Q8HuDFUNmDdywoLES3/ualfeNlukZN/68ilLBCx2sT2de1P/XOj/Sz5NnV1IluY/OYft3BMHOSMIKP4NMR0pmIxAtKulnuFqLrXRtS34s5FVayJ4R1GxBPR8g+1ALwHYchhFMVrmrSO0ZZoL0qw5hy+GKcFhs9FojWcfHl3Pe+a301m3iEiMK6M9cdFIrJdYujXOw+JKuHNcbOzeGlMdkC2ljaL4mkZTpCunuJVXnqD2Y0+M23VYnbtkJXA/nd9dgEifqvrCNTfPpU3wvK3IaiKMl9ortA3CFfAz7FJSAvn5IntTjS4ztzi00rCfdq7R8fy8D1AWRsmdHoGFZ/eI/SIALdwJPmQJt+EMhk1qFMyggfiF3ArO6sfO+xTQj2KZjZ7WjIv/uXJCzsAQdHA0lLmX7vUYpVRL8vF778ac5TEKI9ewYNlL1rKFoxZMt//2+tVccJ0i7W5mWbtC/SDtbB9mrbQRMsyFoWMGtzbTh69jwW9sXDrvdyi/eLp6L1jy2oD3B4g4zubzLlAoa+kYAQ==",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"The law course CML4607F is assessed by an assignment worth 20%, a class test worth 20%, and an exam worth 60%. Completing the assignment and class test is compulsory to be allowed to write the exam, and a missed assessment scores 0 unless you are granted an exemption.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P64\", \"quote\": \"Assessment: Assignment (20%), Class test (20%), Exam (60%)\"}, {\"passage_id\": \"P64\", \"quote\": \"Completion of assignment and class test is compulsory. If the student does not submit the assignment or write the test the student will receive 0 for that assessment (unless granted an exemption).\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 958,
+     "output_tokens": 528,
+     "output_tokens_details": {
+      "thinking_tokens": 288
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

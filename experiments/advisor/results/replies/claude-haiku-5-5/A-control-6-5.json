@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:39:37+00:00",
+ "calls": [
+  {
+   "request": "b77427190add1286efc0c29056b2fe34be1c97a3b0a3cbcef38d802062e2756c",
+   "seconds": 4.22,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEcEU8EKXuKELwF64Cy8",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"CML4607F Law for Engineers is assessed by an assignment (20%), a class test (20%) and an exam (60%). Completing the assignment and class test is compulsory, and if you don't submit the assignment or write the test you get 0 for that assessment unless granted an exemption, but you can still write the exam.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P64\", \"quote\": \"Assessment: Assignment (20%), Class test (20%), Exam (60%)\"}, {\"passage_id\": \"P64\", \"quote\": \"Completion of assignment and class test is compulsory. If the student does not submit the assignment or write the test the student will receive 0 for that assessment (unless granted an exemption). But the student will be able to write the exam.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 958,
+     "output_tokens": 751,
+     "output_tokens_details": {
+      "thinking_tokens": 492
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

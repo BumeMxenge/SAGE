@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:34:15+00:00",
+ "calls": [
+  {
+   "request": "f056ea47c1e3d9570dfd2f5139095ea640eadc4fe9c75ee97c4bd6601e2c642c",
+   "seconds": 3.61,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEbpi7wAyvcMFkUDKgNz",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"A prerequisite must be completed before you can take another course, while a co-requisite must be taken at the same time as another course. For example, a prerequisite is finished in an earlier term, but a co-requisite is registered for alongside the course it supports.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P06\", \"quote\": \"A prerequisite course is one which a student must have completed in order to gain admission to a specific other course.\"}, {\"passage_id\": \"P06\", \"quote\": \"A co-requisite course is one for which a student must be registered together with (i.e. concurrently) another specified course.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 965,
+     "output_tokens": 522,
+     "output_tokens_details": {
+      "thinking_tokens": 317
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}
