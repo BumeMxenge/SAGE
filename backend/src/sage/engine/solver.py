@@ -37,9 +37,9 @@ class Solver:
         # Read once, when the app builds the engine, so a missing file stops it starting
         self._encoding = ENCODING.read_text(encoding="utf-8")
 
-    def plans(self, facts: Facts, off: Collection[str] = ()) -> list[Found]:
+    def plans(self, facts: Facts) -> list[Found]:
         # Every plan, each once however many ways there are to attend it, as projection onto take/1
-        # compares answer sets by their courses alone. Switches in off stay off.
+        # compares answer sets by their courses alone
         control = self._ground(facts, "--models=0", "--project", parts=("plans",))
         found: list[Found] = []
 
@@ -53,21 +53,15 @@ class Solver:
                 )
             )
 
-        control.solve(assumptions=switched(facts, off), on_model=keep)
+        control.solve(assumptions=switched(facts), on_model=keep)
         return found
 
-    def fits(
-        self,
-        facts: Facts,
-        plan: Found,
-        candidates: Collection[str],
-        off: Collection[str] = (),
-    ) -> list[Fit]:
+    def fits(self, facts: Facts, plan: Found, candidates: Collection[str]) -> list[Fit]:
         # The extra courses some way of attending the plan leaves room for, with their sections
         # that fit: clingo's brave mode keeps whatever at least one answer set holds. A course whose
         # meetings could rule out a section of the plan's is then tried alone in cautious mode, and
         # the plan's section it leaves in every answer set is the one it forces.
-        assumptions = fixed(facts, plan, candidates, off)
+        assumptions = fixed(facts, plan, candidates)
         brave = self._last(
             self._ground(facts, "--enum-mode=brave", "--models=0"), assumptions
         )
@@ -106,11 +100,7 @@ class Solver:
         return forced
 
     def choices(
-        self,
-        facts: Facts,
-        plan: Found,
-        candidates: Collection[str],
-        off: Collection[str] = (),
+        self, facts: Facts, plan: Found, candidates: Collection[str]
     ) -> dict[str, dict[str, list[str]]]:
         # Each choice group's alternatives that some clash-free way of attending the whole plan
         # uses, sorted: clingo's brave mode keeps whatever at least one answer set holds. One left
@@ -118,14 +108,12 @@ class Solver:
         control = self._ground(facts, "--enum-mode=brave", "--models=0")
         chosen: dict[str, dict[str, list[str]]] = {}
         for code, group, choice in sorted(
-            picks(self._last(control, fixed(facts, plan, candidates, off)))
+            picks(self._last(control, fixed(facts, plan, candidates)))
         ):
             chosen.setdefault(code, {}).setdefault(group, []).append(choice)
         return chosen
 
-    def conflict(
-        self, facts: Facts, order: Sequence[str], off: Collection[str] = ()
-    ) -> list[str]:
+    def conflict(self, facts: Facts, order: Sequence[str]) -> list[str]:
         # With no plan, the smallest set of switches that leaves none. clingo returns a set that
         # does, its core; each of its switches is then dropped, in the order given, if the rest
         # still leave no plan, so the switches given first leave first.
@@ -135,15 +123,12 @@ class Solver:
             for switch in facts.switches
         }
         core: list[int] = []
-        control.solve(assumptions=switched(facts, off), on_core=core.extend)
+        control.solve(assumptions=switched(facts), on_core=core.extend)
         found = {literal[number] for number in core}
         kept = [switch for switch in order if switch in found]
-        held_off = [(on(switch), False) for switch in off]
         for switch in list(kept):
             trial = [other for other in kept if other != switch]
-            result = control.solve(
-                assumptions=[(on(other), True) for other in trial] + held_off
-            )
+            result = control.solve(assumptions=[(on(other), True) for other in trial])
             if result.unsatisfiable:
                 kept = trial
         return kept
@@ -174,20 +159,18 @@ def on(switch: str) -> clingo.Symbol:
     return clingo.parse_term(f"on({switch})")
 
 
-def switched(facts: Facts, off: Collection[str] = ()) -> list[Assumption]:
-    # Every switch on, except those in off
-    return [(on(switch), switch not in off) for switch in facts.switches]
+def switched(facts: Facts) -> list[Assumption]:
+    # Every switch on
+    return [(on(switch), True) for switch in facts.switches]
 
 
-def fixed(
-    facts: Facts, plan: Found, candidates: Collection[str], off: Collection[str]
-) -> list[Assumption]:
-    # Exactly the plan's courses taken, with the switches as they were when it was found
+def fixed(facts: Facts, plan: Found, candidates: Collection[str]) -> list[Assumption]:
+    # Exactly the plan's courses taken, with every switch on, as when it was found
     taken = [
         (clingo.Function("take", [clingo.String(code)]), code in plan.courses)
         for code in candidates
     ]
-    return switched(facts, off) + taken
+    return switched(facts) + taken
 
 
 def picks(atoms: Sequence[clingo.Symbol]) -> list[tuple[str, str, str]]:

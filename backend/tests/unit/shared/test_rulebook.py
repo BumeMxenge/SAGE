@@ -7,6 +7,7 @@ from sage.shared.errors import RulebookNotLoaded
 from sage.shared.memory.rules import InMemoryRuleRepository
 from sage.shared.printed_meetings import timetabled
 from sage.shared.rulebook import TIME_LIMIT, Rulebook
+from sage.shared.rules import HandbookVersion, RuleSet
 
 
 class CountingRules(InMemoryRuleRepository):
@@ -70,3 +71,9 @@ def test_a_year_holds_the_meetings_its_course_entries_print_once(rules):
     ]
     assert len(practicals) == 20
     assert timetabled(year).timetable_slots == year.timetable_slots
+
+
+def test_a_year_whose_entries_print_no_meetings_is_left_as_it_is():
+    # 2023's entries print none that its rules lack
+    rules = RuleSet(handbook_versions=(HandbookVersion(year=2023, approved=True),))
+    assert timetabled(rules) == rules

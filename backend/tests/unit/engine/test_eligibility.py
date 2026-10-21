@@ -1,5 +1,5 @@
-# Checks what Explore Electives says of each course: one course per status, with its reason written
-# out by hand. A reason names only the part of a rule she hasn't met, or the part still open, where
+# Checks what Explore Electives says of each course: each status, with its reason written out by
+# hand. A reason names only the part of a rule she hasn't met, or the part still open, where
 # words such as "or equivalent" keep whole the list they continue.
 from uuid import UUID
 
@@ -44,8 +44,9 @@ def line(code: str, result: str, mark: int | None, credits: int) -> CourseHistor
 
 
 def test_each_status_with_its_reason(result_symbols):
-    first, second = (
-        CourseNeed(course=code, need="pass") for code in ("AAA1000F", "AAA1001F")
+    first, second, third, fourth = (
+        CourseNeed(course=code, need="pass")
+        for code in ("AAA1000F", "AAA1001F", "AAA1003F", "AAA1004F")
     )
     printed = Refer(refer="Not stated in course entry.")
     rules = RuleSet(
@@ -55,6 +56,14 @@ def test_each_status_with_its_reason(result_symbols):
             course("AAA1002F"),
             course("AAA2000S", AllOf(all=(first, second))),
             course("AAA2001S", AnyOf(any=(printed, second))),
+            course("AAA2002S", AllOf(all=(second, third))),
+            course("AAA2003S", AnyOf(any=(second, third))),
+            # Her AAA1004F result isn't out, so the printed words are left to judge beside it
+            course(
+                "AAA2004S",
+                AllOf(all=(fourth, Refer(refer="Not open to first-year students."))),
+            ),
+            course("AAA2005S", AnyOf(any=(printed, fourth))),
         ),
         # As the approved 2026 has EEE1006F count as EEE1008F
         equivalences=(
@@ -63,7 +72,11 @@ def test_each_status_with_its_reason(result_symbols):
             ),
         ),
     )
-    history = [line("AAA1000F", "1", 80, 16), line("EEE1006F", "3", 59, 12)]
+    history = [
+        line("AAA1000F", "1", 80, 16),
+        line("EEE1006F", "3", 59, 12),
+        line("AAA1004F", "OS", None, 16),
+    ]
     symbols = {row.symbol: row for row in result_symbols}
     found = EntryRuleEligibility().check(
         rules.courses, history, rules, symbols, STUDENT
@@ -84,6 +97,28 @@ def test_each_status_with_its_reason(result_symbols):
             (
                 'It needs "Not stated in course entry." SAGE can\'t check this, so confirm '
                 "it with your advisor."
+            ),
+        ),
+        "AAA2002S": (
+            "not_eligible",
+            "It needs AAA1001F and AAA1003F, which your record doesn't show yet.",
+        ),
+        "AAA2003S": (
+            "not_eligible",
+            "It needs AAA1001F or AAA1003F, which your record doesn't show yet.",
+        ),
+        "AAA2004S": (
+            "check",
+            (
+                'It needs AAA1004F and "Not open to first-year students." SAGE can\'t check '
+                "this, so confirm it with your advisor."
+            ),
+        ),
+        "AAA2005S": (
+            "check",
+            (
+                'It needs AAA1004F or "Not stated in course entry." SAGE can\'t check this, '
+                "so confirm it with your advisor."
             ),
         ),
     }

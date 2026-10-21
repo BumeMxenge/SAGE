@@ -1,7 +1,8 @@
 # Checks the encoding through the facts it reads, on small years built for each test, with every
-# plan worked out by hand: co-requisites and same-year prerequisites met by the plan itself, a year's
-# courses and credits met exactly or missed by one, clashes at the edges of their days and terms,
-# alternatives, and meetings with no printed time.
+# plan worked out by hand: co-requisites and same-year prerequisites met by the plan itself at the
+# edges of their terms, rules left open on plan courses, a year's courses and credits met exactly or
+# missed by one, clashes at the edges of their days and terms, alternatives, and meetings with no
+# printed time.
 from datetime import time
 from uuid import uuid4
 
@@ -13,13 +14,17 @@ from sage.engine.solver import Solver
 from sage.shared.printed_meetings import MEETINGS
 from sage.shared.rules import (
     TERM_BY_SUFFIX,
+    AllOf,
+    AnyOf,
     Course,
     CourseNeed,
     EntryRule,
+    Refer,
     RuleSet,
     TimetableSlot,
+    TimetableSlotCurriculum,
 )
-from sage.shared.students import Student
+from sage.shared.students import CourseHistoryLine, Student
 
 STUDENT = Student(curriculum_code="EB000AAA01", id=uuid4(), intake_year=2024)
 
@@ -66,9 +71,22 @@ def year(courses: list[Course], meetings: tuple | list = ()) -> RuleSet:
     return RuleSet(courses=tuple(courses), timetable_slots=tuple(meetings))
 
 
-def solve(rules: RuleSet, problem: Problem, symbols) -> list[tuple]:
+def line(code: str, result: str) -> CourseHistoryLine:
+    # One of her 2025 results, in the term its code gives
+    return CourseHistoryLine(
+        student_id=STUDENT.id,
+        academic_year=2025,
+        term=TERM_BY_SUFFIX[code[-1]],
+        course_code=code,
+        course_name="Made Up",
+        credits=16,
+        result=result,
+    )
+
+
+def solve(rules: RuleSet, problem: Problem, symbols, history=()) -> list[tuple]:
     # Each plan's courses and its conditional ones, in a fixed order
-    record = Record(STUDENT, [], rules, symbols)
+    record = Record(STUDENT, list(history), rules, symbols)
     found = Solver().plans(facts(problem, rules, record))
     return sorted((plan.courses, plan.conditional) for plan in found)
 
@@ -80,22 +98,114 @@ def test_a_co_requisite_in_the_same_term_is_met_by_the_plan(symbols):
     assert solve(rules, problem, symbols) == [(("AAA1001S", "AAA2000S"), ())]
 
 
+def alongside(code: str) -> CourseNeed:
+    return CourseNeed(course=code, need="concurrent")
+
+
+def before(code: str) -> CourseNeed:
+    return CourseNeed(course=code, need="pass")
+
+
 @pytest.mark.parametrize(
-    ("leaf", "taken", "expected"),
+    ("leaf", "owner", "taken", "expected"),
     [
-        # A co-requisite starting after its course has started, in the second semester
-        (CourseNeed(course="AAA1001S", need="concurrent"), "AAA1001S", "not_met"),
-        # A prerequisite in the same semester as its course, so not passed before it starts
-        (CourseNeed(course="AAA1001F", need="pass"), "AAA1001F", "not_met"),
+        # A co-requisite in a term that starts as its course's does, one that starts later, and
+        # one that starts later inside its course's term (the second quarter)
+        (alongside("AAA1001F"), "AAA2000F", "AAA1001F", "open"),
+        (alongside("AAA1001S"), "AAA2000F", "AAA1001S", "not_met"),
+        (alongside("AAA1001B"), "AAA2000F", "AAA1001B", "not_met"),
+        # A prerequisite in a term that ends before its course starts, one in the same term, one
+        # in the first quarter, which ends as a first-semester course starts, and one that ends
+        # inside a full-year course
+        (before("AAA1001F"), "AAA2000S", "AAA1001F", "open"),
+        (before("AAA1001F"), "AAA2000F", "AAA1001F", "not_met"),
+        (before("AAA1001A"), "AAA2000F", "AAA1001A", "not_met"),
+        (before("AAA1001F"), "AAA2000W", "AAA1001F", "not_met"),
+        # The plan's other offering of the course, at the same credits
+        (before("AAA1001S"), "AAA2000S", "AAA1001F", "open"),
     ],
 )
-def test_the_plan_cant_meet_a_rule_with_a_course_that_comes_too_late(
-    leaf, taken, expected, symbols
+def test_a_plan_course_meets_a_rule_only_when_it_comes_in_time(
+    leaf, owner, taken, expected, symbols
 ):
-    rules = year([course("AAA2000F", rule=leaf), course(taken)])
+    codes = dict.fromkeys((owner, taken, leaf.course))
+    rules = year([course(code, rule=leaf if code == owner else None) for code in codes])
     record = Record(STUDENT, [], rules, symbols)
-    problem = Problem(required=("AAA2000F", taken))
-    assert verdicts(problem, rules, record)["AAA2000F"].value == expected
+    problem = Problem(required=(owner, taken))
+    assert verdicts(problem, rules, record)[owner].value == expected
+
+
+def test_only_a_course_that_covers_a_prerequisite_meets_it(symbols):
+    # AAA2000S needs AAA1000F, and the plan takes one of AAA1000F and AAA1001F. AAA1001F comes in
+    # time too, but covers nothing AAA2000S needs, so the plan with it can't hold AAA2000S.
+    rules = year(
+        [
+            course("AAA2000S", rule=before("AAA1000F")),
+            course("AAA1000F"),
+            course("AAA1001F"),
+        ]
+    )
+    group = ("AAA1000F", "AAA1001F")
+    problem = Problem(
+        required=("AAA2000S",),
+        electives=group,
+        needs=(Need(kind="courses", amount=1, courses=group),),
+    )
+    assert solve(rules, problem, symbols) == [(("AAA1000F", "AAA2000S"), ())]
+
+
+def test_a_rule_left_open_on_two_plan_courses_needs_both(symbols):
+    # AAA2000S needs AAA1000F and AAA1001F, and the plan takes two of three electives, so only
+    # the plan that takes both can hold it
+    both = AllOf(all=(before("AAA1000F"), before("AAA1001F")))
+    rules = year(
+        [
+            course("AAA2000S", rule=both),
+            course("AAA1000F"),
+            course("AAA1001F"),
+            course("AAA1002F"),
+        ]
+    )
+    group = ("AAA1000F", "AAA1001F", "AAA1002F")
+    problem = Problem(
+        required=("AAA2000S",),
+        electives=group,
+        needs=(Need(kind="courses", amount=2, courses=group),),
+    )
+    assert solve(rules, problem, symbols) == [
+        (("AAA1000F", "AAA1001F", "AAA2000S"), ())
+    ]
+
+
+def test_a_prerequisite_whose_result_is_still_to_come_leaves_its_course_conditional(
+    symbols,
+):
+    # Her AAA1000F result isn't out, so AAA2000S, which needs it, can be taken on the condition
+    # that she passes
+    rules = year([course("AAA2000S", rule=before("AAA1000F"))])
+    problem = Problem(required=("AAA2000S",))
+    history = [line("AAA1000F", "OS")]
+    assert solve(rules, problem, symbols, history) == [(("AAA2000S",), ("AAA2000S",))]
+
+
+def test_a_list_that_words_continue_is_met_through_its_open_branch(symbols):
+    # AAA2000S needs AAA1000F, AAA1001F and AAA1002F, "or equivalent". She has passed AAA1000F,
+    # and the plan takes the other two earlier in the year, so it meets the rule, and nothing is
+    # left for a person to judge.
+    branch = AllOf(all=(before("AAA1000F"), before("AAA1001F"), before("AAA1002F")))
+    rule = AnyOf(any=(branch, Refer(refer="or equivalent")))
+    rules = year(
+        [
+            course("AAA2000S", rule=rule),
+            course("AAA1000F"),
+            course("AAA1001F"),
+            course("AAA1002F"),
+        ]
+    )
+    problem = Problem(required=("AAA2000S", "AAA1001F", "AAA1002F"))
+    assert solve(rules, problem, symbols, [line("AAA1000F", "1")]) == [
+        (("AAA1001F", "AAA1002F", "AAA2000S"), ())
+    ]
 
 
 @pytest.mark.parametrize(
@@ -273,3 +383,39 @@ def test_a_meeting_with_no_printed_time_makes_its_course_conditional(symbols):
     )
     problem = Problem(required=("AAA1001F", "AAA1002F"))
     assert solve(rules, problem, symbols) == [(("AAA1001F", "AAA1002F"), ("AAA1001F",))]
+
+
+def test_a_course_still_clashes_through_its_meetings_after_one_with_no_printed_time(
+    symbols,
+):
+    # AAA1001F's first meeting has no day or time, and its second meets on Monday at 10:00, as
+    # AAA1002F's does
+    rules = year(
+        [course("AAA1001F"), course("AAA1002F")],
+        [
+            meeting("AAA1001F", None, None),
+            meeting("AAA1001F", 1, (time(10), time(11))),
+            meeting("AAA1002F", 1, (time(10), time(11))),
+        ],
+    )
+    assert solve(rules, Problem(required=("AAA1001F", "AAA1002F")), symbols) == []
+
+
+def test_a_meeting_linked_to_her_curriculum_clashes_for_her(symbols):
+    # AAA1001F's Monday 10:00 meeting is linked to her curriculum, and AAA1002F meets then too
+    linked = meeting("AAA1001F", 1, (time(10), time(11)))
+    rules = year(
+        [course("AAA1001F"), course("AAA1002F")],
+        [linked, meeting("AAA1002F", 1, (time(10), time(11)))],
+    ).model_copy(
+        update={
+            "timetable_slot_curricula": (
+                TimetableSlotCurriculum(
+                    slot_id=linked.id,
+                    handbook_year=2026,
+                    curriculum_code=STUDENT.curriculum_code,
+                ),
+            )
+        }
+    )
+    assert solve(rules, Problem(required=("AAA1001F", "AAA1002F")), symbols) == []

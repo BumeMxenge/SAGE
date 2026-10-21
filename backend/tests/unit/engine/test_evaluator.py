@@ -1,6 +1,7 @@
 # Checks the evaluator's three values on rules built for each test, worked out by hand from the
 # decisions they follow: all and any around a printed refer, a mark at and beside its threshold,
-# results still to come, covers, and the leaves that read her curriculum and her year
+# results still to come, covers and passes counted once, and the leaves that read her curriculum
+# and her year
 from uuid import UUID
 
 import pytest
@@ -90,6 +91,8 @@ def test_all_and_any_around_a_refer(kind, result, expected, symbols):
         ),  # a supplementary pass counts as 50, as the Term GPA has it
         ("SP", None, 51, "not_met"),
         ("CR", None, 50, "open"),  # credit carries no mark
+        ("PA", None, 50, "open"),  # nor does a pass printed without one
+        ("OS", None, 50, "open"),  # and a result still to come has none yet
     ],
 )
 def test_a_mark_leaf(result, mark, min_mark, expected, symbols):
@@ -99,6 +102,14 @@ def test_a_mark_leaf(result, mark, min_mark, expected, symbols):
 
 def test_a_result_still_to_come_leaves_a_pass_open(symbols):
     assert value(need("AAA1000F"), [line("AAA1000F", "OS")], symbols) == "open"
+
+
+@pytest.mark.parametrize(
+    ("passed", "expected"), [((), "not_met"), (("AAA1001F",), "met")]
+)
+def test_an_any_fails_only_when_every_branch_does(passed, expected, symbols):
+    rule = AnyOf(any=(need("AAA1000F"), need("AAA1001F")))
+    assert value(rule, [line(code, "1") for code in passed], symbols) == expected
 
 
 def test_an_equivalence_meets_the_course_it_counts_as(symbols):
@@ -195,6 +206,22 @@ def test_a_cover_takes_one_equivalence_and_one_offering_step(
     assert value(need(leaf), lines, symbols, rules) == expected
 
 
+def test_a_pass_moves_to_another_code_it_covers_so_both_count(symbols):
+    # Her older AAA1000F pass covers AAA1000F and its other offering, AAA1000S, and her BBB1000F
+    # pass, at other credits, counts as AAA1000S alone. AAA1000S takes the older pass first, then
+    # moves to the BBB1000F one, so AAA1000F counts too.
+    rules = RuleSet(
+        courses=(offering("AAA1000F", "sem1"), offering("AAA1000S", "sem2")),
+        equivalences=(counts("BBB1000F", "AAA1000S"),),
+    )
+    older = line("AAA1000F", "1", 72, credits=18).model_copy(
+        update={"academic_year": 2024}
+    )
+    lines = [older, line("BBB1000F", "1", 72, credits=16)]
+    record = Record(STUDENT, lines, rules, symbols)
+    assert record.counted(["AAA1000S", "AAA1000F"]) == ["AAA1000S", "AAA1000F"]
+
+
 @pytest.mark.parametrize(
     ("curricula", "expected"),
     [(("EB000AAA01", "EB000BBB01"), "met"), (("EB000BBB01",), "not_met")],
@@ -275,6 +302,20 @@ def test_her_year_is_the_latest_she_has_passed_two_core_courses_from(
     passed += ["AAA3000F", "AAA3001F", *fourth]
     lines = [line(code, "1") for code in passed]
     assert Record(STUDENT, lines, cores(4), symbols).year == year
+
+
+def test_practical_training_doesnt_hold_her_year_back(symbols):
+    # Her third year's core also holds AAA3000X, practical training, which her record doesn't show
+    # yet. It doesn't count, so with her first three years' other core passed she's in her fourth.
+    rules = cores(4)
+    training = CourseGroupMember(
+        handbook_year=2026, group_key="y3", course_code="AAA3000X"
+    )
+    rules = rules.model_copy(
+        update={"course_group_members": (*rules.course_group_members, training)}
+    )
+    lines = [line(f"AAA{year}00{n}F", "1") for year in (1, 2, 3) for n in range(3)]
+    assert Record(STUDENT, lines, rules, symbols).year == 4
 
 
 def test_a_co_requisite_passed_earlier_is_met_and_one_not_taken_is_open(symbols):
