@@ -8,7 +8,7 @@ import logging
 from collections.abc import Mapping, Sequence
 from uuid import UUID, uuid5
 
-from sage.engine import printed
+from sage.engine import printed, themes
 from sage.engine.evaluator import Record, Verdict, evaluate
 from sage.engine.facts import (
     FLOOR,
@@ -88,7 +88,7 @@ class ClingoPlanGenerator:
         )
         year = Year(student, Record(student, history, rules, symbols), rules)
         if year.finished:
-            return rows(plan_set, {None: [year.said.finished()]}, [], {}, ())
+            return rows(plan_set, {None: [year.said.finished()]}, [], {}, (), {})
         found, written, problem = self._plans(year)
         ranked = sorted(
             (plan for plan in found if plan.courses),
@@ -107,7 +107,8 @@ class ClingoPlanGenerator:
             for plan in ranked
         }
         said = year.reasons(ranked, problem, self._fits(year, problem, ranked))
-        return rows(plan_set, said, ranked, chosen, problem.required)
+        titles = {course.code: course.name for course in rules.courses}
+        return rows(plan_set, said, ranked, chosen, problem.required, titles)
 
     def _plans(self, year: "Year") -> tuple[list[Found], Facts, Problem]:
         # Every plan, once each current-year course that clashes with one she's repeating or owes
@@ -550,14 +551,22 @@ def attach(
         found[plan.courses].append(reason)
 
 
-def name(courses: Sequence[str], required: Sequence[str]) -> str:
-    # A plan is named by its electives, in code order
-    electives = [code for code in courses if code not in required]
-    if not electives:
-        return "Core courses only"
-    if len(electives) == 1:
-        return electives[0]
-    return f"{', '.join(electives[:-1])} & {electives[-1]}"
+def name(electives: Sequence[str], titles: Mapping[str, str]) -> str:
+    # A plan is named by its electives' theme words, in code order, a word two of them share
+    # written once, and an elective with no word by its printed name
+    words = list(
+        dict.fromkeys(themes.WORDS.get(code) or titles[code] for code in electives)
+    )
+    if not words:
+        return "Core Courses Only"
+    if len(words) == 1:
+        return words[0]
+    return f"{', '.join(words[:-1])} & {words[-1]}"
+
+
+def combination(electives: Sequence[str]) -> str | None:
+    # Its electives' codes in code order, as the prototype prints them under its name
+    return " · ".join(electives) or None
 
 
 def rows(
@@ -566,22 +575,25 @@ def rows(
     ranked: Sequence[Found],
     chosen: Mapping[tuple[str, ...], dict[str, dict[str, list[str]]]],
     required: Sequence[str],
+    titles: Mapping[str, str],
 ) -> PlanSetRows:
     # The set as stored, with ids made from her id, the year and each plan's courses, so a retried
-    # onboarding writes the same rows
+    # onboarding writes the same rows. Titles are the year's printed course names.
     student, period = plan_set.student_id, plan_set.period
     ids: dict[tuple[str, ...] | None, UUID | None] = {None: None}
     plans, courses = [], []
     for position, found in enumerate(ranked, start=1):
         plan_id = uuid5(student, f"plans/{period}/{'+'.join(found.courses)}")
         ids[found.courses] = plan_id
+        electives = [code for code in found.courses if code not in required]
         plans.append(
             Plan(
                 id=plan_id,
                 plan_set_id=plan_set.id,
                 student_id=student,
                 position=position,
-                name=name(found.courses, required),
+                name=name(electives, titles),
+                combination=combination(electives),
             )
         )
         courses += [

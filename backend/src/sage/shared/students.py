@@ -50,7 +50,10 @@ class Plan(Row):
     plan_set_id: UUID
     student_id: UUID
     position: int
-    name: str
+    name: str  # its electives' theme words, such as "Power, Control & Robotics"
+    # Its electives' codes in code order, such as "EEE4117F · EEE4118F · EEE4119F"; None when it
+    # has none
+    combination: str | None = None
     hidden: bool = False
 
 

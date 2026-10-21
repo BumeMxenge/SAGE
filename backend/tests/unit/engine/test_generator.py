@@ -7,7 +7,7 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from sage.engine.generator import ClingoPlanGenerator, name
+from sage.engine.generator import ClingoPlanGenerator, combination, name
 from sage.shared.printed_meetings import timetabled
 from sage.shared.rules import (
     TERM_BY_SUFFIX,
@@ -974,18 +974,43 @@ def test_a_set_keeps_its_best_50_plans_and_logs_any_it_cuts(
 
 
 @pytest.mark.parametrize(
-    ("electives", "named"),
+    ("electives", "named", "combined"),
     [
-        ((), "Core courses only"),
-        (("AAA2001S",), "AAA2001S"),
-        (("AAA2001S", "AAA2002S"), "AAA2001S & AAA2002S"),
-        (("AAA2001S", "AAA2002S", "AAA2003S"), "AAA2001S, AAA2002S & AAA2003S"),
+        ((), "Core Courses Only", None),
+        (("EEE4119F",), "Robotics", "EEE4119F"),
+        (("EEE4117F", "HUB4049F"), "Power & Imaging", "EEE4117F · HUB4049F"),
+        (
+            ("EEE4117F", "EEE4118F", "EEE4119F"),
+            "Power, Control & Robotics",
+            "EEE4117F · EEE4118F · EEE4119F",
+        ),
+        # Networks, Control and Control: the shared word comes once, where its first elective
+        # puts it, so not in alphabetical order
+        (
+            ("CSC3002F", "EEE3094S", "EEE4118F"),
+            "Networks & Control",
+            "CSC3002F · EEE3094S · EEE4118F",
+        ),
     ],
 )
-def test_a_plan_is_named_by_its_electives(electives, named):
-    # Stop 1's decision 15: its electives in code order, written "A, B & C", and "Core courses
-    # only" when it has none
-    assert name(("AAA2000S", *electives), ("AAA2000S",)) == named
+def test_a_plan_is_named_by_its_electives_theme_words(electives, named, combined):
+    # My words for its electives in code order, written "A, B & C", over their codes as the
+    # prototype prints them, and "Core Courses Only" when it has none
+    assert (name(electives, {}), combination(electives)) == (named, combined)
+
+
+def test_a_plan_is_stored_with_its_name_and_combination(symbols):
+    # AAA1001F has no theme word, so its printed name names its plan
+    rules = rulebook(
+        {1: (core("y1"), ChooseFromGroup(choose=1, from_group="g"), total(32))},
+        {"y1": ("AAA1000F",), "g": ("AAA1001F", "EEE4119F")},
+        [course(code) for code in ("AAA1000F", "AAA1001F", "EEE4119F")],
+    )
+    rows = generate(rules, symbols)
+    assert {(plan.name, plan.combination) for plan in rows.plans} == {
+        ("Course AAA1001F", "AAA1001F"),
+        ("Robotics", "EEE4119F"),
+    }
 
 
 def test_the_same_record_gets_the_same_ids(symbols):

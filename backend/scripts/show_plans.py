@@ -123,7 +123,8 @@ def show(rows: PlanSetRows, rules: RuleSet, took: float) -> None:
     for plan in rows.plans:
         held = [row for row in rows.plan_courses if row.plan_id == plan.id]
         total = sum(credits[row.course_code] for row in held)
-        print(f"\n{plan.position}. {plan.name}, {total} credits")
+        combined = f" ({plan.combination})" if plan.combination else ""
+        print(f"\n{plan.position}. {plan.name}{combined}, {total} credits")
         print(
             "   "
             + ", ".join(

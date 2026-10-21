@@ -22,7 +22,10 @@ class Reason(BaseModel):
 class PlanSummary(BaseModel):
     id: UUID
     position: int
-    name: str
+    name: str  # its electives' theme words, such as "Power, Control & Robotics"
+    # Its electives' codes, such as "EEE4117F · EEE4118F · EEE4119F", which the planner prints
+    # under its name; null when it has none
+    combination: str | None
     hidden: bool  # hidden by the questionnaire, but still hers to open
     credits: int
 
@@ -68,6 +71,7 @@ class Plan(BaseModel):
     period: int
     position: int
     name: str
+    combination: str | None  # as in PlanSummary
     hidden: bool
     credits: Credits
     courses: list[PlanCourse]
