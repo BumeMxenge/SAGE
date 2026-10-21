@@ -577,6 +577,103 @@ def test_a_final_year_reaches_the_degree_total(passed, electives, symbols):
     assert {len(courses) - 1 for courses in plans(rows)} == {electives}
 
 
+@pytest.mark.parametrize(
+    ("passed", "advice"),
+    [
+        (512, "See your advisor about it."),
+        (
+            513,
+            (
+                "Your year is now under its printed minimum of 48 credits, and your advisor "
+                "can give permission for that."
+            ),
+        ),
+    ],
+)
+def test_a_left_out_course_puts_her_year_under_its_minimum_unless_the_degree_needs_it(
+    passed, advice, symbols
+):
+    # EB009's first page prints 560 credits for a 2025 intake. AAA2001S needs ZZZ1000F, which she
+    # hasn't passed, so her last year's 48 drops by its 16 to 32. With 512 passed the degree still
+    # needs 48 from her year, its printed minimum, and with 513 only 47, under it. Both take the
+    # same plan.
+    rules = rulebook(
+        {
+            1: (core("y1"), total(passed)),
+            2: (
+                core("y2"),
+                CreditsFromGroups(credits=16, from_groups=("g",)),
+                total(48),
+            ),
+        },
+        {
+            "y1": ("AAA1000F",),
+            "y2": ("AAA2000S", "AAA2001S"),
+            "g": ("AAA2002S", "AAA2003S"),
+        },
+        [
+            course("AAA1000F", passed),
+            course("AAA2000S"),
+            course("AAA2001S", rule=CourseNeed(course="ZZZ1000F", need="pass")),
+            course("AAA2002S"),
+            course("AAA2003S"),
+        ],
+        curriculum="EB009EEE01",
+    )
+    history = (line("AAA1000F", credits=passed),)
+    rows = generate(rules, symbols, history, curriculum="EB009EEE01")
+    assert plans(rows) == [("AAA2000S", "AAA2002S", "AAA2003S")]
+    assert messages(rows, "excluded")[-1] == (
+        "AAA2001S isn't in your plans, as it needs ZZZ1000F, which your record doesn't show "
+        f"yet. {advice}"
+    )
+
+
+@pytest.mark.parametrize(
+    ("passed", "early"),
+    [
+        (
+            ("ZZZ1000F", "AAA2003F"),
+            [
+                (
+                    "Next year's core includes AAA2000F, whose entry rules you already meet. "
+                    "Students sometimes take such courses early, with their advisor's "
+                    "agreement."
+                )
+            ],
+        ),
+        (("AAA2003F",), []),
+    ],
+)
+def test_next_years_core_she_already_meets_the_rules_for_is_named(
+    passed, early, symbols
+):
+    # Her second year's core: AAA2000F needs ZZZ1000F, AAA2001F needs ZZZ1001F, which she hasn't
+    # passed, AAA2002F needs a person's judgement, and she has passed AAA2003F early, which keeps
+    # her in her first year. Only AAA2000F can be named, and only once she has ZZZ1000F.
+    rules = rulebook(
+        {1: (core("y1"), total(32)), 2: (core("y2"), total(64))},
+        {
+            "y1": ("AAA1000F", "AAA1001F"),
+            "y2": ("AAA2000F", "AAA2001F", "AAA2002F", "AAA2003F"),
+        },
+        [
+            course("AAA1000F"),
+            course("AAA1001F"),
+            course("AAA2000F", rule=CourseNeed(course="ZZZ1000F", need="pass")),
+            course("AAA2001F", rule=CourseNeed(course="ZZZ1001F", need="pass")),
+            course(
+                "AAA2002F", rule=Refer(refer="By permission of the Head of Department.")
+            ),
+            course("AAA2003F"),
+        ],
+    )
+    rows = generate(rules, symbols, tuple(line(code) for code in passed))
+    assert plans(rows) == [("AAA1000F", "AAA1001F")]
+    named = [m for m in messages(rows, "included") if m.startswith("Next year's core")]
+    assert named == early
+
+
 def test_a_core_result_still_to_come_counts_as_passed_with_its_reason(symbols):
     # Her AAA1001F result isn't out, so her plans are for her second year
     rules = rulebook(
