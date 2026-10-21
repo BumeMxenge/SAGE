@@ -53,7 +53,7 @@ testpaths = ["tests"]
 addopts = ["--import-mode=importlib", "--strict-markers"]
 markers = [
     "integration: needs local Supabase (make test-integration)",
-    "stub(component): tests a stand-in in engine/stubs.py or advisor/stubs.py, so it goes when that component lands",
+    "stub(component): tests a stand-in in advisor/stubs.py, so it goes when that component lands",
 ]
 
 # make test's coverage report: each file's lines that no unit test runs

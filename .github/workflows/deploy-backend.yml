@@ -64,8 +64,6 @@ jobs:
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: backend
-          # Mbali's seed, which the plan stand-in reads at runtime. It goes when the engine replaces it.
-          build-contexts: seed=data/synthetic
           push: true
           tags: ${{ env.IMAGE }}:${{ env.SHA }}
           build-args: GIT_SHA=${{ env.SHA }} # /health reports this, so the last step can tell new from old

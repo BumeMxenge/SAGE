@@ -10,6 +10,7 @@ from sage.shared.planning import Eligibility, EligibilityChecker
 from sage.shared.repositories import StudentRepository
 from sage.shared.rulebook import Rulebook
 from sage.shared.rules import Course, ElectiveTab
+from sage.shared.students import Student
 
 
 class Elective(Row):
@@ -22,7 +23,7 @@ def by_tab(
     students: StudentRepository,
     rulebook: Rulebook,
     checker: EligibilityChecker,
-    student_id: UUID,
+    student: Student,
 ) -> list[tuple[ElectiveTab, list[Elective]]]:
     # The tabs in ElectiveTab's order, leaving out empty ones
     rules = rulebook.current()
@@ -32,12 +33,13 @@ def by_tab(
             tabs[member.category].add(member.course_code)
     courses = {course.code: course for course in rules.courses}
     listed = sorted({code for codes in tabs.values() for code in codes})
-    record = students.record(student_id)
+    record = students.record(student.id)
     eligibility = checker.check(
         [courses[code] for code in listed],
         record.course_history,
         rules,
         rulebook.symbols(),
+        student,
     )
     return [
         (

@@ -1,5 +1,4 @@
-# The interfaces the planning engine will implement. Until it exists, stand-ins in engine/stubs.py
-# fill them, so swapping the engine in never touches a route.
+# The interfaces the planning engine implements, so the routes never depend on it directly
 from collections.abc import Mapping, Sequence
 from typing import Literal, Protocol
 
@@ -20,7 +19,11 @@ class PlanGenerator(Protocol):
     # Every valid plan for the student in the rulebook's year, with the reasons behind them. The set
     # comes back unwritten and not yet complete.
     def generate(
-        self, student: Student, history: Sequence[CourseHistoryLine], rules: RuleSet
+        self,
+        student: Student,
+        history: Sequence[CourseHistoryLine],
+        rules: RuleSet,
+        symbols: Mapping[str, ResultSymbol],
     ) -> PlanSetRows: ...
 
 
@@ -32,4 +35,5 @@ class EligibilityChecker(Protocol):
         history: Sequence[CourseHistoryLine],
         rules: RuleSet,
         symbols: Mapping[str, ResultSymbol],
+        student: Student,
     ) -> dict[str, Eligibility]: ...

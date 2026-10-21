@@ -1,6 +1,6 @@
 # Checks Finish setup generates one plan set a year however often she presses it, from the lines she
 # confirmed and that year's rules
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from uuid import UUID, uuid4
 
 import pytest
@@ -9,7 +9,7 @@ from sage.features.onboarding import service as onboarding
 from sage.shared.memory.rules import InMemoryRuleRepository
 from sage.shared.memory.students import InMemoryStudentRepository
 from sage.shared.rulebook import Rulebook
-from sage.shared.rules import RuleSet
+from sage.shared.rules import ResultSymbol, RuleSet
 from sage.shared.seed import load_seed
 from sage.shared.students import (
     CourseHistoryLine,
@@ -23,13 +23,17 @@ STUDENT = UUID(int=1)
 
 
 class Generator:
-    # Stands in for the engine: records every call, and gives each set new ids, as the engine will.
-    # The seeded stand-in can't show a second set, as it makes the same ids every time.
+    # Stands in for the engine: records every call, and gives each set new ids, so a second set
+    # would show. The engine can't, as it makes the same ids from the same record every time.
     def __init__(self) -> None:
         self.calls: list[tuple[Sequence[CourseHistoryLine], RuleSet]] = []
 
     def generate(
-        self, student: Student, history: Sequence[CourseHistoryLine], rules: RuleSet
+        self,
+        student: Student,
+        history: Sequence[CourseHistoryLine],
+        rules: RuleSet,
+        symbols: Mapping[str, ResultSymbol],
     ) -> PlanSetRows:
         self.calls.append((history, rules))
         return PlanSetRows(

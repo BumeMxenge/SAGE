@@ -1,7 +1,6 @@
-# Checks Explore Electives on Mbali's seeded set: whether she may take each course, as the
-# eligibility stand-in decides until the engine does, and hearting, which changes nothing the
-# second time. In the approved 2026 only the language options have a tab, as the other tabs wait
-# for M3's categories.
+# Checks Explore Electives on Mbali's seeded set: hearting, which changes nothing the second time.
+# Whether she may take each course is checked in tests/unit/engine/test_eligibility.py. In the
+# approved 2026 only the language options have a tab, as the other tabs wait for M3's categories.
 import pytest
 
 from tests.unit.accounts import MBALI
@@ -11,26 +10,6 @@ def electives(mbali) -> dict[str, dict]:
     # Every course on every tab, by code, as the page would read them now
     tabs = mbali.get("/v1/electives").json()["tabs"]
     return {course["code"]: course for tab in tabs for course in tab["courses"]}
-
-
-@pytest.mark.stub("engine")
-def test_an_eligible_course_has_no_reason(mbali):
-    reasons = {
-        course["eligibility"]["reason"]
-        for course in electives(mbali).values()
-        if course["eligibility"]["status"] == "eligible"
-    }
-    assert reasons == {None}
-
-
-@pytest.mark.stub("engine")
-def test_a_course_with_a_printed_refer_shows_its_text(mbali):
-    # The complementary workbook prints SLL1029F's requirement as this (Language options!G6, from
-    # the Humanities handbook's p. 247), which is kept as a refer leaf
-    assert electives(mbali)["SLL1029F"]["eligibility"] == {
-        "status": "check",
-        "reason": "Not stated in course entry.",
-    }
 
 
 def test_hearting_a_course_shows_on_its_card_and_can_be_repeated(mbali, stores):
