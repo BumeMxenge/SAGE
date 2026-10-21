@@ -1,0 +1,16 @@
+/* The week or the list, then what follows it, in one column as wide as the week */
+.term-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: var(--width-full);
+  margin: 0 auto;
+}
+
+.no-set-times {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}

@@ -5,6 +5,7 @@ import { mbali, signInLink } from './visitors.ts'
 
 setup('sign Mbali in', async ({ page }) => {
   await page.goto(signInLink('sign-in'))
-  await page.waitForURL('**/plan')
+  // Home is /plan, which opens her first plan at its own address
+  await page.waitForURL(/\/plan\/[\w-]+$/)
   await page.context().storageState({ path: mbali })
 })

@@ -37,13 +37,14 @@ test('each link opens its page, and only that link is current, a plan of its own
   await page.goto('/plan/00000000-0000-4000-8000-000000000001')
   const current = sidebar(page).locator('[aria-current="page"]')
   await expect(current).toHaveText('Plan')
-  for (const [name, path] of [
-    ['Explore Electives', '/electives'],
-    ['Course History', '/history'],
-    ['Plan', '/plan'],
-  ]) {
+  for (const [name, address] of [
+    ['Explore Electives', '**/electives'],
+    ['Course History', '**/history'],
+    // Plan opens her first plan, at its own address
+    ['Plan', /\/plan\/[\w-]+$/],
+  ] as const) {
     await sidebar(page).getByRole('link', { name, exact: true }).click()
-    await page.waitForURL(`**${path}`)
+    await page.waitForURL(address)
     await expect(page.getByRole('heading', { level: 1, name })).toBeVisible()
     await expect(current).toHaveText(name)
   }
@@ -115,7 +116,8 @@ test('Sign Out leaves nothing of the student in the browser', async ({ page }) =
 })
 
 test('the rail passes axe, and the keyboard walks it in order, each stop ringed', async ({ page }) => {
-  await page.goto('/plan')
+  // Course History has nothing to press, so the rail's stops are the page's only ones
+  await page.goto('/history')
   await collapse(page)
   await expectNoAxeViolations(page)
   // Focus moved to Open Sidebar, and Tab would go on from there, so the walk starts from the corner
