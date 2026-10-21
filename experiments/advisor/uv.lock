@@ -1681,6 +1681,7 @@ dev = [
     { name = "httpx", specifier = ">=0.28" },
     { name = "httpx2", specifier = ">=2.13.1" },
     { name = "import-linter", specifier = ">=2.15" },
+    { name = "openai", specifier = ">=3.29.0" },
     { name = "pytest", specifier = ">=8.0" },
     { name = "pytest-cov", specifier = ">=7.1" },
     { name = "ruff", specifier = ">=0.6" },
