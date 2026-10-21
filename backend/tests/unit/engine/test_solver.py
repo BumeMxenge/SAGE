@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import pytest
 
+from sage.engine import printed
 from sage.engine.evaluator import Record
 from sage.engine.facts import Need, Problem, facts, verdicts
 from sage.engine.solver import Solver
@@ -209,6 +210,41 @@ def test_an_alternative_is_recorded_only_when_the_plan_needs_it(other, chosen, s
     solver = Solver()
     (plan,) = solver.plans(written)
     assert solver.choices(written, plan, problem.required) == chosen
+
+
+@pytest.mark.parametrize(
+    ("busy", "found"),
+    [
+        # AAA1000F takes every afternoon but Friday's, and the two practicals need two days
+        ((1, 2, 3, 4), []),
+        # It leaves Tuesday and Thursday free, which every way of attending the plan uses
+        (
+            (1, 3, 5),
+            [
+                (
+                    ("AAA1000F", "CSC3002F"),
+                    {"CSC3002F": {"practical": "Tuesday and Thursday"}},
+                )
+            ],
+        ),
+    ],
+)
+def test_csc3002f_needs_two_free_afternoons_for_its_practicals(busy, found, symbols):
+    # Its entry (p. 171) prints two 4-hour practicals a week, 14:00 to 18:00, Monday to Friday
+    practicals = [
+        slot for slot in printed.MEETINGS[2026] if slot.course_code == "CSC3002F"
+    ]
+    afternoons = [meeting("AAA1000F", day, (time(14), time(15))) for day in busy]
+    rules = year([course("CSC3002F", 36), course("AAA1000F")], practicals + afternoons)
+    problem = Problem(required=("CSC3002F", "AAA1000F"))
+    written = facts(problem, rules, Record(STUDENT, [], rules, symbols))
+    solver = Solver()
+    plans = solver.plans(written)
+    chosen = [
+        (plan.courses, solver.choices(written, plan, problem.required))
+        for plan in plans
+    ]
+    assert chosen == found
 
 
 def test_a_meeting_with_no_printed_time_makes_its_course_conditional(symbols):

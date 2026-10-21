@@ -85,6 +85,7 @@ class ClingoPlanGenerator:
             period=version.year,
             version=1,
         )
+        rules = printed.timetabled(rules)
         year = Year(student, Record(student, history, rules, symbols), rules)
         if year.finished:
             return rows(plan_set, {None: [year.said.finished()]}, [], {}, ())
@@ -403,10 +404,16 @@ class Year:
             every = len(met) == len(ranked)
             attach(found, ranked, met, said.met_by_plan(code, verdict.rest, every))
         held = sorted({code for plan in ranked for code in plan.courses})
+        (version,) = self.rules.handbook_versions
+        arranged = {
+            slot.course_code
+            for slot in printed.MEETINGS.get(version.year, ())
+            if slot.day is None
+        }
         for code in held:
             if untimed(code, self.rules, self.curriculum):
                 holding = [plan for plan in ranked if code in plan.courses]
-                attach(found, ranked, holding, said.untimed(code))
+                attach(found, ranked, holding, said.untimed(code, code in arranged))
         for plan in ranked:
             for slot in self.slots:
                 fit = [

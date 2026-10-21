@@ -122,13 +122,14 @@ class Reasons:
             passage_id=self.entry(code),
         )
 
-    def untimed(self, code: str) -> Reason:
+    def untimed(self, code: str, arranged: bool) -> Reason:
+        # One its own entry prints by arrangement cites the entry, and any other FB3.4
         return Reason(
             kind="conditional",
             message=f"{code} has a meeting with no printed day or time, so SAGE can't check "
             "it for clashes. Check its times with your advisor.",
             course_code=code,
-            passage_id=self.faculty("FB3.4"),
+            passage_id=self.entry(code) if arranged else self.faculty("FB3.4"),
         )
 
     def practical(self, code: str) -> Reason:
