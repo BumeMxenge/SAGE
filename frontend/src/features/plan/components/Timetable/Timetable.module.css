@@ -117,6 +117,12 @@
   font-weight: var(--font-weight-semibold);
 }
 
+/* A compare panel's days are too narrow for the times, which the hours beside the week already give,
+   as the prototype's compare shows a code and a short label. A screen reader still hears them. */
+.timetable[data-compact] .times {
+  display: none;
+}
+
 /* The mark of a course only this plan has, beside its code */
 .only {
   --icon-size: var(--size-icon-sm);

@@ -48,6 +48,33 @@
   color: var(--color-text);
 }
 
+/* Compare's title, with Done Comparing at the far end */
+.title {
+  margin: 0;
+  margin-inline-end: auto;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-text);
+}
+
+/* The two plans side by side, each at least a compare panel's width, so with less room they stack. A
+   window narrower than one panel gives it the whole width rather than scroll sideways. */
+.panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--width-compare-panel), 100%), 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.panel-credits {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
 .controls {
   display: flex;
   flex-wrap: wrap;

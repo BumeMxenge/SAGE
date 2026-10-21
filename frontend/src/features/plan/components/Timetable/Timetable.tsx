@@ -2,7 +2,8 @@
 // meeting a block in its course's colour, as tall as the meeting is long. The days and hours are for
 // the eye. To a screen reader each day is a list named by the day, and each block says its course,
 // its times, any options it stands for, and whether only this plan of two has it. The course list is
-// the plain equivalent of the whole week. Compact is the smaller week inside a compare panel.
+// the plain equivalent of the whole week. Compact is the smaller week inside a compare panel, whose
+// blocks leave the times to the hours beside them.
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import type { CourseColour, Week } from '../../week.ts'
 import styles from './Timetable.module.css'
@@ -61,11 +62,13 @@ export function Timetable({ week, colours, only, compact = false }: TimetablePro
                   )}
                 </p>
                 <p className={styles.detail}>
-                  {block.quarter && `${block.quarter} · `}
-                  <span aria-hidden="true">
+                  {block.quarter}
+                  <span aria-hidden="true" className={styles.times}>
+                    {block.quarter && ' · '}
                     {block.from}–{block.to}
                   </span>
                   <span className="visually-hidden">
+                    {' '}
                     {block.from} to {block.to}
                   </span>
                 </p>
