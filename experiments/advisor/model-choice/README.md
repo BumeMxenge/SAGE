@@ -129,3 +129,13 @@ From `experiments/advisor/`:
 3. `uv run python model-choice/read.py` writes the blind reading file, `results/reading.md`, and its key. It never calls a provider.
 4. `uv run python model-choice/score.py` scores every reply from the cache and my marks, then prints the tables and writes them to `results/`. It never calls a provider.
 5. `uv run pytest` runs the tests, which never call a model.
+
+## Protocol change, 21 October
+
+Made after the model calls and before the key was opened, so before any model's result was known.
+
+Gemini, from a third provider, and I marked safety together in one pass. For each reply, Gemini gave its view against the evidence and I decided the mark, writing the final marks straight into `results/reading.md`. No record of Gemini's suggestions on their own was kept, so there is no agreement figure between its views and my marks. I marked every first sentence and made every clarity pick myself. The Gemini model's name and version weren't recorded.
+
+**Why.** A reader from a third provider has no stake in either candidate. Each of its views came with a reason, which I checked against the evidence before deciding. It also made a one-person blind read faster and less tiring.
+
+An editor reformatted `reading.md` while I marked, so I put my marks back onto the layout `read.py` generated. Regenerating that layout and masking the mark lines leaves no line different, and the eight "by code" lines are as generated.
