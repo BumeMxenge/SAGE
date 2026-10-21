@@ -12,6 +12,11 @@
   height: var(--size-logo-compact);
 }
 
+/* After .compact, so the sidebar's smaller size wins */
+.small {
+  height: var(--size-logo-compact-small);
+}
+
 .mark {
   height: var(--size-logo-mark);
 }

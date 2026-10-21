@@ -23,7 +23,9 @@ export function shouldRetry(failureCount: number, error: Error): boolean {
 export const queryClient = new QueryClient({
   defaultOptions: {
     // Data changes only when the student acts, and each action refreshes what it changes
-    // (queryKeys.ts), so nothing goes stale on a timer
-    queries: { retry: shouldRetry, staleTime: Infinity },
+    // (queryKeys.ts), so nothing goes stale on a timer. Nothing leaves on one either, so a page opened
+    // once opens at once afterwards, however long the student was away: TanStack Query would otherwise
+    // drop a closed page's read after five minutes. Sign Out empties the cache (useAuth.ts).
+    queries: { retry: shouldRetry, staleTime: Infinity, gcTime: Infinity },
   },
 })

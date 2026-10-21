@@ -1,0 +1,141 @@
+[
+  {
+    "need": "pass",
+    "printed": "3 years of engineering or science studies at university level",
+    "cause": "refused_free_text",
+    "model": "claude-haiku-5-5",
+    "reply": {
+      "refer": "3 years of engineering or science studies at university level"
+    },
+    "kept": true,
+    "in its place": {
+      "refer": "3 years of engineering or science studies at university level"
+    }
+  },
+  {
+    "need": "pass",
+    "printed": "All core third year courses, CHE4048F, CHE4049F.",
+    "cause": "refused_free_text",
+    "model": "claude-haiku-5-5",
+    "reply": {
+      "all": [
+        {
+          "refer": "All core third year courses"
+        },
+        {
+          "course": "CHE4048F",
+          "need": "pass"
+        },
+        {
+          "course": "CHE4049F",
+          "need": "pass"
+        }
+      ]
+    },
+    "kept": true,
+    "in its place": {
+      "all": [
+        {
+          "course": "CHE4048F",
+          "need": "pass"
+        },
+        {
+          "course": "CHE4049F",
+          "need": "pass"
+        },
+        {
+          "refer": "All core third year courses"
+        }
+      ]
+    }
+  },
+  {
+    "need": "pass",
+    "printed": "All core third year courses.",
+    "cause": "refused_free_text",
+    "model": "claude-haiku-5-5",
+    "reply": {
+      "refer": "All core third year courses."
+    },
+    "kept": true,
+    "in its place": {
+      "refer": "All core third year courses."
+    }
+  },
+  {
+    "need": "pass",
+    "printed": "CON2033F,CML1001F/L/P or CML1004S",
+    "cause": "refused_mixed_and_or",
+    "model": "claude-haiku-5-5",
+    "reply": {
+      "all": [
+        {
+          "course": "CON2033F",
+          "need": "pass"
+        },
+        {
+          "any": [
+            {
+              "course": "CML1001F",
+              "need": "pass"
+            },
+            {
+              "course": "CML1001L",
+              "need": "pass"
+            },
+            {
+              "course": "CML1001P",
+              "need": "pass"
+            },
+            {
+              "course": "CML1004S",
+              "need": "pass"
+            }
+          ]
+        }
+      ]
+    },
+    "kept": true,
+    "in its place": {
+      "all": [
+        {
+          "any": [
+            {
+              "course": "CML1001F",
+              "need": "pass"
+            },
+            {
+              "course": "CML1001L",
+              "need": "pass"
+            },
+            {
+              "course": "CML1001P",
+              "need": "pass"
+            },
+            {
+              "course": "CML1004S",
+              "need": "pass"
+            }
+          ]
+        },
+        {
+          "course": "CON2033F",
+          "need": "pass"
+        }
+      ]
+    }
+  },
+  {
+    "need": "pass",
+    "printed": "DP obtained in CHE3008S",
+    "cause": "refused_free_text",
+    "model": "claude-haiku-5-5",
+    "reply": {
+      "refer": "DP obtained in CHE3008S"
+    },
+    "kept": true,
+    "in its place": {
+      "refer": "DP obtained in CHE3008S"
+    }
+  }
+]

@@ -41,12 +41,11 @@
 
   /* Errors and warnings */
   --color-danger-tint: #fdf1ef; /* the tile behind an error icon */
-  --color-warning: #c07b54; /* warning icons, never text */
   --color-warning-tint: #f6ebe6; /* the tile behind a warning icon */
 
   /* Borders */
   --color-border: #e6e6e8; /* decorative */
-  --color-border-field: #7b8286; /* the search field and chat box: 3:1 */
+  --color-border-field: #83898d; /* the search field and chat box: the lightest at 3:1 on every surface */
   --color-border-control: #7b8286; /* the checkbox, which is only its edge: 3:1 */
 
   /* Focus ring */
@@ -55,6 +54,11 @@
   /* Behind dialogs, and inside the shadows */
   --color-scrim: rgb(30 36 40 / 32%);
   --color-shadow: rgb(30 36 40 / 9%);
+
+  /* Brand: the logo's navy for decoration, and sand, the warm panel behind the sign-in highlights,
+     which text sits on */
+  --color-brand-navy: #16345c;
+  --color-brand-sand: #f6f4ee;
 }
 
 /* Dark */
@@ -89,7 +93,6 @@
 
   /* Errors and warnings */
   --color-danger-tint: #2a1715;
-  --color-warning: #d08a60;
   --color-warning-tint: #33261f;
 
   /* Borders */
@@ -103,4 +106,8 @@
   /* Behind dialogs, and inside the shadows (50% black, as measured) */
   --color-scrim: rgb(0 0 0 / 60%);
   --color-shadow: rgb(0 0 0 / 50%);
+
+  /* Brand: navy lifts as the logo's navy petal does in dark, and sand becomes a warm near-black */
+  --color-brand-navy: #5580bd;
+  --color-brand-sand: #1a1916;
 }

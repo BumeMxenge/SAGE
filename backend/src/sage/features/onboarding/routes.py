@@ -8,6 +8,7 @@ from sage.features.accounts.routes import me
 from sage.features.onboarding import service as onboarding
 from sage.features.onboarding.models import (
     Catalogue,
+    CatalogueCourse,
     Curriculum,
     ResultSymbol,
     Setup,
@@ -15,6 +16,7 @@ from sage.features.onboarding.models import (
     TranscriptLine,
     TranscriptWarning,
 )
+from sage.ingestion.curricula import COMPLEMENTARY
 from sage.shared.api.deps import (
     STUDENT_ERRORS,
     Generator,
@@ -117,6 +119,12 @@ async def read_transcript(
 def get_catalogue(rulebook: Rules) -> Catalogue:
     year = rulebook.current_year()
     rules = rulebook.year(year)
+    # The year's approved complementary studies courses, which the course picker lists apart
+    complementary = {
+        member.course_code
+        for member in rules.course_group_members
+        if member.group_key == COMPLEMENTARY
+    }
     return Catalogue(
         year=year,
         curricula=[
@@ -124,7 +132,10 @@ def get_catalogue(rulebook: Rules) -> Catalogue:
             for row in sorted(rules.curricula, key=lambda row: row.code)
         ],
         courses=[
-            Course.model_validate(row, from_attributes=True)
+            CatalogueCourse(
+                **Course.model_validate(row, from_attributes=True).model_dump(),
+                complementary=row.code in complementary,
+            )
             for row in sorted(rules.courses, key=lambda row: row.code)
         ],
         symbols=[

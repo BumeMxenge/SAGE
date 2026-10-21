@@ -1,14 +1,14 @@
 // One action in a Menu. A destructive one, such as Sign Out, is red. In a section where one item is
-// chosen, such as Appearance, the chosen item shows a tick.
+// chosen, such as Appearance, the chosen item is semibold as well as filled.
 import type { ReactNode } from 'react'
 import { MenuItem as AriaMenuItem } from 'react-aria-components'
-import { Icon } from '@/components/brand/Icon/Icon.tsx'
-import type { IconName } from '@/components/brand/Icon/icons.ts'
+import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import styles from '@/components/overlays/Popover/Popover.module.css'
+import itemStyles from './MenuItem.module.css'
 
 type MenuItemProps = {
   id: string
-  icon?: Exclude<IconName, 'favorite'>
+  icon?: PlainIconName
   isDestructive?: boolean
   onAction?: () => void
   children: ReactNode
@@ -20,17 +20,12 @@ export function MenuItem({ id, icon, isDestructive, onAction, children }: MenuIt
       id={id}
       textValue={typeof children === 'string' ? children : id}
       onAction={onAction}
-      className={`${styles.item} ${isDestructive ? styles.destructive : ''}`}
+      className={`${styles.item} ${itemStyles.item} ${isDestructive ? styles.destructive : ''}`}
     >
-      {({ isSelected }) => (
-        <>
-          <span className={styles.text}>
-            {icon && <Icon name={icon} />}
-            {children}
-          </span>
-          {isSelected && <Icon name="check" />}
-        </>
-      )}
+      <span className={styles.text}>
+        {icon && <Icon name={icon} />}
+        {children}
+      </span>
     </AriaMenuItem>
   )
 }

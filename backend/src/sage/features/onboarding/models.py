@@ -20,12 +20,18 @@ class ResultSymbol(BaseModel):
     label: str
 
 
+class CatalogueCourse(Course):
+    # Whether the handbook lists it as an approved complementary studies course, which the review's
+    # course picker shows apart from the programme's own courses
+    complementary: bool
+
+
 class Catalogue(BaseModel):
     # What the review screen picks from: the curricula, the courses for adding a line, and the
     # results for its outcome menu
     year: int
     curricula: list[Curriculum]
-    courses: list[Course]
+    courses: list[CatalogueCourse]
     symbols: list[ResultSymbol]
 
 

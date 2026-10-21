@@ -1,0 +1,82 @@
+/* The pieces start just above the page and fall once, over --duration-fall, each setting off a little
+   after the last, fading in at once and out by the end, drifting and turning as they go */
+.confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* A ribbon */
+.piece {
+  position: absolute;
+  top: calc(-1 * var(--space-6));
+  left: var(--across);
+  width: calc(var(--space-2) * var(--size));
+  height: calc(var(--space-4) * var(--size));
+  opacity: 0;
+  animation: fall var(--duration-fall) var(--easing-fall) calc(var(--duration-fall) * var(--delay)) both;
+}
+
+/* Every fourth piece is a disc */
+.piece:nth-child(4n + 1) {
+  height: calc(var(--space-2) * var(--size));
+  border-radius: var(--radius-full);
+}
+
+/* The course colours, in turn */
+.piece:nth-child(8n + 1) {
+  background: var(--color-course-teal);
+}
+
+.piece:nth-child(8n + 2) {
+  background: var(--color-course-orange);
+}
+
+.piece:nth-child(8n + 3) {
+  background: var(--color-course-navy);
+}
+
+.piece:nth-child(8n + 4) {
+  background: var(--color-course-pink);
+}
+
+.piece:nth-child(8n + 5) {
+  background: var(--color-course-blue);
+}
+
+.piece:nth-child(8n + 6) {
+  background: var(--color-course-ochre);
+}
+
+.piece:nth-child(8n + 7) {
+  background: var(--color-course-purple);
+}
+
+.piece:nth-child(8n) {
+  background: var(--color-course-dark-teal);
+}
+
+/* About four fifths of the page's height, further for some pieces than others */
+@keyframes fall {
+  0% {
+    opacity: 0;
+    transform: translate(0, calc(-1 * var(--space-2))) rotate(0);
+  }
+
+  8% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--drift), calc(78vh * var(--distance))) rotate(var(--turn));
+  }
+}
+
+/* Not drawn at all under reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    display: none;
+  }
+}

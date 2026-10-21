@@ -1,0 +1,47 @@
+/* From 768 px wide the page stands 24 px further in than the page area's margins, its title and
+   cumulative average in line with its tables, so the tables don't run from edge to edge. A narrower
+   window, as at 200% zoom, gives the tables that room instead. */
+@media (width >= 768px) {
+  .page {
+    padding-inline: var(--space-6);
+  }
+}
+
+.years {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* The cumulative average on one line, its figure in the text's own colour */
+.cumulative {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.value {
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.average {
+  font-weight: var(--font-weight-medium);
+}
+
+/* Each course's code, smaller and grey beside its name, in a column as wide in every year, so the names
+   line up from one table to the next */
+.code {
+  display: inline-block;
+  min-width: var(--width-course-code);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.result {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}

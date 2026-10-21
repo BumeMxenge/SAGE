@@ -1,8 +1,7 @@
-/* The border belongs to the table, so the caption sits above it, outside, as a title */
+/* The header row's fill and the lines between rows mark the table out, as in the review's prototype,
+   with no outline unless the table is outlined. The caption sits above it as its title. */
 .table {
   width: 100%;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
   border-spacing: 0;
   border-collapse: separate;
   font-size: var(--font-size-md);
@@ -11,11 +10,31 @@
   background: var(--color-surface);
 }
 
+/* One tight line, as the prototype draws a year's title. A scrollable table's caption sets its own
+   height below. */
 .caption {
   padding-bottom: var(--space-3);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
   text-align: start;
+}
+
+/* Figures at the end of the caption's line, on its baseline. In a narrow window they wrap under it. */
+.caption-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.detail {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
 }
 
 /* No hover change: the parity file leaves table rows as they are */
@@ -27,7 +46,7 @@
   background: var(--color-surface-muted);
 }
 
-/* The header row's fill follows the table's rounded top corners */
+/* The header row's fill has rounded top corners, as the prototype's has */
 .table th:first-child {
   border-top-left-radius: var(--radius-xl);
 }
@@ -42,6 +61,58 @@
   overflow-wrap: anywhere;
 }
 
+/* An outlined table sits in a box with rounded corners, as Course History's years do. The line goes
+   round the header and the rows, not the caption above them, and the header's top corners follow the
+   box's. */
+.outlined {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.outlined th:first-child {
+  border-top-left-radius: var(--radius-lg);
+}
+
+.outlined th:last-child {
+  border-top-right-radius: var(--radius-lg);
+}
+
 .table .end {
   text-align: end;
+}
+
+/* A column that fits never wraps, and its width asks for less than its cells need, so it stays as
+   narrow as its widest cell while the other columns share the rest of the row */
+.table .fit {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* A scrollable table's box. Its caption and headers stick to its top as the rows scroll beneath them,
+   and isolation keeps them under anything a page lays over the box. */
+.scroll {
+  isolation: isolate;
+  overflow-y: auto;
+}
+
+.scroll:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* The caption is one large control tall, its text centred on a row of buttons a page may set beside
+   it, with room below them as in the prototype. The headers stick just below it. */
+.scroll .caption {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  height: var(--size-control-lg);
+  line-height: var(--size-control-md);
+  background: var(--color-surface);
+}
+
+.scroll .table th {
+  position: sticky;
+  top: var(--size-control-lg);
+  z-index: var(--z-sticky);
 }

@@ -36,3 +36,13 @@
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
 }
+
+/* Filling its place, with the options sharing it equally */
+.segmented-control[data-fill] {
+  display: flex;
+}
+
+.segmented-control[data-fill] .segment {
+  flex: 1;
+  justify-content: center;
+}

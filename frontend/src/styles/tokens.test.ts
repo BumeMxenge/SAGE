@@ -1,5 +1,5 @@
 // Reads tokens.css and theme.css and checks WCAG 2.2 AA in both themes: 4.5:1 for text, and 3:1 for
-// the focus ring, the control border and, in light, the field border. In dark, fields have no border
+// the focus ring, the control border, the danger icon and, in light, the field border. In dark, fields have no border
 // and are identified by their placeholder, icon or label (approved difference 2). Decorative borders
 // and disabled text are left out, as WCAG allows.
 import { describe, expect, it } from 'vitest'
@@ -45,7 +45,8 @@ function value(name: string, theme: Theme): string {
   return found
 }
 
-const surfaces = ['--color-surface', '--color-surface-raised', '--color-surface-muted', '--color-surface-field']
+// Brand sand is the sign-in highlights' panel, which text, dots and focus rings sit on
+const surfaces = ['--color-surface', '--color-surface-raised', '--color-surface-muted', '--color-surface-field', '--color-brand-sand']
 const courseColours = [...tokens.light.keys()].filter((name) => name.startsWith('--color-course-'))
 
 // Placeholders use --color-text-secondary, so its check on --color-surface-field is the one a dark
@@ -60,12 +61,22 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
     '--color-link',
     '--color-link-hover',
   ].map((token) => ({ token, against: surfaces, minimum: 4.5 })),
+  // An inline error's words on its tinted row, as in the sign-in highlights' callout. The warning icon
+  // takes the warning text colour, so the warning check covers it too.
   { token: '--color-text-danger', against: ['--color-danger-tint'], minimum: 4.5 },
-  { token: '--color-on-primary', against: ['--color-primary', '--color-surface-inverse'], minimum: 4.5 },
+  { token: '--color-text-warning', against: ['--color-warning-tint'], minimum: 4.5 },
+  // ErrorState's danger icon, on its tile or its inline row
+  { token: '--color-danger', against: ['--color-danger-tint'], minimum: 3 },
+  // The danger button's fill is the danger text colour
+  { token: '--color-on-primary', against: ['--color-primary', '--color-surface-inverse', '--color-text-danger'], minimum: 4.5 },
   { token: '--color-on-fill', against: ['--color-sign-in', '--color-accent-fill', ...courseColours], minimum: 4.5 },
   { token: '--color-border-field', against: surfaces, minimum: 3, theme: 'light' },
   { token: '--color-border-control', against: surfaces, minimum: 3 },
   { token: '--color-focus', against: surfaces, minimum: 3 },
+  // Large accent text on the page, and the white tick on the tile it fills: 3:1, as text of 24 px or
+  // more and a graphic need
+  { token: '--color-accent-large', against: ['--color-surface'], minimum: 3 },
+  { token: '--color-on-fill', against: ['--color-accent-large'], minimum: 3 },
 ]
 
 describe.each(['light', 'dark'] as const)('%s theme', (theme) => {

@@ -1,0 +1,56 @@
+/* A narrow column in the middle of the page, as the prototype draws it */
+.upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--width-dialog);
+  margin: auto;
+}
+
+.found,
+.status {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.found {
+  color: var(--color-text-accent);
+}
+
+.status {
+  color: var(--color-text-secondary);
+}
+
+/* The programme the transcript names, or a plain list to choose it from, in the weight of the text
+   around it. A long name wraps, in the list's button too, so it never runs past the column. */
+.programme {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+.programme dt {
+  flex: none;
+  color: var(--color-text-secondary);
+}
+
+.programme dd {
+  min-width: 0;
+  margin: 0;
+}
+
+.continue {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  margin-top: var(--space-5);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}

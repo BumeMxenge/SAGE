@@ -29,9 +29,16 @@
   color: var(--color-text-secondary);
 }
 
+/* Chrome and Safari draw a clear button of their own in a search input, beside the one below */
+.input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+/* The ring is drawn over the border, so focus reads as the field's edge darkening, as in the
+   prototype */
 .input[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
+  outline-offset: calc(var(--focus-ring-width) * -1);
 }
 
 .icon {

@@ -1,5 +1,9 @@
-/* Also holds the list-item look that Select and Menu share, so their options match */
+/* Also holds the list-item look that Select and Menu share, so their options match. React Aria limits
+   the panel to the space beside its trigger; as a column, its list shrinks to that and scrolls inside,
+   so a long list never spills over the trigger, where a press could pick an option. */
 .popover {
+  display: flex;
+  flex-direction: column;
   min-width: var(--trigger-width);
   padding: var(--space-2);
   border: 1px solid var(--color-border);
@@ -17,6 +21,7 @@
 }
 
 .list {
+  min-height: 0;
   max-height: 60vh;
   overflow-y: auto;
   outline: none;
@@ -58,6 +63,11 @@
 
 .destructive {
   color: var(--color-text-danger);
+}
+
+/* An option's label holds all of its text, but lays none of it out */
+.content {
+  display: contents;
 }
 
 .text {

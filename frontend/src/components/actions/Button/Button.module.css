@@ -20,6 +20,7 @@
 /* Borderless variants keep a clear border, so every button is the same height as an outlined one */
 .primary,
 .sign-in,
+.dark,
 .quiet {
   border: 1px solid transparent;
 }
@@ -38,6 +39,12 @@
   opacity: 0.92;
 }
 
+/* Danger is shaped like primary, with the danger text colour as its fill: white on it in light, and
+   near-black on its lighter red in dark, both at least 4.5:1, which tokens.test.ts checks */
+.danger {
+  background: var(--color-text-danger);
+}
+
 /* Only a primary button is ever disabled, as Continue is until a transcript is read */
 .primary[data-disabled] {
   color: var(--color-text-disabled);
@@ -47,8 +54,20 @@
   cursor: not-allowed;
 }
 
-/* The sign-in button is as long as the sign-in form. Onboarding is light only, so its colours
-   don't change with the theme, and its hover darkens instead of fading. */
+/* The sign-in button is as long as the sign-in form, as Account Created's Next is, and dark is the same
+   button at a secondary button's size, as Done Editing is. Onboarding is light only, so their colours
+   don't change with the theme, and their hover darkens instead of fading. */
+.sign-in,
+.dark {
+  color: var(--color-on-fill);
+  background: var(--color-sign-in);
+}
+
+.sign-in[data-hovered],
+.dark[data-hovered] {
+  background: var(--color-sign-in-hover);
+}
+
 .sign-in {
   width: 100%;
   max-width: var(--width-form);
@@ -56,16 +75,11 @@
   padding: 0 var(--space-5);
   border-radius: var(--radius-md);
   font-size: var(--font-size-lg);
-  color: var(--color-on-fill);
-  background: var(--color-sign-in);
   box-shadow: var(--shadow-raised);
 }
 
-.sign-in[data-hovered] {
-  background: var(--color-sign-in-hover);
-}
-
-.secondary {
+.secondary,
+.dark {
   min-height: var(--size-control-md);
   padding: 0 var(--space-4);
   border-radius: var(--radius-md);
@@ -74,9 +88,10 @@
 
 /* The outline and its teal hover come from styles/outline.module.css */
 
+/* Its hover fill keeps some room beside the label, so the button never fits it tightly */
 .quiet {
   min-height: var(--size-control-md);
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-5);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
