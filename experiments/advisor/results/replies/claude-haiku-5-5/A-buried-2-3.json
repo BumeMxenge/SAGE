@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T03:03:58+00:00",
+ "calls": [
+  {
+   "request": "1570075cb584c72de8b68d638938140f2553095569001fddff070b5c86df5eba",
+   "seconds": 3.59,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEe6CFWxbkcK1q9tGZks",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"You need at least 576 credits. Because you first registered in 2023, the rule for students who registered before 2025 applies to you, not the 560-credit figure for 2025 registrants. You also need to meet the prescribed curriculum requirements.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P45\", \"quote\": \"A candidate who registered before 2025 shall complete approved courses of a value not less than 576 credits and shall comply with the prescribed curriculum requirements.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 961,
+     "output_tokens": 601,
+     "output_tokens_details": {
+      "thinking_tokens": 427
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

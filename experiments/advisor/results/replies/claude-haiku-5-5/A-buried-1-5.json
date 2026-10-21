@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:39:52+00:00",
+ "calls": [
+  {
+   "request": "23d2dde95331868456d08c408ef875c480b962c2ea256f4616557680c6725086",
+   "seconds": 7.4,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEcFZvXGN6WRSUJaoTSf",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\":\"You need to obtain at least 116 credits in the courses recognised for your degree this year. Because you first registered in 2023, you are on the 576-credit curriculum, and falling short of 116 means you may not renew your registration unless the Senate gives permission. Your open plan V01 totals 138 credits, which is above that minimum.\",\"referral\":false,\"open_plan_id\":\"V01\",\"citations\":[{\"passage_id\":\"P45\",\"quote\":\"A candidate who registered before 2025 shall complete approved courses of a value not less than 576 credits\"},{\"passage_id\":\"P36\",\"quote\":\"candidates on the 576-credit curriculum in any subsequent year of registration, fail in the courses recognised for the degree to obtain at least 116 credits\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 970,
+     "output_tokens": 1535,
+     "output_tokens_details": {
+      "thinking_tokens": 1286
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

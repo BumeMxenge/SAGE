@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:48:24+00:00",
+ "calls": [
+  {
+   "request": "f4eb101df1fba0b5bd0395543faa80665a3e2c7177a20a3c2d8b373543fdfcd1",
+   "seconds": 5.51,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEcuKnmDCZMkj9KLKktf",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"Priority goes to courses you are repeating or taking in arrears. Your handbook says that if two courses clash, precedence for registration goes to those courses. You must also tell the Head of the Department in writing about any clash as soon as you see it, and you can't register for a clashing course without the Head of Department's permission. Your plan V01 has no clashing meetings, so this won't affect it.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P15\", \"quote\": \"In the event of such a clash precedence shall be given, for registration purposes, to courses which are being repeated or undertaken in arrears.\"}, {\"passage_id\": \"P15\", \"quote\": \"Candidates shall inform the Head of the Department in writing of any clash of courses\"}, {\"passage_id\": \"P15\", \"quote\": \"Except with the permission of the Head of Department, candidates may not be permitted to register for a course which clashes with another in the lecture timetable.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 968,
+     "output_tokens": 999,
+     "output_tokens_details": {
+      "thinking_tokens": 683
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

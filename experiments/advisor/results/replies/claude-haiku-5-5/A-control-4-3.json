@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:39:50+00:00",
+ "calls": [
+  {
+   "request": "33556ff9ec1144bf9328d821ade39693ae5177715a3549d0489dc576c9889af6",
+   "seconds": 2.3,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEcFQvHYPWfdXzkVrBfL",
+    "container": null,
+    "content": [
+     {
+      "signature": "CAQSlAgKEAgTGAI4AUIIdGhpbmtpbmcSDPKbQFWOVbSOFlAw0BoMDeA8owSE5kIGRhCPIjAf6PHcifBzU3kfvE8vaM9HeH5CClqakgeZwU8hS+hlvJt95ZmnC6s18NT+hJrHWEIqsQdTpPSUfEQcb1rHUFeNkCLLhq9pYjXEcq0yFQZs7MWYH3B87DbcDRVLGY5kG1q6dT2DLDn1gqGQm5/TibZPNCS7BGTXeoBuTYek+2mwF9d5imy6Jkx78MsPwC0F2odfTo/OS41yb5eWMzXpbcYRt38J5a/IYhFqGcD/fuK7FFRD4zfoLnvpn3337gWkx+c/jIbLpAW/4Hxesy2uy4tuKqRr/GvO7T8VKYs4j0PdyiKC9dtZEomt3irWlWXZaDh909fUJPE0FQgE3yUT4/HqdbniQSbmDlC8MXTRisWt9kkLVOy3Mb+Xv207SFDClIPFOEt+OK9F0XOgzpeXyZsqOUpeoA8kWRmMBhHBrzqfHBgZQiAiTRzanuIfSRhNvVsALcmaeRlRJW3KxYtWtNPy9srdHl9PtIn3Ucmn8/NOaPutSmkggL8pXbKV/+vskAJHFSneDNXXrO58XP/Mp68Lz62rQ2heiM0A33AP9BgBB8fhrO3k2cFysWjaHHdp5T7GTLUnq6TW2n4ZCltPv0L8K2Hm/0u7rE93mo0q0S8Gk1oBkmlkj87VUKZTrYnWW2eAivU60MCbaZ8skQdIznxKk0uY8/HRBOSWSqaI7IdCxP2V/x073Zn9XMGiERYfA0P83ppx4fif9OE1/3bCz8jem1a7Htz60bG3voa/sTiHYP6HURySYxk/OH8L3z7zuus3Tb62dFvriH2UbolyPznrpTIUCW56BasIvf0Id1qU6KND6TK5nKpBt/t5rX6U70rLbObb/qEgVpG01x9Ns+Por+wwEnrYoCwGeKF9WKOD8pFfS/TKZ6+XM4vkIxZ/k72MfHu3VT+2I9iYF/eu7r5wkl7tr6vxQMfw1FT+CyN3DQ5wo3sR4f2ttM/hL+LTV1CTFqpzo0Uvp+UjyCbl90seNzUF3Tzx8DwUsfDfal1tKjb9n+aq+hHBwJvN6EtbDFX1sxzbYmzkFehFFz0hjw1sKFJY6yngbMz4MJC+1plwgdQGQqAdB51Cbs/7PNeUVjfbe09717tkcFoW8HZqu9WnLPdgzkgZUKCC4o9v8gvzVJEzjgXN/kZPh9cPqv908Qm+0eE9Fvcitn+EZHxPj3Wzg2x07+qNKNigtujOra6zt9vxcyX+D2Ldgt/z79pa8f3WBcpUPzX4JDzWM/gQXiZ6J5Be77Bfje+ENVbUzSpzQawtiaLSWGdWeMCz7h1XliGQTGQHt3ZB7JzfsZbrBhx4orPOoMSYUUSLPpdVwPyviB8Aj+4YAQ==",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"Lecture period 6 starts at 14:00 and runs to 14:45.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P02\", \"quote\": \"6 14:00 to 14:45\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 965,
+     "output_tokens": 288,
+     "output_tokens_details": {
+      "thinking_tokens": 203
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:44:45+00:00",
+ "calls": [
+  {
+   "request": "b77427190add1286efc0c29056b2fe34be1c97a3b0a3cbcef38d802062e2756c",
+   "seconds": 3.29,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEcdBJLxJDMBrmARF1Wk",
+    "container": null,
+    "content": [
+     {
+      "signature": "CAQSogkKEAgTGAI4AUIIdGhpbmtpbmcSDMdIzUkKWXaoOCkTXxoMiE277IpoI9DQyx8tIjAqTy6e4GFEwpE2VepfBOs8NKhtlD7xg0ykcyuaFSuI7Zsj4+S+pWi+rZOVzwy4ClMqvwhZh/RApEZOvJpSYgr/AJXzA8A/7s1TosA/ShlXT7IfiBNwNjD/5t0K/0qH/Nb54C9dYIysh3uzH7O/bjKMW97lZ6/XzLuVKxJ/4zNjSL7Z7KDd46kf3QK9vGoT0qKsl0a8k1HSpcq70mwOeHuPtgCKQxygMkKPv/FWzujgfKaja6tFM3znbcNP43KXb2lVcGtPDW1U78K3C86E4zWr+DBRdSlA/qc3i65ZBRNHIYK0fxNmxvMQ85y/K5VJWR2XXeD35/E+B0N/7W5DOQdDEMKrZmuzMDtIT3QM0yr3J2soJm3o3TPDjWG+uQ1AYrs1tgwrqT2mzY6733GCAoj4poKaGYRKVgcOKvnPxlvFMQm11aXWitfMmmYEPMQuZ/LWZIQ638zTzBDQDDUCVNafX7viT09XfHEzajQjqrsmkLG8EBtsmiWqeiPzRAS9RocLz4rppBekNeDaTx/l5Ma0mReT68CtbC9mbHz3NTEpvdGAmfR2ds3nGnH7P582px+8Gu3OJfYOnkbuNcplrUqP1RRe1W/FPsznP5iQQ5chj7x5OXwsGfY3k8hmNxFhVDtOlAI3MnDLhWgWxpSiBW7HOlo8pvaGbV8+4w38RbW3yVABNe2HBW2Q8S4QRVSWQPPHPq8vRWm9NCZPeiquQOjWMT0gYIZQcR32hVfJrr/E4QtiIOkaqNhnOCafIcPTYQIDVSXxysa/b9c/3pSEmDvUcNqrePnqXLOAfvm91WiVQUCr5tWADut5A+mFoJQsyCa2CTVVgCdVx1mL1LHWt0r56iP/oY4gkN6+VJUnbUiUilTiE62OZoflxoyiBSQ0ecB0GxYgEnnkQhxgN7BXIkBTZp9iv3uwvaikS+ga8KIq6Pe8hRHB9MNZLli6CbxHwsnY2L8dmcMYZUZeL2cZsnV5ws96t6kihba1a2dI9cCJ/IuZd5vuOKIWI7dHccoWg1QPGaeUJKENkt6VtjurtwPhChoJK9lGIqOFLPUehx1bc4B/9K/+2ctjHejGDQR+eART35++6FpBiWFAfCpcI06LpFAy5u1etHE5L3mj8NDKof8+2FsPLLYX9QGAjpOvOj6f4Fp3bu5SB1GSQYQCU8azsuluW9KpLPhYbROWmGj6i9bR1aM8Jp+5hDaYNTUzKclQTH7Nm5BoMWqTOoe1ulJj5JOQZ7KUNYqV72lKQq9HAHFYBNqM1EmyyDfC2e5/oPiR3tL7TcND1a5dIL9z3Vp6t0pCLjnnrGjkstZDi/rOaxXXhsBHAVTLXSeQ1PeVfOuUFkRzBR9xPsG+bdowjIuhn4GVu8sdzP/wu674gK9YrPEnIDEY7zTU440aglW236anc+WUggb9bVyVaVZQ6OuFBLjtHLuu9qfMPyn6ofdl6v8erafWhhdsIO585uCj3rkMY9FKPihfL1dieXxvioHcb0U59hqJZg319CPN/46ynfbdGAE=",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"CML4607F Law for Engineers is assessed by an assignment (20%), a class test (20%) and an exam (60%). The assignment and class test are compulsory: if you don't submit the assignment or write the test, you get 0 for that assessment unless you have an exemption, but you can still write the exam.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P64\", \"quote\": \"Assessment: Assignment (20%), Class test (20%), Exam (60%)\"}, {\"passage_id\": \"P64\", \"quote\": \"Completion of assignment and class test is compulsory. If the student does not submit the assignment or write the test the student will receive 0 for that assessment (unless granted an exemption). But the student will be able to write the exam.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 958,
+     "output_tokens": 477,
+     "output_tokens_details": {
+      "thinking_tokens": 221
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

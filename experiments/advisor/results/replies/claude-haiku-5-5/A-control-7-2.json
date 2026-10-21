@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:38:43+00:00",
+ "calls": [
+  {
+   "request": "f056ea47c1e3d9570dfd2f5139095ea640eadc4fe9c75ee97c4bd6601e2c642c",
+   "seconds": 4.68,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEcAVetdtSrZ7ABbqhkZ",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"A prerequisite is a course you must already have completed before you can be admitted to another course. A co-requisite is a course you must be registered for at the same time as another specified course. So a prerequisite is completed first, while a co-requisite is taken alongside.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P06\", \"quote\": \"A prerequisite course is one which a student must have completed in\"}, {\"passage_id\": \"P06\", \"quote\": \"A co-requisite course is one for which a student must be registered\"}, {\"passage_id\": \"P06\", \"quote\": \"together with (i.e. concurrently) another specified course.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 965,
+     "output_tokens": 819,
+     "output_tokens_details": {
+      "thinking_tokens": 605
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}
