@@ -1,0 +1,38 @@
+/* The lists one under another at the reading width, as the prototype centres its course list */
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: var(--width-reading);
+  margin: 0 auto;
+}
+
+/* A code in a column as wide in every list, so the names line up from one table to the next */
+.code {
+  display: inline-block;
+  min-width: var(--width-course-code);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.mark,
+.credits {
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+/* The mark of a course only this plan has: its icon and its words after the name */
+.only {
+  --icon-size: var(--size-icon-sm);
+
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-inline-start: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  vertical-align: middle;
+}
