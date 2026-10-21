@@ -281,10 +281,8 @@ class Year:
         electives = [code for owed in self.owed for code in owed.need.courses]
         return list(dict.fromkeys([*self.required, *electives]))
 
-    def minimum(self) -> int:
-        # The year's total, less the credits of her year's courses she has done or can't take and
-        # the complementary credits her passes already meet, and in her final year at least what's
-        # left of the degree. It needs no check against the core, which every plan holds.
+    def _done(self) -> int:
+        # The credits of her year's own courses she has done, each pass counted once
         named = [
             code
             for part in self._by_year[self.number]
@@ -292,19 +290,28 @@ class Year:
             if group != COMPLEMENTARY
             for code in self.record.members[group]
         ]
-        done = sum(self._credits[code] for code in self.record.counted(named))
+        return sum(self._credits[code] for code in self.record.counted(named))
+
+    def minimum(self) -> int:
+        # The year's total, less the credits of her year's courses she has done or can't take and
+        # the complementary credits her passes already meet, and in her final year at least what's
+        # left of the degree. It needs no check against the core, which every plan holds.
         gone = sum(
             self._credits[code]
             for code in self.current
             if code in self.left_out or code in self.dropped
         )
-        least = self.total - done - self.met - gone
+        least = self.total - self._done() - self.met - gone
         (version,) = self.rules.handbook_versions
         degree = printed.DEGREE_CREDITS.get(version.year, {}).get(self.curriculum or "")
         if degree and self.number == max(self._by_year):
             total = degree[0] if self._before_change() else degree[1]
             least = max(least, total - self.record.passed_credits)
         return least
+
+    def under(self) -> bool:
+        # Whether her plans can leave her year under the total its table prints as its minimum
+        return self.minimum() + self._done() + self.met < self.total
 
     def problem(self) -> Problem:
         # What the solver gets, once each course whose rule her record can't meet is left out, and
@@ -458,8 +465,14 @@ class Year:
         if not self.rules.timetable_slots:
             whole.append(said.unchecked())
         whole += self.notes
+        under = self.total if self.under() else None
         whole += [
-            said.excluded(code, verdict.rest, code in self.required)
+            said.excluded(
+                code,
+                verdict.rest,
+                code in self.required,
+                under if code in self.current else None,
+            )
             for code, verdict in sorted(self.left_out.items())
         ]
         return whole

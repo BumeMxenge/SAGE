@@ -289,7 +289,8 @@ def test_a_core_course_she_cant_take_yet_is_left_out_and_her_minimum_drops(symbo
     assert sorted(plans(rows)) == [("AAA1000F", "AAA1002F"), ("AAA1000F", "AAA1003F")]
     assert messages(rows, "excluded")[-1] == (
         "AAA1001F isn't in your plans, as it needs ZZZ1000F, which your record doesn't show "
-        "yet. See your advisor about it."
+        "yet. Your year is now under its printed minimum of 48 credits, and your advisor can "
+        "give permission for that."
     )
 
 

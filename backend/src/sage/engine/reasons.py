@@ -93,10 +93,19 @@ class Reasons:
             passage_id=self.table(table),
         )
 
-    def excluded(self, code: str, rest: EntryRule, core: bool) -> Reason:
-        # A course she can't take yet, which leaves core credits for her advisor to settle
+    def excluded(
+        self, code: str, rest: EntryRule, core: bool, minimum: int | None = None
+    ) -> Reason:
+        # A course she can't take yet. A core course leaves her advisor to settle it, and one of
+        # her own year can take her year under the minimum its table prints, which her advisor can
+        # give permission for.
         where = "your plans" if core else "any plan"
         advice = " See your advisor about it." if core else ""
+        if minimum:
+            advice = (
+                f" Your year is now under its printed minimum of {minimum} credits, and your "
+                "advisor can give permission for that."
+            )
         return Reason(
             kind="excluded",
             message=f"{code} isn't in {where}, as it needs {in_words(rest)}, which your "
