@@ -1,6 +1,7 @@
-# Whether she may take each course, as Explore Electives shows it. A course she has passed, or passed
-# under a code that counts as it, isn't for her. Otherwise its entry rule decides, read from her
-# record alone, and the reason names what's missing or quotes the words a person must judge.
+# Whether she may take each course, as Explore Electives shows it. A course she has passed, or whose
+# result is still to come, which plans count as passed, isn't for her, under its own code or one
+# that counts as it. Otherwise its entry rule decides, read from her record alone, and the reason
+# names what's missing or quotes the words a person must judge.
 from collections.abc import Mapping, Sequence
 
 from sage.engine.evaluator import Record, evaluate
@@ -35,6 +36,17 @@ def eligibility(course: Course, record: Record) -> Eligibility:
         return Eligibility(
             status="not_eligible",
             reason=f"You've already passed {passed.course_code}{counts}.",
+        )
+    pending = record.pending_line(course.code)
+    if pending is not None:
+        under = (
+            pending.course_code
+            if pending.course_code == course.code
+            else f"{pending.course_code}, which counts as {course.code},"
+        )
+        return Eligibility(
+            status="not_eligible",
+            reason=f"Your result for {under} is still to come, and SAGE counts it as passed.",
         )
     verdict = evaluate(course.entry_rule, record)
     if verdict.value == "met":

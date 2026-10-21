@@ -123,12 +123,23 @@ class Record:
             None,
         )
 
-    def pending(self, code: str) -> Outcome | None:
-        # A course not passed whose result is still to come, with what's to come
+    def pending_line(self, code: str) -> CourseHistoryLine | None:
+        # Her first line for a course she hasn't passed whose result is still to come
         if self.passed(code) is not None:
             return None
-        found = [self._outcomes[line.result] for line in self._lines[code]]
-        return next((outcome for outcome in found if outcome in PENDING), None)
+        return next(
+            (
+                line
+                for line in self._lines[code]
+                if self._outcomes[line.result] in PENDING
+            ),
+            None,
+        )
+
+    def pending(self, code: str) -> Outcome | None:
+        # A course not passed whose result is still to come, with what's to come
+        line = self.pending_line(code)
+        return None if line is None else self._outcomes[line.result]
 
     def done(self, code: str) -> bool:
         # Passed, or with a result still to come, which a plan assumes she passes

@@ -89,6 +89,30 @@ def test_each_status_with_its_reason(result_symbols):
     }
 
 
+def test_a_course_whose_result_is_still_to_come_isnt_for_her(result_symbols):
+    # Her AAA1003F result isn't out, and plans count it as passed, so it covers AAA1003S, its other
+    # offering at the same credits, as a pass would
+    rules = RuleSet(courses=(course("AAA1003F"), course("AAA1003S")))
+    history = [line("AAA1003F", "OS", None, 16)]
+    symbols = {row.symbol: row for row in result_symbols}
+    found = EntryRuleEligibility().check(
+        rules.courses, history, rules, symbols, STUDENT
+    )
+    assert {code: (row.status, row.reason) for code, row in found.items()} == {
+        "AAA1003F": (
+            "not_eligible",
+            "Your result for AAA1003F is still to come, and SAGE counts it as passed.",
+        ),
+        "AAA1003S": (
+            "not_eligible",
+            (
+                "Your result for AAA1003F, which counts as AAA1003S, is still to come, and "
+                "SAGE counts it as passed."
+            ),
+        ),
+    }
+
+
 def test_words_that_continue_a_list_keep_the_whole_list(result_symbols):
     # As CSC3002F's maths list ends "or equivalent" (p. 171). She has passed AAA1000F alone, so
     # every branch fails but the words, and each still reads as printed, with no second "or".
