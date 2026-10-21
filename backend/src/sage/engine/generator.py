@@ -208,7 +208,7 @@ class Year:
                 pending = self.record.pending(code)
                 if pending:
                     self.notes.append(self.said.pending(code, pending))
-                if self.record.done(code):
+                if code in self.record.core_done:
                     continue
                 self.required.append(code)
                 if number < self.number:
@@ -219,19 +219,20 @@ class Year:
                     self.first.add(code)
 
     def _owe(self, number: int, part: ChooseFromGroup | CreditsFromGroups) -> None:
-        # A choose or credits rule, less what she has done towards it
+        # A choose or credits rule, less what she has done towards it, each pass counted once. A
+        # course a pass covers is never offered again, even when the pass counts for another.
         members = list(
             dict.fromkeys(
                 code for group in groups(part) for code in self.record.members[group]
             )
         )
-        done = [code for code in members if self.record.done(code)]
+        done = self.record.counted(members)
         if isinstance(part, ChooseFromGroup):
             kind, left = "courses", part.choose - len(done)
         else:
             kind, left = "credits", part.credits - sum(self._credits[c] for c in done)
         if left > 0:
-            courses = tuple(code for code in members if code not in done)
+            courses = tuple(code for code in members if not self.record.done(code))
             self.owed.append(
                 Owed(
                     need=Need(kind=kind, amount=left, courses=courses),
@@ -248,8 +249,7 @@ class Year:
         passed = sorted(
             (
                 self._credits[code]
-                for code in self.record.members[COMPLEMENTARY]
-                if self.record.done(code)
+                for code in self.record.counted(self.record.members[COMPLEMENTARY])
             ),
             reverse=True,
         )
@@ -287,14 +287,14 @@ class Year:
         # The year's total, less the credits of her year's courses she has done or can't take and
         # the complementary credits her passes already meet, and in her final year at least what's
         # left of the degree. It needs no check against the core, which every plan holds.
-        named = {
+        named = [
             code
             for part in self._by_year[self.number]
             for group in groups(part)
             if group != COMPLEMENTARY
             for code in self.record.members[group]
-        }
-        done = sum(self._credits[code] for code in named if self.record.done(code))
+        ]
+        done = sum(self._credits[code] for code in self.record.counted(named))
         gone = sum(
             self._credits[code]
             for code in self.current

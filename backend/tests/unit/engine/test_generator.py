@@ -344,6 +344,43 @@ def test_a_576_credit_student_owing_asl1200s_gets_a_place(intake, places, symbol
     assert all(d["credits"] == 8 for d in owed)
 
 
+def test_a_pass_in_one_offering_counts_once_towards_complementary_credits_and_places(
+    symbols,
+):
+    # Her KKK1000F covers KKK1000S, its other offering at the same credits, but it's one pass: it
+    # meets her second year's 18 complementary credits, so the ASL1200S place EB011's footnote puts
+    # in that year is still hers to fill
+    rules = rulebook(
+        {
+            1: (core("y1"), total(16)),
+            2: (
+                core("y2"),
+                CreditsFromGroups(credits=18, from_groups=("complementary",)),
+                total(34),
+            ),
+            3: (core("y3"), total(16)),
+        },
+        {
+            "y1": ("AAA1000F",),
+            "y2": ("AAA2000F",),
+            "y3": ("AAA3000F",),
+            "complementary": ("KKK1000F", "KKK1000S"),
+        },
+        [course(f"AAA{n}000F") for n in (1, 2, 3)]
+        + [course("KKK1000F", 18), course("KKK1000S", 18)],
+        curriculum="EB011EEE05",
+    )
+    history = (
+        line("AAA1000F"),
+        line("CON2026S", credits=8),
+        line("KKK1000F", credits=18),
+    )
+    rows = generate(rules, symbols, history, 2024, "EB011EEE05")
+    assert [r.details.get("owed") for r in rows.plan_reasons if r.details] == [
+        "ASL1200S"
+    ]
+
+
 def test_a_passed_complementary_course_fills_a_576_credit_place(symbols):
     # KKK1000F is left over once her complementary credits, of which she owes none, are met, so it
     # stands in for ASL1200S

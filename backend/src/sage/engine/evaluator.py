@@ -4,7 +4,7 @@
 # words only a person can judge, a result still to come, and, when there's a plan, a course the plan
 # itself might take.
 from collections import defaultdict
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from typing import Literal
 
 from sage.shared.base import Row
@@ -52,28 +52,37 @@ class Record:
         for rule in rules.equivalences:
             self._counts_as[rule.course_code].add(rule.counts_as)
         self._outcomes = {line.result: symbols[line.result].outcome for line in history}
-        # Each code her lines cover, with the lines that cover it, oldest first
+        # Each code her lines cover, with the lines that cover it, oldest first, and the place in
+        # that order of each line that passes it or has its result still to come
         self._lines: dict[str, list[CourseHistoryLine]] = defaultdict(list)
-        for line in sorted(history, key=lambda line: (line.academic_year, line.term)):
+        self._done: dict[str, list[int]] = defaultdict(list)
+        oldest_first = sorted(history, key=lambda line: (line.academic_year, line.term))
+        for at, line in enumerate(oldest_first):
             for code in self.covers(line.course_code, line.credits):
                 self._lines[code].append(line)
+                if self._outcomes[line.result] in (*PASSED, *PENDING):
+                    self._done[code].append(at)
         self.passed_credits = sum(
             line.credits for line in history if self._outcomes[line.result] in PASSED
         )
-        # One more than the highest year whose own core she has done, practical training aside, as
-        # FB5 sets her year by when she's expected to graduate
-        done = [
-            rule.year_of_study
-            for rule in rules.curriculum_rules
-            if rule.curriculum_code == self.curriculum
-            and all(
-                self.done(code)
+        # Each year's core, practical training aside, and the core courses she has done
+        self.core = {
+            rule.year_of_study: [
+                code
                 for part in rule.rule.all
                 if isinstance(part, AllOfGroup)
                 for code in self.members[part.all_of_group]
                 if not code.endswith("X")
-            )
-        ]
+            ]
+            for rule in rules.curriculum_rules
+            if rule.curriculum_code == self.curriculum
+        }
+        self.core_done = set(
+            self.counted(code for year in sorted(self.core) for code in self.core[year])
+        )
+        # One more than the highest year whose own core she has done, as FB5 sets her year by when
+        # she's expected to graduate
+        done = [year for year, core in self.core.items() if set(core) <= self.core_done]
         self.year = max(done, default=0) + 1
 
     def covers(self, code: str, credits: int) -> set[str]:
@@ -109,6 +118,25 @@ class Record:
     def done(self, code: str) -> bool:
         # Passed, or with a result still to come, which a plan assumes she passes
         return self.passed(code) is not None or self.pending(code) is not None
+
+    def counted(self, codes: Iterable[str]) -> list[str]:
+        # The codes she has done, each through a line of its own, as one pass counts for one course
+        # however many codes it covers. A line already counted for one code moves to another code it
+        # covers when that frees it for this one, so as many codes count as can.
+        # Each line counted, by its place, and the code it counts for
+        owner: dict[int, str] = {}
+
+        def count(code: str, tried: set[int]) -> bool:
+            for at in self._done[code]:
+                if at in tried:
+                    continue
+                tried.add(at)
+                if at not in owner or count(owner[at], tried):
+                    owner[at] = code
+                    return True
+            return False
+
+        return [code for code in dict.fromkeys(codes) if count(code, set())]
 
     def repeated(self, code: str) -> bool:
         # Taken before and not passed, so taking it again repeats it (FB3.4)
