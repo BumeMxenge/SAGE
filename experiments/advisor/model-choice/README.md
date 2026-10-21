@@ -139,3 +139,9 @@ Gemini, from a third provider, and I marked safety together in one pass. For eac
 **Why.** A reader from a third provider has no stake in either candidate. Each of its views came with a reason, which I checked against the evidence before deciding. It also made a one-person blind read faster and less tiring.
 
 An editor reformatted `reading.md` while I marked, so I put my marks back onto the layout `read.py` generated. Regenerating that layout and masking the mark lines leaves no line different, and the eight "by code" lines are as generated.
+
+## Protocol change, 21 October: the rest read too
+
+Made after the first scoring, so after the overall scores were known. Each reply's model was still hidden from me, because the scorer opened the key and I didn't.
+
+In the first read, 4 of my 13 unsafe marks, two for each model, were on replies the flags hadn't caught. None was in the random sample: I saw them only because each sat beside a flagged reply or in a clarity pair. The rule to read every reply fires only when the sample itself finds one, so it didn't fire. But unsafe replies the flags miss clearly exist, and the 100 replies I hadn't read could hold more, so I read those as well. They are in `results/reading-rest.md`, built by `read.py rest` and marked the same way as before, with Gemini as a reviewing aid. The first read's results stay in `results/tables-first-read.md`, and the final results come from reading both files, reported side by side.
