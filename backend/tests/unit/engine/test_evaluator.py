@@ -230,6 +230,53 @@ def test_min_year_of_study_either_side_of_her_year(year, expected, symbols):
     assert value(rule, [line("AAA1000F", "1")], symbols, rules) == expected
 
 
+def cores(years: int) -> RuleSet:
+    # A made-up curriculum whose years each hold three core courses, AAA<year>000F to AAA<year>002F
+    return RuleSet(
+        course_group_members=tuple(
+            CourseGroupMember(
+                handbook_year=2026, group_key=f"y{year}", course_code=f"AAA{year}00{n}F"
+            )
+            for year in range(1, years + 1)
+            for n in range(3)
+        ),
+        curriculum_rules=tuple(
+            CurriculumRule(
+                handbook_year=2026,
+                curriculum_code=STUDENT.curriculum_code,
+                year_of_study=year,
+                rule=YearRules(
+                    all=(
+                        AllOfGroup(all_of_group=f"y{year}"),
+                        TotalCredits(total_credits=48),
+                    )
+                ),
+            )
+            for year in range(1, years + 1)
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    ("fourth", "year"),
+    [
+        # She owes AAA2002F from her second year and has passed two third-year core courses, so
+        # she's in her third year. One fourth-year course taken early, as EEE4124C can be, doesn't
+        # move her up.
+        (["AAA4000F"], 3),
+        # Two do
+        (["AAA4000F", "AAA4001F"], 4),
+    ],
+)
+def test_her_year_is_the_latest_she_has_passed_two_core_courses_from(
+    fourth, year, symbols
+):
+    passed = ["AAA1000F", "AAA1001F", "AAA1002F", "AAA2000F", "AAA2001F"]
+    passed += ["AAA3000F", "AAA3001F", *fourth]
+    lines = [line(code, "1") for code in passed]
+    assert Record(STUDENT, lines, cores(4), symbols).year == year
+
+
 def test_a_co_requisite_passed_earlier_is_met_and_one_not_taken_is_open(symbols):
     # With no plan to read, she could still take it alongside
     rule = need("MAM1020F", "concurrent")

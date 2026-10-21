@@ -175,21 +175,29 @@ def test_a_core_course_she_still_owes_from_an_earlier_year_is_in_every_plan(symb
     rules = rulebook(
         {
             1: (core("y1"), total(16)),
-            2: (core("y2"), total(16)),
+            2: (core("y2"), total(32)),
             3: (core("y3"), ChooseFromGroup(choose=1, from_group="g"), total(32)),
         },
         {
             "y1": ("AAA1000F",),
-            "y2": ("AAA2000F",),
+            "y2": ("AAA2000F", "AAA2001F"),
             "y3": ("AAA3000S",),
             "g": ("AAA3001S", "AAA3002S"),
         },
         [
             course(code)
-            for code in ("AAA1000F", "AAA2000F", "AAA3000S", "AAA3001S", "AAA3002S")
+            for code in (
+                "AAA1000F",
+                "AAA2000F",
+                "AAA2001F",
+                "AAA3000S",
+                "AAA3001S",
+                "AAA3002S",
+            )
         ],
     )
-    rows = generate(rules, symbols, (line("AAA1000F", "F"), line("AAA2000F")))
+    history = (line("AAA1000F", "F"), line("AAA2000F"), line("AAA2001F"))
+    rows = generate(rules, symbols, history)
     assert sorted(plans(rows)) == [
         ("AAA1000F", "AAA3000S", "AAA3001S"),
         ("AAA1000F", "AAA3000S", "AAA3002S"),
@@ -202,18 +210,26 @@ def test_a_course_she_owes_from_an_earlier_year_beats_a_clashing_current_one(sym
     rules = rulebook(
         {
             1: (core("y1"), total(16)),
-            2: (core("y2"), total(16)),
+            2: (core("y2"), total(32)),
             3: (core("y3"), total(32)),
         },
-        {"y1": ("AAA1000F",), "y2": ("AAA2000F",), "y3": ("AAA3000F", "AAA3001F")},
-        [course(code) for code in ("AAA1000F", "AAA2000F", "AAA3000F", "AAA3001F")],
+        {
+            "y1": ("AAA1000F",),
+            "y2": ("AAA2000F", "AAA2001F"),
+            "y3": ("AAA3000F", "AAA3001F"),
+        },
+        [
+            course(code)
+            for code in ("AAA1000F", "AAA2000F", "AAA2001F", "AAA3000F", "AAA3001F")
+        ],
         [
             meeting("AAA1000F", 1, 10),
             meeting("AAA3000F", 1, 10),
             meeting("AAA3001F", 2, 10),
         ],
     )
-    rows = generate(rules, symbols, (line("AAA1000F", "F"), line("AAA2000F")))
+    history = (line("AAA1000F", "F"), line("AAA2000F"), line("AAA2001F"))
+    rows = generate(rules, symbols, history)
     assert plans(rows) == [("AAA1000F", "AAA3001F")]
     (conflict,) = [r for r in rows.plan_reasons if r.kind == "conflict"]
     assert (conflict.course_code, conflict.plan_id, conflict.message) == (

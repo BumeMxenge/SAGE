@@ -80,10 +80,15 @@ class Record:
         self.core_done = set(
             self.counted(code for year in sorted(self.core) for code in self.core[year])
         )
-        # One more than the highest year whose own core she has done, as FB5 sets her year by when
-        # she's expected to graduate
-        done = [year for year, core in self.core.items() if set(core) <= self.core_done]
-        self.year = max(done, default=0) + 1
+        # Her year of study, which FB5 sets by when she's expected to graduate: the latest year from
+        # which she has passed at least two core courses, or the year after it once its core is
+        # complete, and never earlier than her lowest unfinished year. Two keeps one course taken
+        # early, such as EEE4124C, from moving her up a year.
+        done = {year: self.core_done & set(core) for year, core in self.core.items()}
+        complete = {year for year, core in self.core.items() if done[year] == set(core)}
+        latest = max((year for year in done if len(done[year]) >= 2), default=0)
+        lowest = min(set(self.core) - complete, default=max(self.core, default=0) + 1)
+        self.year = max(latest + 1 if latest in complete else latest, lowest)
 
     def covers(self, code: str, credits: int) -> set[str]:
         # The codes a pass in this course counts for: itself, and at most one step of each kind, in
