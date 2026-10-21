@@ -93,6 +93,14 @@ class Reasons:
             passage_id=self.table(table),
         )
 
+    def early(self, codes: Sequence[str], table: str | None) -> Reason:
+        return Reason(
+            kind="included",
+            message=f"Next year's core includes {listed(codes)}, whose entry rules you already "
+            "meet. Students sometimes take such courses early, with their advisor's agreement.",
+            passage_id=self.table(table),
+        )
+
     def excluded(
         self, code: str, rest: EntryRule, core: bool, minimum: int | None = None
     ) -> Reason:

@@ -455,6 +455,9 @@ class Year:
             whole.append(
                 said.minimum(self.minimum(), self._last_table(), bool(self.slots))
             )
+        early = self._early()
+        if early:
+            whole.append(said.early(early, self._core_table(self.number + 1)))
         electives = [owed for owed in self.owed if owed.year is None]
         if electives:
             note = printed.ALL_THREE.get((self.curriculum or "", self.number))
@@ -476,6 +479,20 @@ class Year:
             for code, verdict in sorted(self.left_out.items())
         ]
         return whole
+
+    def _early(self) -> list[str]:
+        # Next year's core courses she hasn't done whose entry rules her record already meets,
+        # which students sometimes take a year early. Her plans keep to her own year.
+        later = self.number + 1
+        if later not in self._by_year:
+            return []
+        rules = {course.code: course.entry_rule for course in self.rules.courses}
+        return [
+            code
+            for code in self.record.core[later]
+            if code not in self.record.core_done
+            and evaluate(rules[code], self.record).value == "met"
+        ]
 
     def _heading(self, keys: Sequence[str]) -> str | None:
         # The first of these groups whose table has a passage
