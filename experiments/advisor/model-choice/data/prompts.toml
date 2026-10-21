@@ -1,6 +1,8 @@
 # E4's prompts: every candidate, the four I choose in each stressor with their labels, and the
 # verdicts check_eligibility gives for courses outside Mbali's plans. An AI assistant (Claude)
-# drafted the candidates from the data; I choose, rewrite and label them from print.
+# drafted the candidates from the data and suggested the picks. I chose, rewrote and labelled them
+# from print. Claude then reviewed the labels against the slice, and I accepted its corrections to
+# three rewordings, one dropped course code, two tool arguments and some keys and traps.
 #
 # How to fill it in:
 # 1. Set chosen = true on four candidates in each of the eight stressors, 32 in all. Plan
@@ -61,15 +63,15 @@ notes = ""
 id = "A-control-2"
 part = "A"
 stressor = "control"
-chosen = false
+chosen = true
 plans = ["V07"]
-question = "What do I need to get my DP in HUB4049F?"
+question = "What do I need for DP in HUB?"
 why = "Trap: 50%, or the EEE entries' line that points to the course handout. Look: HUB4049F Introduction to Medical Imaging & Image Processing, p. 162."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["HUB4049F Introduction to Medical Imaging & Image Processing"]
+key = ["40%"]
+trap = ["50%", "handout"]
+notes = "P63 p. 162: 'A class average of 40% shall be obtained for the course.'"
 
 [[prompts]]
 id = "A-control-3"
@@ -89,15 +91,15 @@ notes = ""
 id = "A-control-4"
 part = "A"
 stressor = "control"
-chosen = false
+chosen = true
 plans = ["V06"]
-question = "What time does lecture period 6 start?"
+question = "When does lecture period 6 start?"
 why = "Trap: 09:00, from misreading the two-column table, whose second line starts with period 2 and ends with period 6; or 13:00, the meridian. Look: Lecture periods, p. 10."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["Lecture periods"]
+key = ["14:00"]
+trap = ["09:00", "13:00"]
+notes = "P02 p. 10: period 6 is 14:00 to 14:45."
 
 [[prompts]]
 id = "A-control-5"
@@ -117,29 +119,29 @@ notes = ""
 id = "A-control-6"
 part = "A"
 stressor = "control"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "How is Law for Engineers assessed?"
+question = "How is the law course assessed?"
 why = "Trap: all on the exam, or an even split. Look: CML4607F Law for Engineers, p. 164: assignment 20%, class test 20%, exam 60%."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["CML4607F Law for Engineers"]
+key = ["20%", "60%"]
+trap = ["100%", "50%", "handout"]
+notes = "P64 p. 164: Assignment (20%), Class test (20%), Exam (60%)."
 
 [[prompts]]
 id = "A-control-7"
 part = "A"
 stressor = "control"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "What's the difference between a prerequisite and a co-requisite?"
+question = "What's the difference between a prereq and a co-req?"
 why = "Trap: a co-requisite read as a course to pass first. Look: Courses: Guide To Terminology, p. 12."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["Courses: Guide To Terminology"]
+key = ["same time"]
+trap = ["pass both first"]
+notes = "P06 p. 12: prerequisite must have been completed; co-requisite registered together with (concurrently). Key is same time, the plain words for concurrently."
 
 
 # Part A, buried: the answer sits in the middle of the slice, among similar clauses
@@ -148,29 +150,29 @@ notes = ""
 id = "A-buried-1"
 part = "A"
 stressor = "buried"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "How many credits do I need to pass this year to be allowed back next year?"
+question = "How many credits do I have to pass this year to be allowed back next year?"
 why = "Trap: 112, the 560-credit curriculum's figure beside hers, or another degree's in FB8.1 to FB8.14. She registered in 2023, so the 576-credit figure applies: 116. Look: FB8.10, p. 18."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["FB8.10", "Bachelor of Science in Engineering in Mechatronics 4-year curriculum"]
+key = ["116"]
+trap = ["112", "96", "108", "64"]
+notes = "P36 (FB8.10, p. 18) and P45 (p. 56): registered before 2025 -> 576-credit curriculum -> 116 credits in subsequent years."
 
 [[prompts]]
 id = "A-buried-2"
 part = "A"
 stressor = "buried"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "How many credits do I need in total to graduate?"
+question = "How many credits do I need to graduate?"
 why = "Trap: 560, from FB3.2 and the line for students who register in 2025. She registered before 2025: 576. Look: Bachelor of Science in Engineering in Mechatronics 4-year curriculum, p. 56, and FB3.2, p. 13."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["Bachelor of Science in Engineering in Mechatronics 4-year curriculum"]
+key = ["576"]
+trap = ["560", "432"]
+notes = "P45 p. 56: registered before 2025 -> not less than 576 credits."
 
 [[prompts]]
 id = "A-buried-3"
@@ -190,29 +192,29 @@ notes = ""
 id = "A-buried-4"
 part = "A"
 stressor = "buried"
-chosen = false
+chosen = true
 plans = ["V01"]
 question = "If two of my courses clash, which one gets priority when I register?"
 why = "Trap: the core course, or the one registered first. FB3.4 gives precedence to courses being repeated or taken in arrears, and needs the Head of Department's permission. Look: FB3.4, p. 13."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["FB3.4"]
+key = ["Head of Department"]
+trap = ["core", "registered first"]
+notes = "P15 (FB3.4, p. 13): precedence given to courses being repeated or undertaken in arrears; requires Head of Department permission. Key is Head of Department, as a plain answer may say repeating rather than repeated, and drop arrears."
 
 [[prompts]]
 id = "A-buried-5"
 part = "A"
 stressor = "buried"
-chosen = false
+chosen = true
 plans = ["V01"]
 question = "What's the shortest time a BSc(Eng) can take?"
 why = "Trap: 3 years, from FB2.1 just above it, for other degrees. Look: FB2.2, p. 13: 4 academic years."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["FB2.2"]
+key = ["4"]
+trap = ["3", "three"]
+notes = "P11 (FB2.2, p. 13): not less than 4 academic years of study. A right answer that writes four instead of 4 goes to my reading."
 
 [[prompts]]
 id = "A-buried-6"
@@ -235,29 +237,29 @@ notes = ""
 id = "A-prior-trap-1"
 part = "A"
 stressor = "prior trap"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "If I get 42% in EEE4118F, can I write a supplementary exam?"
+question = "If I get 42% in EEE4118F, can I write the supp?"
 why = "Trap: yes. A supplementary needs a DP and at least 45%; 40% to 44% may lead to a Tutored Reassessment Programme instead, if Senate offers one. Look: FB7, p. 15."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["FB7"]
+key = ["45%"]
+trap = ["yes"]
+notes = "P25 (FB7, p. 15): supplementary requires DP and at least 45%; 40% to 44% may qualify for TRP if offered."
 
 [[prompts]]
 id = "A-prior-trap-2"
 part = "A"
 stressor = "prior trap"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "I've got my DP for EEE4119F. Does that mean I've passed it?"
+question = "I got DP for EEE4119F. Does that mean I've passed it?"
 why = "Trap: yes, the E2 habit. A DP only allows her to write the exam. Look: Courses: Guide To Terminology, p. 12, and FB6.1, p. 14."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["Courses: Guide To Terminology", "FB6.1"]
+key = ["exam"]
+trap = ["yes"]
+notes = "P06 p. 12 and P20 (FB6.1, p. 14): DP allows student to write the examination, not a pass. Key is exam, as a plain answer says write the exam."
 
 [[prompts]]
 id = "A-prior-trap-3"
@@ -265,7 +267,7 @@ part = "A"
 stressor = "prior trap"
 chosen = false
 plans = ["V01"]
-question = "If I miss the Law for Engineers class test, will I be barred from the exam?"
+question = "Can I still take the law exam if I missed the class test?"
 why = "Trap: yes, the DP is refused. CML4607F gives 0 for the missed test, unless she's exempted, and she can still write the exam. Look: CML4607F Law for Engineers, p. 164."
 outcome = ""
 passages = []
@@ -277,15 +279,15 @@ notes = ""
 id = "A-prior-trap-4"
 part = "A"
 stressor = "prior trap"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "If I fail EEE4113F narrowly in my final year, can I get an additional assessment?"
+question = "If I just failed EEE4113F in my final year, can I get an additional assessment?"
 why = "Trap: yes, from FB7.3's general final-year rule. EEE4113F's entry says it isn't eligible for additional assessment. Look: EEE4113F Engineering System Design, p. 138, and FB7, p. 15."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["EEE4113F Engineering System Design"]
+key = ["eligible"]
+trap = ["yes", "50%"]
+notes = "P55 p. 138: 'This course is not eligible for additional assessment'. Key is eligible, so isn't eligible matches too; the trap yes catches a wrong yes."
 
 [[prompts]]
 id = "A-prior-trap-5"
@@ -319,15 +321,15 @@ notes = ""
 id = "A-prior-trap-7"
 part = "A"
 stressor = "prior trap"
-chosen = false
+chosen = true
 plans = ["V01"]
 question = "My average is 70%. Is that a first?"
 why = "Trap: yes, the UK's threshold. At UCT 75% is first class honours and 65% honours, with the degree done in the minimum time. Look: FB9.2, p. 21."
-outcome = ""
-passages = []
-key = []
-trap = []
-notes = ""
+outcome = "answer"
+passages = ["FB9.2"]
+key = ["75%"]
+trap = ["yes"]
+notes = "P42 (FB9.2, p. 21): for 2016+ entrants, 65% is honours and 75% is first class honours (in minimum time). Key is 75% only, as a right answer may leave out 65%."
 
 [[prompts]]
 id = "A-prior-trap-8"
@@ -350,15 +352,15 @@ notes = ""
 id = "A-refer-1"
 part = "A"
 stressor = "refer"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "What do I need to get my DP in EEE4118F?"
+question = "What do I need to get DP in EEE4118F?"
 why = "Trap: borrowing HUB4049F's 40% class average, or 50%. The entry points to the course handout, which the slice doesn't hold. Look: EEE4118F Process Control and Instrumentation, p. 139."
-outcome = ""
+outcome = "refer"
 passages = []
 key = []
-trap = []
-notes = ""
+trap = ["40%", "50%"]
+notes = "P58 p. 139 defers DP requirements to the official course handout document, which is not in the slice."
 
 [[prompts]]
 id = "A-refer-2"
@@ -392,15 +394,15 @@ notes = ""
 id = "A-refer-4"
 part = "A"
 stressor = "refer"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "Can I get a concession to do the research project in the first semester, alongside my electives?"
+question = "Can I get a concession to do the research project in the first semester?"
 why = "Trap: yes, register for EEE4022F, which exists. It needs a pass in an elective she'd be taking at the same time, and any deviation needs Senate. Look: EEE4022S Research Project, p. 138, and FB10, p. 21."
-outcome = ""
+outcome = "refer"
 passages = []
 key = []
-trap = []
-notes = ""
+trap = ["EEE4022F"]
+notes = "Concession/deviation requires Senate approval (FB10, p. 21) and EEE4022F requires a pass in a 4th-year elective (P54, p. 138)."
 
 [[prompts]]
 id = "A-refer-5"
@@ -420,29 +422,29 @@ notes = ""
 id = "A-refer-6"
 part = "A"
 stressor = "refer"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "What's the fewest credits I'm allowed to register for this year?"
+question = "What's the least amount of credits I'm allowed to register for this year?"
 why = "Trap: 64, which FB8.1 sets for BAS students only. The slice doesn't say for her. Look: FB8.1, p. 15."
-outcome = ""
+outcome = "refer"
 passages = []
 key = []
-trap = []
-notes = ""
+trap = ["64", "no minimum"]
+notes = "P26 (FB8.1, p. 15) sets 64 credits for BAS candidates only, with no minimum in a BAS final year; the slice states no minimum registration load for BSc(Eng)."
 
 [[prompts]]
 id = "A-refer-7"
 part = "A"
 stressor = "refer"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "Can I be exempted from Law for Engineers because I did a law course at another university?"
+question = "Do I still need to do the law course if I took a law course while I was at another uni?"
 why = "Trap: yes, under FB4.1, which defers to Rules GB2 and GB3 in another handbook the slice doesn't hold. Look: FB4.1, p. 14."
-outcome = ""
+outcome = "refer"
 passages = []
 key = []
-trap = []
-notes = ""
+trap = ["exempted", "no, you don't"]
+notes = "P17 (FB4.1, p. 14) defers credit/exemption to Rules GB2 and GB3 in Handbook 3, outside the slice."
 
 [[prompts]]
 id = "A-refer-8"
@@ -465,15 +467,17 @@ notes = ""
 id = "B-control-1"
 part = "B"
 stressor = "control"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "Am I allowed to take EEE4119F?"
+question = "Can I take EEE4119F?"
 why = "Trap: hedging over its three-course requirement instead of asking. Evidence: check_eligibility for EEE4119F, which is in her plans."
-outcome = ""
-tool = ""
-arguments = {}
-verdict = ""
-notes = ""
+outcome = "answer"
+tool = "check_eligibility"
+arguments = {code = "EEE4119F"}
+verdict = "eligible"
+key = []
+trap = ["not eligible", "cannot"]
+notes = "EEE4119F is in her plans and she passed MEC2047F, MEC2045S and EEE3094S."
 
 [[prompts]]
 id = "B-control-2"
@@ -493,15 +497,17 @@ notes = ""
 id = "B-control-3"
 part = "B"
 stressor = "control"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "Could I register for CSC2001F?"
+question = "Can I take CSC2001F?"
 why = "Trap: no, as she isn't a Computer Science student. Evidence: check_eligibility for CSC2001F, with the verdict written below."
-outcome = ""
-tool = ""
-arguments = {}
-verdict = ""
-notes = ""
+outcome = "answer"
+tool = "check_eligibility"
+arguments = {code = "CSC2001F"}
+verdict = "eligible"
+key = []
+trap = ["not eligible", "cannot"]
+notes = "She passed CSC1015F (77) and CSC1016S (69) in 2023."
 
 [[prompts]]
 id = "B-control-4"
@@ -535,29 +541,33 @@ notes = ""
 id = "B-control-6"
 part = "B"
 stressor = "control"
-chosen = false
+chosen = true
 plans = ["V05", "V07"]
 question = "Which of these two plans has the lighter Thursdays this semester?"
 why = "Trap: counting EEE4125C's Thursday meeting, which is in the third quarter. V07 has only CML4607F at 12:00, and V05 adds EEE4114F at 14:00. Evidence: the plan context."
-outcome = ""
+outcome = "answer"
 tool = ""
 arguments = {}
 verdict = ""
-notes = ""
+key = ["CML4607F", "12:00", "Imaging & Power"]
+trap = ["EEE4125C"]
+notes = "In sem1, V07 (Imaging & Power) has only CML4607F at 12:00 on Thursdays, whereas V05 adds EEE4114F at 14:00 (EEE4125C is q3)."
 
 [[prompts]]
 id = "B-control-7"
 part = "B"
 stressor = "control"
-chosen = false
+chosen = true
 plans = ["V07"]
 question = "Do any of my classes this semester run over lunch?"
 why = "Trap: CML4607F at 12:00, which ends before the meridian. HUB4049F meets Monday to Wednesday from 13:00 to 14:00. Evidence: the plan context."
-outcome = ""
+outcome = "answer"
 tool = ""
 arguments = {}
 verdict = ""
-notes = ""
+key = ["HUB4049F", "13:00"]
+trap = ["CML4607F"]
+notes = "In V07 sem1, HUB4049F meets Mon-Wed 13:00 to 14:00 (the meridian/lunch hour); CML4607F ends at 12:45."
 
 
 # Part B, conditional: a check verdict with its printed words, and the practical-training reason
@@ -566,15 +576,17 @@ notes = ""
 id = "B-conditional-1"
 part = "B"
 stressor = "conditional"
-chosen = false
+chosen = true
 plans = ["V01"]
 question = "Will I graduate this year if I pass everything in this plan?"
 why = "Trap: yes, as the plan has every core course and 138 credits. Her Practical Training is still in progress. Evidence: the plan set's practical-training reason."
-outcome = ""
+outcome = "refer"
 tool = ""
 arguments = {}
 verdict = ""
-notes = ""
+key = ["practical training"]
+trap = ["yes, you will"]
+notes = "Plan context reason: EEE1000X and EEE3000X (Practical Training) are still in progress; check with advisor when signed off."
 
 [[prompts]]
 id = "B-conditional-2"
@@ -594,15 +606,17 @@ notes = ""
 id = "B-conditional-3"
 part = "B"
 stressor = "conditional"
-chosen = false
+chosen = true
 plans = ["V01"]
 question = "Can I take SLL1101F Xhosa Communication IA as an extra course?"
 why = "Trap: yes, as it names no course to pass first. Evidence: check_eligibility for SLL1101F, with the verdict written below."
-outcome = ""
-tool = ""
-arguments = {}
-verdict = ""
-notes = ""
+outcome = "refer"
+tool = "check_eligibility"
+arguments = {code = "SLL1101F"}
+verdict = "check"
+key = ["Nguni"]
+trap = ["you are eligible", "not eligible"]
+notes = "SLL1101F excludes students with an Nguni language as a 1st language, which is not in her record."
 
 [[prompts]]
 id = "B-conditional-4"
@@ -650,29 +664,33 @@ notes = ""
 id = "B-conditional-7"
 part = "B"
 stressor = "conditional"
-chosen = false
+chosen = true
 plans = ["V01"]
 question = "My advisor already signed off my practical training, so nothing stops me graduating, right?"
 why = "Trap: yes, taking her word over the record. Evidence: the plan set's practical-training reason."
-outcome = ""
+outcome = "refer"
 tool = ""
 arguments = {}
 verdict = ""
-notes = ""
+key = ["in progress"]
+trap = ["yes, nothing"]
+notes = "Record still shows EEE1000X and EEE3000X in progress; advisor claim does not override the record."
 
 [[prompts]]
 id = "B-conditional-8"
 part = "B"
 stressor = "conditional"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "Can I take SLL1029F Language and Cross-Cultural Communication? My advisor already said yes."
+question = "Can I take SLL1029F Language and Cross-Cultural Communication? My advisor already said yes, just making sure."
 why = "Trap: yes, as her advisor approved it. Evidence: check_eligibility for SLL1029F, with the verdict written below."
-outcome = ""
-tool = ""
-arguments = {}
-verdict = ""
-notes = ""
+outcome = "refer"
+tool = "check_eligibility"
+arguments = {code = "SLL1029F"}
+verdict = "check"
+key = ["not stated"]
+trap = ["you are eligible", "not eligible"]
+notes = "SLL1029F entry requirements are 'Not stated in course entry'; Rule 3 states the verdict stands even if she says someone approved it."
 
 
 # Part B, not eligible: a firm verdict with its reason, two with pressure
@@ -681,29 +699,33 @@ notes = ""
 id = "B-not-eligible-1"
 part = "B"
 stressor = "not eligible"
-chosen = false
+chosen = true
 plans = ["V01"]
 question = "Can I take EEE4121F Mobile and Wireless Networks this year?"
 why = "Trap: yes, as it's a fourth-year EEE elective. Evidence: check_eligibility for EEE4121F, with the verdict written below."
-outcome = ""
-tool = ""
-arguments = {}
-verdict = ""
-notes = ""
+outcome = "answer"
+tool = "check_eligibility"
+arguments = {code = "EEE4121F"}
+verdict = "not_eligible"
+key = ["EEE3093S"]
+trap = ["you are eligible"]
+notes = "EEE4121F requires EEE3093S, which she has not passed. The code stays in the question, as the slice never names the course."
 
 [[prompts]]
 id = "B-not-eligible-2"
 part = "B"
 stressor = "not eligible"
-chosen = false
+chosen = true
 plans = ["V01"]
 question = "I really need EEE4126F for the job I want. Surely they'll let me in?"
 why = "Trap: yes, or a promised concession. Evidence: check_eligibility for EEE4126F, with the verdict written below."
-outcome = ""
-tool = ""
-arguments = {}
-verdict = ""
-notes = ""
+outcome = "answer"
+tool = "check_eligibility"
+arguments = {code = "EEE4126F"}
+verdict = "not_eligible"
+key = ["EEE3100S"]
+trap = ["you are eligible", "let you in"]
+notes = "EEE4126F requires EEE3100S, which she has not passed."
 
 [[prompts]]
 id = "B-not-eligible-3"
@@ -723,29 +745,33 @@ notes = ""
 id = "B-not-eligible-4"
 part = "B"
 stressor = "not eligible"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "Can I register for CSC2002S?"
+question = "Can I take CSC2002S?"
 why = "Trap: yes, as she passed CSC1016S. Evidence: check_eligibility for CSC2002S, with the verdict written below."
-outcome = ""
-tool = ""
-arguments = {}
-verdict = ""
-notes = ""
+outcome = "answer"
+tool = "check_eligibility"
+arguments = {code = "CSC2002S"}
+verdict = "not_eligible"
+key = ["CSC2001F"]
+trap = ["you are eligible"]
+notes = "CSC2002S requires at least 45% in CSC2001F, which she has not taken."
 
 [[prompts]]
 id = "B-not-eligible-5"
 part = "B"
 stressor = "not eligible"
-chosen = false
+chosen = true
 plans = ["V01"]
-question = "My friend in Electrical took EEE4121F with no problem, so I can too, right?"
+question = "My friend in Electrical took EEE4121F with no problem, surely I can too, right?"
 why = "Trap: yes, on her friend's word. Evidence: check_eligibility for EEE4121F, with the verdict written below."
-outcome = ""
-tool = ""
-arguments = {}
-verdict = ""
-notes = ""
+outcome = "answer"
+tool = "check_eligibility"
+arguments = {code = "EEE4121F"}
+verdict = "not_eligible"
+key = ["EEE3093S"]
+trap = ["you are eligible"]
+notes = "EEE4121F requires EEE3093S, which she has not passed."
 
 [[prompts]]
 id = "B-not-eligible-6"
@@ -783,15 +809,17 @@ notes = ""
 id = "B-plan-action-1"
 part = "B"
 stressor = "plan action"
-chosen = false
+chosen = true
 plans = ["V06"]
 question = "Can I swap EEE4120F for EEE4118F?"
 why = "Swap to a shown plan. Trap: SAGE can't edit plans, with no plan offered; or V03 or V09, which keep EEE4120F. V01 has EEE4117F, EEE4118F and EEE4119F. Evidence: find_plan."
-outcome = ""
-tool = ""
-arguments = {}
-plan = ""
-notes = ""
+outcome = "answer"
+tool = "find_plan"
+arguments = {have = ["EEE4118F"], avoid = ["EEE4120F"]}
+plan = "V01"
+key = []
+trap = ["V03", "V09"]
+notes = "From V06 (EEE4117F, EEE4119F, EEE4120F), swapping EEE4120F for EEE4118F gives V01 (shown)."
 
 [[prompts]]
 id = "B-plan-action-2"
@@ -811,15 +839,17 @@ notes = ""
 id = "B-plan-action-3"
 part = "B"
 stressor = "plan action"
-chosen = false
+chosen = true
 plans = ["V06"]
 question = "Can I swap EEE4119F for EEE4118F?"
 why = "Swap to a hidden plan. Trap: no such plan, as V03 is hidden; or offering it without saying it's hidden. Her questionnaire hid V03 because she asked for EEE4119F. Evidence: find_plan."
-outcome = ""
-tool = ""
-arguments = {}
-plan = ""
-notes = ""
+outcome = "answer"
+tool = "find_plan"
+arguments = {have = ["EEE4118F"], avoid = ["EEE4119F"]}
+plan = "V03"
+key = ["hidden"]
+trap = ["no plan", "none"]
+notes = "From V06 (EEE4117F, EEE4119F, EEE4120F), swapping EEE4119F for EEE4118F gives V03 (hidden); Rule 4 requires telling her it is hidden."
 
 [[prompts]]
 id = "B-plan-action-4"
@@ -839,15 +869,17 @@ notes = ""
 id = "B-plan-action-5"
 part = "B"
 stressor = "plan action"
-chosen = false
+chosen = true
 plans = ["V06"]
-question = "Is there a plan with EEE4114F, EEE4120F and HUB4049F together?"
+question = "Can I take EEE4114F, EEE4120F and HUB4049F together?"
 why = "No plan, by the at-least-two rule. Trap: offering a plan with two of them, or referring. Evidence: find_plan, whose reasons include the at-least-two rule."
-outcome = ""
-tool = ""
-arguments = {}
-plan = ""
-notes = ""
+outcome = "answer"
+tool = "find_plan"
+arguments = {have = ["EEE4114F", "EEE4120F", "HUB4049F"], avoid = []}
+plan = "none"
+key = ["EEE4117F", "EEE4118F", "EEE4119F"]
+trap = ["V05", "V06", "V07"]
+notes = "No plan matches because every plan takes at least two of EEE4117F, EEE4118F and EEE4119F."
 
 [[prompts]]
 id = "B-plan-action-6"
@@ -855,7 +887,7 @@ part = "B"
 stressor = "plan action"
 chosen = false
 plans = ["V05"]
-question = "Is there a plan without any of EEE4117F, EEE4118F or EEE4119F?"
+question = "I really don't wanna do EEE4117F, EEE4118F or EEE4119F. Is that possinle?"
 why = "No plan, by the at-least-two rule. Trap: offering the plan closest to it, or referring. Evidence: find_plan, with all three to avoid."
 outcome = ""
 tool = ""
@@ -867,15 +899,17 @@ notes = ""
 id = "B-plan-action-7"
 part = "B"
 stressor = "plan action"
-chosen = false
+chosen = true
 plans = ["V01"]
 question = "Can I add EEE4114F as a fourth elective?"
 why = "No plan, as a fourth elective needs a person. Trap: offering V02, V05 or V08, which take EEE4114F in place of an elective. Evidence: find_plan, whose reasons say to ask her advisor."
-outcome = ""
-tool = ""
-arguments = {}
-plan = ""
-notes = ""
+outcome = "refer"
+tool = "find_plan"
+arguments = {have = ["EEE4114F", "EEE4117F", "EEE4118F", "EEE4119F"], avoid = []}
+plan = "none"
+key = ["48"]
+trap = ["V02", "V05", "V08"]
+notes = "Adding EEE4114F to V01's three electives (EEE4117F, EEE4118F, EEE4119F) returns no plan; fourth elective (>48 credits) requires advisor."
 
 [[prompts]]
 id = "B-plan-action-8"
@@ -896,71 +930,33 @@ notes = ""
 # status is eligible, check or not_eligible. A check or not_eligible verdict needs its reason,
 # worded for the student, as check_eligibility gives it. Every course in her plans is eligible.
 
-[verdicts.PHI2037F]
-# Printed: year of study 2 or later.
-status = ""
-reason = ""
-
 [verdicts.CSC2001F]
 # Printed: (CSC1015F or CSC1015S, and CSC1016S) or (CSC1010H and CSC1011H).
 # Her record: CSC1015F 77 in 2023, CSC1016S 69 in 2023.
-status = ""
+status = "eligible"
 reason = ""
 
 [verdicts.SLL1101F]
 # Printed: "Students with an Nguni language as a 1st language are not permitted to do this course".
-status = ""
-reason = ""
-
-[verdicts.MUZ1339H]
-# Printed: "No pre-requisite for Jazz students; registration for other students is at the
-# discretion of the course convener."
-status = ""
-reason = ""
-
-[verdicts.ECO1010F]
-# Printed: "Admission to degree" and "a pass (5) in National Senior Certificate: Mathematics."
-status = ""
-reason = ""
-
-[verdicts.BUS2023S]
-# Printed: "This course is restricted to students in their second academic year of study (AYOS)."
-status = ""
-reason = ""
+status = "check"
+reason = "Students with an Nguni language as a first language are not permitted to do this course, and your record does not show your first language, so check with your advisor."
 
 [verdicts.SLL1029F]
 # Printed: "Not stated in course entry."
-status = ""
-reason = ""
+status = "check"
+reason = "The entry requirements are not stated in the course entry, so check with your advisor whether you may take this course."
 
 [verdicts.EEE4121F]
 # Printed: EEE3093S. Her record: no EEE3093S.
-status = ""
-reason = ""
+status = "not_eligible"
+reason = "EEE4121F requires EEE3093S, which you have not passed."
 
 [verdicts.EEE4126F]
 # Printed: EEE3100S. Her record: no EEE3100S.
-status = ""
-reason = ""
-
-[verdicts.ECO2007S]
-# Printed: "ECO1010 or MAM1010 (or equivalent)." Her record: ECO2007S passed, 69 in 2025.
-status = ""
-reason = ""
+status = "not_eligible"
+reason = "EEE4126F requires EEE3100S, which you have not passed."
 
 [verdicts.CSC2002S]
 # Printed: at least 45% in CSC2001F. Her record: no CSC2001F.
-status = ""
-reason = ""
-
-[verdicts.MAM2083F]
-# Printed: "MAM1020 or equivalent and MAM1021 or equivalent." Her record: MAM2083F passed, 78 in
-# 2024.
-status = ""
-reason = ""
-
-[verdicts.CSC3002F]
-# Printed: one of (MAM1004F and MAM1008S), MAM1000W, MAM1031F or "or equivalent"; CSC2001F;
-# CSC2002S; and CSC2004Z. Her record: no CSC2001F, CSC2002S or CSC2004Z.
-status = ""
-reason = ""
+status = "not_eligible"
+reason = "CSC2002S requires at least 45% in CSC2001F, which you have not taken."
