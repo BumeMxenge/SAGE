@@ -245,9 +245,9 @@ def test_a_course_she_owes_from_an_earlier_year_beats_a_clashing_current_one(sym
         "AAA3000F",
         None,
         (
-            "AAA3000F clashes with AAA1000F, which you still owe from an earlier year, so it "
-            "isn't in your plans: a repeated or earlier year's course comes first (FB3.4). "
-            "See your advisor."
+            "AAA3000F clashes with AAA1000F, which you still owe from an earlier year. A "
+            "course you still owe from an earlier year comes first, so AAA3000F isn't in your "
+            "plans. See your advisor about it."
         ),
     )
 

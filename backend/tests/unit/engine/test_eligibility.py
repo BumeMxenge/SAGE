@@ -81,8 +81,8 @@ def test_each_status_with_its_reason(result_symbols):
         "AAA2001S": (
             "check",
             (
-                'It needs a person\'s judgement of "Not stated in course entry.", which '
-                "SAGE can't confirm from your record. Check with your advisor."
+                'It needs "Not stated in course entry." SAGE can\'t check this, so confirm '
+                "it with your advisor."
             ),
         ),
     }

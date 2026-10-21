@@ -4,6 +4,7 @@
 from collections.abc import Mapping, Sequence
 
 from sage.engine.evaluator import Record, evaluate
+from sage.engine.reasons import unchecked
 from sage.shared.planning import Eligibility
 from sage.shared.rules import Course, ResultSymbol, RuleSet
 from sage.shared.students import CourseHistoryLine, Student
@@ -38,14 +39,10 @@ def eligibility(course: Course, record: Record) -> Eligibility:
     verdict = evaluate(course.entry_rule, record)
     if verdict.value == "met":
         return Eligibility(status="eligible")
-    words = in_words(verdict.rest)
     if verdict.value == "not_met":
+        words = in_words(verdict.rest)
         return Eligibility(
             status="not_eligible",
             reason=f"It needs {words}, which your record doesn't show yet.",
         )
-    return Eligibility(
-        status="check",
-        reason=f"It needs {words}, which SAGE can't confirm from your record. "
-        "Check with your advisor.",
-    )
+    return Eligibility(status="check", reason=unchecked("It", verdict.rest))

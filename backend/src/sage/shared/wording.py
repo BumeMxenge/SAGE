@@ -17,27 +17,29 @@ from sage.shared.rules import (
 )
 
 
-def in_words(rule: EntryRule | YearRules | None) -> str:
+def in_words(rule: EntryRule | YearRules | None, quoted: bool = False) -> str:
+    # Quoted, a refer leaf is its printed text alone, in quotes, for a reason that goes on to say
+    # a person must judge it
     if rule is None:
         return "no requirement"
     if isinstance(rule, YearRules):
         return all_of([_part(part) for part in rule.all], listed=True)
-    return _words(rule)
+    return _words(rule, quoted=quoted)
 
 
-def _words(node: EntryRule, nested: bool = False) -> str:
+def _words(node: EntryRule, nested: bool = False, quoted: bool = False) -> str:
     if isinstance(node, AllOf):
         listed = any(_lists(child) for child in node.all)
         # A tree joins an all inside an all, so a child here is never an all
         words = [
-            f"({_words(child)})"
+            f"({_words(child, quoted=quoted)})"
             if _commas(child) and at < len(node.all) - 1
-            else _words(child)
+            else _words(child, quoted=quoted)
             for at, child in enumerate(node.all)
         ]
         return f"({all_of(words, listed)})" if nested else all_of(words, listed)
     if isinstance(node, AnyOf):
-        return _one_of([_words(child, True) for child in node.any])
+        return _one_of([_words(child, True, quoted) for child in node.any])
     if isinstance(node, CourseNeed):
         if node.need == "concurrent":
             return f"{node.course} taken alongside"
@@ -48,7 +50,7 @@ def _words(node: EntryRule, nested: bool = False) -> str:
         return f"a student on {_one_of(list(node.student_in))}"
     if isinstance(node, MinYearOfStudy):
         return f"year of study {node.min_year_of_study} or later"
-    return f'a person\'s judgement of "{node.refer}"'
+    return f'"{node.refer}"' if quoted else f'a person\'s judgement of "{node.refer}"'
 
 
 def _part(part: YearRule) -> str:

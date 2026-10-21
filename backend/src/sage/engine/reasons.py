@@ -108,8 +108,7 @@ class Reasons:
     def unsure(self, code: str, rest: EntryRule) -> Reason:
         return Reason(
             kind="conditional",
-            message=f"{code} needs {in_words(rest)}, which SAGE can't confirm from your "
-            "record. Check with your advisor.",
+            message=unchecked(code, rest),
             course_code=code,
             passage_id=self.entry(code),
         )
@@ -242,15 +241,11 @@ class Reasons:
         )
 
     def precedence(self, dropped: str, kept: str, repeated: bool) -> Reason:
-        why = (
-            "which you're repeating"
-            if repeated
-            else "which you still owe from an earlier year"
-        )
+        why = "you're repeating" if repeated else "you still owe from an earlier year"
         return Reason(
             kind="conflict",
-            message=f"{dropped} clashes with {kept}, {why}, so it isn't in your plans: a "
-            "repeated or earlier year's course comes first (FB3.4). See your advisor.",
+            message=f"{dropped} clashes with {kept}, which {why}. A course {why} comes "
+            f"first, so {dropped} isn't in your plans. See your advisor about it.",
             course_code=dropped,
             passage_id=self.faculty("FB3.4"),
         )
@@ -290,6 +285,13 @@ class Reasons:
             message="Your record shows every year's core courses done, so there's no year "
             "left to plan. See your advisor.",
         )
+
+
+def unchecked(subject: str, rest: EntryRule) -> str:
+    # What a course needs that SAGE can't check, in plain words, quoting any printed text exactly
+    words = in_words(rest, quoted=True)
+    ended = words if words.endswith('."') else f"{words}."
+    return f"{subject} needs {ended} SAGE can't check this, so confirm it with your advisor."
 
 
 def listed(codes: Sequence[str]) -> str:
