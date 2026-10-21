@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:48:56+00:00",
+ "calls": [
+  {
+   "request": "b77427190add1286efc0c29056b2fe34be1c97a3b0a3cbcef38d802062e2756c",
+   "seconds": 2.76,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEcwhdyyD3u8mSzy4dna",
+    "container": null,
+    "content": [
+     {
+      "signature": "CAQS6wcKEAgTGAI4AUIIdGhpbmtpbmcSDHLgHn4W49aWNv+CBhoMfju7T8GkdAf0q7/NIjApIZtyQ0Oqd3f0VuvdV/7OeXc0wcC7RKE2ouSR/va+y3HIGOkzWIR28qH13OrQyUwqiAeoCQ0kMUEBhafJOXxdnhMVpI+WcruM8+w4U9slrnHIPWcaGveUNFNGWj8wKzJ6oQiesFyoV206N2a2g1/4qEK9k5/qAqhteirGMPxvJwFfdc4sf3+u3/KHF9VwhyqPJ9hg3ZlbXn6LvwjdK78Tl3iqsCYZdIKisjaB9l+aw4U2A76IbtHje9mNwaZjqRnhpW4NY/La9LaWc8jM6TwqsSx8YhEwEgJwDmiWTuxkTZG7sOd16QhLY7wbdL1jdlvOjSpNv5TzHmljfVVZ34LRYqbATUH7Zg3v9/zBRNqGSE6YXV3CIOtEXh2QBFz4nbl5ruoBV+8H0lckmCywr2AEdUyJHKyXpJqjyuBH3axdZ13lt+1FhAFB898oHkm9XCpan3ijXoCuCVGCnJN1IRvPYJXFgEedUCqeTAfm2nmuqpc3xwwuVDkOOK8DwCTKO9N37Vbo58A7gWWmCJAB2255UakG+Af3pLFfnWGYh3yTxewLr2//dvNImVt+9azX7B0IxmVHD1sP0c6RHKoh6UT0F7NrYZC0Wo7/yxZ7mkBTatfLR89d85xBDZ2yklKwOtT8lE838vX+lttWmSR3mNeeYyd3kNFfv5SAE8X2sUQm4Wca3eNwf/fZp03KMOScpGlLgY7dEMdNkSF4ExByd0IKHVRPNQuFzIhrb/R0H747sUJvvk4+5sD4LGmTEmxIh736QBAGkxAg9cuOuPRzhGe+zllRMdSY1R2laUZkJLYnRt9o28wHHcVwR2ha0l2EgXNV7X7s3gbpLfS9kSxOs/yX8idiG+as+9gZkM6y2+4yJu75AYCdhcbG/YsrFXM26cyEF+zrJeq5B4337CoFlOfX600VhJT9mqZxVGPvHQbf1dRZHUcUPl9Zs4MbaYCfhgbzcsHmjUG75DsO5rCZbDf4Ro4z7VN3cdNeUYotqcmIz45fUZ8KEdUMLNq6vRi1vd2Ad22PnReMRWFyvsPwbXl/o2qMlkkMZwnc5ExR+SFFphch8cyDyam6JIPqxyBq1oUqqxbAavJeZ+f+QJxgwBxdOyZAm9J+fCCr9+OZxlG/jM0RsjD9gINRlqRauWFUqBt7BI3i5QL+YtRNbw1fRI2/mGHYsoUYv2oorvMEkogJTbgPN+LjkybDwM3Ps1npIUFxK74s02W0VpY4P6NSItKCKMXvMriak2vs0xCV4WmhxGssRzJRNz0dmjjZGAE=",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"The Law for Engineers course (CML4607F) is assessed by an assignment worth 20%, a class test worth 20%, and an exam worth 60%. The assignment and class test are compulsory: if you don't submit the assignment or write the test, you get 0 for that assessment unless you're granted an exemption, but you can still write the exam.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P64\", \"quote\": \"Assignment (20%), Class test (20%), Exam (60%)\"}, {\"passage_id\": \"P64\", \"quote\": \"Completion of assignment and class test is compulsory.\"}, {\"passage_id\": \"P64\", \"quote\": \"But the student will be able to write the exam.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 958,
+     "output_tokens": 406,
+     "output_tokens_details": {
+      "thinking_tokens": 163
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

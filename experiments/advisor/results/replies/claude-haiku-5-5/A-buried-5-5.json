@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:47:55+00:00",
+ "calls": [
+  {
+   "request": "0855c1233696642b551376058372d1c7c6ac676ad93e87c9c1849cba0698ffdf",
+   "seconds": 5.23,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEcs9sAnheuU4bPbW4SP",
+    "container": null,
+    "content": [
+     {
+      "signature": "CAQShRYKEAgTGAI4AUIIdGhpbmtpbmcSDIiaZfSd/WlnvYZCXhoM96T+CpohMvSlt5vRIjCECgTLzA932ofi9EYUd9IH5njZEuQFqZ7RN4AKudh76I7tqipX7RU925XL1N4VOiIqohWkg36El80w9WUQ1nYfLe2Iee40yFoRcW9lw8/KghbnfTSX4B0H+UZgYHnAsj0vxOZ0Mano01a3vex5+gDSVQdZaY0p/VKqltEusibfrJ8cbnKR58k+7nPy3djE0JIi3YmQBGETGnopfwQ7AldGZ026Tr3edzxzyL2CuS9uRw3q1s62LZf6cMvR4zBdaTTmmcnggORHKbFXgqySzK6vv6JHRfgqw063PAu8BwxmuKgHy+vGL4T4DbC3atT8kFIPScJvD26GB+FDlJ1RpjHsMMTbEgEBGM80bz34Jvtjjuog7/fz9rCwL0GMLkIZ+JpZHoUHI9rFY28w+mrC1fqmryzbgWuK9c+PTFMgj/N7TS4QZFcKzS3I+9TKyWkrwnX6TNYVLiuIeika+Lbr+d2y3uTR9clr5uwzYxUZUenrygEHpSzrxssEpUiNw8jRtpcGiee8El5XaUoBbMnA5UZqtNaYI1+MthSaBXV4uFdSmwrQQmCdolu0sNDsoa1S+kCdlfotw0kcNiednxSgYhao++jHMI8k7iETzbOQjBZGnCQD/HHOtV9l6viQdoKjbslkSiOb2EK1kFCuTQeDR96CGcQ36/i+K1LpYRRiA07+H84zFlGdgL7qDbsHM0lcY9Q+iVrkWRbj/0LFQC1NZXoUZVHjG0NVWbXjvk8PiGAuNiB79UJ17S0Y+a0LoqjQnFQpE0CtgvIcJCb2A/L3OWbr9D5yDpTu9euow65whzU+w3Z7VJnPP0dBxqOX7VygvrhZdj1DjcOowQWr8ru+WzBMvSXBLwWOzgjIdutSUTd/plNm0fmQdiq++O2wpWUq6KoamhegwJYL/MnPYkwinSW16gMZ04GOyBILSAPzqrBDPWWc5n321F3EKqCUOY1S4s88ALPERuhdeCUkFYmOrZc9l77bphL5lGhLZXBaRw/djY06puBvRxD+DNxtVsgU7jsnRsyv0ix40KzPqcUdgIx4a+IZ+BNAfH4SqEKF24O1gHIZXGGiV76g83COyZegg4JetjVWtjesKR48promkbosHyVeydXk8tYa7jymnZYEF+cSg74qIGgktarOxafNhBzV/9GcVXldQ4+UAjfDhvGrQM1ETxQVNf6sQC0US3+96JIOSkHjQs3J5VxKyAS9w5vVOzxGoqEf8FoMTi4aIgQMjTZhHQLnMxmDWTNfZxtQGBvtxdF46QpLbLl6FQrKWdvh0tIiYG8L7b3TaZs1v3hRmHxAnKfBf+AL3hywWt38K35xMycWZ1Ku/anQxlpA7EyQx1D4UximI99DoknjFEgF9x23wMter1PVM/df0bcHYSYBf8/0vcZ0mrRl0ttpKN1oIaiM5vY8U3QAWZhZZbohlegIaIN1km7Slnk2HPmMPQ0ZiChVWQ3qubUfTr2/LgJrU+3oYRI7N5hXCqrQT6/+zgj084TyiIe0Ov7c4xky2VgzAh5ELRZ/q8W9asKJfdASIoJSAFhYzXW4jROEaK1ypo7BlIII9HP7dY2WaGvMC74zZi14LiQeHWNJ1d12kmzJNY1aps1jluXEWGb+aAsNQMvIRxu/YV/vG3j+QVbShPZ6UfpXJOHSm6VcTiJP4MeSw1MRYSkuUTGZj9EMafh7If9SKIyx968E/A+M4MMmlB0S7MMo/OAb8wRJ8l0K4cYNmib9jml63aWMgXycYHksqRztFU7uo9s89LIHA+NwyiNpHqQViU3Lm7tzlTQlJAf5vQw/3/86+aQpqOlxT1sW9iuY7XEDaMWPT3HKdbczcEEavSGyI9LoNUR46n6gXzJz1t/5cRj9oWa6p06oiR9m55V6kGIlxrB+oFpepW0zLmkAmMzaqO4iDfnOHHFswZD5BeaQSaPB4pNuD8w6J6gHFIAgSGJnoeNKoYbSGYmIitZRMTI7yKajIsCJUuQcnk7oMghihCtgEqsVM3ghueMM0baaMtNlQFQwFasWp+GCGgm1mxbIR5el2wu08bvZUg87tUCN7gnzyLhXAu3yF8TMXoQxX3IgnU46lTSptIcxJ8yJgPgUHhSevQe0RflHjhPQ6Yl+wVeiGbmbXO/fx06Dg6A7uaRPfoaG1RLXGlr7WIq6TNeTYExu2lUUiiOafcDQHZTCpJLjAsHK4wlG3DoX+zZcRyYptA6GIU7c1/zBDP3u6SouQBKCUn7zoAo3ku6MLMZp2eAmWUyWFk/gZB0VlAp0z6NW9itpFTQt5PwQ2ucUWug2DWbbzxGWJuPgteD7ctDZLVK454Jwnyaxe6TnNVF8L1QwgopmAILViXjuTH2swXwIgBQillnz6TlPsWvkNorXY+0V5xGP1am2beCvWBsLH/H4TsUcvff9Z0X6dYCTjzyU3EJVIHM2Olx6fD4ybEMI6iThpum7zieROy30LuH86me0JqWK17NIxLE8muv7o585yTyMmyGMu1Fvk3A0lFJYty4ATAJXL+i3m1gKCzJgn264AXYuVOS5w9cxtcxG5zhSvpUmeBKQYzL026SUOO1r6JasjDEhc8PtJvJRsA700yBRku6SnDlCWAAVowpV2ZC2+8hQWMYHdJhS/ETfVdzzutY/oO4D7aH3CIHyCqub4nMLAPRARRe91AWUghl3lhZTBRiaJUe6lEGwwGS0n1L/pd/5LeCFU5KtOPmOHZt602KlLl3baMmk/YhoN26fjxyeNSy30xDhv93hVzWagE/a0n0FHqiKhgzY4zHssVh3nIiAdKIZMhWOgEceFvp163n7xNHr+4EkilW4rsxS+9D0uBPBC+w3yxFnAvmAlFMqxl+yRsrThHEfS2jUuWI8wC70bIEFsd+7qhQeV2gmX6RrN+JDm0zFW9Y1ABIABg08XaVU740w1T2LlvxsvRZKuCDAwuBim2/07rPUb+R6ACKQuzpMvw286CYGqWuBXKs3w5q7NjBBuinX4msKO0mgi8BAn17uMlxeMhMliYp/DtLm3sjE6QjSS1IaIMnT0uA2j0l/isuzGA5AJHAaw+Wd+Abwhu//49TZ2tRO34LApLT668Qwl2CA1ufSWjzOzHk9yRfofqEOhPixgpG2fZBY1z/ykD5jJ2rVWRNYU4ubz6awjjdxVpcQI08UWBaW0WQOcpknP0u7m6FREWQWlyMUwaQLbZKVECH8uHkBD67nEp0k2SHwS/tW6G1PKgel0NCmbyfciYlkA2bmsNZR8oOXj4EaAxmlRJwAQyVdqpSDTuaN8sidDk4CsFYGO6x+0sWv9pbOaR2B0lsbp2KF42mMOIj4jNUh/1ZYiu7AB2k/gOrpeRqjz79Ezk0HCDsGZJyYx/pmMpZ4oWtrNmA/LpWz+3czljjHh4D3Pq1VHndwVv2MD47Rzcd5hl2EIeGcwgt76HBcd6aeFGO4g3CEW1AjvQbA3OOlfNrRlU3CmJ/W6m+PElUWhDVq/vMjMz0zfm/K77qIjn3TVPQgjntOiYcJp+N0fXpsI5zYm5yEfroKM2Lep1GdBPLkhP0YrwTAy29jU98jT8ZBH0eSR/oGK3GeYOsNQAQ0xRUnIZyQdwrl6dI1h/AQuYr5oW1I4eejoATzbBmUYcdzWxmcRTLIBSPn0OYnrxyPh6/NtJ4FKLZYN6OWDPa12SbjggAQh+PmGBqsZrdyp3nDtle+vv6o12QW/nPjGAE=",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"The shortest time for a BSc(Eng) is 4 academic years. Because you first registered in 2023, your curriculum needs at least 576 credits, not the 560 that applies to later registrants.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P11\", \"quote\": \"The curriculum shall extend over not less than 4 academic years of study.\"}, {\"passage_id\": \"P45\", \"quote\": \"shall complete approved courses of a value not less than\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 968,
+     "output_tokens": 952,
+     "output_tokens_details": {
+      "thinking_tokens": 786
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

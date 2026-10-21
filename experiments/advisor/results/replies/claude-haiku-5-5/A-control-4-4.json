@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T03:03:48+00:00",
+ "calls": [
+  {
+   "request": "33556ff9ec1144bf9328d821ade39693ae5177715a3549d0489dc576c9889af6",
+   "seconds": 2.17,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEe5QNzFT9HQAEbUHZ5b",
+    "container": null,
+    "content": [
+     {
+      "signature": "CAQS4QcKEAgTGAI4AUIIdGhpbmtpbmcSDBLxeacHpuXkICSV0hoMuqDu34wUJ9gJNqyEIjDLm4qdbXNR35m52X8WoKRAPk27qpXD7V4c8H8G7o2sbGWm998NAsguIh9sjtd6Tlgq/gbwRRw4Pb7HyGNR2zeJTLuYG/v8lpp1n6rXNtseQ4Sl0O+hGBDiAH3pBmzWDrnTDFmu+M5p9uU4oBqGEOXoKCOotKryfzSZlyX7WllAN6Bd40tjw8siQw45G/Ko4eSPmY0ac6ZqoQvcvRQdPGQ4AB349ry3hV4+8c6BWpUjQFvUAuRONpemFzyT+InlEaN3raUTV5iCLCesaa4Ni7Uvk7cj6nxggRo1+5RNYBQ0o2E3fGB4z7d1WYslhyHov83VX/yUOrjSb3JFJumZzej7uhyYjCbevjDb2soIGceQq6OmtyegzajHMuWqdLdHbSsAes0uzzqwIVmZOeg6eBBAkFGkt+Kj0DlJztlzOb67D7qzCqYNkj+UfW6DKJ4/udVa2TIMFNsfs39EB2aVBQ0Le0Y2cS+RorwNRtBBW30j262RIYki1Cei7OHBOAgVpwrRyGbb2WuvneafC6GILgcKk0B1/5SGdPlqs+ReoieVbzsf9b+7VtMPlbjpXTQBgMZrN+IOs6MJvayoI505TeYFcw7R5W6XVzCS5CuwAvi5JDG2H+vrXZZi4chV7+bLiGHVYgDo7Uu8T1lOIRAo9pjPWOXoae6Ay8AsR7GuSoG6hEySkjOlfjNsgPNzyJYm2WITM+COIqZHR2H0lpNpmkED/Y+XU3fmayKaZw9ZPKfbfsdxht7pFXDPyxd9sTPe8YbCLljg1Q3IGpJvH7CMlS4o8N5syFiaN6LzTAwETcjWaJlq/T5duwheprhoSx9Y7yNhlEE8HNJQQ10BTyJxnc7O72pKmRsXo+gbx0xgD7aprLvBje4LEOuUokjqOxzAvqugom0bGBEahPnAjjcKoicbUvKotYr8ezwwTeuXdAt+1f93YCgfcSges3J9k2Oe+nvAa6VHJIrUMGnyGM+mOwbg5tFFcH9dY7hhg/YyUc23CHdjqvc571jwzKhUZeJanAX/SQ+nVK1bIdx81DOow1CD2/2ftlAtq0UmACQAaj/rfjj3atDF8loMIj316l6OQZY5FXpc3lTEVLfySbo7l8pKT/xe9vxlHaBggrNUW/elrRsbTm+2mm6PzhRQQUlXYJV5bXkbPs+gxfgpZYHJbunfDvGcky7BiPET+NWpsFryP/9zmDgolyMDe1pWLaxDpqao5QsHd9IusR7PL4myfLRJ64VRHwqg3zUl5UiwrnFmhsgYAQ==",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"Lecture period 6 starts at 14:00 and runs until 14:45.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P02\", \"quote\": \"6 14:00 to 14:45\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 965,
+     "output_tokens": 275,
+     "output_tokens_details": {
+      "thinking_tokens": 190
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

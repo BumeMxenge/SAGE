@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T03:05:37+00:00",
+ "calls": [
+  {
+   "request": "f056ea47c1e3d9570dfd2f5139095ea640eadc4fe9c75ee97c4bd6601e2c642c",
+   "seconds": 4.04,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEeDRvEZUMcQj1w1YtCR",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"A prerequisite must be completed before you can take another course, while a co-requisite must be taken at the same time as it. A prerequisite is a course you must have already passed to be admitted to a later course. A co-requisite is a course you must be registered for together with another specified course, so both are taken in the same period.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P06\", \"quote\": \"A prerequisite course is one which a student must have completed in\"}, {\"passage_id\": \"P06\", \"quote\": \"order to gain admission to a specific other course.\"}, {\"passage_id\": \"P06\", \"quote\": \"A co-requisite course is one for which a student must be registered\"}, {\"passage_id\": \"P06\", \"quote\": \"together with (i.e. concurrently) another specified course.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 965,
+     "output_tokens": 761,
+     "output_tokens_details": {
+      "thinking_tokens": 501
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

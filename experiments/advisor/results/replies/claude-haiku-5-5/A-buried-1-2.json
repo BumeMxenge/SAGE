@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:58:18+00:00",
+ "calls": [
+  {
+   "request": "23d2dde95331868456d08c408ef875c480b962c2ea256f4616557680c6725086",
+   "seconds": 5.91,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEdf7XoSLRymEffgpTvU",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"You need to obtain at least 116 credits this year to be allowed to renew your registration next year. You first registered in 2023, so you are on the 576-credit curriculum, and this 116-credit threshold applies to you. If you fall short, you can only continue with permission of the Senate, so talk to your advisor if that happens.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P45\", \"quote\": \"A candidate who registered before 2025 shall complete approved courses of a value not less than 576 credits\"}, {\"passage_id\": \"P36\", \"quote\": \"candidates on the 576-credit curriculum in any subsequent year of registration, fail in the courses recognised for the degree to obtain at least 116 credits\"}, {\"passage_id\": \"P36\", \"quote\": \"Except by permission of the Senate candidates may not renew their registration if:\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 970,
+     "output_tokens": 1273,
+     "output_tokens_details": {
+      "thinking_tokens": 983
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}
