@@ -1,9 +1,9 @@
 // The plan view at /plan/:planId: a header with the plan switcher, the plan's credits and Compare, a row
 // with the term and the view, Calendar or Course List, then the term's week or list. With ?compare=,
-// two plans sit side by side in panels, each course only one of them has marked, until Done Comparing,
-// Back or Escape. The header and the term's row stay in view as the week scrolls beneath them. The
-// address says which plans and term are open (lib/planAddress.ts), so choosing any of them changes it,
-// and what was on screen stays there while the next plan arrives.
+// two plans sit side by side in panels until Done Comparing, Back or Escape. The header and the term's
+// row stay in view as the week scrolls beneath them. The address says which plans and term are open
+// (lib/planAddress.ts), so choosing any of them changes it, and what was on screen stays there while
+// the next plan arrives.
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-aria-components'
@@ -23,9 +23,6 @@ import { TermView, type View } from './components/TermView/TermView.tsx'
 import { partnerOf } from './planSet.ts'
 import { coloursOf, weekOf } from './week.ts'
 import styles from './PlanView.module.css'
-
-// A plan on its own has no other to differ from
-const alone: ReadonlySet<string> = new Set()
 
 export function PlanView() {
   const address = usePlanAddress()
@@ -127,7 +124,7 @@ export function PlanView() {
           </div>
           {controls}
         </div>
-        <TermView plan={plan} term={term} view={view} week={week} colours={coloursOf([week])} only={alone} />
+        <TermView plan={plan} term={term} view={view} week={week} colours={coloursOf([week])} />
       </>
     )
   }
@@ -157,7 +154,7 @@ export function PlanView() {
       {bar}
       <div className={styles.panels}>
         <Card title={first.name} level={2} meta={<p className={styles.panelCredits}>{first.credits.total} credits</p>}>
-          <TermView plan={first} term={term} view={view} week={firstWeek} colours={colours} only={new Set(comparison.only_first)} compact />
+          <TermView plan={first} term={term} view={view} week={firstWeek} colours={colours} compact />
         </Card>
         <Card
           title={second.name}
@@ -175,7 +172,7 @@ export function PlanView() {
             )
           }
         >
-          <TermView plan={second} term={term} view={view} week={secondWeek} colours={colours} only={new Set(comparison.only_second)} compact />
+          <TermView plan={second} term={term} view={view} week={secondWeek} colours={colours} compact />
         </Card>
       </div>
     </>

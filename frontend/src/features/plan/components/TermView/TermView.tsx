@@ -19,12 +19,10 @@ type TermViewProps = {
   view: View
   week: Week
   colours: ReadonlyMap<string, CourseColour>
-  // The codes only this plan has, when it's compared with another
-  only: ReadonlySet<string>
   compact?: boolean
 }
 
-export function TermView({ plan, term, view, week, colours, only, compact = false }: TermViewProps) {
+export function TermView({ plan, term, view, week, colours, compact = false }: TermViewProps) {
   const courses = termCourses(plan, term)
   if (courses.length === 0) {
     return (
@@ -38,10 +36,10 @@ export function TermView({ plan, term, view, week, colours, only, compact = fals
   return (
     <div className={styles.termView}>
       {view === 'list' ? (
-        <CourseList courses={courses} only={only} />
+        <CourseList courses={courses} />
       ) : (
         <>
-          <Timetable week={week} colours={colours} only={only} compact={compact} />
+          <Timetable week={week} colours={colours} compact={compact} />
           {week.noSetTimes && <p className={styles.noSetTimes}>{week.noSetTimes}</p>}
         </>
       )}

@@ -1,10 +1,9 @@
 // A plan's week in one term: Monday to Friday across the top, the hours down the side, and each
 // meeting a block in its course's colour, as tall as the meeting is long. The days and hours are for
 // the eye. To a screen reader each day is a list named by the day, and each block says its course,
-// its times, any options it stands for, and whether only this plan of two has it. The course list is
-// the plain equivalent of the whole week. Compact is the smaller week inside a compare panel, whose
-// blocks leave the times to the hours beside them.
-import { Icon } from '@/components/brand/Icon/Icon.tsx'
+// its times and any options it stands for. The course list is the plain equivalent of the whole week.
+// Compact is the smaller week inside a compare panel, whose blocks leave the times to the hours beside
+// them.
 import type { CourseColour, Week } from '../../week.ts'
 import styles from './Timetable.module.css'
 
@@ -21,12 +20,10 @@ const clock = (hour: number) => `${String(hour).padStart(2, '0')}:00`
 type TimetableProps = {
   week: Week
   colours: ReadonlyMap<string, CourseColour>
-  // The codes only this plan has, when it's compared with another
-  only: ReadonlySet<string>
   compact?: boolean
 }
 
-export function Timetable({ week, colours, only, compact = false }: TimetableProps) {
+export function Timetable({ week, colours, compact = false }: TimetableProps) {
   const hours = Array.from({ length: week.hours }, (_, index) => week.firstHour + index)
   return (
     <div className={styles.timetable} data-compact={compact || undefined} style={{ '--hours': week.hours }}>
@@ -54,12 +51,6 @@ export function Timetable({ week, colours, only, compact = false }: TimetablePro
                 <p className={styles.code}>
                   {block.code}
                   <span className="visually-hidden"> {block.name}</span>
-                  {only.has(block.code) && (
-                    <span className={styles.only}>
-                      <Icon name="difference" />
-                      <span className="visually-hidden">, only in this plan</span>
-                    </span>
-                  )}
                 </p>
                 <p className={styles.detail}>
                   {block.quarter}

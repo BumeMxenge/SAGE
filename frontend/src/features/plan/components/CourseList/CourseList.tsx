@@ -1,7 +1,6 @@
 // A plan's courses in one term, a table for each list the handbook puts them on, such as Fourth Year
 // Core Courses (ME), with the list's credits that term. A course that runs for one quarter of its
-// semester is marked so, and when two plans are compared, so is a course only this one has.
-import { Icon } from '@/components/brand/Icon/Icon.tsx'
+// semester is marked so.
 import { DataTable, type DataTableColumn } from '@/components/content/DataTable/DataTable.tsx'
 import type { components } from '@/lib/api-types.ts'
 import { quarterOf } from '../../week.ts'
@@ -36,13 +35,7 @@ function groupsOf(courses: PlanCourse[]): Group[] {
   return others.length > 0 ? [...sorted, { key: 'other', label: 'Other Courses', courses: others }] : sorted
 }
 
-type CourseListProps = {
-  courses: PlanCourse[]
-  // The codes only this plan has, when it's compared with another
-  only: ReadonlySet<string>
-}
-
-export function CourseList({ courses, only }: CourseListProps) {
+export function CourseList({ courses }: { courses: PlanCourse[] }) {
   return (
     <div className={styles.courseList}>
       {groupsOf(courses).map((group) => (
@@ -62,12 +55,6 @@ export function CourseList({ courses, only }: CourseListProps) {
                   <>
                     {course.name}
                     {quarter && <span className={styles.mark}> {quarter}</span>}
-                    {only.has(course.code) && (
-                      <span className={styles.only}>
-                        <Icon name="difference" />
-                        Only in this plan
-                      </span>
-                    )}
                   </>
                 ),
                 credits: <span className={styles.credits}>{course.credits}</span>,

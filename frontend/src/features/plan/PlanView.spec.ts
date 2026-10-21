@@ -1,7 +1,7 @@
 // The plan view as Mbali: /plan opens her first plan, the switcher puts the plans her answers hid
-// last, choosing a plan or a term changes the address, Compare pairs the next plan her answers kept,
-// marks what only one plan has and returns on Done Comparing, Escape or Back, and axe and the keyboard
-// walk pass on compare and the open switcher. routes.spec.ts runs both on the plan itself. Then one
+// last, choosing a plan or a term changes the address, Compare pairs the next plan her answers kept
+// and returns on Done Comparing, Escape or Back, and axe and the keyboard walk pass on compare and the
+// open switcher. routes.spec.ts runs both on the plan itself. Then one
 // engine-shaped plan on a made-up answer from the API, and parity beside the planner prototype in
 // both themes. Her plans are her seed's (data/synthetic/mbali.json): ten, of which her saved answers
 // hid Signals & Power, Embedded & Power and Imaging & Control.
@@ -86,20 +86,6 @@ test('Compare pairs the next plan her answers kept, and Done Comparing, Escape a
     await expect(page).toHaveURL(alone)
     await expect(compareButton(page)).toBeVisible()
   }
-})
-
-test('compare marks each course only one plan has, in the week and the list', async ({ page }) => {
-  await openPlan(page)
-  await compareButton(page).click()
-  const [first, second] = [page.getByRole('article').first(), page.getByRole('article').last()]
-  // Power & Robotics takes EEE4118F and Signals & Robotics EEE4114F; both take EEE4117F
-  await expect(first.getByRole('list', { name: 'Tuesday' }).getByRole('listitem').filter({ hasText: 'EEE4118F' })).toContainText('only in this plan')
-  await expect(second.getByRole('list', { name: 'Tuesday' }).getByRole('listitem').filter({ hasText: 'EEE4114F' })).toContainText('only in this plan')
-  await expect(first.getByRole('list', { name: 'Monday' }).getByRole('listitem').filter({ hasText: 'EEE4117F' })).not.toContainText('only in this plan')
-  await page.getByRole('radio', { name: 'Course List' }).click()
-  await expect(first.getByRole('row', { name: /EEE4118F/ })).toContainText('Only in this plan')
-  await expect(second.getByRole('row', { name: /EEE4114F/ })).toContainText('Only in this plan')
-  await expect(first.getByRole('row', { name: /EEE4117F/ })).not.toContainText('Only in this plan')
 })
 
 test('compare and the open switcher pass axe, and the keyboard walks compare', async ({ page }) => {

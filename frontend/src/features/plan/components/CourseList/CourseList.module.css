@@ -23,16 +23,3 @@
   font-variant-numeric: tabular-nums;
   color: var(--color-text-secondary);
 }
-
-/* The mark of a course only this plan has: its icon and its words after the name */
-.only {
-  --icon-size: var(--size-icon-sm);
-
-  display: inline-flex;
-  gap: var(--space-1);
-  align-items: center;
-  margin-inline-start: var(--space-2);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  vertical-align: middle;
-}
