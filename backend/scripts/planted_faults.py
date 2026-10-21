@@ -133,8 +133,8 @@ FAULTS = [
         16,
         "plans: unchosen alternatives hidden",
         "src/sage/features/plans/service.py",
-        "slot.choice_group not in chosen or chosen[slot.choice_group] == slot.choice",
-        "slot.choice_group is None or chosen.get(slot.choice_group) == slot.choice",
+        "slot.choice_group not in chosen or slot.choice in chosen[slot.choice_group]",
+        "slot.choice_group is None or slot.choice in chosen.get(slot.choice_group, ())",
     ),
     Fault(
         17,

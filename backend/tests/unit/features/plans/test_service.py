@@ -51,8 +51,8 @@ def meeting(day: int, **fields) -> TimetableSlot:
     )
 
 
-def course(choices: dict[str, str] | None = None) -> PlanCourse:
-    # The made-up course in a plan, with the alternatives chosen so far
+def course(choices: dict[str, list[str]] | None = None) -> PlanCourse:
+    # The made-up course in a plan, with each group's alternatives that fit the plan
     return PlanCourse(
         plan_id=uuid4(),
         course_code="TST4000F",
@@ -76,11 +76,14 @@ def test_a_meeting_linked_to_curricula_shows_only_in_theirs():
     assert plans.meetings(course(), rules, HERS) == [everyone, hers]
 
 
-def test_every_alternative_shows_until_one_is_chosen():
+def test_a_plan_shows_only_the_alternatives_that_fit_it():
     lecture = meeting(1)
-    tutorial_a = meeting(2, choice_group="tutorial", choice="A")
-    tutorial_b = meeting(3, choice_group="tutorial", choice="B")
-    rules = RuleSet(timetable_slots=(lecture, tutorial_a, tutorial_b))
-    assert plans.meetings(course(), rules, HERS) == [lecture, tutorial_a, tutorial_b]
-    chosen = course({"tutorial": "B"})
-    assert plans.meetings(chosen, rules, HERS) == [lecture, tutorial_b]
+    tutorials = [
+        meeting(day, choice_group="tutorial", choice=letter)
+        for day, letter in ((2, "A"), (3, "B"), (4, "C"))
+    ]
+    rules = RuleSet(timetable_slots=(lecture, *tutorials))
+    # A group her plan doesn't record shows every alternative
+    assert plans.meetings(course(), rules, HERS) == [lecture, *tutorials]
+    fitting = course({"tutorial": ["A", "C"]})
+    assert plans.meetings(fitting, rules, HERS) == [lecture, tutorials[0], tutorials[2]]

@@ -90,13 +90,13 @@ def group_keys(rules: RuleSet, curriculum: str) -> set[str]:
 def meetings(
     course: PlanCourse, rules: RuleSet, curriculum: str
 ) -> list[TimetableSlot]:
-    # The meetings she attends: the compulsory ones, and the chosen alternative of each choice
-    # group, or every alternative while none is chosen
+    # The meetings she attends: the compulsory ones, and each alternative of a choice group that
+    # fits her plan, or every alternative of a group her plan doesn't record
     chosen = course.choices or {}
     attended = [
         slot
         for slot in meetings_on(rules, curriculum, course.course_code)
-        if slot.choice_group not in chosen or chosen[slot.choice_group] == slot.choice
+        if slot.choice_group not in chosen or slot.choice in chosen[slot.choice_group]
     ]
     # Unknown days and times last
     return sorted(

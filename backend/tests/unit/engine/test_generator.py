@@ -416,7 +416,10 @@ def test_a_slot_records_each_courses_sections_and_what_it_forces(symbols):
     )
     rows = generate(rules, symbols)
     chosen = {c.course_code: c.choices for c in rows.plan_courses if c.choices}
-    assert chosen == {"AAA1001S": {"tutorial": "B"}}
+    assert chosen == {
+        "AAA1000S": {"lab": ["A", "B"]},
+        "AAA1001S": {"tutorial": ["B"]},
+    }
     (slot,) = [r for r in rows.plan_reasons if r.details]
     assert (slot.details["fits"], slot.details["sections"], slot.details["forced"]) == (
         ["KKK1000S", "KKK1001S", "KKK1002S"],

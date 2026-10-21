@@ -24,6 +24,7 @@ from sage.engine.facts import (
 from sage.engine.reasons import Reason, Reasons
 from sage.engine.solver import Fit, Found, Solver
 from sage.shared.base import Row
+from sage.shared.printed_meetings import MEETINGS
 from sage.shared.rules import (
     COMPLEMENTARY,
     AllOfGroup,
@@ -85,7 +86,6 @@ class ClingoPlanGenerator:
             period=version.year,
             version=1,
         )
-        rules = printed.timetabled(rules)
         year = Year(student, Record(student, history, rules, symbols), rules)
         if year.finished:
             return rows(plan_set, {None: [year.said.finished()]}, [], {}, ())
@@ -414,7 +414,7 @@ class Year:
         (version,) = self.rules.handbook_versions
         arranged = {
             slot.course_code
-            for slot in printed.MEETINGS.get(version.year, ())
+            for slot in MEETINGS.get(version.year, ())
             if slot.day is None
         }
         for code in held:
@@ -564,7 +564,7 @@ def rows(
     plan_set: PlanSet,
     said: Said,
     ranked: Sequence[Found],
-    chosen: Mapping[tuple[str, ...], dict[str, dict[str, str]]],
+    chosen: Mapping[tuple[str, ...], dict[str, dict[str, list[str]]]],
     required: Sequence[str],
 ) -> PlanSetRows:
     # The set as stored, with ids made from her id, the year and each plan's courses, so a retried

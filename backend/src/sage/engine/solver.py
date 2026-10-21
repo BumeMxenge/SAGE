@@ -1,7 +1,7 @@
 # Runs plans.lp over one student's facts with clingo, the engine's only use of it: every plan once,
 # the courses that fit beside a plan, with their sections and any of the plan's they force, the
-# alternatives every way of attending a plan shares, and the smallest set of requirements that leaves
-# no plan.
+# alternatives of each of a plan's choice groups that fit it, and the smallest set of requirements
+# that leaves no plan.
 from collections.abc import Collection, Sequence
 from pathlib import Path
 
@@ -111,15 +111,16 @@ class Solver:
         plan: Found,
         candidates: Collection[str],
         off: Collection[str] = (),
-    ) -> dict[str, dict[str, str]]:
-        # The alternatives every clash-free way of attending the plan uses: clingo's cautious mode
-        # keeps only what every answer set holds
-        control = self._ground(facts, "--enum-mode=cautious", "--models=0")
-        chosen: dict[str, dict[str, str]] = {}
-        for code, group, choice in picks(
-            self._last(control, fixed(facts, plan, candidates, off))
+    ) -> dict[str, dict[str, list[str]]]:
+        # Each choice group's alternatives that some clash-free way of attending the whole plan
+        # uses, sorted: clingo's brave mode keeps whatever at least one answer set holds. One left
+        # is the only one that fits.
+        control = self._ground(facts, "--enum-mode=brave", "--models=0")
+        chosen: dict[str, dict[str, list[str]]] = {}
+        for code, group, choice in sorted(
+            picks(self._last(control, fixed(facts, plan, candidates, off)))
         ):
-            chosen.setdefault(code, {})[group] = choice
+            chosen.setdefault(code, {}).setdefault(group, []).append(choice)
         return chosen
 
     def conflict(

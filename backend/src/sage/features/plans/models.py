@@ -47,7 +47,8 @@ class Meeting(BaseModel):
     start_time: time | None  # null when the handbook prints no time
     end_time: time | None
     kind: str | None
-    # An alternative she hasn't chosen between yet has its group and letter
+    # An alternative has its group and choice, such as a letter or CSC3002F's pair of days. Only
+    # the alternatives that fit her plan are listed, so a group with one is fixed.
     choice_group: str | None
     choice: str | None
 

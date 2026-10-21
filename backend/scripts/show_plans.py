@@ -14,6 +14,7 @@ from uuid import UUID
 from sage.engine import printed
 from sage.engine.generator import ClingoPlanGenerator, groups
 from sage.ingestion.ingest import approved_snapshot
+from sage.shared.printed_meetings import timetabled
 from sage.shared.rules import (
     COMPLEMENTARY,
     TERM_BY_SUFFIX,
@@ -128,8 +129,8 @@ def show(rows: PlanSetRows, rules: RuleSet, took: float) -> None:
             + ", ".join(
                 row.course_code
                 + "".join(
-                    f" ({group} {choice})"
-                    for group, choice in (row.choices or {}).items()
+                    f" ({group} {' or '.join(choices)})"
+                    for group, choices in (row.choices or {}).items()
                 )
                 for row in held
             )
@@ -156,7 +157,8 @@ def main() -> None:
     arguments = parser.parse_args()
     if bool(arguments.seed) == bool(arguments.curriculum and arguments.year):
         parser.error("give --seed, or --curriculum with --year")
-    rules = approved_snapshot(arguments.rules).rules
+    # With the meetings course entries print, as the app's rulebook adds them
+    rules = timetabled(approved_snapshot(arguments.rules).rules)
     if arguments.seed:
         seeded = load_seed(arguments.seed, ACCOUNT)
         student, history = seeded.student, list(seeded.course_history)

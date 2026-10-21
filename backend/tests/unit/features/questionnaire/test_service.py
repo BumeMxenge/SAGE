@@ -15,8 +15,8 @@ HERS, THEIRS = "EB011EEE05", "EB999XYZ99"  # her curriculum, and a made-up secon
 
 
 def at(start: time | None, end: time | None, **fields: Any) -> dict[str, Any]:
-    # A Monday meeting. chosen marks the alternative her plan picked, and only_for links the meeting
-    # to one curriculum.
+    # A Monday meeting. left marks an alternative that fits her plan, and only_for links the
+    # meeting to one curriculum.
     return {"day": 1, "start_time": start, "end_time": end} | fields
 
 
@@ -39,7 +39,10 @@ def week_options(*plans: list[dict[str, Any]]) -> dict[str, set[int]]:
             name=f"Plan {position}",
         )
         rows.append(plan)
-        chosen = {m["choice_group"]: m["choice"] for m in meetings if m.get("chosen")}
+        chosen: dict[str, list[str]] = {}
+        for meeting in meetings:
+            if meeting.get("left"):
+                chosen.setdefault(meeting["choice_group"], []).append(meeting["choice"])
         plan_courses.append(
             PlanCourse(
                 plan_id=plan.id,
@@ -61,7 +64,7 @@ def week_options(*plans: list[dict[str, Any]]) -> dict[str, set[int]]:
         )
         for meeting in meetings:
             columns = {
-                k: v for k, v in meeting.items() if k not in ("chosen", "only_for")
+                k: v for k, v in meeting.items() if k not in ("left", "only_for")
             }
             slot = TimetableSlot(
                 id=uuid4(), handbook_year=2026, course_code=code, term="sem1", **columns
@@ -91,14 +94,10 @@ def week_options(*plans: list[dict[str, Any]]) -> dict[str, set[int]]:
     }
 
 
-def tutorials(chosen: str | None) -> list[dict[str, Any]]:
-    # Two alternative tutorials, A over lunch and B in the morning, and the one her plan picked
-    a = at(
-        time(13, 0), time(13, 45), choice_group="tut", choice="A", chosen=chosen == "A"
-    )
-    b = at(
-        time(9, 0), time(9, 45), choice_group="tut", choice="B", chosen=chosen == "B"
-    )
+def tutorials(*left: str) -> list[dict[str, Any]]:
+    # Two alternative tutorials, A over lunch and B in the morning, and those that fit her plan
+    a = at(time(13, 0), time(13, 45), choice_group="tut", choice="A", left="A" in left)
+    b = at(time(9, 0), time(9, 45), choice_group="tut", choice="B", left="B" in left)
     return [a, b]
 
 
@@ -109,8 +108,9 @@ def tutorials(chosen: str | None) -> list[dict[str, Any]]:
         ([at(time(13, 45), time(14, 30))], True),
         ([at(time(12, 0), time(13, 1))], False),
         ([at(time(13, 44), time(14, 30))], False),
-        (tutorials(chosen=None), True),
-        (tutorials(chosen="A"), False),
+        (tutorials(), True),
+        (tutorials("A", "B"), True),
+        (tutorials("A"), False),
         ([at(None, None)], True),
         ([LUNCH_HOUR | {"only_for": THEIRS}], True),
         ([LUNCH_HOUR | {"only_for": HERS}], False),
@@ -120,8 +120,9 @@ def tutorials(chosen: str | None) -> list[dict[str, Any]]:
         "starts as lunch ends",
         "a minute into lunch",
         "starts a minute before it ends",
-        "an alternative she hasn't chosen yet",
-        "the alternative she chose",
+        "a group her plan doesn't record",
+        "two alternatives left",
+        "one alternative left",
         "no time printed",
         "another curriculum's meeting",
         "her curriculum's meeting",

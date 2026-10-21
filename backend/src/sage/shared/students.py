@@ -59,7 +59,9 @@ class PlanCourse(Row):
     course_code: str
     student_id: UUID
     handbook_year: int
-    choices: dict[str, str] | None = None
+    # Each choice group's alternatives that fit the rest of the plan, sorted, such as
+    # {"lab": ["A", "B"]}. One left is fixed, and a group not here shows every alternative.
+    choices: dict[str, list[str]] | None = None
 
 
 # What a reason explains, as plan_reasons.kind allows

@@ -7,10 +7,10 @@ from uuid import uuid4
 
 import pytest
 
-from sage.engine import printed
 from sage.engine.evaluator import Record
 from sage.engine.facts import Need, Problem, facts, verdicts
 from sage.engine.solver import Solver
+from sage.shared.printed_meetings import MEETINGS
 from sage.shared.rules import (
     TERM_BY_SUFFIX,
     Course,
@@ -189,12 +189,12 @@ def test_two_courses_clash_only_when_their_meetings_overlap(
     ("other", "chosen"),
     [
         # A Wednesday course clashing with lab A leaves only lab B
-        ("AAA1001F", {"AAA1000F": {"lab": "B"}}),
-        # With nothing else on, either lab fits, so neither is chosen for her
-        (None, {}),
+        ("AAA1001F", {"AAA1000F": {"lab": ["B"]}}),
+        # With nothing else on, either lab fits, so both are left for her to pick from
+        (None, {"AAA1000F": {"lab": ["A", "B"]}}),
     ],
 )
-def test_an_alternative_is_recorded_only_when_the_plan_needs_it(other, chosen, symbols):
+def test_a_plan_records_every_alternative_that_fits(other, chosen, symbols):
     labs = [
         meeting("AAA1000F", 3, (time(14), time(17)), choice="A"),
         meeting("AAA1000F", 5, (time(14), time(17)), choice="B"),
@@ -217,23 +217,42 @@ def test_an_alternative_is_recorded_only_when_the_plan_needs_it(other, chosen, s
     [
         # AAA1000F takes every afternoon but Friday's, and the two practicals need two days
         ((1, 2, 3, 4), []),
-        # It leaves Tuesday and Thursday free, which every way of attending the plan uses
+        # It leaves Tuesday and Thursday free, the only pair that fits
         (
             (1, 3, 5),
             [
                 (
                     ("AAA1000F", "CSC3002F"),
-                    {"CSC3002F": {"practical": "Tuesday and Thursday"}},
+                    {"CSC3002F": {"practical": ["Tuesday and Thursday"]}},
+                )
+            ],
+        ),
+        # It leaves Wednesday to Friday free, so any two of those fit, and no pair with Monday
+        # or Tuesday
+        (
+            (1, 2),
+            [
+                (
+                    ("AAA1000F", "CSC3002F"),
+                    {
+                        "CSC3002F": {
+                            "practical": [
+                                "Thursday and Friday",
+                                "Wednesday and Friday",
+                                "Wednesday and Thursday",
+                            ]
+                        }
+                    },
                 )
             ],
         ),
     ],
 )
-def test_csc3002f_needs_two_free_afternoons_for_its_practicals(busy, found, symbols):
+def test_csc3002f_lists_only_the_practical_pairs_her_free_afternoons_allow(
+    busy, found, symbols
+):
     # Its entry (p. 171) prints two 4-hour practicals a week, 14:00 to 18:00, Monday to Friday
-    practicals = [
-        slot for slot in printed.MEETINGS[2026] if slot.course_code == "CSC3002F"
-    ]
+    practicals = [slot for slot in MEETINGS[2026] if slot.course_code == "CSC3002F"]
     afternoons = [meeting("AAA1000F", day, (time(14), time(15))) for day in busy]
     rules = year([course("CSC3002F", 36), course("AAA1000F")], practicals + afternoons)
     problem = Problem(required=("CSC3002F", "AAA1000F"))

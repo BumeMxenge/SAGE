@@ -1,9 +1,11 @@
 # Checks the rulebook cache: a year is read once and reused for ten minutes, read again after that,
-# and a year that isn't there is the rulebook_not_loaded refusal rather than an empty rulebook
+# and a year that isn't there is the rulebook_not_loaded refusal rather than an empty rulebook. Each
+# year comes with the meetings its course entries print, once.
 import pytest
 
 from sage.shared.errors import RulebookNotLoaded
 from sage.shared.memory.rules import InMemoryRuleRepository
+from sage.shared.printed_meetings import timetabled
 from sage.shared.rulebook import TIME_LIMIT, Rulebook
 
 
@@ -54,3 +56,17 @@ def test_no_approved_year_means_no_rulebook():
 def test_a_year_that_isnt_stored_means_no_rulebook(rules):
     with pytest.raises(RulebookNotLoaded, match="2031"):
         Rulebook(rules).year(2031)
+
+
+def test_a_year_holds_the_meetings_its_course_entries_print_once(rules):
+    # CSC3002F's entry prints two practicals a week on two weekdays a plan picks (p. 171), which the
+    # department's timetable leaves out, holding only its lectures: one alternative for each of the
+    # ten pairs of weekdays, two meetings each
+    year = Rulebook(rules).year(2026)
+    practicals = [
+        s
+        for s in year.timetable_slots
+        if s.course_code == "CSC3002F" and s.kind == "practical"
+    ]
+    assert len(practicals) == 20
+    assert timetabled(year).timetable_slots == year.timetable_slots
