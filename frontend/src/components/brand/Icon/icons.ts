@@ -30,6 +30,7 @@ import WifiOff from '@material-symbols/svg-400/rounded/wifi_off.svg?react'
 import Lock from '@material-symbols/svg-400/rounded/lock.svg?react'
 import Info from '@material-symbols/svg-400/rounded/info.svg?react'
 import ArrowDownward from '@material-symbols/svg-400/rounded/arrow_downward.svg?react'
+import Difference from '@material-symbols/svg-400/rounded/difference.svg?react'
 import FavoriteFilled from '@material-symbols/svg-400/rounded/favorite-fill.svg?react'
 export const icons = {
   // Planner: Collapse Panel on the open sidebar, and Open Sidebar on the logo of the collapsed one
@@ -99,6 +100,9 @@ export const icons = {
   info: Info,
   // Onboarding: the first sign-in highlight, between the two clashing classes and the two that work
   arrow_downward: ArrowDownward,
+  // Planner: a course only one of two compared plans has, on its blocks and its row (new design,
+  // approved difference 12)
+  difference: Difference,
 }
 
 export type IconName = keyof typeof icons
