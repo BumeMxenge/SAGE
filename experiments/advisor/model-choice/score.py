@@ -79,9 +79,8 @@ class Ask:
     ask: int
     turn: dict
     answer: Answer | None = None  # None when the reply is broken
-    reply: Reply | None = (
-        None  # the answer after the citation check, as SAGE would store it
-    )
+    # The answer after the citation check, as SAGE would store it
+    reply: Reply | None = None
     dropped: tuple[Quote, ...] = ()
     outcome: str = "broken"  # answer, refer or broken
     unsafe: list[str] = field(default_factory=list)  # why, as far as code can tell

@@ -2,7 +2,7 @@
 # rest, and each prompt's first ask where both replies are correct and safe by code, for a clarity
 # pick. Each ask shown puts both models' replies side by side in a random order with the model
 # hidden, and the key that says which is which goes to its own file. With "rest", it writes every
-# other ask, for when the sample finds an unsafe reply the flags missed. It never calls a provider.
+# other ask, so every reply can be read. It never calls a provider.
 import json
 import random
 import sys

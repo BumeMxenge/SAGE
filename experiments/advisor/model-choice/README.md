@@ -126,8 +126,8 @@ Fixed in the code before any run: seed 1 orders the calls, seed 2 draws the read
 From `experiments/advisor/`:
 1. `uv run python model-choice/check_labels.py` checks the labels.
 2. `uv run --env-file .env python model-choice/asking.py` makes every call and caches each turn in `results/replies/`. It's the only step that calls a provider and costs money. It needs `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` in `.env`, and it won't start while a label doesn't fit.
-3. `uv run python model-choice/read.py` writes the blind reading file, `results/reading.md`, and its key. It never calls a provider.
-4. `uv run python model-choice/score.py` scores every reply from the cache and my marks, then prints the tables and writes them to `results/`. It never calls a provider.
+3. `uv run python model-choice/read.py` writes the blind reading file, `results/reading.md`, and its key. `read.py rest` writes `results/reading-rest.md`, every ask the first file left out. Neither calls a provider.
+4. `uv run python model-choice/score.py` scores every reply from the cache and my marks in both reading files, then prints the tables and writes them to `results/`. It never calls a provider. `results/tables-first-read.md` is its `tables.md` with `reading-rest.md` set aside.
 5. `uv run pytest` runs the tests, which never call a model.
 
 The results reproduce at the tag `e4-result`. Later changes to the backend or the data alter the requests, and the replay refuses a cached reply to a changed request by design, so replay E4 from that tag.
