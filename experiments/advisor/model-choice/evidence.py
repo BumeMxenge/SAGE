@@ -5,7 +5,6 @@
 from collections.abc import Mapping, Sequence
 from uuid import UUID
 
-from sage.engine.stubs import UNCHECKED
 from sage.ingestion.ingest import approved_snapshot
 from sage.shared.planning import Eligibility
 from sage.shared.rules import Passage
@@ -17,6 +16,10 @@ YEAR = 2026
 # A made-up account for the seed's ids, as no real account is involved
 ACCOUNT = UUID(int=4)
 DAYS = {1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun"}
+# The engine's interim stand-in's words for a course it can't check, as E4 ran them. Kept here
+# because the engine replaces that stand-in, and changed words would change every request whose
+# tool result carries them, which the replay then refuses
+UNCHECKED = "SAGE can't check this requirement yet. Ask your advisor."
 
 RULES = approved_snapshot(YEAR).rules
 STUDENT = load_seed(SEED_FILE, ACCOUNT)

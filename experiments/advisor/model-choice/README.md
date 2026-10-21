@@ -130,6 +130,8 @@ From `experiments/advisor/`:
 4. `uv run python model-choice/score.py` scores every reply from the cache and my marks, then prints the tables and writes them to `results/`. It never calls a provider.
 5. `uv run pytest` runs the tests, which never call a model.
 
+The results reproduce at the tag `e4-result`. Later changes to the backend or the data alter the requests, and the replay refuses a cached reply to a changed request by design, so replay E4 from that tag.
+
 ## Protocol change, 21 October
 
 Made after the model calls and before the key was opened, so before any model's result was known.
