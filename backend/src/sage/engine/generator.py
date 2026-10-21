@@ -22,7 +22,7 @@ from sage.engine.facts import (
     verdicts,
 )
 from sage.engine.reasons import Reason, Reasons
-from sage.engine.solver import Found, Solver
+from sage.engine.solver import Fit, Found, Solver
 from sage.shared.base import Row
 from sage.shared.rules import (
     COMPLEMENTARY,
@@ -125,7 +125,7 @@ class ClingoPlanGenerator:
 
     def _fits(
         self, year: "Year", problem: Problem, ranked: Sequence[Found]
-    ) -> dict[tuple[str, ...], tuple[str, ...]]:
+    ) -> dict[tuple[str, ...], list[Fit]]:
         # The approved complementary courses that fit each plan's timetable, when it has a slot
         if not year.slots:
             return {}
@@ -389,7 +389,7 @@ class Year:
         self,
         ranked: Sequence[Found],
         problem: Problem,
-        fits: Mapping[tuple[str, ...], tuple[str, ...]],
+        fits: Mapping[tuple[str, ...], Sequence[Fit]],
     ) -> Said:
         said = self.said
         found: Said = {None: self._rules(problem, bool(ranked))}
@@ -416,15 +416,16 @@ class Year:
                 attach(found, ranked, holding, said.untimed(code, code in arranged))
         for plan in ranked:
             for slot in self.slots:
-                fit = [
-                    code
-                    for code in fits[plan.courses]
-                    if not slot.place or self._credits[code] >= slot.place.credits
+                listed = [
+                    fit
+                    for fit in fits[plan.courses]
+                    if not slot.place or self._credits[fit.code] >= slot.place.credits
                 ]
-                late = [c for c in fit if untimed(c, self.rules, self.curriculum)]
-                fewer = [c for c in fit if self._credits[c] < slot.credits]
+                codes = [fit.code for fit in listed]
+                late = [c for c in codes if untimed(c, self.rules, self.curriculum)]
+                fewer = [c for c in codes if self._credits[c] < slot.credits]
                 found[plan.courses].append(
-                    said.slot(slot.credits, slot.table, fit, late, fewer, slot.place)
+                    said.slot(slot.credits, slot.table, listed, late, fewer, slot.place)
                 )
         return found
 

@@ -48,8 +48,15 @@ def course(code: str, credits: int = 16, rule=None) -> Course:
     )
 
 
-def meeting(code: str, day: int | None, start: int | None = None) -> TimetableSlot:
-    # An hour from the given hour, or a meeting with no printed day or time
+def meeting(
+    code: str,
+    day: int | None,
+    start: int | None = None,
+    section: tuple[str, str] | None = None,
+) -> TimetableSlot:
+    # An hour from the given hour, or a meeting with no printed day or time, and the choice group
+    # and alternative of a section
+    group, choice = section or (None, None)
     return TimetableSlot(
         id=uuid4(),
         handbook_year=2026,
@@ -58,6 +65,8 @@ def meeting(code: str, day: int | None, start: int | None = None) -> TimetableSl
         day=day,
         start_time=time(start) if start else None,
         end_time=time(start + 1) if start else None,
+        choice_group=group,
+        choice=choice,
     )
 
 
@@ -333,6 +342,8 @@ def test_a_slot_lists_the_complementary_courses_that_fit_marking_untimed_ones(sy
             "fits": ["KKK1001F", "KKK1002F"],
             "untimed": ["KKK1001F"],
             "fewer_credits": [],
+            "sections": {},
+            "forced": {},
         },
     )
 
@@ -364,7 +375,52 @@ def test_a_15_credit_course_fills_an_18_credit_line_and_needs_a_check(symbols):
             "fits": ["KKK1001F", "KKK1002F"],
             "untimed": [],
             "fewer_credits": ["KKK1001F"],
+            "sections": {},
+            "forced": {},
         },
+    )
+
+
+def test_a_slot_records_each_courses_sections_and_what_it_forces(symbols):
+    # AAA1000S meets on Monday at 10:00, with lab A on Wednesday and lab B on Friday at 14:00, and
+    # either lab fits the plan. AAA1002S meets on Tuesday at 9:00, so the plan itself takes
+    # AAA1001S's Thursday tutorial. KKK1000S meets on Wednesday at 14:00, so it forces lab B, while
+    # KKK1002S forces nothing. KKK1001S's lecture A clashes on Monday, leaving its lecture B.
+    rules = rulebook(
+        {
+            1: (
+                core("y1"),
+                CreditsFromGroups(credits=18, from_groups=("complementary",)),
+                total(66),
+            )
+        },
+        {
+            "y1": ("AAA1000S", "AAA1001S", "AAA1002S"),
+            "complementary": ("KKK1000S", "KKK1001S", "KKK1002S"),
+        },
+        [course(c) for c in ("AAA1000S", "AAA1001S", "AAA1002S")]
+        + [course(c, 18) for c in ("KKK1000S", "KKK1001S", "KKK1002S")],
+        [
+            meeting("AAA1000S", 1, 10),
+            meeting("AAA1000S", 3, 14, ("lab", "A")),
+            meeting("AAA1000S", 5, 14, ("lab", "B")),
+            meeting("AAA1001S", 2, 9, ("tutorial", "A")),
+            meeting("AAA1001S", 4, 9, ("tutorial", "B")),
+            meeting("AAA1002S", 2, 9),
+            meeting("KKK1000S", 3, 14),
+            meeting("KKK1001S", 1, 10, ("lecture", "A")),
+            meeting("KKK1001S", 2, 10, ("lecture", "B")),
+            meeting("KKK1002S", 4, 11),
+        ],
+    )
+    rows = generate(rules, symbols)
+    chosen = {c.course_code: c.choices for c in rows.plan_courses if c.choices}
+    assert chosen == {"AAA1001S": {"tutorial": "B"}}
+    (slot,) = [r for r in rows.plan_reasons if r.details]
+    assert (slot.details["fits"], slot.details["sections"], slot.details["forced"]) == (
+        ["KKK1000S", "KKK1001S", "KKK1002S"],
+        {"KKK1001S": {"lecture": ["B"]}},
+        {"KKK1000S": {"AAA1000S": {"lab": "B"}}},
     )
 
 

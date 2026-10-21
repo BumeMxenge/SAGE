@@ -89,14 +89,21 @@ overlap(T, full_year) :- overlap(full_year, T).
 
 % Two meetings clash on the same day in overlapping terms when their times overlap. Meetings that
 % only touch, one ending as the other starts, don't.
-:- attends(M), attends(N), M < N, meeting(M, _, D, S1, E1, T1), meeting(N, _, D, S2, E2, T2),
+clash(M, N) :- meeting(M, _, D, S1, E1, T1), meeting(N, _, D, S2, E2, T2), M != N,
    overlap(T1, T2), S1 < E2, S2 < E1.
+:- attends(M), attends(N), M < N, clash(M, N).
+
+% A section of a plan's course that a meeting of the course tried beside it clashes with, and so
+% rules out
+blocked(A, C, G, X) :- add(A), attends(M), meeting(M, A, _, _, _, _), clash(M, N),
+   meeting(N, C, _, _, _, _), take(C), alternative(N, G, X).
 
 #show take/1.
 #show conditional/1.
 #show unsure/1.
 #show pick/3.
 #show add/1.
+#show blocked/4.
 
 % Grounded only to list plans, so each one comes once, by its courses alone. clingo works out the
 % brave and cautious solves' consequences over projected atoms alone, so they leave this part out.

@@ -1,6 +1,7 @@
 # Runs plans.lp over one student's facts with clingo, the engine's only use of it: every plan once,
-# the courses that fit beside a plan, the alternatives every way of attending a plan shares, and the
-# smallest set of requirements that leaves no plan.
+# the courses that fit beside a plan, with their sections and any of the plan's they force, the
+# alternatives every way of attending a plan shares, and the smallest set of requirements that leaves
+# no plan.
 from collections.abc import Collection, Sequence
 from pathlib import Path
 
@@ -21,6 +22,14 @@ class Found(Row):
     courses: tuple[str, ...]
     conditional: tuple[str, ...]
     unsure: tuple[str, ...]
+
+
+class Fit(Row):
+    # A course some way of attending a plan leaves room for, the sections of it that fit, by choice
+    # group, and the section of a plan's course it forces, where its own meetings rule out the others
+    code: str
+    sections: dict[str, list[str]]
+    forced: dict[str, dict[str, str]]
 
 
 class Solver:
@@ -53,11 +62,48 @@ class Solver:
         plan: Found,
         candidates: Collection[str],
         off: Collection[str] = (),
-    ) -> tuple[str, ...]:
-        # The extra courses some way of attending the plan leaves room for: clingo's brave mode
-        # keeps whatever at least one answer set holds
-        control = self._ground(facts, "--enum-mode=brave", "--models=0")
-        return named(self._last(control, fixed(facts, plan, candidates, off)), "add")
+    ) -> list[Fit]:
+        # The extra courses some way of attending the plan leaves room for, with their sections
+        # that fit: clingo's brave mode keeps whatever at least one answer set holds. A course whose
+        # meetings could rule out a section of the plan's is then tried alone in cautious mode, and
+        # the plan's section it leaves in every answer set is the one it forces.
+        assumptions = fixed(facts, plan, candidates, off)
+        brave = self._last(
+            self._ground(facts, "--enum-mode=brave", "--models=0"), assumptions
+        )
+        blocking = {
+            atom.arguments[0].string for atom in brave if atom.name == "blocked"
+        }
+        cautious = self._ground(facts, "--enum-mode=cautious", "--models=0")
+        found = []
+        for code in named(brave, "add"):
+            sections: dict[str, list[str]] = {}
+            for course, group, choice in sorted(picks(brave)):
+                if course == code:
+                    sections.setdefault(group, []).append(choice)
+            forced = (
+                self._forced(cautious, assumptions, code) if code in blocking else {}
+            )
+            found.append(Fit(code=code, sections=sections, forced=forced))
+        return found
+
+    def _forced(
+        self, control: clingo.Control, assumptions: list[Assumption], code: str
+    ) -> dict[str, dict[str, str]]:
+        # The plan's sections that every answer set with the course added picks, where the
+        # course's own meetings rule out another of the same group
+        added = (clingo.Function("add", [clingo.String(code)]), True)
+        every = self._last(control, [*assumptions, added])
+        ruled = {
+            (atom.arguments[1].string, atom.arguments[2].string)
+            for atom in every
+            if atom.name == "blocked"
+        }
+        forced: dict[str, dict[str, str]] = {}
+        for course, group, choice in picks(every):
+            if (course, group) in ruled:
+                forced.setdefault(course, {})[group] = choice
+        return forced
 
     def choices(
         self,
@@ -70,10 +116,10 @@ class Solver:
         # keeps only what every answer set holds
         control = self._ground(facts, "--enum-mode=cautious", "--models=0")
         chosen: dict[str, dict[str, str]] = {}
-        for atom in self._last(control, fixed(facts, plan, candidates, off)):
-            if atom.name == "pick":
-                code, group, choice = (argument.string for argument in atom.arguments)
-                chosen.setdefault(code, {})[group] = choice
+        for code, group, choice in picks(
+            self._last(control, fixed(facts, plan, candidates, off))
+        ):
+            chosen.setdefault(code, {})[group] = choice
         return chosen
 
     def conflict(
@@ -141,6 +187,16 @@ def fixed(
         for code in candidates
     ]
     return switched(facts, off) + taken
+
+
+def picks(atoms: Sequence[clingo.Symbol]) -> list[tuple[str, str, str]]:
+    # Each course, choice group and alternative the atoms pick
+    return [
+        (code.string, group.string, choice.string)
+        for code, group, choice in (
+            atom.arguments for atom in atoms if atom.name == "pick"
+        )
+    ]
 
 
 def named(atoms: Sequence[clingo.Symbol], name: str) -> tuple[str, ...]:

@@ -101,6 +101,19 @@ def show(rows: PlanSetRows, rules: RuleSet, took: float) -> None:
             )
             fewer = reason.details["fewer_credits"]
             print(f"{indent}  fewer credits: {', '.join(fewer) or 'none'}")
+            sections = [
+                f"{code} {group} {' or '.join(choices)}"
+                for code, groups in reason.details["sections"].items()
+                for group, choices in groups.items()
+            ]
+            print(f"{indent}  sections: {', '.join(sections) or 'none'}")
+            forced = [
+                f"{code} needs {course} {group} {choice}"
+                for code, courses in reason.details["forced"].items()
+                for course, groups in courses.items()
+                for group, choice in groups.items()
+            ]
+            print(f"{indent}  forced: {', '.join(forced) or 'none'}")
 
     print(f"{len(rows.plans)} plans in {took:.2f} s\n")
     for reason in rows.plan_reasons:

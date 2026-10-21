@@ -7,6 +7,7 @@ from uuid import UUID
 
 from sage.engine.facts import Need
 from sage.engine.printed import Note, Place
+from sage.engine.solver import Fit
 from sage.shared.base import Row
 from sage.shared.rules import EntryRule, Outcome, RuleSet
 from sage.shared.students import ReasonKind
@@ -180,15 +181,15 @@ class Reasons:
         self,
         credits: int,
         table: str | None,
-        fits: Sequence[str],
+        fits: Sequence[Fit],
         untimed: Sequence[str],
         fewer: Sequence[str],
         place: Place | None = None,
     ) -> Reason:
         # A complementary line, or a 576-credit place, the plan leaves to her, with the approved
-        # complementary courses that fit its timetable. One course fills a line, and one worth
-        # fewer credits than the line needs a check, so a plan that fills it with one is
-        # conditional.
+        # complementary courses that fit its timetable, the sections of each that fit, and any
+        # section of the plan's courses one forces. One course fills a line, and one worth fewer
+        # credits than the line needs a check, so a plan that fills it with one is conditional.
         if place:
             ask = (
                 f"Your 576-credit curriculum still needs {place.code}. Take an approved "
@@ -217,14 +218,16 @@ class Reasons:
             )
         details: dict[str, Any] = {
             "credits": credits,
-            "fits": list(fits),
+            "fits": [fit.code for fit in fits],
             "untimed": list(untimed),
             "fewer_credits": list(fewer),
+            "sections": {fit.code: fit.sections for fit in fits if fit.sections},
+            "forced": {fit.code: fit.forced for fit in fits if fit.forced},
         }
         if place:
             details["owed"] = place.code
         return Reason(
-            kind="included" if set(fits) - set(fewer) else "conditional",
+            kind="included" if len(fits) > len(fewer) else "conditional",
             message=message,
             passage_id=passage,
             details=details,
