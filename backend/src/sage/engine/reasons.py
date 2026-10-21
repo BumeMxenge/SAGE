@@ -134,7 +134,7 @@ class Reasons:
         holder = "every plan holds" if every else "this plan holds"
         return Reason(
             kind="included",
-            message=f"{code} needs {in_words(rest)}, which {holder} in time.",
+            message=f"{code} needs {in_words(rest, quoted=True)}, which {holder} in time.",
             course_code=code,
             passage_id=self.entry(code),
         )

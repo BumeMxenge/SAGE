@@ -1,5 +1,6 @@
 # Checks what Explore Electives says of each course: one course per status, with its reason written
-# out by hand. A reason names only the part of a rule she hasn't met, or the part still open.
+# out by hand. A reason names only the part of a rule she hasn't met, or the part still open, where
+# words such as "or equivalent" keep whole the list they continue.
 from uuid import UUID
 
 from sage.engine.eligibility import EntryRuleEligibility
@@ -86,3 +87,30 @@ def test_each_status_with_its_reason(result_symbols):
             ),
         ),
     }
+
+
+def test_words_that_continue_a_list_keep_the_whole_list(result_symbols):
+    # As CSC3002F's maths list ends "or equivalent" (p. 171). She has passed AAA1000F alone, so
+    # every branch fails but the words, and each still reads as printed, with no second "or".
+    first, second, third, fourth = (
+        CourseNeed(course=code, need="pass")
+        for code in ("AAA1000F", "AAA1001S", "AAA1002F", "AAA1003F")
+    )
+    rule = AnyOf(
+        any=(
+            AllOf(all=(first, second)),
+            third,
+            fourth,
+            Refer(refer="or equivalent"),
+        )
+    )
+    rules = RuleSet(courses=(course("AAA3000S", rule),))
+    history = [line("AAA1000F", "1", 80, 16)]
+    symbols = {row.symbol: row for row in result_symbols}
+    found = EntryRuleEligibility().check(
+        rules.courses, history, rules, symbols, STUDENT
+    )
+    assert found["AAA3000S"].reason == (
+        'It needs one of (AAA1000F and AAA1001S), AAA1002F or AAA1003F "or equivalent". SAGE '
+        "can't check this, so confirm it with your advisor."
+    )

@@ -172,6 +172,12 @@ AllOf.model_rebuild()
 AnyOf.model_rebuild()
 
 
+def continues(node: EntryRule) -> bool:
+    # Printed words that only continue the list before them, such as "or equivalent", and so read
+    # only with that list
+    return isinstance(node, Refer) and node.refer.startswith("or ")
+
+
 class AllOfGroup(Row):
     all_of_group: str
 

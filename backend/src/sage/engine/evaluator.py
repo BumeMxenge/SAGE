@@ -20,6 +20,7 @@ from sage.shared.rules import (
     ResultSymbol,
     RuleSet,
     StudentIn,
+    continues,
 )
 from sage.shared.students import CourseHistoryLine, Student, final_mark
 
@@ -184,7 +185,7 @@ class Record:
 
 class Verdict(Row):
     # A rule as her record leaves it, with the part that fails when it's not met, and the part still
-    # open when it's open
+    # open when it's open, which keeps whole a list that words such as "or equivalent" continue
     value: Literal["met", "not_met", "open"]
     rest: EntryRule | None = None
 
@@ -208,6 +209,14 @@ def evaluate(
             return Verdict(value="met")
         if all(part.value == "not_met" for part in parts):
             return Verdict(value="not_met", rest=rule)
+        if any(continues(child) for child in rule.any):
+            # Words such as "or equivalent" read only with the list they continue, so the list
+            # stays whole: each open branch with what's still open, and each failed one as printed
+            kept = [
+                part.rest if part.value == "open" else child
+                for child, part in zip(rule.any, parts, strict=True)
+            ]
+            return Verdict(value="open", rest=AnyOf(any=tuple(kept)))
         return still_open(AnyOf, parts)
     value = leaf(rule, record, plan)
     if value == "met":

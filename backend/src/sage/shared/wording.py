@@ -14,12 +14,13 @@ from sage.shared.rules import (
     StudentIn,
     YearRule,
     YearRules,
+    continues,
 )
 
 
 def in_words(rule: EntryRule | YearRules | None, quoted: bool = False) -> str:
-    # Quoted, a refer leaf is its printed text alone, in quotes, for a reason that goes on to say
-    # a person must judge it
+    # Quoted, as a student's reasons have it, a refer leaf is its printed text alone, in quotes,
+    # and words that continue a list, such as "or equivalent", follow it with no "or" of their own
     if rule is None:
         return "no requirement"
     if isinstance(rule, YearRules):
@@ -33,13 +34,15 @@ def _words(node: EntryRule, nested: bool = False, quoted: bool = False) -> str:
         # A tree joins an all inside an all, so a child here is never an all
         words = [
             f"({_words(child, quoted=quoted)})"
-            if _commas(child) and at < len(node.all) - 1
+            if _commas(child, quoted) and at < len(node.all) - 1
             else _words(child, quoted=quoted)
             for at, child in enumerate(node.all)
         ]
         return f"({all_of(words, listed)})" if nested else all_of(words, listed)
     if isinstance(node, AnyOf):
-        return _one_of([_words(child, True, quoted) for child in node.any])
+        listed, after = _branches(node, quoted)
+        words = _one_of([_words(child, True, quoted) for child in listed])
+        return " ".join([words, *(_words(child, quoted=quoted) for child in after)])
     if isinstance(node, CourseNeed):
         if node.need == "concurrent":
             return f"{node.course} taken alongside"
@@ -72,10 +75,21 @@ def _lists(node: EntryRule) -> bool:
     return isinstance(node, AnyOf)
 
 
-def _commas(node: EntryRule) -> bool:
-    # Whether a node's words separate items with commas: one of three or more. A student_in, which
-    # sorts last among its siblings, never sits in the middle of an all.
-    return isinstance(node, AnyOf) and len(node.any) > 2
+def _commas(node: EntryRule, quoted: bool) -> bool:
+    # Whether a node's words separate items with commas: one of three or more listed. A student_in,
+    # which sorts last among its siblings, never sits in the middle of an all.
+    return isinstance(node, AnyOf) and len(_branches(node, quoted)[0]) > 2
+
+
+def _branches(node: AnyOf, quoted: bool) -> tuple[list[EntryRule], list[EntryRule]]:
+    # The branches an any lists, and, quoted, the words that continue the list, which follow it.
+    # Unquoted, they're a person's judgement like any other branch.
+    if not quoted:
+        return list(node.any), []
+    return (
+        [child for child in node.any if not continues(child)],
+        [child for child in node.any if continues(child)],
+    )
 
 
 def all_of(words: list[str], listed: bool = False) -> str:

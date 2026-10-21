@@ -157,13 +157,15 @@ def flatten(
             yield f"child({node}, {below})."
             yield from flatten(child, below, ids, record, plan)
         return
+    # A leaf the plan may meet names the plan's courses that could. One her record decides only
+    # comes in a failed branch of a list kept whole for its words, which can't hold either way, so
+    # it writes nothing.
     value = leaf(rule, record, plan)
     if value == "unknown":
         yield f"unknown({node})."
-        return
-    # Planned or maybe, so the leaf is a course the plan may take
-    for code in plan(rule):
-        yield f'{value}({node}, "{code}").'
+    elif value in ("planned", "maybe"):
+        for code in plan(rule):
+            yield f'{value}({node}, "{code}").'
 
 
 def meetings(code: str, rules: RuleSet, curriculum: str) -> Iterator[str]:
