@@ -1,12 +1,20 @@
 # Checks chats on Mbali's seeded set: they list under their plan or pair, a pair is stored the same
-# whichever way round it was sent, a question and the advisor's reply are stored together, and a bad
-# question or pair is refused. Who may reach a chat is in test_guards.py.
+# whichever way round it was sent, a question and the advisor's reply are stored together, a bad
+# question or pair is refused, and a question the advisor can't answer in time stores nothing. Who
+# may reach a chat is in test_guards.py.
+import threading
 from uuid import UUID, uuid4
 
 import pytest
 
+from sage.advisor import replies
+from sage.advisor.replies import GroundedAdvisor
+from sage.engine.eligibility import EntryRuleEligibility
 from sage.shared.advisor import Reply
 from sage.shared.api import deps
+from sage.shared.language_model import ModelUnavailable, Response
+from sage.shared.memory.language_model import ScriptedModel
+from sage.shared.rulebook import Rulebook
 from sage.shared.students import Chat, Citation, Plan, PlanSet
 from tests.unit.accounts import MBALI
 
@@ -192,3 +200,51 @@ def test_a_question_is_1_to_2000_characters_and_nothing_else(
 ):
     response = ask(mbali, one_plan_chat, body)
     assert (response.status_code, response.json().get("code")) == answer
+
+
+@pytest.fixture
+def luna(app, stores):
+    # The real advisor in the app, on her stores, with a scripted model in Luna's place
+    def scripted(model: ScriptedModel) -> None:
+        advisor = GroundedAdvisor(
+            model, stores[1], Rulebook(stores[0]), EntryRuleEligibility()
+        )
+        app.dependency_overrides[deps.advisor] = lambda: advisor
+
+    return scripted
+
+
+def test_a_provider_error_stores_nothing_and_reaches_her_as_advisor_unavailable(
+    luna, mbali, one_plan_chat
+):
+    luna(ScriptedModel({"reply": [ModelUnavailable("InternalServerError")]}))
+    before = messages_in(mbali, one_plan_chat).json()
+    response = ask(mbali, one_plan_chat, QUESTION)
+    assert (response.status_code, response.json()["code"]) == (
+        503,
+        "advisor_unavailable",
+    )
+    assert messages_in(mbali, one_plan_chat).json() == before
+
+
+def test_a_turn_that_runs_over_stores_nothing_even_once_its_reply_comes(
+    luna, mbali, one_plan_chat, monkeypatch
+):
+    monkeypatch.setattr(replies, "TURN_LIMIT", 0.2)
+    late = Response(
+        text='{"content": "Late.", "referral": false, "open_plan_id": null, "citations": []}'
+    )
+    model = ScriptedModel({"reply": [late]}, held={"reply"})
+    luna(model)
+    before = messages_in(mbali, one_plan_chat).json()
+    response = ask(mbali, one_plan_chat, QUESTION)
+    assert (response.status_code, response.json()["code"]) == (
+        503,
+        "advisor_unavailable",
+    )
+    # The model answers after all, and the turn it was in runs to its end
+    model.release()
+    for thread in threading.enumerate():
+        if thread.name.startswith("advisor"):
+            thread.join(5)
+    assert messages_in(mbali, one_plan_chat).json() == before
