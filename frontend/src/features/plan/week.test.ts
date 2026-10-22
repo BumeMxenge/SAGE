@@ -199,7 +199,7 @@ describe('course colours', () => {
   it('go out in the order courses first appear, reading the week row by row', () => {
     // 08:00 row: EEE4117F on Monday, EEE4119F on Tuesday. 10:00: EEE4118F on Tuesday. 12:00: CML4607F
     // on Tuesday. 14:00: EEE4113F on Wednesday. The prototype gives these five the same colours.
-    expect(Object.fromEntries(coloursOf([weekOf(powerControlAndRobotics, 'sem1')]))).toEqual({
+    expect(Object.fromEntries(coloursOf([powerControlAndRobotics]))).toEqual({
       EEE4117F: 'teal',
       EEE4119F: 'orange',
       EEE4118F: 'navy',
@@ -209,23 +209,37 @@ describe('course colours', () => {
     // Row by row, not day by day: Tuesday's 08:00 comes before Monday's 10:00
     const late = course('TST1002F', 'Made up', 'sem1', [meeting('sem1', MON, '10:00', '10:45')])
     const early = course('TST1001F', 'Made up', 'sem1', [meeting('sem1', TUE, '08:00', '08:45')])
-    expect(Object.fromEntries(coloursOf([weekOf(plan([late, early]), 'sem1')]))).toEqual({ TST1001F: 'teal', TST1002F: 'orange' })
+    expect(Object.fromEntries(coloursOf([plan([late, early])]))).toEqual({ TST1001F: 'teal', TST1002F: 'orange' })
   })
 
-  it('keep a shared course one colour in both compared plans', () => {
+  it('keep each course one colour across the set, a new course taking the first its term has free', () => {
     // Read alone, Power, Robotics & Imaging would give CML4607F navy, as the third course it meets.
-    // Read after Power, Control & Robotics, CML4607F keeps pink and HUB4049F, new, takes the sixth
-    // colour.
-    const colours = coloursOf([weekOf(powerControlAndRobotics, 'sem1'), weekOf(powerRoboticsAndImaging, 'sem1')])
+    // Read after Power, Control & Robotics, CML4607F keeps pink and HUB4049F, new, takes the first
+    // colour none of the five has, the sixth.
+    const colours = coloursOf([powerControlAndRobotics, powerRoboticsAndImaging])
     expect(colours.get('CML4607F')).toBe('pink')
     expect(colours.get('HUB4049F')).toBe('ochre')
+  })
+
+  it("keep a full-year course's colour in both semesters, while each term otherwise starts afresh", () => {
+    // Sem 1 meets the full-year course at 09:00, then TST1001F at 10:00: teal, orange. Sem 2 meets
+    // TST2001S at 08:00 first. Teal is the full-year course's there too, and orange is free, as
+    // TST1001F is in Sem 1 alone.
+    const fullYear = course('TST1000H', 'Made up', 'full_year', [meeting('full_year', MON, '09:00', '09:45')])
+    const first = course('TST1001F', 'Made up', 'sem1', [meeting('sem1', MON, '10:00', '10:45')])
+    const second = course('TST2001S', 'Made up', 'sem2', [meeting('sem2', MON, '08:00', '08:45')])
+    expect(Object.fromEntries(coloursOf([plan([fullYear, first, second])]))).toEqual({
+      TST1000H: 'teal',
+      TST1001F: 'orange',
+      TST2001S: 'orange',
+    })
   })
 
   it('start again at teal after the eighth', () => {
     // Nine courses, one an hour from 08:00
     const hours = Array.from({ length: 9 }, (_, index) => String(8 + index).padStart(2, '0'))
     const nine = day(...hours.map((hour): [string, string] => [`${hour}:00`, `${hour}:45`]))
-    const colours = [...coloursOf([weekOf(nine, 'sem1')]).values()]
+    const colours = [...coloursOf([nine]).values()]
     expect(colours).toEqual(['teal', 'orange', 'navy', 'pink', 'blue', 'ochre', 'purple', 'dark-teal', 'teal'])
   })
 })

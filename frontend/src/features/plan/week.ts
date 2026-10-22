@@ -4,7 +4,7 @@
 // the same time; the stylesheet turns those into a position against the hour's height.
 import type { components } from '@/lib/api-types.ts'
 import { termLabels } from '@/lib/copy.ts'
-import type { PlanTerm } from '@/lib/planAddress.ts'
+import { type PlanTerm, planTerms } from '@/lib/planAddress.ts'
 
 type Plan = components['schemas']['Plan']
 type PlanCourse = components['schemas']['PlanCourse']
@@ -207,15 +207,26 @@ export function weekOf(plan: Plan, tab: PlanTerm): Week {
 export const courseColours = ['teal', 'orange', 'navy', 'pink', 'blue', 'ochre', 'purple', 'dark-teal'] as const
 export type CourseColour = (typeof courseColours)[number]
 
-// Each course's colour, given out in the order courses first appear, reading each week row by row:
-// the hour, then the day. After the eighth they start again at teal. Compare reads both plans' weeks,
-// the open plan's first, so a course they share keeps one colour, and the open plan keeps its own.
-export function coloursOf(weeks: Week[]): Map<string, CourseColour> {
+// A week's blocks row by row: the hour, then the day
+const rowByRow = ({ blocks }: Week) =>
+  [...blocks].sort((a, b) => Math.floor(a.start / 60) - Math.floor(b.start / 60) || a.day - b.day || a.start - b.start)
+
+// Each course's one colour across a set of plans, so it never changes between plans or in compare.
+// Term by term, the plans are read in the order given, each week row by row, and a course met for the
+// first time takes the first colour no other course of that term has. A course coloured in an earlier
+// term, such as a full-year course, keeps its colour, so no course of the later term takes it. Once a
+// term has all eight, they start again at teal.
+export function coloursOf(plans: Plan[]): Map<string, CourseColour> {
   const colours = new Map<string, CourseColour>()
-  for (const { blocks } of weeks) {
-    const rowByRow = [...blocks].sort((a, b) => Math.floor(a.start / 60) - Math.floor(b.start / 60) || a.day - b.day || a.start - b.start)
-    for (const { code } of rowByRow) {
-      if (!colours.has(code)) colours.set(code, courseColours[colours.size % courseColours.length])
+  for (const term of planTerms) {
+    const met = new Set(plans.flatMap((plan) => rowByRow(weekOf(plan, term)).map(({ code }) => code)))
+    const taken = new Set([...met].flatMap((code) => colours.get(code) ?? []))
+    let again = 0
+    for (const code of met) {
+      if (colours.has(code)) continue
+      const colour = courseColours.find((each) => !taken.has(each)) ?? courseColours[again++ % courseColours.length]
+      colours.set(code, colour)
+      taken.add(colour)
     }
   }
   return colours

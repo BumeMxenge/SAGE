@@ -4,7 +4,7 @@
 // row stay in view as the week scrolls beneath them. The address says which plans and term are open
 // (lib/planAddress.ts), so choosing any of them changes it, and what was on screen stays there while
 // the next plan arrives.
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQueries, useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-aria-components'
 import { useNavigate } from 'react-router'
@@ -30,6 +30,8 @@ export function PlanView() {
   const navigate = useNavigate()
   const [view, setView] = useState<View>('calendar')
   const { data: set } = useQuery(queries.plans())
+  // Every plan in her set, read once, so each course keeps one colour in all of them
+  const setPlans = useQueries({ queries: (set?.plans ?? []).map(({ id }) => queries.plan(id)) })
   // One plan, or two side by side. The read not on screen waits, and keeps what it had for Back.
   const single = useQuery({ ...queries.plan(planId), enabled: compareWith === null, placeholderData: keepPreviousData })
   const pair = useQuery({
@@ -65,9 +67,13 @@ export function PlanView() {
       </ErrorState>
     )
   }
-  // Nothing shows until her set arrives, then the plan, or in compare the panels until both plans do.
-  // Their loading and error states come with the app's others.
+  // Nothing shows until her set and every plan in it arrive, then the plan, or in compare the panels
+  // until both plans do. Their loading and error states come with the app's others.
   if (!set) return null
+  const read = setPlans.flatMap(({ data }) => (data ? [data] : []))
+  if (read.length < set.plans.length) return null
+  // The set's plans by position, then those on screen, which a link can open from an earlier set
+  const byPosition = read.sort((a, b) => a.position - b.position)
 
   const controls = (
     <div className={styles.controls}>
@@ -124,7 +130,7 @@ export function PlanView() {
           </div>
           {controls}
         </div>
-        <TermView plan={plan} term={term} view={view} week={week} colours={coloursOf([week])} />
+        <TermView plan={plan} term={term} view={view} week={week} colours={coloursOf([...byPosition, plan])} />
       </>
     )
   }
@@ -145,8 +151,7 @@ export function PlanView() {
   const { first, second } = comparison
   const firstWeek = weekOf(first, term)
   const secondWeek = weekOf(second, term)
-  // Both plans' weeks give out the colours, the open plan's first, so a course they share keeps one
-  const colours = coloursOf([firstWeek, secondWeek])
+  const colours = coloursOf([...byPosition, first, second])
   // Another plan to swap in for the second, when the set has one beyond these two
   const swappable = set.plans.some((summary) => summary.id !== first.id && summary.id !== second.id)
   return (
