@@ -17,6 +17,7 @@ from pydantic import (
 )
 
 from sage.shared.base import Row
+from sage.shared.students import PlanCourse
 
 # The term_code domain in the rule-tables migration: every term a course or meeting can run in
 TermCode = Literal[
@@ -402,6 +403,28 @@ def meetings_on(
         if slot.course_code == course_code
         and (slot.id not in only_for or curriculum in only_for[slot.id])
     ]
+
+
+def meetings(
+    course: PlanCourse, rules: RuleSet, curriculum: str
+) -> list[TimetableSlot]:
+    # The meetings she attends: the compulsory ones, and each alternative of a choice group that
+    # fits her plan, or every alternative of a group her plan doesn't record
+    chosen = course.choices or {}
+    attended = [
+        slot
+        for slot in meetings_on(rules, curriculum, course.course_code)
+        if slot.choice_group not in chosen or slot.choice in chosen[slot.choice_group]
+    ]
+    # Unknown days and times last
+    return sorted(
+        attended,
+        key=lambda slot: (
+            slot.day or 8,
+            slot.start_time or time.max,
+            slot.choice or "",
+        ),
+    )
 
 
 # Each table's primary key. The fake keys its rows by it, and a store reads rows in key order,

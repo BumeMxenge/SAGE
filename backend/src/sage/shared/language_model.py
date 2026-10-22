@@ -8,6 +8,17 @@ from typing import Any, Literal, Protocol
 from sage.shared.base import Row
 
 
+def strict_object(**properties: dict[str, Any]) -> dict[str, Any]:
+    # A JSON schema for an object with exactly these properties, all required, as a strict tool or
+    # reply needs
+    return {
+        "type": "object",
+        "properties": properties,
+        "required": list(properties),
+        "additionalProperties": False,
+    }
+
+
 class ModelUnavailable(Exception):
     # The model can't be reached: no connection or a timeout, too many requests, or a server error,
     # still failing once the SDK's retries have run out

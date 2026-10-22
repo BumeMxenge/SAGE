@@ -17,7 +17,7 @@ from sage.shared.errors import (
 )
 from sage.shared.repositories import StudentRepository
 from sage.shared.rulebook import Rulebook
-from sage.shared.rules import RuleSet, TimetableSlot
+from sage.shared.rules import RuleSet, TimetableSlot, meetings
 from sage.shared.students import PlanSetRows, Student
 
 QuestionId = Literal["course", "week"]
@@ -160,7 +160,7 @@ def known_meetings(
         chosen = course.choices or {}
         known += [
             meeting
-            for meeting in plans.meetings(course, rules, curriculum)
+            for meeting in meetings(course, rules, curriculum)
             if (
                 meeting.choice_group is None
                 or len(chosen.get(meeting.choice_group, ())) == 1
