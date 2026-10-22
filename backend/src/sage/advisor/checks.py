@@ -1,8 +1,9 @@
 # What SAGE checks in every reply before it's stored, as E4's score.py checked Luna's: each quote
-# against the passage it cites, and the plan it offers against the plans it may offer. Two flags mark
-# a reply for a person to read later, and never change it. A chat's title has its own check.
+# against the passage it cites, and the plan it offers against the plans it may offer. A plan id left
+# in a reply becomes the plan's name. Two flags mark a reply for a person to read later, and never
+# change it. A chat's title has its own check.
 import re
-from collections.abc import Collection, Sequence
+from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Literal
 
@@ -12,7 +13,7 @@ from sage.advisor.evidence import Evidence
 from sage.shared.advisor import Reply
 from sage.shared.base import Row
 from sage.shared.rules import Passage
-from sage.shared.students import Citation
+from sage.shared.students import Citation, Plan
 
 # The one line a reply that gave no checked answer says
 REFERRAL = "I couldn't give you a checked answer to this, so please ask your advisor."
@@ -64,6 +65,7 @@ def check(
     kept, dropped = quotes_kept(answer.citations, evidence.passages)
     if answer.citations and not kept:
         return Checked(REFERRED, dropped=tuple(dropped))
+    content = named(answer.content, evidence.plans)
     offered = answer.open_plan_id
     plan = evidence.plans[offered] if offered in offerable else None
     citations = []
@@ -81,15 +83,25 @@ def check(
         )
     return Checked(
         Reply(
-            content=answer.content,
+            content=content,
             referral=answer.referral,
             open_plan_id=plan.id if plan else None,
             citations=tuple(citations),
         ),
         dropped=tuple(dropped),
         unoffered=offered if offered is not None and plan is None else None,
-        flags=tuple(flags(answer.content, kept, heard)),
+        flags=tuple(flags(content, kept, heard)),
     )
+
+
+def named(content: str, plans: Mapping[str, Plan]) -> str:
+    # The reply with each of her plans by its name, so she never sees an id: an id followed by its
+    # own name loses the id, and any other becomes the name
+    for key, plan in plans.items():
+        name = re.escape(plan.name)
+        content = re.sub(rf"\b{key}\b[,:]?\s*(?:\({name}\)|{name})", plan.name, content)
+        content = re.sub(rf"\b{key}\b", plan.name, content)
+    return content
 
 
 def quotes_kept(

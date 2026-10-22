@@ -75,6 +75,25 @@ def test_a_reply_that_kept_no_quote_is_the_fixed_referral_and_one_with_none_stan
     )
 
 
+def test_a_plan_id_in_a_reply_becomes_the_plans_name(found):
+    # Her seed names V05 "Signals, Power & Robotics", V08 "Signals, Control & Robotics" and V09
+    # "Control, Robotics & Embedded". An id followed by its own name loses the id, as in Luna's reply
+    # in the live check, and an id on its own becomes the name.
+    answer = Answer(
+        content=(
+            "Plan V05, Signals, Power & Robotics, has it, and so does "
+            "V08 (Signals, Control & Robotics), but not V09."
+        ),
+        referral=False,
+        open_plan_id=None,
+        citations=(),
+    )
+    assert check(answer, found, set(), "").reply.content == (
+        "Plan Signals, Power & Robotics, has it, and so does "
+        "Signals, Control & Robotics, but not Control, Robotics & Embedded."
+    )
+
+
 @pytest.mark.parametrize(
     ("title", "kept"),
     [
