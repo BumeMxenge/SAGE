@@ -29,10 +29,13 @@ class Settings(BaseSettings):
     # test's email-provider accounts can sign in too, then switches it off again.
     accept_email_sign_in: bool = False
     # The model that drafts rule trees the grammar can't read, and the key that pays for it, used
-    # only by `sage ingest --draft`. Claude Haiku 5.5 is E2's choice, provisional until the advisor
-    # milestone picks one model for drafting and the advisor.
+    # only by `sage ingest --draft`. Claude Haiku 5.5 is E2's choice, until the electives branch
+    # moves drafting onto the language model below.
     anthropic_api_key: str = ""
     drafting_model: str = "claude-haiku-5-5"
+    # The language model behind the advisor, E4's choice, and the key that pays for it
+    language_model: str = "gpt-6-luna"
+    openai_api_key: str = ""
 
     @property
     def email_sign_in(self) -> bool:
