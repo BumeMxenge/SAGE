@@ -33,7 +33,8 @@ class Settings(BaseSettings):
     # moves drafting onto the language model below.
     anthropic_api_key: str = ""
     drafting_model: str = "claude-haiku-5-5"
-    # The language model behind the advisor, E4's choice, and the key that pays for it
+    # The language model behind the advisor, E4's choice, and the key that pays for it. The app
+    # won't start without the key.
     language_model: str = "gpt-6-luna"
     openai_api_key: str = ""
 

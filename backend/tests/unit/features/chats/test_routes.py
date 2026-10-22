@@ -11,39 +11,14 @@ import pytest
 from sage.advisor import replies
 from sage.advisor.replies import GroundedAdvisor
 from sage.engine.eligibility import EntryRuleEligibility
-from sage.shared.advisor import Reply
 from sage.shared.api import deps
 from sage.shared.language_model import ModelUnavailable, Response, Said
 from sage.shared.memory.language_model import ScriptedModel
 from sage.shared.rulebook import Rulebook
-from sage.shared.students import Chat, Citation, Plan, PlanSet
+from sage.shared.students import Plan, PlanSet
 from tests.unit.accounts import MBALI
 
 QUESTION = {"content": "Which plan has the lighter Fridays?", "term": "sem1"}
-CITATION = Citation(
-    passage_id=UUID(int=9),
-    position=1,
-    quote="Made-up quote",
-    source="Made-up handbook",
-    section="Test",
-    page=7,
-)
-
-
-class Advisor:
-    # Stands in for the advisor: records what it's asked, and replies with a referral, a plan to
-    # open and a citation, so a test can see each one reach her
-    def __init__(self) -> None:
-        self.asked: list[tuple[Chat, str, str | None]] = []
-
-    def reply(self, chat: Chat, question: str, term: str | None) -> Reply:
-        self.asked.append((chat, question, term))
-        return Reply(
-            content="Made-up reply",
-            referral=True,
-            open_plan_id=chat.plan_id,
-            citations=(CITATION,),
-        )
 
 
 def chats_on(client, plan_id: str, other_plan_id: str | None = None):
@@ -143,9 +118,9 @@ def test_plans_from_different_sets_cant_share_a_chat(mbali, stores, plan_ids):
     )
 
 
-def test_a_question_and_the_advisors_reply_are_stored_together(app, mbali, pair_chat):
-    advisor = Advisor()
-    app.dependency_overrides[deps.advisor] = lambda: advisor
+def test_a_question_and_the_advisors_reply_are_stored_together(
+    advisor, mbali, pair_chat
+):
     response = ask(mbali, pair_chat, QUESTION)
     assert response.status_code == 201
     question, reply = response.json()["question"], response.json()["reply"]
@@ -173,7 +148,7 @@ def test_a_question_and_the_advisors_reply_are_stored_together(app, mbali, pair_
     )
     assert (reply["referral"], reply["open_plan_id"]) == (True, pair_chat["plan_id"])
     assert reply["citations"] == [
-        CITATION.model_dump(mode="json", exclude={"passage_id"})
+        advisor.citation.model_dump(mode="json", exclude={"passage_id"})
     ]
     # Both are stored after her seeded exchange, in order
     assert messages_in(mbali, pair_chat).json()[2:] == [question, reply]

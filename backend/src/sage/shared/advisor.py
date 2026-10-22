@@ -1,5 +1,4 @@
-# The interface the advisor will implement. Until it exists, a stand-in in advisor/stubs.py fills it,
-# so swapping the real advisor in never touches a route.
+# The interface the advisor fills, in advisor/replies.py, so the routes never depend on it directly
 from typing import Protocol
 from uuid import UUID
 

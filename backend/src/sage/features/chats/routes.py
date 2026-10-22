@@ -1,5 +1,5 @@
-# Chats about one plan or a pair of plans, and the questions she asks in them. Each answer is the
-# advisor stand-in's fixed reply until the real advisor arrives.
+# Chats about one plan or a pair of plans, and the questions she asks in them, which the advisor
+# answers
 from uuid import UUID
 
 from fastapi import APIRouter
