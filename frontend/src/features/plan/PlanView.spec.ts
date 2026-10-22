@@ -1,10 +1,11 @@
 // The plan view as Mbali: /plan opens her first plan, the switcher puts the plans her answers hid
 // last, choosing a plan or a term changes the address, Compare pairs the next plan her answers kept
 // and returns on Done Comparing, Escape or Back, and axe and the keyboard walk pass on compare and the
-// open switcher. routes.spec.ts runs both on the plan itself. Then one
-// engine-shaped plan on a made-up answer from the API, and parity beside the planner prototype in
-// both themes. Her plans are her seed's (data/synthetic/mbali.json): ten, of which her saved answers
-// hid Signals & Power, Embedded & Power and Imaging & Control.
+// open switcher. routes.spec.ts runs both on the plan itself. Then one engine-shaped plan and a set of
+// 50 plans on made-up answers from the API, and parity beside the planner prototype in both themes.
+// Her plans are her seed's (data/synthetic/mbali.json): ten, named as the engine names them, of which
+// her saved answers hid "Signals, Power & Control", "Power, Control & Embedded" and "Power, Control &
+// Imaging".
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, type Locator, type Page, test } from '@playwright/test'
@@ -18,7 +19,7 @@ import type { components } from '../../lib/api-types.ts'
 test.use({ storageState: mbali })
 
 const planAddress = /\/plan\/[\w-]+$/
-const switcher = (page: Page) => page.getByRole('button', { name: /^Power & Robotics/ })
+const switcher = (page: Page) => page.getByRole('button', { name: /^Power, Control & Robotics/ })
 const compareButton = (page: Page) => page.getByRole('button', { name: 'Compare', exact: true })
 const day = (page: Page, name: string) => page.getByRole('list', { name })
 
@@ -28,24 +29,24 @@ async function openPlan(page: Page): Promise<void> {
   await switcher(page).waitFor()
 }
 
-test('/plan opens her first plan, and the switcher lists the plans her answers hid last', async ({ page }) => {
+test('/plan opens her first plan, and the switcher lists each over its codes, those her answers hid last', async ({ page }) => {
   await openPlan(page)
   await switcher(page).click()
-  const options = await page.getByRole('option').allTextContents()
-  const hidden = await page.getByRole('group', { name: 'Hidden by Your Answers' }).getByRole('option').allTextContents()
-  const named = (texts: string[]) => texts.map((text) => text.replace(/\d+ credits$/, ''))
-  expect([...named(hidden)].sort()).toEqual(['Embedded & Power', 'Imaging & Control', 'Signals & Power'])
-  expect(named(options).slice(-hidden.length)).toEqual(named(hidden))
-  expect(named(options)[0]).toBe('Power & Robotics')
+  const options = page.getByRole('option')
+  const hidden = page.getByRole('group', { name: 'Hidden by Your Answers' }).getByRole('option')
+  // Her first plan's electives are the prototype's first plan's, under its name in code order
+  await expect(options.first()).toHaveText(/^Power, Control & Robotics\s*EEE4117F · EEE4118F · EEE4119F\s*\d+ credits$/)
+  await expect(hidden).toHaveText([/^Signals, Power & Control/, /^Power, Control & Embedded/, /^Power, Control & Imaging/])
+  expect((await options.allTextContents()).slice(-3)).toEqual(await hidden.allTextContents())
 })
 
 test('choosing a plan opens it at its own address, and Back returns', async ({ page }) => {
   await openPlan(page)
   const first = page.url()
   await switcher(page).click()
-  await page.getByRole('option', { name: /^Signals & Robotics/ }).click()
+  await page.getByRole('option', { name: /^Signals, Power & Robotics/ }).click()
   await expect(page).not.toHaveURL(first)
-  // EEE4114F is Signals & Robotics' and not Power & Robotics'
+  // EEE4114F is Signals, Power & Robotics' and not Power, Control & Robotics'
   await expect(day(page, 'Tuesday').getByText('EEE4114F')).toBeVisible()
   await page.goBack()
   await expect(page).toHaveURL(first)
@@ -75,11 +76,11 @@ test('Compare pairs the next plan her answers kept, and Done Comparing, Escape a
   await openPlan(page)
   const alone = page.url()
   const panels = page.getByRole('heading', { level: 2 })
-  // Signals & Power, Embedded & Power and Imaging & Control come between them, hidden
+  // Her second, third and fourth plans come between them, hidden
   for (const leave of ['Done Comparing', 'Escape', 'Back'] as const) {
     await compareButton(page).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Comparing Plans' })).toBeVisible()
-    await expect(panels).toHaveText(['Power & Robotics', 'Signals & Robotics'])
+    await expect(panels).toHaveText(['Power, Control & Robotics', 'Signals, Power & Robotics'])
     if (leave === 'Done Comparing') await page.getByRole('button', { name: 'Done Comparing' }).click()
     else if (leave === 'Escape') await page.keyboard.press('Escape')
     else await page.goBack()
@@ -101,16 +102,18 @@ test('compare and the open switcher pass axe, and the keyboard walks compare', a
 })
 
 // One plan as the engine makes them for a third-year student, on a made-up answer from the API: named
-// by its electives, alone in its set, with EEE3096S's two labs, CSC3002F's practicals on the pairs of
-// days that fit, and CSC3024S's practical by arrangement. Every meeting is as the 2026 rulebook or the
-// engine has it. No real plan holds both CSC3024S and EEE3096S, as their lectures meet at 10:00 on
-// Tuesday and Wednesday, so here they share those mornings side by side.
+// by its electives' theme words, alone in its set, with EEE3096S's two labs, CSC3002F's practicals on
+// the pairs of days that fit, and CSC3024S's practical by arrangement. Every meeting is as the 2026
+// rulebook or the engine has it. No real plan holds both CSC3024S and EEE3096S, as their lectures meet
+// at 10:00 on Tuesday and Wednesday, so here they share those mornings side by side.
 type PlanSet = components['schemas']['PlanSet']
 type Plan = components['schemas']['Plan']
 type Meeting = components['schemas']['Meeting']
 
 const engineId = '00000000-0000-4000-8000-000000000999'
-const engineName = 'CSC3002F & CSC3024S'
+// engine/themes.py gives CSC3002F "Networks" and CSC3024S "C++"
+const engineName = 'Networks & C++'
+const engineCombination = 'CSC3002F · CSC3024S'
 
 function meeting(term: Meeting['term'], day: number | null, from: string | null, to: string | null, more: Partial<Meeting> = {}): Meeting {
   return {
@@ -126,17 +129,18 @@ function meeting(term: Meeting['term'], day: number | null, from: string | null,
 }
 
 const weekdays = [1, 2, 3, 4, 5]
+// Each afternoon is in more than one pair, so it draws as one block naming the pairs it's in
 const pairs = [
-  ['Monday and Wednesday', 1, 3],
   ['Monday and Thursday', 1, 4],
-  ['Monday and Friday', 1, 5],
-  ['Wednesday and Friday', 3, 5],
+  ['Monday and Tuesday', 1, 2],
+  ['Tuesday and Thursday', 2, 4],
 ] as const
 const enginePlan: Plan = {
   id: engineId,
   period: 2026,
   position: 1,
   name: engineName,
+  combination: engineCombination,
   hidden: false,
   credits: { total: 70, by_term: { sem1: 36, sem2: 34 } },
   reasons: [],
@@ -185,7 +189,7 @@ const engineSet: PlanSet = {
   version: 1,
   questionnaire_needed: false,
   reasons: [],
-  plans: [{ id: engineId, position: 1, name: engineName, hidden: false, credits: 70 }],
+  plans: [{ id: engineId, position: 1, name: engineName, combination: engineCombination, hidden: false, credits: 70 }],
 }
 
 // The API is on another port, so each answer allows this page's origin, as the backend's CORS does
@@ -199,10 +203,11 @@ test('an engine plan alone in its set: its name, its options and what has no set
   await page.waitForURL(`**/plan/${engineId}`)
   // One plan: its name, with no switcher and no Compare
   await expect(page.getByText(engineName, { exact: true })).toBeVisible()
-  await expect(page.getByRole('button', { name: new RegExp(engineName) })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: engineName })).toHaveCount(0)
   await expect(compareButton(page)).toHaveCount(0)
-  // Monday holds a lecture and one block for the three pairs of days that include it
+  // Monday holds a lecture and one block for the two pairs that include it, which its label names
   await expect(day(page, 'Monday').getByRole('listitem')).toHaveCount(2)
+  await expect(day(page, 'Monday').getByText('Practical: Monday and Thursday or Monday and Tuesday')).toBeVisible()
   await expectNoAxeViolations(page)
   mkdirSync(images, { recursive: true })
   await page.screenshot({ path: join(images, `engine-sem1-${testInfo.project.name}.png`), fullPage: true })
@@ -212,10 +217,50 @@ test('an engine plan alone in its set: its name, its options and what has no set
   await page.screenshot({ path: join(images, `engine-sem2-${testInfo.project.name}.png`), fullPage: true })
 })
 
+// A set of 50 plans, the most the engine makes, on a made-up answer from the API, of which her answers
+// kept five. The last has no electives, so the engine names it Core Courses Only, with no codes.
+type PlanSummary = components['schemas']['PlanSummary']
+
+const fifty: PlanSummary[] = Array.from({ length: 50 }, (_, index) => {
+  const position = index + 1
+  const id = `00000000-0000-4000-8000-${String(position).padStart(9, '0')}999`
+  const hidden = position > 5
+  if (position === 50) return { id, position, name: 'Core Courses Only', combination: null, hidden, credits: 72 }
+  return { id, position, name: `Plan ${position} of 50`, combination: `TST4${String(position).padStart(3, '0')}F`, hidden, credits: 72 }
+})
+const fiftyPlans: Plan[] = fifty.map((summary) => ({
+  ...summary,
+  period: 2026,
+  credits: { total: 72, by_term: { sem1: 72 } },
+  courses: [],
+  reasons: [],
+}))
+
+test('a set of 50 plans: the list stays in the window and scrolls to the last, which has no codes line', async ({ page }) => {
+  const set: PlanSet = { period: 2026, version: 1, questionnaire_needed: false, reasons: [], plans: fifty }
+  await page.route('**/v1/plans', (route) => route.fulfill({ json: set, headers: allowed }))
+  await page.route('**/v1/plans/*', (route) =>
+    route.fulfill({ json: fiftyPlans.find(({ id }) => route.request().url().endsWith(id)), headers: allowed }),
+  )
+  await page.goto('/plan')
+  await page.waitForURL(`**/plan/${fifty[0].id}`)
+  await page.getByRole('button', { name: /^Plan 1 of 50/ }).click()
+  const last = page.getByRole('option', { name: /^Core Courses Only/ })
+  // Out of sight until the list scrolls under the wheel, which a list taller than the window can't
+  await expect(last).not.toBeInViewport()
+  await page.getByRole('listbox').hover()
+  await page.mouse.wheel(0, 10_000)
+  await expect(last).toBeInViewport()
+  await expect(last).toHaveText(/^Core Courses Only\s*72 credits$/)
+  await last.click()
+  await page.waitForURL(`**/plan/${fifty[49].id}`)
+})
+
 // Parity. The prototype opens at the empty plan and reads its theme from its address. Create
 // Registration Plan, then Mechatronics, the course Mbali's saved answers chose, then Generate Plans opens
-// Power & Robotics among the same seven plans her answers kept. Its plan area is three divs up from its
-// Compare button, its plan list holds its rows, and its compare view is three divs up from its title.
+// Power & Robotics, her Power, Control & Robotics, among the same seven plans her answers kept. Its
+// plan area is three divs up from its Compare button, its plan list holds its rows, and its compare view
+// is three divs up from its title.
 async function prototypePlan(page: Page, theme: Theme): Promise<void> {
   if (theme === 'dark') await page.goto(`${page.url()}?theme=dark`)
   await page.getByRole('button', { name: 'Create registration plan' }).click()
@@ -291,7 +336,7 @@ parity('plan', [
     'plan-option',
     steps.switcher,
     (page) => page.getByRole('button', { name: /^Signals & Robotics/ }),
-    (page) => page.getByRole('option', { name: /^Signals & Robotics/ }),
+    (page) => page.getByRole('option', { name: /^Signals, Power & Robotics/ }),
     true,
   ),
   state(

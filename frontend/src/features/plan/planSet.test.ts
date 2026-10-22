@@ -10,6 +10,7 @@ const summary = (position: number, hidden = false): PlanSummary => ({
   id: `p${position}`,
   position,
   name: `Plan ${position}`,
+  combination: null,
   hidden,
   credits: 138,
 })

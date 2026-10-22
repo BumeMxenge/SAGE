@@ -1,5 +1,5 @@
-// A plan's week, on made-up plans and on Power & Robotics' real meetings from the approved 2026
-// rulebook. Each expected value is worked out by hand in its comment, or comes from the prototype.
+// A plan's week, on made-up plans and on Power, Control & Robotics' real meetings from the approved
+// 2026 rulebook. Each expected value is worked out by hand in its comment, or comes from the prototype.
 import { describe, expect, it } from 'vitest'
 import type { components } from '@/lib/api-types.ts'
 import { coloursOf, termCourses, weekOf } from './week.ts'
@@ -33,7 +33,17 @@ function course(code: string, name: string, term: TermCode, meetings: Meeting[])
 }
 
 function plan(courses: PlanCourse[]): Plan {
-  return { id: 'p1', period: 2026, position: 1, name: 'A made-up plan', hidden: false, credits: { total: 0, by_term: {} }, courses, reasons: [] }
+  return {
+    id: 'p1',
+    period: 2026,
+    position: 1,
+    name: 'A made-up plan',
+    combination: null,
+    hidden: false,
+    credits: { total: 0, by_term: {} },
+    courses,
+    reasons: [],
+  }
 }
 
 // One course a day at the given times, each its own made-up code
@@ -115,6 +125,23 @@ describe('alternatives a plan leaves open', () => {
       [FRI, '14:00', 'Lab A'],
     ])
   })
+
+  it('draw as fixed meetings once one alternative is left in their group', () => {
+    // The API lists only the alternatives that fit the plan: here EEE3096S's Lab A alone, and one
+    // pair of CSC3002F's days
+    const labA = course('EEE3096S', 'Embedded Systems II', 'sem2', [
+      meeting('sem2', FRI, '14:00', '17:45', { kind: 'lab', choice_group: 'lab', choice: 'A' }),
+    ])
+    expect(weekOf(plan([labA]), 'sem2').blocks.map(({ day: weekday, options }) => [weekday, options])).toEqual([[FRI, null]])
+    const onePair = course('CSC3002F', 'Networks and Operating Systems', 'sem1', [
+      meeting('sem1', MON, '14:00', '18:00', { kind: 'practical', choice_group: 'practical', choice: 'Monday and Wednesday' }),
+      meeting('sem1', WED, '14:00', '18:00', { kind: 'practical', choice_group: 'practical', choice: 'Monday and Wednesday' }),
+    ])
+    expect(weekOf(plan([onePair]), 'sem1').blocks.map(({ day: weekday, options }) => [weekday, options])).toEqual([
+      [MON, null],
+      [WED, null],
+    ])
+  })
 })
 
 describe('terms', () => {
@@ -145,7 +172,8 @@ describe('the hours a week spans', () => {
   })
 })
 
-// Power & Robotics' and Imaging & Power's Sem 1 meetings in the approved 2026 rulebook
+// Power, Control & Robotics' and Power, Robotics & Imaging's Sem 1 meetings in the approved 2026
+// rulebook
 const law = course('CML4607F', 'Law for Engineers', 'sem1', [TUE, WED, THU, FRI].map((weekday) => meeting('sem1', weekday, '12:00', '12:45')))
 const design = course('EEE4113F', 'Engineering System Design', 'sem1', [meeting('sem1', WED, '14:00', '15:45'), meeting('sem1', FRI, '14:00', '17:45')])
 const energy = course('EEE4117F', 'Energy Conversion II', 'sem1', [
@@ -164,14 +192,14 @@ const mechatronics = course('EEE4119F', 'Mechatronics', 'sem1', [
   meeting('sem1', WED, '10:00', '11:45'),
 ])
 const imaging = course('HUB4049F', 'Introduction to Medical Imaging & Image Processing', 'sem1', [MON, TUE, WED].map((weekday) => meeting('sem1', weekday, '13:00', '14:00')))
-const powerAndRobotics = plan([law, design, energy, control, mechatronics])
-const imagingAndPower = plan([law, design, energy, mechatronics, imaging])
+const powerControlAndRobotics = plan([law, design, energy, control, mechatronics])
+const powerRoboticsAndImaging = plan([law, design, energy, mechatronics, imaging])
 
 describe('course colours', () => {
   it('go out in the order courses first appear, reading the week row by row', () => {
     // 08:00 row: EEE4117F on Monday, EEE4119F on Tuesday. 10:00: EEE4118F on Tuesday. 12:00: CML4607F
     // on Tuesday. 14:00: EEE4113F on Wednesday. The prototype gives these five the same colours.
-    expect(Object.fromEntries(coloursOf([weekOf(powerAndRobotics, 'sem1')]))).toEqual({
+    expect(Object.fromEntries(coloursOf([weekOf(powerControlAndRobotics, 'sem1')]))).toEqual({
       EEE4117F: 'teal',
       EEE4119F: 'orange',
       EEE4118F: 'navy',
@@ -185,9 +213,10 @@ describe('course colours', () => {
   })
 
   it('keep a shared course one colour in both compared plans', () => {
-    // Read alone, Imaging & Power would give CML4607F navy, as the third course it meets. Read after
-    // Power & Robotics, CML4607F keeps pink and HUB4049F, new, takes the sixth colour.
-    const colours = coloursOf([weekOf(powerAndRobotics, 'sem1'), weekOf(imagingAndPower, 'sem1')])
+    // Read alone, Power, Robotics & Imaging would give CML4607F navy, as the third course it meets.
+    // Read after Power, Control & Robotics, CML4607F keeps pink and HUB4049F, new, takes the sixth
+    // colour.
+    const colours = coloursOf([weekOf(powerControlAndRobotics, 'sem1'), weekOf(powerRoboticsAndImaging, 'sem1')])
     expect(colours.get('CML4607F')).toBe('pink')
     expect(colours.get('HUB4049F')).toBe('ochre')
   })
@@ -221,6 +250,6 @@ describe('the line naming what has no set time', () => {
   })
 
   it('is left out when everything in the term has a time', () => {
-    expect(weekOf(powerAndRobotics, 'sem1').noSetTimes).toBeNull()
+    expect(weekOf(powerControlAndRobotics, 'sem1').noSetTimes).toBeNull()
   })
 })

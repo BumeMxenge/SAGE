@@ -141,20 +141,33 @@ function noSetTimesOf(courses: PlanCourse[], tab: PlanTerm): string | null {
   return parts.length > 0 ? `No set times this term: ${parts.join('. ')}.` : null
 }
 
+// A course's choice groups that still leave alternatives to choose between. The API lists only the
+// alternatives that fit the plan, so a group with one left is fixed.
+function openGroupsOf(course: PlanCourse): Set<string> {
+  const choices = new Map<string, Set<string>>()
+  for (const { choice_group: group, choice } of course.meetings) {
+    if (group && choice) choices.set(group, (choices.get(group) ?? new Set()).add(choice))
+  }
+  return new Set([...choices].filter(([, each]) => each.size > 1).map(([group]) => group))
+}
+
 // A plan's week in one term. It runs from 08:00 to 17:00, or further to fit its meetings. A course's
-// alternatives at the same day and time are one block naming them all, rather than lanes of their own.
+// alternatives at the same day and time are one block naming them all, rather than lanes of their own,
+// and the meetings of a group with one alternative left draw as any other.
 export function weekOf(plan: Plan, tab: PlanTerm): Week {
   const drafts = new Map<string, Draft>()
   for (const course of plan.courses) {
+    const open = openGroupsOf(course)
     course.meetings.forEach((meeting, index) => {
       if (!inTerm(meeting.term, tab) || !isTimed(meeting)) return
       const begins = minutesOf(meeting.start_time)
       const ends = minutesOf(meeting.end_time)
-      const group = meeting.choice_group
+      const group = meeting.choice_group !== null && open.has(meeting.choice_group) ? meeting.choice_group : null
+      const choice = group ? meeting.choice : null
       const key = group ? `${course.code}/${group}/${meeting.day}/${begins}/${ends}` : `${course.code}/${index}`
       const merged = drafts.get(key)
-      if (merged && meeting.choice) {
-        if (!merged.choices.includes(meeting.choice)) merged.choices.push(meeting.choice)
+      if (merged && choice) {
+        if (!merged.choices.includes(choice)) merged.choices.push(choice)
         return
       }
       drafts.set(key, {
@@ -167,7 +180,7 @@ export function weekOf(plan: Plan, tab: PlanTerm): Week {
         from: clockOf(meeting.start_time),
         to: clockOf(meeting.end_time),
         kind: meeting.kind ?? group ?? 'option',
-        choices: meeting.choice ? [meeting.choice] : [],
+        choices: choice ? [choice] : [],
         quarter: quarterOf(meeting.term),
       })
     })
