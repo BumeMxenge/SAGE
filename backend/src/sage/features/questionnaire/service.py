@@ -150,8 +150,9 @@ def questions(
 def known_meetings(
     rows: PlanSetRows, plan_id: UUID, rules: RuleSet, curriculum: str
 ) -> list[TimetableSlot]:
-    # The plan's meetings that are certain and placed: an alternative not yet chosen, or a meeting
-    # with no day or time printed, counts towards neither week option
+    # The plan's meetings that are certain and placed: an alternative counts only when it's the one
+    # left in its group, and a meeting with no day or time printed counts towards neither week
+    # option
     known = []
     for course in rows.plan_courses:
         if course.plan_id != plan_id:
@@ -160,7 +161,10 @@ def known_meetings(
         known += [
             meeting
             for meeting in plans.meetings(course, rules, curriculum)
-            if (meeting.choice_group is None or meeting.choice_group in chosen)
+            if (
+                meeting.choice_group is None
+                or len(chosen.get(meeting.choice_group, ())) == 1
+            )
             and meeting.day is not None
             and meeting.start_time is not None
         ]

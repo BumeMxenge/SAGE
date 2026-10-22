@@ -9,6 +9,7 @@ from sage.ingestion.handbook import Handbook, Unit
 from sage.ingestion.sources import Reading, Section, SourceError
 from sage.shared.base import Row
 from sage.shared.rules import (
+    COMPLEMENTARY,
     COURSE_CODE,
     AllOfGroup,
     ChooseFromGroup,
@@ -54,7 +55,6 @@ KNOWN = (
     "note: some elective core courses in the first semester are in the same timetable",
 )
 NOTE_MARKS = ("*", "†", "Note:")
-COMPLEMENTARY = "complementary"
 
 
 class Listed(Row):

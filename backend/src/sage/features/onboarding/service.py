@@ -88,7 +88,7 @@ def complete(
     students.replace_history(student_id, history)
     current = students.current_plan_set(student_id)
     if current is None or current.plan_set.period != year:
-        students.add_plan_set(generator.generate(profile, history, rules))
+        students.add_plan_set(generator.generate(profile, history, rules, symbols))
     done = profile.model_copy(update={"onboarding_complete": True})
     students.save_profile(done)
     return done

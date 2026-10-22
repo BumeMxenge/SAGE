@@ -72,7 +72,7 @@ def test_her_seeded_chats_list_under_their_plan_and_their_pair(mbali, plan_ids):
     one = chats_on(mbali, plan_ids[1]).json()
     pair = chats_on(mbali, plan_ids[1], plan_ids[7]).json()
     flipped = chats_on(mbali, plan_ids[7], plan_ids[1]).json()
-    assert [chat["title"] for chat in one] == ["Fridays on Power & Robotics"]
+    assert [chat["title"] for chat in one] == ["Fridays on Power, Control & Robotics"]
     assert [chat["title"] for chat in pair] == ["Process Control or Medical Imaging"]
     assert flipped == pair  # the pair reads the same whichever way round it's asked for
 

@@ -24,8 +24,7 @@ from sage.shared.students import (
     StudentState,
 )
 
-# Four folders up from this file: the repo root on a laptop, and / in the backend image, which copies
-# the file there for the plan stand-in
+# Four folders up from this file: the repo root on a laptop. The backend image doesn't hold it.
 SEED_FILE = Path(__file__).resolve().parents[4] / "data" / "synthetic" / "mbali.json"
 
 

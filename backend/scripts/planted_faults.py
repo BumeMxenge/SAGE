@@ -1,9 +1,9 @@
-# Plants each of the 26 faults in a copy of the backend, runs the unit tests, and reports which test
-# caught it: the 24 from my test review, and two in the review and approval the thesis rests on. The
-# tests first run on the copy with no fault, and any failure stops the script, as a broken copy would
-# make every fault look caught. The faults go into a temporary copy, so a run cut short never leaves
-# one in the real code. A fault whose text no longer matches is reported as not applied, never as
-# caught.
+# Plants each of the 30 faults in a copy of the backend, runs the unit tests, and reports which test
+# caught it: the 24 from my test review, two in the review and approval the thesis rests on, and four
+# in the plan encoding, which mutmut can't reach as it isn't Python. The tests first run on the copy
+# with no fault, and any failure stops the script, as a broken copy would make every fault look
+# caught. The faults go into a temporary copy, so a run cut short never leaves one in the real code.
+# A fault whose text no longer matches is reported as not applied, never as caught.
 import os
 import shutil
 import subprocess
@@ -21,9 +21,6 @@ class Fault(NamedTuple):
     file: str  # under backend/
     find: str
     replace: str
-    stand_in: bool = (
-        False  # in engine/stubs.py, so it goes when the engine replaces the stand-ins
-    )
 
 
 FAULTS = [
@@ -31,8 +28,8 @@ FAULTS = [
         1,
         "average: SP counts as 40",
         "src/sage/shared/students.py",
-        'mark = 50 if line.result == "SP"',
-        'mark = 40 if line.result == "SP"',
+        'return 50 if line.result == "SP"',
+        'return 40 if line.result == "SP"',
     ),
     Fault(
         2,
@@ -128,7 +125,7 @@ FAULTS = [
     Fault(
         15,
         "plans: curriculum-only meetings shown to everyone",
-        "src/sage/features/plans/service.py",
+        "src/sage/shared/rules.py",
         "and (slot.id not in only_for or curriculum in only_for[slot.id])",
         "",
     ),
@@ -136,24 +133,22 @@ FAULTS = [
         16,
         "plans: unchosen alternatives hidden",
         "src/sage/features/plans/service.py",
-        "slot.choice_group not in chosen or chosen[slot.choice_group] == slot.choice",
-        "slot.choice_group is None or chosen.get(slot.choice_group) == slot.choice",
+        "slot.choice_group not in chosen or slot.choice in chosen[slot.choice_group]",
+        "slot.choice_group is None or slot.choice in chosen.get(slot.choice_group, ())",
     ),
     Fault(
         17,
-        "eligibility (stand-in): failed course counts as passed",
-        "src/sage/engine/stubs.py",
-        'if symbols[line.result].outcome in ("pass", "credited")',
-        'if symbols[line.result].outcome != "credited"',
-        stand_in=True,
+        "evaluator: failed course counts as passed",
+        "src/sage/engine/evaluator.py",
+        'PASSED: tuple[Outcome, ...] = ("pass", "credited")',
+        'PASSED: tuple[Outcome, ...] = ("pass", "credited", "fail")',
     ),
     Fault(
         18,
-        "eligibility (stand-in): equivalences ignored",
-        "src/sage/engine/stubs.py",
-        "covered.setdefault(rule.counts_as, rule.course_code)",
+        "evaluator: equivalences ignored",
+        "src/sage/engine/evaluator.py",
+        "self._counts_as[rule.course_code].add(rule.counts_as)",
         "pass",
-        stand_in=True,
     ),
     Fault(
         19,
@@ -211,6 +206,34 @@ FAULTS = [
         "src/sage/ingestion/review.py",
         "return not (self.pending or self.problems)",
         "return not self.problems",
+    ),
+    Fault(
+        27,
+        "encoding: meetings that touch clash",
+        "src/sage/engine/plans.lp",
+        "overlap(T1, T2), S1 < E2, S2 < E1.",
+        "overlap(T1, T2), S1 <= E2, S2 <= E1.",
+    ),
+    Fault(
+        28,
+        "encoding: the first quarter outside the first semester",
+        "src/sage/engine/plans.lp",
+        "inside(q1, sem1).",
+        "",
+    ),
+    Fault(
+        29,
+        "encoding: a spare elective allowed",
+        "src/sage/engine/plans.lp",
+        ":- take(C), elective(C), not needed(C).",
+        "",
+    ),
+    Fault(
+        30,
+        "encoding: plans not projected onto their courses",
+        "src/sage/engine/plans.lp",
+        "#project take/1.",
+        "",
     ),
 ]
 
@@ -296,9 +319,7 @@ def main() -> None:
 
     applied = [fault for fault, outcome in outcomes.items() if outcome != "not applied"]
     caught = [fault for fault in applied if outcomes[fault].startswith("caught")]
-    stand_ins = " and ".join(str(fault.number) for fault in applied if fault.stand_in)
-    print(f"\nCaught {len(caught)} of {len(applied)} planted faults.", end="")
-    print(f" {stand_ins} are in the eligibility stand-in." if stand_ins else "")
+    print(f"\nCaught {len(caught)} of {len(applied)} planted faults.")
     if len(applied) < len(FAULTS):
         print(
             f"{len(FAULTS) - len(applied)} no longer match the code and weren't applied."

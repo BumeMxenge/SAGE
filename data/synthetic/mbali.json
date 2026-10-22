@@ -399,70 +399,80 @@
       "key": "V01",
       "plan_set": "2026-v1",
       "position": 1,
-      "name": "Power & Robotics",
+      "name": "Power, Control & Robotics",
+      "combination": "EEE4117F · EEE4118F · EEE4119F",
       "hidden": false
     },
     {
       "key": "V02",
       "plan_set": "2026-v1",
       "position": 2,
-      "name": "Signals & Power",
+      "name": "Signals, Power & Control",
+      "combination": "EEE4114F · EEE4117F · EEE4118F",
       "hidden": true
     },
     {
       "key": "V03",
       "plan_set": "2026-v1",
       "position": 3,
-      "name": "Embedded & Power",
+      "name": "Power, Control & Embedded",
+      "combination": "EEE4117F · EEE4118F · EEE4120F",
       "hidden": true
     },
     {
       "key": "V04",
       "plan_set": "2026-v1",
       "position": 4,
-      "name": "Imaging & Control",
+      "name": "Power, Control & Imaging",
+      "combination": "EEE4117F · EEE4118F · HUB4049F",
       "hidden": true
     },
     {
       "key": "V05",
       "plan_set": "2026-v1",
       "position": 5,
-      "name": "Signals & Robotics",
+      "name": "Signals, Power & Robotics",
+      "combination": "EEE4114F · EEE4117F · EEE4119F",
       "hidden": false
     },
     {
       "key": "V06",
       "plan_set": "2026-v1",
       "position": 6,
-      "name": "Embedded & Robotics",
+      "name": "Power, Robotics & Embedded",
+      "combination": "EEE4117F · EEE4119F · EEE4120F",
       "hidden": false
     },
     {
       "key": "V07",
       "plan_set": "2026-v1",
       "position": 7,
-      "name": "Imaging & Power",
+      "name": "Power, Robotics & Imaging",
+      "combination": "EEE4117F · EEE4119F · HUB4049F",
       "hidden": false
     },
     {
       "key": "V08",
       "plan_set": "2026-v1",
       "position": 8,
-      "name": "Signals & Control",
+      "name": "Signals, Control & Robotics",
+      "combination": "EEE4114F · EEE4118F · EEE4119F",
       "hidden": false
     },
     {
       "key": "V09",
       "plan_set": "2026-v1",
       "position": 9,
-      "name": "Embedded & Control",
+      "name": "Control, Robotics & Embedded",
+      "combination": "EEE4118F · EEE4119F · EEE4120F",
       "hidden": false
     },
     {
       "key": "V10",
       "plan_set": "2026-v1",
       "position": 10,
-      "name": "Imaging & Robotics",
+      "name": "Control, Robotics & Imaging",
+      "combination": "EEE4118F · EEE4119F · HUB4049F",
       "hidden": false
     }
   ],
@@ -1015,7 +1025,7 @@
       "key": "c1",
       "plan": "V01",
       "other_plan": null,
-      "title": "Fridays on Power & Robotics"
+      "title": "Fridays on Power, Control & Robotics"
     },
     {
       "key": "c2",
@@ -1052,7 +1062,7 @@
       "role": "assistant",
       "term": "sem1",
       "open_plan": "V07",
-      "content": "They differ in one elective. Power & Robotics takes EEE4118F Process Control and Instrumentation, and Imaging & Power takes HUB4049F Medical Imaging instead. Both keep EEE4117F and EEE4119F, so both meet the group 1 rule. EEE4118F meets on Tuesday and Thursday from 10:00 to 11:45 and Monday at 12:00. HUB4049F meets Monday to Wednesday at 13:00, over the lunch hour."
+      "content": "They differ in one elective. Power, Control & Robotics takes EEE4118F Process Control and Instrumentation, and Power, Robotics & Imaging takes HUB4049F Medical Imaging instead. Both keep EEE4117F and EEE4119F, so both meet the group 1 rule. EEE4118F meets on Tuesday and Thursday from 10:00 to 11:45 and Monday at 12:00. HUB4049F meets Monday to Wednesday at 13:00, over the lunch hour."
     }
   ],
   "message_citations": []

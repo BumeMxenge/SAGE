@@ -10,7 +10,8 @@ from fastapi.routing import APIRoute
 
 from sage.advisor.stubs import FixedAdvisor
 from sage.config import get_settings
-from sage.engine.stubs import InterimEligibility, SeededPlanGenerator
+from sage.engine.eligibility import EntryRuleEligibility
+from sage.engine.generator import ClingoPlanGenerator
 from sage.features.accounts import routes as accounts
 from sage.features.chats import routes as chats
 from sage.features.electives import routes as electives
@@ -22,7 +23,6 @@ from sage.features.questionnaire import routes as questionnaire
 from sage.shared.api import problems
 from sage.shared.errors import InternalError
 from sage.shared.rulebook import Rulebook
-from sage.shared.seed import SEED_FILE
 from sage.shared.supabase.auth import SupabaseTokenVerifier
 from sage.shared.supabase.client import connect
 from sage.shared.supabase.rules import SupabaseRuleRepository
@@ -48,10 +48,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             "ACCEPT_EMAIL_SIGN_IN is on, so email-provider accounts can sign in. "
             "Switch it off when the test window ends."
         )
-    # The plan stand-in reads its seed file now, so a wrong path in the image fails the deploy's
+    # The engine reads its encoding now, so a file missing from the image fails the deploy's
     # health check rather than the first onboarding
-    app.state.plan_generator = SeededPlanGenerator(SEED_FILE)
-    app.state.eligibility_checker = InterimEligibility()
+    app.state.plan_generator = ClingoPlanGenerator()
+    app.state.eligibility_checker = EntryRuleEligibility()
     app.state.advisor = FixedAdvisor()
     client = connect(settings.supabase_url, settings.supabase_secret_key)
     app.state.verifier = SupabaseTokenVerifier(
