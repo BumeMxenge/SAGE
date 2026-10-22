@@ -1,0 +1,124 @@
+/* The hours column and the five days, under a row of day names. There are no grid lines (parity
+   file). --hours, the week's length, comes from the page, and --hour is an hour's height. */
+.timetable {
+  --hour: var(--size-hour);
+
+  display: grid;
+  grid-template-columns: var(--width-hours) repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+  width: 100%;
+  max-width: var(--width-full);
+  margin: 0 auto;
+}
+
+.timetable[data-compact] {
+  --hour: var(--size-hour-compact);
+
+  grid-template-columns: var(--width-hours-compact) repeat(5, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.day-label,
+.hours {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-secondary);
+}
+
+.day-label {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* The day names start over the first day, past the hours */
+.day-label:first-child {
+  grid-column-start: 2;
+}
+
+.timetable[data-compact] .day-label {
+  text-align: center;
+}
+
+/* Each hour's name at the top of its hour, where a meeting on the hour starts */
+.hours {
+  display: grid;
+  grid-auto-rows: var(--hour);
+  font-variant-numeric: tabular-nums;
+}
+
+.day {
+  position: relative;
+  height: calc(var(--hours) * var(--hour));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A meeting's place from its numbers: down by its start and as tall as its length, both in minutes,
+   and across by its lane. Lanes and meetings that follow one another keep a small gap. */
+.block {
+  --gap: var(--space-1);
+
+  position: absolute;
+  top: calc(var(--start) * var(--hour) / 60);
+  left: calc((100% + var(--gap)) / var(--lanes) * var(--lane));
+  width: calc((100% + var(--gap)) / var(--lanes) - var(--gap));
+  height: calc(var(--length) * var(--hour) / 60 - var(--gap));
+  padding: var(--space-2);
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-heading);
+  overflow-wrap: anywhere;
+  color: var(--color-on-fill);
+}
+
+.timetable[data-compact] .block {
+  padding: var(--space-1);
+}
+
+.block[data-colour='teal'] {
+  background: var(--color-course-teal);
+}
+
+.block[data-colour='orange'] {
+  background: var(--color-course-orange);
+}
+
+.block[data-colour='navy'] {
+  background: var(--color-course-navy);
+}
+
+.block[data-colour='pink'] {
+  background: var(--color-course-pink);
+}
+
+.block[data-colour='blue'] {
+  background: var(--color-course-blue);
+}
+
+.block[data-colour='ochre'] {
+  background: var(--color-course-ochre);
+}
+
+.block[data-colour='purple'] {
+  background: var(--color-course-purple);
+}
+
+.block[data-colour='dark-teal'] {
+  background: var(--color-course-dark-teal);
+}
+
+.code,
+.detail {
+  margin: 0;
+}
+
+.code {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* A compare panel's days are too narrow for the times, which the hours beside the week already give,
+   as the prototype's compare shows a code and a short label. A screen reader still hears them. */
+.timetable[data-compact] .times {
+  display: none;
+}
