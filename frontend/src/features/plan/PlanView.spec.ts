@@ -1,8 +1,9 @@
 // The plan view as Mbali: /plan opens her first plan, the switcher puts the plans her answers hid
 // last, choosing a plan or a term changes the address, Compare pairs the next plan her answers kept
-// and returns on Done Comparing, Escape or Back, and axe and the keyboard walk pass on compare and the
-// open switcher. routes.spec.ts runs both on the plan itself. Then one engine-shaped plan and a set of
-// 50 plans on made-up answers from the API, and parity beside the planner prototype in both themes.
+// and returns on Done Comparing, Escape or Back, every view passes axe and the keyboard walks compare.
+// routes.spec.ts runs both on the plan itself and on a plan that doesn't exist. Then one engine-shaped
+// plan, a set of 50 plans and a set with none on made-up answers from the API, and parity beside the
+// planner prototype and the error sheet in both themes.
 // Her plans are her seed's (data/synthetic/mbali.json): ten, named as the engine names them, of which
 // her saved answers hid "Signals, Power & Control", "Power, Control & Embedded" and "Power, Control &
 // Imaging".
@@ -89,23 +90,46 @@ test('Compare pairs the next plan her answers kept, and Done Comparing, Escape a
   }
 })
 
-test('compare and the open switcher pass axe, and the keyboard walks compare', async ({ page }) => {
+test('every view passes axe, and the keyboard walks compare', async ({ page }) => {
+  const choose = (name: string) => page.getByRole('radio', { name }).click()
   await openPlan(page)
   await switcher(page).click()
   await settled(page)
   await expectNoAxeViolations(page)
   await page.keyboard.press('Escape')
+  // The list, then an empty term, as she has no winter courses
+  await choose('Course List')
+  await expectNoAxeViolations(page)
+  await choose('Winter')
+  await expectNoAxeViolations(page)
+  await choose('Sem 1')
+  await choose('Calendar')
   await compareButton(page).click()
   await page.getByRole('heading', { level: 2 }).first().waitFor()
   await expectNoAxeViolations(page)
   await walkKeyboard(page)
+  // Opened over Sem 1's week, as the page scrolls there. Over an empty term the page is shorter than
+  // the window, and axe counts the out-of-sight last plan's name as on screen but its codes, below
+  // the page's end, as hidden, so finds its label isn't in its name (docs/shortfalls.md).
+  await page.getByRole('button', { name: /Compare with Another Plan/ }).click()
+  await settled(page)
+  await expectNoAxeViolations(page)
+  await page.keyboard.press('Escape')
+  await choose('Course List')
+  await expectNoAxeViolations(page)
+  await choose('Winter')
+  // Each panel's empty term sits under the panel's own title
+  await expect(page.getByRole('heading', { level: 3, name: 'No Courses This Term' })).toHaveCount(2)
+  await expectNoAxeViolations(page)
 })
 
-// One plan as the engine makes them for a third-year student, on a made-up answer from the API: named
-// by its electives' theme words, alone in its set, with EEE3096S's two labs, CSC3002F's practicals on
-// the pairs of days that fit, and CSC3024S's practical by arrangement. Every meeting is as the 2026
-// rulebook or the engine has it. No real plan holds both CSC3024S and EEE3096S, as their lectures meet
-// at 10:00 on Tuesday and Wednesday, so here they share those mornings side by side.
+// One plan made up from the engine's real cases, on a made-up answer from the API, cut down to the
+// courses that carry them: EEE3096S's two labs, CSC3002F's practicals on the pairs of days that fit,
+// and CSC3024S's practical by arrangement. It is named by its electives' theme words, alone in its
+// set. Every meeting is as the 2026 rulebook or the engine has it, but no student's year holds these
+// three: the CSC courses are electives in Electrical and Computer Engineering's final year, EEE3096S
+// is a third-year course, and CSC3024S's and EEE3096S's lectures meet at 10:00 on Tuesday and
+// Wednesday, so here they share those mornings side by side.
 type PlanSet = components['schemas']['PlanSet']
 type Plan = components['schemas']['Plan']
 type Meeting = components['schemas']['Meeting']
@@ -256,6 +280,52 @@ test('a set of 50 plans: the list stays in the window and scrolls to the last, w
   await page.waitForURL(`**/plan/${fifty[49].id}`)
 })
 
+// The error sheet draws each planner case in light, then in dark
+const inSheet = (page: Page, theme: Theme, text: string) => page.getByText(text, { exact: true }).nth(theme === 'dark' ? 1 : 0)
+
+// A set with no plan, for a student whose record shows every year done, on a made-up answer from the
+// API with the engine's own reason (engine/reasons.py), beside the error sheet's case 07
+const noPlans: PlanSet = {
+  period: 2026,
+  version: 1,
+  questionnaire_needed: false,
+  reasons: [
+    {
+      kind: 'conflict',
+      message: "Your record shows every year's core courses done, so there's no year left to plan. See your advisor.",
+      course_code: null,
+      source: null,
+      section: null,
+      page: null,
+    },
+  ],
+  plans: [],
+}
+
+test.describe('a set with no plans', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/v1/plans', (route) => route.fulfill({ json: noPlans, headers: allowed }))
+  })
+
+  test('says why, and passes axe', async ({ page }) => {
+    await page.goto('/plan')
+    await expect(page.getByRole('region', { name: 'No Plans for 2026' })).toContainText(noPlans.reasons[0].message)
+    await expectNoAxeViolations(page)
+  })
+
+  parity('plan', [
+    {
+      name: 'no-plans',
+      prototype: 'error-states',
+      reach: async (page, theme) => {
+        await settled(page)
+        return inSheet(page, theme, 'No clash-free plan for 2026').locator('..')
+      },
+      react: { path: '/plan', element: (page) => page.getByRole('region', { name: 'No Plans for 2026' }) },
+    },
+  ])
+})
+
 // Parity. The prototype opens at the empty plan and reads its theme from its address. Create
 // Registration Plan, then Mechatronics, the course Mbali's saved answers chose, then Generate Plans opens
 // Power & Robotics, her Power, Control & Robotics, among the same seven plans her answers kept. Its
@@ -275,12 +345,17 @@ const designedSwitcher = (page: Page) => page.getByRole('button', { name: /^Powe
 const designedList = (page: Page) => page.getByRole('button', { name: /^Signals & Robotics/ }).locator('..')
 
 type Step = (page: Page) => Promise<void>
+type Steps = { designed: Step; built: Step }
 
 const steps = {
   plan: { designed: async () => undefined, built: async (page: Page) => settled(page) },
   sem2: {
     designed: async (page: Page) => page.getByRole('button', { name: 'Sem 2' }).click(),
     built: async (page: Page) => page.getByRole('radio', { name: 'Sem 2' }).click(),
+  },
+  winter: {
+    designed: async (page: Page) => page.getByRole('button', { name: 'Winter' }).click(),
+    built: async (page: Page) => page.getByRole('radio', { name: 'Winter' }).click(),
   },
   list: {
     designed: async (page: Page) => page.getByRole('button', { name: 'Course list' }).click(),
@@ -297,9 +372,26 @@ const steps = {
       await page.getByRole('heading', { level: 2 }).first().waitFor()
     },
   },
+  another: {
+    designed: async (page: Page) => page.getByRole('button', { name: /Compare with different plan/ }).click(),
+    built: async (page: Page) => page.getByRole('button', { name: /Compare with Another Plan/ }).click(),
+  },
 }
 
-function state(name: string, step: { designed: Step; built: Step }, designed: (page: Page) => Locator, built: (page: Page) => Locator, hover = false): ParityCase {
+// Two steps in turn, such as compare and then its list
+const inTurn = (first: Steps, second: Steps): Steps => ({
+  designed: async (page) => {
+    await first.designed(page)
+    await settled(page)
+    await second.designed(page)
+  },
+  built: async (page) => {
+    await first.built(page)
+    await second.built(page)
+  },
+})
+
+function state(name: string, step: Steps, designed: (page: Page) => Locator, built: (page: Page) => Locator, hover = false): ParityCase {
   return {
     name,
     prototype: 'registration-planner',
@@ -323,15 +415,38 @@ function state(name: string, step: { designed: Step; built: Step }, designed: (p
 }
 
 const main = (page: Page) => page.getByRole('main')
+const builtList = (page: Page) => page.getByRole('listbox').locator('..')
+// A plan id no account has, as routes.spec.ts opens
+const missingPlan = '/plan/00000000-0000-4000-8000-000000000001'
 
 parity('plan', [
   state('plan', steps.plan, designedPlan, main),
   state('sem2', steps.sem2, designedPlan, main),
+  state('winter', steps.winter, designedPlan, main),
   state('list', steps.list, designedPlan, main),
-  state('switcher-list', steps.switcher, designedList, (page) => page.getByRole('listbox').locator('..')),
+  state('switcher-list', steps.switcher, designedList, builtList),
   state('compare', steps.compare, designedCompare, main),
+  state('compare-list', inTurn(steps.compare, steps.list), designedCompare, main),
+  state('compare-winter', inTurn(steps.compare, steps.winter), designedCompare, main),
+  state(
+    'compare-with-another-list',
+    inTurn(steps.compare, steps.another),
+    (page) => page.getByRole('button', { name: /^Embedded & Robotics/ }).locator('..'),
+    builtList,
+  ),
+  {
+    name: 'plan-not-found',
+    prototype: 'error-states',
+    reach: async (page, theme) => {
+      await settled(page)
+      return inSheet(page, theme, "This plan doesn't exist").locator('..')
+    },
+    react: { path: missingPlan, element: (page) => page.getByRole('heading', { level: 1 }).locator('..') },
+  },
   state('switcher', steps.plan, designedSwitcher, switcher, true),
   state('compare-button', steps.plan, (page) => page.getByRole('button', { name: 'Compare', exact: true }), compareButton, true),
+  state('term', steps.plan, (page) => page.getByRole('button', { name: 'Sem 2' }), (page) => page.getByRole('radio', { name: 'Sem 2' }), true),
+  state('view', steps.plan, (page) => page.getByRole('button', { name: 'Course list' }), (page) => page.getByRole('radio', { name: 'Course List' }), true),
   state(
     'plan-option',
     steps.switcher,
@@ -353,4 +468,14 @@ parity('plan', [
     (page) => page.getByRole('button', { name: /Compare with Another Plan/ }),
     true,
   ),
+  {
+    name: 'go-to-plan',
+    prototype: 'error-states',
+    reach: async (page, theme) => {
+      await settled(page)
+      return inSheet(page, theme, 'Go to my plan')
+    },
+    react: { path: missingPlan, element: (page) => page.getByRole('link', { name: 'Go to My Plan' }) },
+    hover: true,
+  },
 ])
