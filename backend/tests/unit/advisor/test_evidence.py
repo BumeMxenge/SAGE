@@ -1,31 +1,13 @@
 # Checks what Luna is given on Mbali's seed and the approved 2026: her slice holds exactly the
 # passages chosen by key, find_plan finds hidden plans and otherwise gives the set's reasons, and a
 # course's meetings are worded as the plan view shows them
-from collections.abc import Callable
 from datetime import time
 from uuid import UUID, uuid4
 
-import pytest
-
-from sage.advisor.evidence import Evidence, meeting_words
-from sage.engine.eligibility import EntryRuleEligibility
-from sage.shared.rulebook import Rulebook
+from sage.advisor.evidence import meeting_words
 from sage.shared.rules import RuleSet, TimetableSlot
-from sage.shared.students import Chat, PlanCourse
+from sage.shared.students import PlanCourse
 from tests.unit.accounts import MBALI
-
-
-@pytest.fixture
-def evidence(stores) -> Callable[[], Evidence]:
-    # What Luna is given for a question in a chat on her first plan
-    rules, students = stores
-
-    def build() -> Evidence:
-        first = next(plan for plan in students.get(MBALI).plans if plan.position == 1)
-        chat = Chat(id=uuid4(), student_id=MBALI, plan_id=first.id)
-        return Evidence(chat, "sem1", students, Rulebook(rules), EntryRuleEligibility())
-
-    return build
 
 
 def test_the_slice_holds_her_plan_courses_and_favourites_and_no_other_course(
