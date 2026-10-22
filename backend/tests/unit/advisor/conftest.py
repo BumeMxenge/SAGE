@@ -14,10 +14,11 @@ from tests.unit.accounts import MBALI
 
 @pytest.fixture
 def chat_on(stores) -> Callable[..., Chat]:
-    # A new chat of hers on the plans at these positions, one or a pair, stored lowest id first
+    # A new chat of hers on the plans at these positions, one or a pair, stored lowest id first. It
+    # has a title unless a test says otherwise, so only the tests of titles ask for one.
     students = stores[1]
 
-    def on(*positions: int) -> Chat:
+    def on(*positions: int, title: str | None = "Made-Up Title") -> Chat:
         plans = {plan.position: plan.id for plan in students.get(MBALI).plans}
         first, *other = sorted(plans[position] for position in positions)
         return students.add_chat(
@@ -26,6 +27,7 @@ def chat_on(stores) -> Callable[..., Chat]:
                 student_id=MBALI,
                 plan_id=first,
                 other_plan_id=other[0] if other else None,
+                title=title,
             )
         )
 

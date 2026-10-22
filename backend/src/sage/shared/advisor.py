@@ -12,6 +12,7 @@ class Reply(Row):
     referral: bool  # it hands the question to a human advisor
     open_plan_id: UUID | None = None  # a plan it offers to open
     citations: tuple[Citation, ...] = ()
+    title: str | None = None  # a name for a chat that has none yet
 
 
 class Advisor(Protocol):

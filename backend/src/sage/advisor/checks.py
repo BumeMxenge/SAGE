@@ -1,10 +1,12 @@
 # What SAGE checks in every reply before it's stored, as E4's score.py checked Luna's: each quote
 # against the passage it cites, and the plan it offers against the plans it may offer. Two flags mark
-# a reply for a person to read later, and never change it.
+# a reply for a person to read later, and never change it. A chat's title has its own check.
 import re
 from collections.abc import Collection, Sequence
 from dataclasses import dataclass
 from typing import Literal
+
+from pydantic import ValidationError
 
 from sage.advisor.evidence import Evidence
 from sage.shared.advisor import Reply
@@ -33,6 +35,10 @@ class Answer(Row):
     referral: bool
     open_plan_id: str | None
     citations: tuple[Quote, ...]
+
+
+class Title(Row):
+    title: str
 
 
 class Flag(Row):
@@ -131,3 +137,20 @@ def holds(text: str, mark: str) -> bool:
     # Whether the text holds a word, number or phrase whole, in any case
     pattern = rf"(?<![\w.]){re.escape(mark)}(?!\w)"
     return re.search(pattern, text, re.IGNORECASE) is not None
+
+
+def checked_title(text: str | None) -> str | None:
+    # The chat's title from the title call's reply, or None when it isn't one: 2 to 6 words, at most
+    # 40 characters, on one line, with no closing full stop
+    try:
+        title = Title.model_validate_json(text or "").title.strip()
+    except ValidationError:
+        return None
+    if (
+        len(title.splitlines()) != 1
+        or not 2 <= len(title.split()) <= 6
+        or len(title) > 40
+        or title.endswith(".")
+    ):
+        return None
+    return title

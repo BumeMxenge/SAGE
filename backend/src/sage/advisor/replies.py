@@ -1,19 +1,20 @@
 # SAGE's advisor, filling shared/advisor.py. It answers a question in a chat about one plan or a
 # pair through the language model, on the evidence SAGE chooses, with the engine's facts served as
-# tools, and checks every reply before it's stored. Logs hold ids, kinds, marks, tokens and seconds,
-# never a student's words.
+# tools, and checks every reply before it's stored. A chat with no title is named from its first
+# question, in a call of its own alongside the reply. Logs hold ids, kinds, marks, tokens and
+# seconds, never a student's words.
 import json
 import logging
 import time
 from collections.abc import Sequence
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from pydantic import ValidationError
 
-from sage.advisor.checks import REFERRED, Answer, Checked, check
+from sage.advisor.checks import REFERRED, Answer, Checked, check, checked_title
 from sage.advisor.evidence import Evidence
 from sage.shared.advisor import Reply
 from sage.shared.errors import AdvisorUnavailable
@@ -61,6 +62,14 @@ CALLS = 6  # a turn still calling tools after this many calls stops there, as in
 EXCHANGES = 5  # the chat's latest exchanges that go before her new message
 # Seconds a turn may take, so she always hears back inside the frontend's 60-second limit
 TURN_LIMIT = 50
+# The title call, which needs little thought, so it reasons at low effort
+TITLE = Schema(name="title", shape=strict_object(title={"type": "string"}))
+TITLING = (
+    "Name a student's chat with their course advisor from the first question they asked in it. "
+    "Give 2 to 6 words and at most 40 characters, on one line in plain text, with no closing "
+    "full stop. Use Title Case, keeping articles, conjunctions and prepositions of four letters "
+    "or fewer in lower case unless they come first."
+)
 
 
 @dataclass(frozen=True)
@@ -85,8 +94,8 @@ class Answered:
     # A reply, with what went into it, which ask_advisor.py prints
     reply: Reply
     checked: Checked
-    called: tuple[Called, ...]
-    tokens: Tokens
+    turn: Turn
+    named: Response | None  # the title call's reply, when it came in time
     seconds: float
 
 
@@ -110,14 +119,18 @@ class GroundedAdvisor:
         started = time.monotonic()
         deadline = started + TURN_LIMIT
         evidence = Evidence(chat, term, self.students, self.rulebook, self.checker)
-        earlier = [
+        said = [
             Said(role=row.message.role, text=row.message.content)
             for row in self.students.messages(chat.student_id, chat.id)
-        ][-2 * EXCHANGES :]
-        # The turn runs in a worker that only talks to the model, so the wait can end on time. A
-        # turn that runs over is left behind, and as only this thread returns a reply, and only in
-        # time, nothing it gives is ever stored.
-        workers = ThreadPoolExecutor(max_workers=1, thread_name_prefix="advisor")
+        ]
+        earlier = said[-2 * EXCHANGES :]
+        first = next((line.text for line in said if line.role == "user"), question)
+        # The turn, and the title when the chat has none, run in workers that only talk to the
+        # model, so the wait ends on time and the title never holds the reply up. What a worker
+        # gives once the turn is over is left behind: only this thread returns a reply, and only in
+        # time, so nothing late is ever stored.
+        workers = ThreadPoolExecutor(max_workers=2, thread_name_prefix="advisor")
+        naming = workers.submit(name, self.model, first) if chat.title is None else None
         turn = workers.submit(
             converse, self.model, evidence, earlier, question, deadline
         )
@@ -135,6 +148,12 @@ class GroundedAdvisor:
             )
             raise AdvisorUnavailable() from error
         checked = self._checked(chat, evidence, earlier, done)
+        named = self._named(chat, naming) if naming else None
+        title = checked_title(named.text) if named else None
+        if named and title is None:
+            logger.warning(
+                "Advisor left chat %s unnamed: its title failed the check", chat.id
+            )
         tokens = sum((response.tokens for response in done.responses), Tokens())
         seconds = time.monotonic() - started
         logger.info(
@@ -148,7 +167,20 @@ class GroundedAdvisor:
             tokens.output,
             seconds,
         )
-        return Answered(checked.reply, checked, done.called, tokens, seconds)
+        reply = checked.reply.model_copy(update={"title": title})
+        return Answered(reply, checked, done, named, seconds)
+
+    def _named(self, chat: Chat, naming: Future[Response]) -> Response | None:
+        # The title call's reply, if it came in time. If not, the chat stays unnamed, and its next
+        # exchange tries again.
+        if not naming.done():
+            logger.info("Advisor left chat %s unnamed: its title wasn't ready", chat.id)
+            return None
+        try:
+            return naming.result()
+        except ModelUnavailable as error:
+            logger.warning("Advisor left chat %s unnamed: %s", chat.id, error)
+            return None
 
     def _checked(
         self, chat: Chat, evidence: Evidence, earlier: Sequence[Said], done: Turn
@@ -191,6 +223,11 @@ class GroundedAdvisor:
                 "Advisor flag in chat %s: %s %s", chat.id, flag.kind, flag.mark
             )
         return checked
+
+
+def name(model: LanguageModel, first: str) -> Response:
+    # A title for a chat, from its first question
+    return model.respond(TITLING, [Said(role="user", text=first)], TITLE, effort="low")
 
 
 def answer_in(last: Response) -> Answer | str:

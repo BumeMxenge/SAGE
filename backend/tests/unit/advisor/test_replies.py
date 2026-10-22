@@ -4,6 +4,7 @@
 import json
 import logging
 import re
+import threading
 from uuid import uuid4
 
 import pytest
@@ -43,8 +44,10 @@ def answers(content: str, open_plan_id: str | None = None, citations=()) -> Resp
 def advisor(stores):
     rules, students = stores
 
-    def build(*replies: Response) -> tuple[GroundedAdvisor, ScriptedModel]:
-        model = ScriptedModel({"reply": replies})
+    def build(
+        *replies: Response, titles: tuple[Response, ...] = (), held=()
+    ) -> tuple[GroundedAdvisor, ScriptedModel]:
+        model = ScriptedModel({"reply": replies, "title": titles}, held=held)
         return GroundedAdvisor(
             model, students, Rulebook(rules), EntryRuleEligibility()
         ), model
@@ -160,3 +163,15 @@ def test_only_the_last_five_exchanges_go_in_oldest_first_and_only_their_words(
     ]
     assert latest.text.startswith("About the student\n")
     assert latest.text.endswith("\n\nQuestion\nSeventh?")
+
+
+def test_the_reply_never_waits_for_its_title(advisor, chat_on):
+    titled = Response(text='{"title": "Made-Up Title"}')
+    asked, model = advisor(answers("Made up."), titles=(titled,), held={"title"})
+    reply = asked.reply(chat_on(1, title=None), "Made up?", "sem1")
+    # The title came too late for this reply, so the chat stays unnamed until its next exchange
+    assert (reply.content, reply.title) == ("Made up.", None)
+    model.release()
+    for thread in threading.enumerate():
+        if thread.name.startswith("advisor"):
+            thread.join(5)

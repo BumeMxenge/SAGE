@@ -1,8 +1,9 @@
 # Checks chats on Mbali's seeded set: they list under their plan or pair, a pair is stored the same
 # whichever way round it was sent, a question and the advisor's reply are stored together, a bad
-# question or pair is refused, and a question the advisor can't answer in time stores nothing. Who
-# may reach a chat is in test_guards.py.
+# question or pair is refused, a question the advisor can't answer in time stores nothing, and a
+# chat is named once, from its first question. Who may reach a chat is in test_guards.py.
 import threading
+from concurrent.futures import Future
 from uuid import UUID, uuid4
 
 import pytest
@@ -12,7 +13,7 @@ from sage.advisor.replies import GroundedAdvisor
 from sage.engine.eligibility import EntryRuleEligibility
 from sage.shared.advisor import Reply
 from sage.shared.api import deps
-from sage.shared.language_model import ModelUnavailable, Response
+from sage.shared.language_model import ModelUnavailable, Response, Said
 from sage.shared.memory.language_model import ScriptedModel
 from sage.shared.rulebook import Rulebook
 from sage.shared.students import Chat, Citation, Plan, PlanSet
@@ -228,16 +229,18 @@ def test_a_provider_error_stores_nothing_and_reaches_her_as_advisor_unavailable(
 
 
 def test_a_turn_that_runs_over_stores_nothing_even_once_its_reply_comes(
-    luna, mbali, one_plan_chat, monkeypatch
+    luna, mbali, plan_ids, monkeypatch
 ):
     monkeypatch.setattr(replies, "TURN_LIMIT", 0.2)
     late = Response(
         text='{"content": "Late.", "referral": false, "open_plan_id": null, "citations": []}'
     )
-    model = ScriptedModel({"reply": [late]}, held={"reply"})
+    titled = Response(text='{"title": "Made-Up Title"}')
+    model = ScriptedModel({"reply": [late], "title": [titled]}, held={"reply"})
     luna(model)
-    before = messages_in(mbali, one_plan_chat).json()
-    response = ask(mbali, one_plan_chat, QUESTION)
+    # A new chat, so its title is asked for too, and answers in time though the reply doesn't
+    chat = mbali.post("/v1/chats", json={"plan_id": plan_ids[1]}).json()
+    response = ask(mbali, chat, QUESTION)
     assert (response.status_code, response.json()["code"]) == (
         503,
         "advisor_unavailable",
@@ -247,4 +250,56 @@ def test_a_turn_that_runs_over_stores_nothing_even_once_its_reply_comes(
     for thread in threading.enumerate():
         if thread.name.startswith("advisor"):
             thread.join(5)
-    assert messages_in(mbali, one_plan_chat).json() == before
+    assert messages_in(mbali, chat).json() == []
+    assert chats_on(mbali, plan_ids[1]).json()[0]["title"] is None
+
+
+class Inline:
+    # Runs each job as it's submitted, in place of the advisor's workers, so a title is always ready
+    # by the time its reply is
+    def __init__(self, **settings) -> None:
+        pass
+
+    def submit(self, job, *arguments) -> Future:
+        # The script's one error comes back through the future, as a real worker hands it back
+        done = Future()
+        try:
+            done.set_result(job(*arguments))
+        except ModelUnavailable as error:
+            done.set_exception(error)
+        return done
+
+    def shutdown(self, wait: bool) -> None:
+        pass
+
+
+def test_a_chat_is_named_once_from_its_first_question(
+    luna, mbali, plan_ids, monkeypatch
+):
+    monkeypatch.setattr(replies, "ThreadPoolExecutor", Inline)
+    answered = Response(
+        text='{"content": "Made up.", "referral": false, "open_plan_id": null, "citations": []}'
+    )
+    # The title call fails, then gives one that fails the check, then a good one. A fourth would be
+    # an error, as nothing more is scripted.
+    model = ScriptedModel(
+        {
+            "reply": [answered] * 4,
+            "title": [
+                ModelUnavailable("RateLimitError"),
+                Response(text='{"title": "Fridays."}'),
+                Response(text='{"title": "Fridays This Semester"}'),
+            ],
+        }
+    )
+    luna(model)
+    chat = mbali.post("/v1/chats", json={"plan_id": plan_ids[1]}).json()
+    titles = []
+    for n in range(1, 5):
+        response = ask(mbali, chat, {"content": f"Question {n}", "term": "sem1"})
+        assert response.status_code == 201
+        titles.append(chats_on(mbali, plan_ids[1]).json()[0]["title"])
+    assert titles == [None, None, "Fridays This Semester", "Fridays This Semester"]
+    # Each title call named the chat from its first question
+    asked = [call.conversation for call in model.calls if call.schema.name == "title"]
+    assert asked == [(Said(role="user", text="Question 1"),)] * 3

@@ -224,6 +224,21 @@ def test_a_new_chat_has_its_time_and_lists_first(store):
     assert [chat.id for chat in newest_first] == [new.id, single.id]
 
 
+def test_a_chat_is_named_once_and_only_by_her(store):
+    her = store.mbali.student.id
+    single = chat_titled(store, "Fridays on Power, Control & Robotics")
+    new = store.students.add_chat(
+        Chat(id=uuid4(), student_id=her, plan_id=single.plan_id)
+    )
+    store.students.name_chat(store.stranger, new.id, "Not Hers")
+    assert store.students.chat(her, new.id).title is None
+    store.students.name_chat(her, new.id, "Fridays This Semester")
+    store.students.name_chat(her, new.id, "Another Title")
+    store.students.name_chat(her, single.id, "Another Title")
+    assert store.students.chat(her, new.id).title == "Fridays This Semester"
+    assert store.students.chat(her, single.id).title == single.title
+
+
 def test_a_chat_reads_back_its_messages_in_order(store):
     her = store.mbali
     pair = chat_titled(store, "Process Control or Medical Imaging")

@@ -1,9 +1,19 @@
 # Checks the citation check and the referral it can force, on Mbali's slice of the approved 2026: a
 # quote counts only word for word in the passage it cites, and a reply that cited the handbook but
-# kept no quote becomes the fixed referral, while one that cites nothing stands as written
+# kept no quote becomes the fixed referral, while one that cites nothing stands as written. A chat's
+# title is checked at each edge.
+import json
+
 import pytest
 
-from sage.advisor.checks import REFERRAL, Answer, Quote, check, quotes_kept
+from sage.advisor.checks import (
+    REFERRAL,
+    Answer,
+    Quote,
+    check,
+    checked_title,
+    quotes_kept,
+)
 from sage.shared.advisor import Reply
 
 
@@ -63,3 +73,28 @@ def test_a_reply_that_kept_no_quote_is_the_fixed_referral_and_one_with_none_stan
     assert plain.reply == Reply(
         content="Made up.", referral=False, open_plan_id=found.plans["V01"].id
     )
+
+
+@pytest.mark.parametrize(
+    ("title", "kept"),
+    [
+        ("Two Words", True),
+        ("One", False),
+        ("Six Words in This Title Here", True),
+        ("Seven Words in This Title Right Here", False),
+        ("A" * 18 + " " + "B" * 21, True),  # 40 characters
+        ("A" * 18 + " " + "B" * 22, False),  # 41
+        ("Fridays on\nPower", False),
+        ("Fridays on Power.", False),
+    ],
+)
+def test_a_title_is_2_to_6_words_and_40_characters_on_one_line_with_no_full_stop(
+    title, kept
+):
+    assert checked_title(json.dumps({"title": title})) == (title if kept else None)
+
+
+def test_a_reply_that_isnt_a_title_is_none():
+    # Cut off, and not in the schema
+    assert checked_title(None) is None
+    assert checked_title('{"name": "Two Words"}') is None
