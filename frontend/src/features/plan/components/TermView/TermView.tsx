@@ -1,5 +1,5 @@
 // One plan's term, as its week or its list, alone or in a compare panel. A term with no courses says
-// so. Under the week, a line names what it can't draw. The plan's complementary studies cards will sit
+// so, under the panel's title in compare. Under the week, a line names what it can't draw. The plan's complementary studies cards will sit
 // below both, in the same column.
 import { EmptyState } from '@/components/feedback/EmptyState/EmptyState.tsx'
 import type { components } from '@/lib/api-types.ts'
@@ -27,6 +27,7 @@ export function TermView({ plan, term, view, week, colours, compact = false }: T
   if (courses.length === 0) {
     return (
       <EmptyState
+        level={compact ? 3 : 2}
         icon={view === 'calendar' ? 'calendar_today' : 'format_list_bulleted'}
         title="No Courses This Term"
         message="Choose another term to see this plan's courses."
