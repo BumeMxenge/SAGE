@@ -1,6 +1,7 @@
 # The rulebook as types: one per table row, named after its columns. The database enforces every
 # rule on these rows except the elective tab, the delta flag and the shape of each rule tree, which
 # only the backend checks.
+from collections import defaultdict
 from datetime import time
 from functools import partial
 from typing import Annotated, Any, Literal, Self
@@ -171,6 +172,12 @@ AllOf.model_rebuild()
 AnyOf.model_rebuild()
 
 
+def continues(node: EntryRule) -> bool:
+    # Printed words that only continue the list before them, such as "or equivalent", and so read
+    # only with that list
+    return isinstance(node, Refer) and node.refer.startswith("or ")
+
+
 class AllOfGroup(Row):
     all_of_group: str
 
@@ -239,6 +246,11 @@ class CourseGroup(Row):
     handbook_year: int
     group_key: str
     label: str
+
+
+# The group of a year's approved complementary studies courses, which every curriculum's
+# complementary credits come from
+COMPLEMENTARY = "complementary"
 
 
 # The Explore Electives tabs: the one list a member's category comes from, which the frontend reads
@@ -374,6 +386,22 @@ class RuleSet(Row):
     timetable_slot_curricula: tuple[TimetableSlotCurriculum, ...] = ()
     passages: tuple[Passage, ...] = ()
     handbook_deltas: tuple[HandbookDelta, ...] = ()
+
+
+def meetings_on(
+    rules: RuleSet, curriculum: str, course_code: str
+) -> list[TimetableSlot]:
+    # A course's meetings on one curriculum's timetable: a meeting linked to curricula is theirs
+    # alone
+    only_for: dict[UUID, set[str]] = defaultdict(set)
+    for link in rules.timetable_slot_curricula:
+        only_for[link.slot_id].add(link.curriculum_code)
+    return [
+        slot
+        for slot in rules.timetable_slots
+        if slot.course_code == course_code
+        and (slot.id not in only_for or curriculum in only_for[slot.id])
+    ]
 
 
 # Each table's primary key. The fake keys its rows by it, and a store reads rows in key order,

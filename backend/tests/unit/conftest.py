@@ -9,7 +9,8 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from sage.advisor.stubs import FixedAdvisor
-from sage.engine.stubs import InterimEligibility, SeededPlanGenerator
+from sage.engine.eligibility import EntryRuleEligibility
+from sage.engine.generator import ClingoPlanGenerator
 from sage.main import create_app
 from sage.shared.api import deps
 from sage.shared.auth import Identity
@@ -36,7 +37,7 @@ def stores(
 
 
 @pytest.fixture
-def app(stores, fake_account, seed_file) -> FastAPI:
+def app(stores, fake_account) -> FastAPI:
     identities = {
         "mbali": Identity(id=MBALI, email=fake_account["email"]),
         "zvsorw": Identity(id=ZVSORW, email="zvsorw999@myuct.ac.za"),
@@ -49,9 +50,9 @@ def app(stores, fake_account, seed_file) -> FastAPI:
     app.dependency_overrides[deps.students] = lambda: stores[1]
     rulebook = Rulebook(stores[0])
     app.dependency_overrides[deps.rulebook] = lambda: rulebook
-    generator = SeededPlanGenerator(seed_file)
+    generator = ClingoPlanGenerator()
     app.dependency_overrides[deps.plan_generator] = lambda: generator
-    app.dependency_overrides[deps.eligibility_checker] = InterimEligibility
+    app.dependency_overrides[deps.eligibility_checker] = EntryRuleEligibility
     app.dependency_overrides[deps.advisor] = FixedAdvisor
     return app
 

@@ -17,6 +17,7 @@ dependencies = [
     "pdfplumber>=0.11.10",
     "openpyxl>=3.1.5",
     "anthropic>=1.15.0",
+    "clingo>=5.8.2", # the plan generator's answer set solver
 ]
 
 [project.scripts]
@@ -52,7 +53,7 @@ testpaths = ["tests"]
 addopts = ["--import-mode=importlib", "--strict-markers"]
 markers = [
     "integration: needs local Supabase (make test-integration)",
-    "stub(component): tests a stand-in in engine/stubs.py or advisor/stubs.py, so it goes when that component lands",
+    "stub(component): tests a stand-in in advisor/stubs.py, so it goes when that component lands",
 ]
 
 # make test's coverage report: each file's lines that no unit test runs
@@ -125,6 +126,12 @@ name = "Only ingestion/anthropic.py imports Anthropic's SDK"
 type = "protected"
 protected_modules = ["anthropic"]
 allowed_importers = ["sage.ingestion.anthropic"]
+
+[[tool.importlinter.contracts]]
+name = "Only engine/solver.py imports clingo"
+type = "protected"
+protected_modules = ["clingo"]
+allowed_importers = ["sage.engine.solver"]
 
 [tool.ruff.lint]
 extend-select = ["I", "B", "UP"] # import order, likely bugs, outdated syntax

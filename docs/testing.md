@@ -11,7 +11,7 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 4. Test each rule once, at the lowest level that can see it. A refusal the transcript reader raises is tested in the reader's tests, and the API tests check only that one reaches the client as its problem code.
 5. Guards (signed out, outside UCT, staff, setup unfinished, questionnaire pending and another student's data) are checked once, in a sweep over every route the app serves, in `backend/tests/unit/shared/api/test_guards.py`. A new route that forgets a guard fails it automatically.
 6. No count snapshots of seed data unless the number is a stated requirement. The seed's own counts are checked once, in the seed tests.
-7. Tests of a stand-in in `engine/stubs.py` or `advisor/stubs.py` are marked `@pytest.mark.stub("engine")` or `("advisor")`, naming the component that replaces it. They prove wiring, never correctness, and are deleted when the real component lands.
+7. Tests of the advisor's stand-in, in `advisor/stubs.py`, are marked `@pytest.mark.stub("advisor")`. They prove wiring, never correctness, and are deleted when the advisor lands, as the engine's were when the engine did.
 8. Every workaround, cut or known limitation goes in [shortfalls.md](shortfalls.md) as it's found.
 
 ## Levels
@@ -35,6 +35,17 @@ The yearly job's tests build each source inside the test: typed page text in the
 | Review | `ingestion/test_review.py` | A first year that isn't all new, an unchanged row not carried over, a removal let through unseen, a decision kept after its reading changed or counted before it's usable, and a check that fails on the year as decided without stopping approval |
 | Approve and load | `ingestion/test_ingest.py` | Approval with a row pending, a snapshot that doesn't survive its round trip, a kept removal lost, and a load that rewrites a year held exactly or replaces one held differently unasked |
 
+## Engine tests
+
+The engine's tests build a small made-up year for each test, with every plan and reason worked out by hand from it, and run Mbali's own record against the approved 2026, whose plans must be her seed's 10, written by hand from print. `plans.lp` is checked through the facts it reads, and planted faults 27 to 30 sit in it, as mutmut can't change it.
+
+| Part | Where | The faults they catch |
+| --- | --- | --- |
+| Evaluator | `engine/test_evaluator.py` | An all or an any around words only a person can judge decided, an any that fails while a branch holds, a mark either side of its threshold, a pass printed with no mark or a result still to come taken as met or failed, a cover missing an equivalence or an offering step, a pass that won't move so another code it covers can count, her curriculum or year of study misread, and her year moved by one course taken early or held back by practical training |
+| Eligibility | `engine/test_eligibility.py` | A course she has passed or is still taking offered, under its own code or one that counts as it, a reason naming what she has met or joining its parts with the wrong word, printed words not quoted as printed, and a list that words such as "or equivalent" continue cut short |
+| Solver | `engine/test_solver.py` | A co-requisite or prerequisite the plan meets a term too early or too late at each edge, or through a course that covers nothing it needs, a rule left open on two plan courses met by one, a prerequisite still to come shutting its course out, a year's courses or credits missed by one, meetings that touch taken for a clash, overlapping terms missed, a meeting linked to her curriculum or after one with no printed time missed, an alternative that fits left out, and a meeting with no printed time left unconditional |
+| Generator | `engine/test_generator.py`, `test_themes.py` | A 2026 elective with no theme word, a plan's name or combination wrong, a word two electives share written twice or out of their order, an elective with no word not named by its printed name, a spare elective, a pass counted twice, an owed or repeated course without its precedence, a core course she can't take kept in, a credit minimum one off or taking off the wrong course, a degree total for the wrong curriculum, a slot's courses, sections or forced sections wrong, a 576-credit place missed, filled twice or taken by a course under 8 credits, a reason that appears when it shouldn't or cites the wrong passage, a finished record or a year with nothing to take planned anyway, a conflict that names the wrong rule, plans out of order or past the cap, and ids that change between runs |
+
 ## Acceptance tests
 
 ATP-1 asks how well ingestion reads print, and whether anything wrong gets into SAGE without a person seeing it. Its label sheets, in `tests/acceptance/atp1/labels/`, were filled from print and committed before any run. Its harness compares SAGE's readers, grammar, drafts and approved years with them, field by field, and its report gives each measure with a 95% Wilson interval, with and without the labeller's judgement calls. [The harness's README](../tests/acceptance/atp1/README.md) says what it compares and how to read the report.
@@ -46,7 +57,7 @@ ATP-1 asks how well ingestion reads print, and whether anything wrong gets into 
 
 ## The dependency check
 
-`make lint`, which `make check` and CI run, also runs import-linter's `lint-imports`. It reads every import in `backend/src/sage` without running the code, and checks the five contracts in `backend/pyproject.toml` that hold [the backend's dependency rule](architecture.md#backend-dependency-rule). Each contract was broken once by hand to see it fail: shared code importing a feature, one feature importing another, a feature importing the engine's stand-in, a feature importing Supabase's SDK, and the `sage` command importing Anthropic's. An exception a contract lists that no import still uses fails the check too, so the list can't go stale.
+`make lint`, which `make check` and CI run, also runs import-linter's `lint-imports`. It reads every import in `backend/src/sage` without running the code, and checks the six contracts in `backend/pyproject.toml` that hold [the backend's dependency rule](architecture.md#backend-dependency-rule). Each contract was broken once by hand to see it fail: shared code importing a feature, one feature importing another, a feature importing the engine's stand-in, a feature importing Supabase's SDK, the `sage` command importing Anthropic's, and the plan generator importing clingo. An exception a contract lists that no import still uses fails the check too, so the list can't go stale.
 
 ## Frontend
 
@@ -104,29 +115,31 @@ CI never runs it. It needs that stack, and screenshots differ between operating 
 
 | Command | What it reports | Time |
 | --- | --- | --- |
-| `make test` | The unit tests, then each file's lines that no unit test runs | 30 seconds |
-| `make mutation` | The share of mutants the unit tests catch, written to `backend/mutation-score.txt` | 12 minutes |
-| `make planted-faults` | Which of the 26 planted faults the unit tests catch, and the test that caught each: the 24 from my test review, and two in the review and approval the thesis rests on | 7 minutes |
+| `make test` | The unit tests, then each file's lines that no unit test runs | 2 minutes |
+| `make mutation` | The share of mutants the unit tests catch, written to `backend/mutation-score.txt` | 20 minutes |
+| `make planted-faults` | Which of the 30 planted faults the unit tests catch, and the test that caught each: the 24 from my test review, two in the review and approval the thesis rests on, and four in the plan encoding, which mutmut can't change | 18 minutes |
 
-Line coverage counts the lines that ran during the tests, not whether anything checked what they did, so it overstates. Mutation testing checks the checking. mutmut makes 5,244 copies of the code in `features/`, `shared/`, `ingestion/`, `engine/` and `advisor/`, each with one small change, such as `<` to `<=` or `5` to `6`. It runs the unit tests against each copy and counts the copies that make a test fail. A copy that makes the tests time out counts as caught. The 26 planted faults are plausible bugs chosen by hand, while mutmut makes every small change it can, most of them easy to catch, so its score runs higher.
+Line coverage counts the lines that ran during the tests, not whether anything checked what they did, so it overstates. Mutation testing checks the checking. mutmut makes 7,346 copies of the code in `features/`, `shared/`, `ingestion/`, `engine/` and `advisor/`, each with one small change, such as `<` to `<=` or `5` to `6`. It runs the unit tests against each copy and counts the copies that make a test fail. A copy that makes the tests time out counts as caught. The 30 planted faults are plausible bugs chosen by hand, while mutmut makes every small change it can, most of them easy to catch, so its score runs higher.
 
 The score leaves out the integration tests, code outside functions (such as the transcript reader's patterns), the adapters to outside services (the storage adapters, where student isolation is enforced, their in-memory fakes, and Claude's drafter), and the entry points, `main.py`, `cli.py` and `config.py`. The mutants that survive are listed below.
 
 ## Numbers
 
-| | 12 Oct (e60bca0) | 18 Oct (fb4a050) | Branch D (de6b976) | Clean-up (bc8db10) |
-| --- | --- | --- | --- | --- |
-| Test functions | 167 | 237 | 241 | 236 |
-| Cases: unit and integration | 177 and 76 | 337 and 78 | 343 and 78 | 340 and 76 |
-| Line coverage, unit tests | 92.8% (1,746 of 1,882 lines) | Not measured | 91.4% (3,417 of 3,738 lines) | 91.5% (3,450 of 3,772 lines) |
-| Mutation score | 90.8% (1,542 of 1,699 mutants) | 93.0% (4,917 of 5,286 mutants) | 93.4% (4,901 of 5,247 mutants) | 93.4% (4,898 of 5,244 mutants) |
-| Planted faults caught | 24 of 24 | 24 of 24 | 26 of 26 | 26 of 26 |
+| | 12 Oct (e60bca0) | 18 Oct (fb4a050) | Branch D (de6b976) | Clean-up (bc8db10) | Engine (a45ff36) |
+| --- | --- | --- | --- | --- | --- |
+| Test functions | 167 | 237 | 241 | 236 | 305 |
+| Cases: unit and integration | 177 and 76 | 337 and 78 | 343 and 78 | 340 and 76 | 493 and 76 |
+| Line coverage, unit tests | 92.8% (1,746 of 1,882 lines) | Not measured | 91.4% (3,417 of 3,738 lines) | 91.5% (3,450 of 3,772 lines) | 92.9% (4,245 of 4,570 lines) |
+| Mutation score | 90.8% (1,542 of 1,699 mutants) | 93.0% (4,917 of 5,286 mutants) | 93.4% (4,901 of 5,247 mutants) | 93.4% (4,898 of 5,244 mutants) | 93.3% (6,857 of 7,346 mutants) |
+| Planted faults caught | 24 of 24 | 24 of 24 | 26 of 26 | 26 of 26 | 30 of 30 |
 
-Between 12 and 18 Oct, C1 and C2 added the ingestion code and its tests, which trebled the mutants. On 18 Oct three test runs crashed in pytest's clean-up and counted as caught, so that score was at worst 4,914; each test session now has a temporary folder of its own. Branch D moved the tests onto the approved 2026, removed the seed's rulebook code and two tests that caught nothing alone, and added six. The clean-up of 19 Oct organised the backend by feature, which renames the mutants but not what they change, and removed five tests that caught nothing alone and the handbook reader's unused `Entry.codes`, whose three mutants were all caught. The 346 survivors are the same, function by function. Line coverage counts the Supabase adapters and the `sage` command too, which the unit tests run only in part. Planted faults 17 and 18 are in the eligibility stand-in, and leave the count when the engine replaces it, as do the 9 tests marked `stub`. Faults 25 and 26 are in the review and approval.
+Between 12 and 18 Oct, C1 and C2 added the ingestion code and its tests, which trebled the mutants. On 18 Oct three test runs crashed in pytest's clean-up and counted as caught, so that score was at worst 4,914; each test session now has a temporary folder of its own. Branch D moved the tests onto the approved 2026, removed the seed's rulebook code and two tests that caught nothing alone, and added six. The clean-up of 19 Oct organised the backend by feature, which renames the mutants but not what they change, and removed five tests that caught nothing alone and the handbook reader's unused `Entry.codes`, whose three mutants were all caught. The 346 survivors are the same, function by function. Line coverage counts the Supabase adapters and the `sage` command too, which the unit tests run only in part. Planted faults 17 and 18 were in the eligibility stand-in. Faults 25 and 26 are in the review and approval.
+
+The engine branch added the evaluator, the encoding, the solver and the generator, which took the mutants to 7,346, and removed the engine's stand-ins with the 8 tests marked `stub` that checked them. Planted faults 17 and 18 now sit in the evaluator, as the same two bugs, and 27 to 30 in the encoding. A first run on 21 Oct, at 9135979, caught 88.2% (6,497 of 7,363) and left 825 alive. The clean-up added 20 test functions and 40 cases where a plausible fault survived, and dropped the solver's unused `off` parameter with its 17 mutants. From this column the counts include the 11 tests of ATP-1's harness, which `make test` runs.
 
 ## Mutants that survive
 
-346 of the 5,244 mutants survive. 96 only change wording a student or developer reads (a prompt, a label, a check's name, a refusal's detail, a log line) or the text inside a made-up id or cache key, which no test should pin. 119 are equivalent: no realistic input tells them apart from the code, such as a file read with this Mac's default encoding, a path given in other capitals on its case-blind disk, a reader's state set before it's ever used, or zip's strict flag where both sides always match. 17 only change how `drafts.json`, `review.json` or `rulebook.json` is laid out. Every survivor in the code the thesis's claims rest on (the transcript reader's statuses, the averages, questionnaire narrowing, student isolation, and a year's review and approval) was closed with a test. The other 114 are future work. The readers' gaps are layouts the test pages don't print, which ATP-1 measures on the real sources instead:
+489 of the 7,346 mutants survive. Outside the new code, 343 are of the kinds the 19 Oct clean-up sorted 346 into: the eligibility stand-in's two went with it, and one more with the shared code this branch changed. Of the 146 in the engine, the printed meetings and the quoted wording, 78 are in the functions that build the printed meetings as `shared/printed_meetings.py` is imported, before mutmut switches a mutant on, and the rulebook's test checks the practicals they build against print. 12 only change wording a student reads, how quoted printed words read in rare shapes, or the text inside a made-up id. 50 are equivalent: a "not met" spelt another way that its caller already treats as a fail, a clingo flag its brave and cautious modes don't need, zip's strict flag where both sides always match, or a default no real record reaches. Every survivor in the code the thesis's claims rest on (the transcript reader's statuses, the averages, questionnaire narrowing, student isolation, a year's review and approval, and the engine's plans, eligibility and reasons) was closed with a test. The rest are future work, by area. The readers' gaps are layouts the test pages don't print, which ATP-1 measures on the real sources instead:
 
 | Where | What no unit test checks | Mutants |
 | --- | --- | --- |
@@ -148,4 +161,6 @@ Between 12 and 18 Oct, C1 and C2 added the ingestion code and its tests, which t
 | Problems | The dotted path of a nested invalid field | 1 |
 | Accounts | An address with two @ signs | 1 |
 | Rulebook cache | A second year in the cache, and a test clock that doesn't start at zero | 2 |
-| Eligibility stand-in | A credited result counting as passed | 2 |
+| Engine | A meeting linked to her curriculum, in the generator's own checks of choice groups, meetings with no printed time and a slot's untimed courses | 4 |
+| Engine | A clash a year rule also takes part in, where FB3.4's drop judges only two courses | 1 |
+| Engine | A plan set's version, as only the first set's 1 is ever written yet | 1 |

@@ -94,6 +94,7 @@ def plan_set(rows: PlanSetRows, rules: RuleSet) -> PlanSet:
                 id=row.id,
                 position=row.position,
                 name=row.name,
+                combination=row.combination,
                 hidden=row.hidden,
                 credits=sum(course.credits for course in courses[row.id]),
             )
@@ -113,6 +114,7 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
         period=rows.plan_set.period,
         position=row.position,
         name=row.name,
+        combination=row.combination,
         hidden=row.hidden,
         credits=Credits(
             total=sum(course.credits for course in courses),

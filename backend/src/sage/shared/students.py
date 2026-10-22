@@ -50,7 +50,10 @@ class Plan(Row):
     plan_set_id: UUID
     student_id: UUID
     position: int
-    name: str
+    name: str  # its electives' theme words, such as "Power, Control & Robotics"
+    # Its electives' codes in code order, such as "EEE4117F · EEE4118F · EEE4119F"; None when it
+    # has none
+    combination: str | None = None
     hidden: bool = False
 
 
@@ -59,7 +62,9 @@ class PlanCourse(Row):
     course_code: str
     student_id: UUID
     handbook_year: int
-    choices: dict[str, str] | None = None
+    # Each choice group's alternatives that fit the rest of the plan, sorted, such as
+    # {"lab": ["A", "B"]}. One left is fixed, and a group not here shows every alternative.
+    choices: dict[str, list[str]] | None = None
 
 
 # What a reason explains, as plan_reasons.kind allows
@@ -158,13 +163,18 @@ class Graded(Protocol):
     result: str
 
 
+def final_mark(line: Graded) -> int | None:
+    # A line's final mark as the transcript's Term GPA reads it: a supplementary pass (SP) counts as
+    # 50, and any other line printed without a mark has none
+    return 50 if line.result == "SP" else line.mark
+
+
 def average(lines: Iterable[Graded]) -> Decimal | None:
-    # The credit-weighted mean of marks, worked out as the transcript's Term GPA is. A supplementary
-    # pass (SP) counts as 50, and any other line without a mark is left out. Two decimals, half up,
-    # and None when no line counts.
+    # The credit-weighted mean of final marks, worked out as the transcript's Term GPA is. A line
+    # without one is left out. Two decimals, half up, and None when no line counts.
     total = weight = 0
     for line in lines:
-        mark = 50 if line.result == "SP" else line.mark
+        mark = final_mark(line)
         if mark is not None:
             total += mark * line.credits
             weight += line.credits

@@ -38,7 +38,7 @@ def get_electives(
                     for row in rows
                 ],
             )
-            for tab, rows in electives.by_tab(students, rulebook, checker, student.id)
+            for tab, rows in electives.by_tab(students, rulebook, checker, student)
         ]
     )
 

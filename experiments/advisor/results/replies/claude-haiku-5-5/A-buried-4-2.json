@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T03:01:02+00:00",
+ "calls": [
+  {
+   "request": "f4eb101df1fba0b5bd0395543faa80665a3e2c7177a20a3c2d8b373543fdfcd1",
+   "seconds": 4.3,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEdsC8x1owQ3k5Md42BB",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"Courses that are being repeated or taken in arrears get priority when a clash happens. You must also tell the Head of the Department in writing about any clash as soon as you see it, and you can't register for a clashing course without the Head of Department's permission.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P15\", \"quote\": \"In the event of such a clash precedence shall be given, for registration purposes, to courses which are being repeated or undertaken in arrears.\"}, {\"passage_id\": \"P15\", \"quote\": \"Candidates shall inform the Head of the Department in writing of any clash of courses\"}, {\"passage_id\": \"P15\", \"quote\": \"Except with the permission of the Head of Department, candidates may not be permitted to register for a course which clashes with another in the lecture timetable.\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 968,
+     "output_tokens": 755,
+     "output_tokens_details": {
+      "thinking_tokens": 485
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

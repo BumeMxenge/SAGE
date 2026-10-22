@@ -202,7 +202,7 @@ def chat_titled(store: Store, title: str) -> Chat:
 
 def test_her_chats_list_under_exactly_their_plan_or_pair(store):
     her = store.mbali.student.id
-    single = chat_titled(store, "Fridays on Power & Robotics")
+    single = chat_titled(store, "Fridays on Power, Control & Robotics")
     pair = chat_titled(store, "Process Control or Medical Imaging")
     alone = store.students.chats(her, single.plan_id, None)
     together = store.students.chats(her, pair.plan_id, pair.other_plan_id)
@@ -215,7 +215,7 @@ def test_her_chats_list_under_exactly_their_plan_or_pair(store):
 
 def test_a_new_chat_has_its_time_and_lists_first(store):
     her = store.mbali.student.id
-    single = chat_titled(store, "Fridays on Power & Robotics")
+    single = chat_titled(store, "Fridays on Power, Control & Robotics")
     new = store.students.add_chat(
         Chat(id=uuid4(), student_id=her, plan_id=single.plan_id)
     )
@@ -229,15 +229,15 @@ def test_a_chat_reads_back_its_messages_in_order(store):
     pair = chat_titled(store, "Process Control or Medical Imaging")
     question, reply = store.students.messages(her.student.id, pair.id)
     assert (question.message.role, reply.message.role) == ("user", "assistant")
-    imaging_and_power = next(plan for plan in her.plans if plan.position == 7)
-    assert reply.message.open_plan_id == imaging_and_power.id
+    power_robotics_and_imaging = next(plan for plan in her.plans if plan.position == 7)
+    assert reply.message.open_plan_id == power_robotics_and_imaging.id
     assert reply.citations == ()
     assert store.students.messages(store.stranger, pair.id) is None
 
 
 def test_a_question_and_its_reply_are_stored_together_in_order(store):
     her = store.mbali.student.id
-    chat = chat_titled(store, "Fridays on Power & Robotics")
+    chat = chat_titled(store, "Fridays on Power, Control & Robotics")
     asked = Message(
         id=uuid4(),
         chat_id=chat.id,

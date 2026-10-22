@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T02:45:03+00:00",
+ "calls": [
+  {
+   "request": "1570075cb584c72de8b68d638938140f2553095569001fddff070b5c86df5eba",
+   "seconds": 4.22,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEceXChJAaJ96obPBmZb",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"You need at least 576 credits to graduate. Because you first registered in 2023, the 576-credit rule applies to you, not the 560-credit rule for students who registered in 2025 or later. Your record shows Practical Training (EEE1000X and EEE3000X) still in progress, and both are needed to graduate, so check with your advisor when they will be signed off.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P45\", \"quote\": \"A candidate who registered before 2025 shall complete approved courses of a value not less than 576 credits\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 961,
+     "output_tokens": 808,
+     "output_tokens_details": {
+      "thinking_tokens": 613
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

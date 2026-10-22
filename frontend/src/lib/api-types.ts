@@ -586,6 +586,8 @@ export interface components {
             position: number;
             /** Name */
             name: string;
+            /** Combination */
+            combination: string | null;
             /** Hidden */
             hidden: boolean;
             credits: components["schemas"]["Credits"];
@@ -636,6 +638,8 @@ export interface components {
             position: number;
             /** Name */
             name: string;
+            /** Combination */
+            combination: string | null;
             /** Hidden */
             hidden: boolean;
             /** Credits */

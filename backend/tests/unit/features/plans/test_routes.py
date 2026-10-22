@@ -18,6 +18,15 @@ def test_her_set_has_10_plans_and_7_still_visible(mbali):
     assert len(plan_set["reasons"]) == 5
 
 
+def test_a_plan_is_named_over_its_combination(mbali, plan_ids):
+    # Plan 1's electives are the prototype's "EEE4117F · EEE4118F · EEE4119F", one theme word each
+    named = ("Power, Control & Robotics", "EEE4117F · EEE4118F · EEE4119F")
+    summary = mbali.get("/v1/plans").json()["plans"][0]
+    plan = mbali.get(f"/v1/plans/{plan_ids[1]}").json()
+    assert (summary["name"], summary["combination"]) == named
+    assert (plan["name"], plan["combination"]) == named
+
+
 def test_every_plan_has_138_credits_split_by_term(mbali, plan_ids):
     # From the entries (pp. 138 to 141, 162 and 164): semester 1 holds EEE4113F's 16, CML4607F's 10
     # and the three electives' 48; the third quarter EEE4124C's 8 and EEE4125C's 16; semester 2

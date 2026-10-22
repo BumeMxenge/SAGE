@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T03:03:38+00:00",
+ "calls": [
+  {
+   "request": "85a5f70282debafcb6f7d2fc68b4278014d8acc19856dd7dc0addf8e434a438a",
+   "seconds": 4.22,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEe4fM8RwPhTCfF5oGfM",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"To get DP (duly performed, meaning you're allowed to sit the course's assessment) in HUB4049F, you need a class average of at least 40%. The course is assessed through assignments, a written assessment and a final project.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P63\", \"quote\": \"A class average of 40% shall be obtained for the course.\"}, {\"passage_id\": \"P06\", \"quote\": \"DP = duly performed\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 1000,
+     "output_tokens": 580,
+     "output_tokens_details": {
+      "thinking_tokens": 420
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-21T03:05:23+00:00",
+ "calls": [
+  {
+   "request": "f4eb101df1fba0b5bd0395543faa80665a3e2c7177a20a3c2d8b373543fdfcd1",
+   "seconds": 6.58,
+   "retries": 0,
+   "reply": {
+    "id": "msg_011CgEeCRwwPmNK1AfJ6MyV1",
+    "container": null,
+    "content": [
+     {
+      "signature": "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",
+      "thinking": "",
+      "type": "thinking"
+     },
+     {
+      "citations": null,
+      "text": "{\"content\": \"Courses being repeated or undertaken in arrears get priority when two courses clash at registration. If a clash is not one of those cases, you may not register for the clashing course unless the Head of Department gives permission, and you must tell the Head of Department in writing as soon as you see the clash.\", \"referral\": false, \"open_plan_id\": null, \"citations\": [{\"passage_id\": \"P15\", \"quote\": \"In the event of such a clash precedence shall be given, for registration purposes, to courses which are being repeated or undertaken in arrears.\"}, {\"passage_id\": \"P15\", \"quote\": \"Except with the permission of the Head of Department, candidates may not be permitted to register for a course which clashes with another in the lecture timetable.\"}, {\"passage_id\": \"P15\", \"quote\": \"Candidates shall inform the Head of the Department in writing of any clash of courses\"}]}",
+      "type": "text"
+     }
+    ],
+    "diagnostics": null,
+    "model": "claude-haiku-5-5",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 21751,
+     "inference_geo": "global",
+     "input_tokens": 968,
+     "output_tokens": 1261,
+     "output_tokens_details": {
+      "thinking_tokens": 978
+     },
+     "server_tool_use": null,
+     "service_tier": "standard",
+     "speed": "standard"
+    }
+   }
+  }
+ ]
+}

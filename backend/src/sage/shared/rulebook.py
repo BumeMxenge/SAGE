@@ -1,11 +1,13 @@
 # The rulebook as the API reads it, kept in memory. A year only changes when it's loaded or approved,
 # so each read is reused for ten minutes: a change shows up within that time with no redeploy, and a
-# busy registration week reads each year a few times an hour instead of on every request.
+# busy registration week reads each year a few times an hour instead of on every request. Each year
+# comes with the meetings its course entries print, so every reader sees the same week.
 import time
 from collections.abc import Callable
 from typing import Any
 
 from sage.shared.errors import RulebookNotLoaded
+from sage.shared.printed_meetings import timetabled
 from sage.shared.repositories import RuleRepository
 from sage.shared.rules import ResultSymbol, RuleSet
 
@@ -28,7 +30,7 @@ class Rulebook:
         return year
 
     def year(self, year: int) -> RuleSet:
-        rules = self._keep(year, lambda: self._rules.get(year))
+        rules = self._keep(year, lambda: timetabled(self._rules.get(year)))
         if not rules.handbook_versions:
             raise RulebookNotLoaded(f"The {year} handbook rules aren't loaded.")
         return rules
