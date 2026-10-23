@@ -31,6 +31,7 @@ import Lock from '@material-symbols/svg-400/rounded/lock.svg?react'
 import Info from '@material-symbols/svg-400/rounded/info.svg?react'
 import ArrowDownward from '@material-symbols/svg-400/rounded/arrow_downward.svg?react'
 import FavoriteFilled from '@material-symbols/svg-400/rounded/favorite-fill.svg?react'
+import Block from '@material-symbols/svg-400/rounded/block.svg?react'
 export const icons = {
   // Planner: Collapse Panel on the open sidebar, and Open Sidebar on the logo of the collapsed one
   dock_to_right: DockToRight,
@@ -99,6 +100,9 @@ export const icons = {
   info: Info,
   // Onboarding: the first sign-in highlight, between the two clashing classes and the two that work
   arrow_downward: ArrowDownward,
+  // Planner: a questionnaire answer that keeps no plan with the answers before it, so the fade isn't
+  // all that marks it (new design, approved difference 20)
+  block: Block,
 }
 
 export type IconName = keyof typeof icons
