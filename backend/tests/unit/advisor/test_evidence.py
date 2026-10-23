@@ -1,8 +1,8 @@
 # Checks what Luna is given on Mbali's seed and the approved 2026: her slice holds exactly the
 # passages chosen by key, each tool answers from her plans, her record and print as E4's did, a
 # missing term on screen says so, a complementary slot's fitting courses reach her message with
-# their marks, a pair names each plan on its own reasons, and a course's meetings and a plan's week
-# are worded as the plan view shows them
+# their marks, a pair names each plan on its own reasons, a course's meetings and a plan's week are
+# worded as the plan view shows them, and her week holds only her curriculum's meetings
 from datetime import time
 from uuid import UUID, uuid4
 
@@ -330,3 +330,25 @@ def test_a_plans_week_lists_each_days_meetings_in_time_order():
         "- Wed: AAA1000F 10:00 to 11:00 (lecture)",
         "- Fri: AAA1000F 14:00 to 17:00 (lab)",
     ]
+    # A plan that meets only in summer still has its week after the empty ones
+    summer = [course for course in plan(None) if course.course_code == "GGG1000U"]
+    assert week_words(summer, rules, "EB011EEE05") == [
+        "Week in summer, day by day",
+        "- Thu: GGG1000U 09:00 to 10:00",
+    ]
+
+
+def test_her_week_holds_the_meetings_for_her_curriculum_alone(stores, chat_on):
+    # The 2026 timetable gives EEE4120F, in her V06, a meeting from 16:00 to 17:45 on Thursday for
+    # Mechatronics students like her, and one at the same hours on Tuesday for Electrical and
+    # Computer Engineering's
+    rules, students = stores
+    found = Evidence(
+        chat_on(6), "sem1", students, Rulebook(rules), EntryRuleEligibility()
+    )
+    sem1 = found.context().split("Week in sem1, day by day\n")[1]
+    days = sem1.split("Week in sem2")[0].splitlines()
+    thursday = next(day for day in days if day.startswith("- Thu: "))
+    tuesday = next(day for day in days if day.startswith("- Tue: "))
+    assert "EEE4120F 16:00 to 17:45" in thursday
+    assert "EEE4120F 16:00 to 17:45" not in tuesday
