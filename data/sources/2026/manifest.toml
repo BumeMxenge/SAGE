@@ -97,7 +97,7 @@ cells = ["Labs!O11:O14", "Labs!M11:M14"]
 file = "2026_Complementary_Studies_Course_Details.xlsx"
 format = "xlsx"
 title = "2026 Complementary Studies Course Details"
-sha256 = "85a1df054b9246b7c01dcb6b16bf587d78d46abda844c73a2612be96d97e829f"
+sha256 = "907d901b812e54bd856825b34104ab28f39c556be58dcc19a59a084101942cb8"
 # Each sheet read, by what it holds. Notes is for people, so it isn't read.
 courses = "Courses"
 languages = "Language options"
