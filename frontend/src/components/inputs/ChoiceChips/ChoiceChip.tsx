@@ -6,16 +6,13 @@ import { ToggleButton } from 'react-aria-components'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import styles from './ChoiceChips.module.css'
 
-type ChoiceChipProps = { id: string; reasonId: string | undefined; takeFocus: boolean; children: ReactNode }
+type ChoiceChipProps = { id: string; reasonId: string | undefined; children: ReactNode }
 
-export function ChoiceChip({ id, reasonId, takeFocus, children }: ChoiceChipProps) {
+export function ChoiceChip({ id, reasonId, children }: ChoiceChipProps) {
   const unavailable = reasonId !== undefined
   return (
     <ToggleButton
       id={id}
-      // Only when its group is asked to take focus, as a new question appears after Next or Back
-      // oxlint-disable-next-line jsx-a11y/no-autofocus
-      autoFocus={takeFocus}
       aria-disabled={unavailable || undefined}
       aria-describedby={reasonId}
       data-unavailable={unavailable || undefined}

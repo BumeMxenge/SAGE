@@ -21,17 +21,12 @@ type ChoiceChipsProps = {
   choices: Choice[]
   value: string | null
   onChange: (value: string | null) => void
-  // Focus the chosen chip, or else the first that can be chosen, as the chips appear
-  takeFocus?: boolean
 }
 
-export function ChoiceChips({ label, description, choices, value, onChange, takeFocus = false }: ChoiceChipsProps) {
+export function ChoiceChips({ label, description, choices, value, onChange }: ChoiceChipsProps) {
   const id = useId()
   const reasonId = (choice: Choice) => `${id}-${choice.value}`
   const unavailable = choices.filter((choice) => choice.unavailable)
-  const focused = takeFocus
-    ? (choices.find((choice) => choice.value === value) ?? choices.find((choice) => !choice.unavailable))
-    : undefined
   return (
     <div className={styles.group}>
       <span id={`${id}-label`} className={styles.label}>
@@ -55,12 +50,7 @@ export function ChoiceChips({ label, description, choices, value, onChange, take
         className={styles.chips}
       >
         {choices.map((choice) => (
-          <ChoiceChip
-            key={choice.value}
-            id={choice.value}
-            reasonId={choice.unavailable && reasonId(choice)}
-            takeFocus={choice === focused}
-          >
+          <ChoiceChip key={choice.value} id={choice.value} reasonId={choice.unavailable && reasonId(choice)}>
             {choice.label}
           </ChoiceChip>
         ))}

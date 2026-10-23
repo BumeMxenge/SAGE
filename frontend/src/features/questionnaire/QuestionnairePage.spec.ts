@@ -1,9 +1,9 @@
 // The questionnaire, on made-up answers from the API, as answering is one-way and every worktree shares
 // the local database, so no check saves a real student's answers. Mbali's session signs the requests
 // the checks leave alone, such as GET /v1/me. Her made-up set of ten plans needs narrowing until the
-// answers are saved: /plan asks one question at a time, Back keeps an answer and changing it clears a
-// later one that no longer fits, a greyed answer takes focus, says why and can't be chosen, and Show My
-// Plans saves the answers by id and opens the first plan they kept. Then axe, the keyboard walk and
+// answers are saved: /plan asks both questions on one page, changing the course clears a week answer
+// that no longer fits, a greyed answer takes focus, says why and can't be chosen, and Show My Plans
+// saves the answers by id and opens the first plan they kept. Then axe, the keyboard walk and
 // parity beside the planner prototype's questionnaire, in both themes.
 // The questions are the prototype's own, with its plans and the plans each answer keeps, as the API
 // would send them: the API's labels for the week, and no direction question (approved difference 11).
@@ -110,10 +110,10 @@ async function madeUpApi(page: Page, refusal?: components['schemas']['Problem'])
 
 const heading = (page: Page) => page.getByRole('heading', { level: 1, name: 'A Few Questions First' })
 const answer = (page: Page, name: string) => page.getByRole('radio', { name, exact: true })
-const button = (page: Page, name: string) => page.getByRole('button', { name, exact: true })
+const showMyPlans = (page: Page) => page.getByRole('button', { name: 'Show My Plans' })
 const narrowing = (page: Page) => page.locator('output')
 
-test('/plan asks one question at a time, and Show My Plans saves the answers and opens the first plan they kept', async ({ page }) => {
+test('/plan asks both questions, and Show My Plans saves the answers and opens the first plan they kept', async ({ page }) => {
   const sent = await madeUpApi(page)
   // From Course History, so Back from the plan shows where she came from
   await page.goto('/history')
@@ -121,17 +121,16 @@ test('/plan asks one question at a time, and Show My Plans saves the answers and
   await page.getByRole('link', { name: 'Plan', exact: true }).click()
   await expect(heading(page)).toBeVisible()
   await expect(page).toHaveURL(/\/plan$/)
-  await expect(page.getByRole('radiogroup')).toHaveAccessibleName('Is there a course you already know you want?')
+  const groups = page.getByRole('radiogroup')
+  await expect(groups.nth(0)).toHaveAccessibleName('Is there a course you already know you want?')
+  await expect(groups.nth(1)).toHaveAccessibleName('How should the week feel?')
   await expect(narrowing(page)).toHaveText('Answer to narrow your 10 plans, or carry on to keep them all.')
-  await expect(button(page, 'Back')).toHaveCount(0)
 
   await answer(page, 'Mechatronics').click()
   await expect(narrowing(page)).toHaveText('This keeps 7 of your 10 plans.')
-  await button(page, 'Next').click()
-  await expect(page.getByRole('radiogroup')).toHaveAccessibleName('How should the week feel?')
   await answer(page, 'Fewest 8am starts').click()
   await expect(narrowing(page)).toHaveText('This keeps 3 of your 10 plans.')
-  await button(page, 'Show My Plans').click()
+  await showMyPlans(page).click()
 
   await page.waitForURL(`**/plan/${plan(8)}`)
   expect(sent()).toEqual({ course: 'TST4103F', week: 'fewest_8am' })
@@ -140,18 +139,15 @@ test('/plan asks one question at a time, and Show My Plans saves the answers and
   await expect(page).toHaveURL(/\/history$/)
 })
 
-test('Back keeps the earlier answer, and changing it clears a later answer that no longer fits', async ({ page }) => {
+test('changing the course clears a week answer that no longer fits', async ({ page }) => {
   await madeUpApi(page)
   await page.goto('/plan')
   await answer(page, 'Mechatronics').click()
-  await button(page, 'Next').click()
   await answer(page, 'Fewest 8am starts').click()
-  await button(page, 'Back').click()
-  await expect(answer(page, 'Mechatronics')).toBeChecked()
   // Energy Conversion II keeps plans 1 to 7, and Fewest 8am starts 8 to 10
   await answer(page, 'Energy Conversion II').click()
-  await button(page, 'Next').click()
-  await expect(page.getByRole('radio', { checked: true })).toHaveCount(0)
+  await expect(page.getByRole('radio', { checked: true })).toHaveCount(1)
+  await expect(answer(page, 'Energy Conversion II')).toBeChecked()
   await expect(answer(page, 'Fewest 8am starts')).toHaveAttribute('aria-disabled', 'true')
 })
 
@@ -159,16 +155,16 @@ test('a greyed answer takes focus, says why, and neither Space nor a click choos
   await madeUpApi(page)
   await page.goto('/plan')
   await answer(page, 'Energy Conversion II').click()
-  await page.keyboard.press('Tab')
-  await page.keyboard.press('Enter')
-  // Next moves focus to the week, onto its first answer that can be chosen
-  const lunch = answer(page, 'Keep the 13:00 lunch hour free')
-  await expect(lunch).toBeFocused()
   const reason = 'No plan has both ‘Energy Conversion II’ and ‘Fewest 8am starts’.'
   await expect(page.getByText(reason)).toBeVisible()
 
-  await page.keyboard.press('ArrowLeft')
+  // Tab leaves the course's answers for the week's, onto its first, the greyed one
+  await page.keyboard.press('Tab')
   const fewest = answer(page, 'Fewest 8am starts')
+  await expect(fewest).toBeFocused()
+  await page.keyboard.press('ArrowRight')
+  await expect(answer(page, 'Keep the 13:00 lunch hour free')).toBeFocused()
+  await page.keyboard.press('ArrowLeft')
   await expect(fewest).toBeFocused()
   await expect(fewest).toHaveAttribute('aria-disabled', 'true')
   await expect(fewest).toHaveAccessibleDescription(reason)
@@ -191,19 +187,14 @@ test('a save refused as already answered moves on to her plans', async ({ page }
     code: 'questionnaire_answered',
   })
   await page.goto('/plan')
-  await button(page, 'Next').click()
-  await button(page, 'Show My Plans').click()
+  await showMyPlans(page).click()
   await page.waitForURL(`**/plan/${plan(8)}`)
 })
 
-test('each question passes axe and the keyboard walk', async ({ page }) => {
+test('the questions pass axe and the keyboard walk, with a greyed answer', async ({ page }) => {
   await madeUpApi(page)
   await page.goto('/plan')
-  await heading(page).waitFor()
-  await expectNoAxeViolations(page)
-  await walkKeyboard(page)
   await answer(page, 'Medical Imaging & Image Processing').click()
-  await button(page, 'Next').click()
   // Medical Imaging keeps plans 4, 7 and 10, and the free lunch hour none of them
   await expect(answer(page, 'Keep the 13:00 lunch hour free')).toHaveAttribute('aria-disabled', 'true')
   await expectNoAxeViolations(page)
@@ -264,14 +255,7 @@ const weekAfterEnergy = {
     await page.getByRole('button', { name: 'Energy Conversion II', exact: true }).click()
     await page.getByRole('button', { name: 'Minimise 8am starts' }).hover()
   },
-  built: async (page: Page) => {
-    await answer(page, 'Energy Conversion II').click()
-    await button(page, 'Next').click()
-  },
-}
-const toWeek = {
-  designed: async () => undefined,
-  built: (page: Page) => button(page, 'Next').click(),
+  built: (page: Page) => answer(page, 'Energy Conversion II').click(),
 }
 
 test.describe('parity', () => {
@@ -290,14 +274,6 @@ test.describe('parity', () => {
       (page) => answer(page, 'Digital Signal Processing'),
       true,
     ),
-    state('next', nothing, (page) => page.getByRole('button', { name: 'Generate plans' }), (page) => button(page, 'Next'), true),
-    state(
-      'show-my-plans',
-      toWeek,
-      (page) => page.getByRole('button', { name: 'Generate plans' }),
-      (page) => button(page, 'Show My Plans'),
-      true,
-    ),
-    state('back', toWeek, (page) => page.getByRole('button', { name: 'Back', exact: true }), (page) => button(page, 'Back'), true),
+    state('show-my-plans', nothing, (page) => page.getByRole('button', { name: 'Generate plans' }), showMyPlans, true),
   ])
 })

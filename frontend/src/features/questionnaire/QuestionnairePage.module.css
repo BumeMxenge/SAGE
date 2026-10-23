@@ -4,13 +4,17 @@
   max-width: var(--width-full);
 }
 
-/* The question stands 40 px under the header, as the prototype's first does: 16 px more than the
-   header's own margin, as padding, which doesn't fold into that margin as a margin would */
-.question {
+/* The first question stands 40 px under the header, as the prototype's does: 16 px more than the
+   header's own margin, as padding, which doesn't fold into that margin as a margin would. The
+   prototype's 34 px between questions takes the nearest token. */
+.questions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
   padding-top: var(--space-4);
 }
 
-/* Back, the step's button and how far the answers narrow her plans, in a row under the question */
+/* Show My Plans and how far the answers narrow her plans, in a row under the questions */
 .actions {
   display: flex;
   flex-wrap: wrap;

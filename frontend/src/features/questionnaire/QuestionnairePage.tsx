@@ -1,5 +1,6 @@
 // The questionnaire, which /plan shows while her plan set is too long to compare and isn't answered.
-// It asks one question at a time, each with its answers in the API's order. Show My Plans saves the
+// It asks its questions on one page, as the prototype does, each with its answers in the API's order,
+// so she sees an answer grey out, or clear, as she changes one above it. Show My Plans saves the
 // answers, which hide every plan they don't keep, and refreshes her set, so the plan workspace then
 // opens the first plan they kept.
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -15,7 +16,7 @@ import styles from './QuestionnairePage.module.css'
 
 type PlanSet = components['schemas']['PlanSet']
 
-// The line beside the step's button: how far her answers narrow her plans
+// The line beside Show My Plans: how far her answers narrow her plans
 function narrowing(kept: number, total: number, answered: boolean): string {
   if (!answered) return `Answer to narrow your ${total} plans, or carry on to keep them all.`
   if (kept === total) return `This keeps all ${total} of your plans.`
@@ -24,10 +25,7 @@ function narrowing(kept: number, total: number, answered: boolean): string {
 
 export function QuestionnairePage({ set }: { set: PlanSet }) {
   const { data: questionnaire } = useQuery(queries.questionnaire())
-  const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Answers>({})
-  // Focus follows Next and Back to the new question, never the page opening
-  const [moved, setMoved] = useState(false)
   const save = useMutation({
     // Each answer is the id of one of the options the API sent for its question
     mutationFn: (body: Answers) =>
@@ -47,13 +45,7 @@ export function QuestionnairePage({ set }: { set: PlanSet }) {
 
   const plans = set.plans.map((plan) => plan.id)
   const questions = askable(questionnaire.questions, plans.length)
-  const question = questions.at(step)
   const answered = questions.some((each) => answers[each.id] !== undefined)
-
-  function move(to: number) {
-    setStep(to)
-    setMoved(true)
-  }
 
   return (
     <div className={styles.page}>
@@ -61,9 +53,8 @@ export function QuestionnairePage({ set }: { set: PlanSet }) {
         title="A Few Questions First"
         subtitle={`SAGE found ${plans.length} plans for ${set.period}. Your answers narrow them to a short list, and the rest stay at the foot of your plan list.`}
       />
-      <div className={styles.question}>
-        {question && (
-          // A new question's chips are new chips, so the one that takes focus takes it as they appear
+      <div className={styles.questions}>
+        {questions.map((question, index) => (
           <ChoiceChips
             key={question.id}
             label={question.prompt}
@@ -71,28 +62,18 @@ export function QuestionnairePage({ set }: { set: PlanSet }) {
             choices={question.options.map((option) => ({
               value: option.id,
               label: option.label,
-              unavailable: clash(plans, questions, answers, step, option),
+              unavailable: clash(plans, questions, answers, index, option),
             }))}
             value={answers[question.id] ?? null}
-            onChange={(option) => setAnswers(choose(plans, questions, answers, step, option))}
-            takeFocus={moved}
+            onChange={(option) => setAnswers(choose(plans, questions, answers, index, option))}
           />
-        )}
+        ))}
       </div>
       <div className={styles.actions}>
-        {step > 0 && (
-          <Button variant="quiet" icon="chevron_left" onPress={() => move(step - 1)}>
-            Back
-          </Button>
-        )}
-        {step < questions.length - 1 ? (
-          <Button onPress={() => move(step + 1)}>Next</Button>
-        ) : (
-          // Disabled while the answers are saving, so a second press can't send them again
-          <Button isDisabled={save.isPending} onPress={() => save.mutate(answers)}>
-            Show My Plans
-          </Button>
-        )}
+        {/* Disabled while the answers are saving, so a second press can't send them again */}
+        <Button isDisabled={save.isPending} onPress={() => save.mutate(answers)}>
+          Show My Plans
+        </Button>
         {/* An output is a polite status, so a screen reader hears the new count as she answers */}
         <output className={styles.narrowing}>
           {narrowing(keptBy(plans, questions, answers).length, plans.length, answered)}
