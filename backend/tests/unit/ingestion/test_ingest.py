@@ -98,6 +98,13 @@ PAGES = [
     ],
 ]
 NOT_STATED = "Not stated in course entry."
+# A reply of each kind a model is asked for
+SUMMARY = "A made-up course on made-up things. Students learn to think about them."
+DRAFTED = {
+    "entry_rule": {"rule": {"refer": "Made up."}},
+    "elective": {"tab": "history", "summary": SUMMARY},
+    "language_option": {"summary": SUMMARY},
+}
 BEGINNERS = "None. This is a beginners’ course aimed at non-mother tongue speakers."
 WORKBOOK = {
     "Courses": [
@@ -300,7 +307,24 @@ def test_a_year_ingests_into_a_candidate_rulebook(
         ("curriculum_rules", "EB009EEE01/1"): "refused_free_text",
         ("curriculum_rules", "EB009EEE01/3"): "check_failed",
         ("equivalences", "EEE1006F/EEE1008F"): "not_printed",
+        # A model writes every complementary course's tab and summary, so a person checks them
+        ("course_group_members", "complementary/AGE1002S"): "model_written",
+        ("course_group_members", "complementary/ECO1007S"): "model_written",
+        ("course_group_members", "complementary/SLL1017F"): "model_written",
     }
+    # What the model reads for each, and a person beside its writing: the passage's heading and
+    # words, from the handbook entry where the faculty handbook prints one
+    model_read = {r.key: r.printed for r in run.readings if r.flag == "model_written"}
+    assert [
+        model_read[f"complementary/{code}"].split("\n")[:2]
+        for code in ("ECO1007S", "AGE1002S")
+    ] == [
+        ["ECO1007S Economics for Engineers", "ECO1007S ECONOMICS FOR ENGINEERS"],
+        [
+            "AGE1002S The Human Planet: Prehistory to Present",
+            "Course outline: Archaeology.",
+        ],
+    ]
     assert {c.name: len(c.failures) for c in run.checks if c.failures} == {
         "Printed totals add up": 1,
         "Every timetable code is a course the rulebook holds": 1,
@@ -347,7 +371,7 @@ def test_a_year_ingests_into_a_candidate_rulebook(
         (HUMANITIES, 1, "SLL1017F Swahili Communication 1A", "SLL1017F"),
     ]
     # Nothing is written and no model is asked
-    assert run.translations.calls == 0
+    assert (run.translations.calls, run.written.calls) == (0, 0)
     assert not (tmp_path / "rules").exists()
 
 
@@ -375,15 +399,21 @@ def test_a_year_takes_the_drafts_of_the_years_before_it(
         drafts = {"concurrent": {co_requisite: {"model": "made up", "tree": tree}}}
         cache.write_text(json.dumps(drafts), encoding="utf-8")
     model = ScriptedModel(
-        {"entry_rule": [Response(text=json.dumps({"rule": {"refer": BEGINNERS}}))]}
+        {
+            "entry_rule": [Response(text=json.dumps({"rule": {"refer": BEGINNERS}}))],
+            "elective": [Response(text=json.dumps(DRAFTED["elective"]))] * 2,
+            "language_option": [Response(text=json.dumps(DRAFTED["language_option"]))],
+        }
     )
     # As sage ingest --draft runs it
     run, _ = review_year(2026, model, data=tmp_path)
     # Only the wording no earlier year drafted is asked for, and both drafts are kept where the next
     # run and the next year read them, so neither is drafted again
-    assert [call.conversation[0].text for call in model.calls] == [
-        f"Course entry requirements: {BEGINNERS}"
-    ]
+    assert [
+        call.conversation[0].text
+        for call in model.calls
+        if call.schema.name == "entry_rule"
+    ] == [f"Course entry requirements: {BEGINNERS}"]
     kept = json.loads(
         (tmp_path / "rules" / "2026" / "drafts.json").read_text(encoding="utf-8")
     )
@@ -549,9 +579,18 @@ def test_a_decision_naming_a_code_the_handbook_prints_needs_no_note(
     assert correct(unloaded) == ()
 
 
+class Drafter:
+    # Stands in for the model on a run that drafts, giving every ask of a kind the same reply
+    model = "a made-up model"
+
+    def respond(self, instructions, conversation, schema=None, tools=(), effort=None):
+        return Response(text=json.dumps(DRAFTED[schema.name]))
+
+
 def accept_all(data, but=()):
-    # Accepts each row of the made-up year's review but those named, with a note where a check fails
-    candidate, review = review_year(2026, data=data)
+    # Drafts what the made-up year needs, as sage ingest --draft would, then accepts each row of its
+    # review but those named, with a note where a check fails
+    candidate, review = review_year(2026, Drafter(), data=data)
     sitting = Sitting(
         candidate, review_file(2026, data), lambda: datetime(2026, 10, 18, tzinfo=UTC)
     )
@@ -599,6 +638,10 @@ def test_an_approved_year_survives_the_snapshot_round_trip(
     assert flags[("courses", "EEE3100S")] == (None, True)
     assert flags[("courses", "PHY1013S")] == ("refused_or_equivalent", True)
     assert flags[("curriculum_rules", "EB009EEE01/3")] == ("check_failed", True)
+    assert flags[("course_group_members", "complementary/AGE1002S")] == (
+        "model_written",
+        True,
+    )
     assert len(flags) == sum(
         len(getattr(rules, table))
         for table in (

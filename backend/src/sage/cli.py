@@ -87,7 +87,8 @@ def main(argv: list[str] | None = None) -> None:
     ingest_command.add_argument(
         "--draft",
         action="store_true",
-        help="ask the language model for refused wording with no draft yet, and cache its drafts",
+        help="ask the language model for every draft not cached yet, a rule tree for each refused "
+        "string and each complementary course's tab and summary, and cache them",
     )
 
     review_command = commands.add_parser(
@@ -291,8 +292,8 @@ def run_ingest(year: int, *, draft: bool) -> None:
         raise SystemExit(f"Stopped: {error}") from None
     except ModelUnavailable as error:
         raise SystemExit(
-            f"Stopped, as the model can't be reached ({error}), so this run's drafts weren't "
-            + "kept: run it again"
+            f"Stopped, as the model can't be reached ({error}). Drafts already cached are "
+            + "kept: run it again to carry on"
         ) from None
     print(report(run))
     print(review_report(review))
@@ -344,6 +345,17 @@ def report(run: Candidate) -> str:
     lines += [
         f"  Not kept, as it isn't a rule tree: {p}" for p in run.translations.refused
     ]
+    offered = sum(r.flag == "model_written" for r in run.readings)
+    if offered:
+        written = run.written
+        lines += [
+            "",
+            f"Electives: {offered} complementary courses, {len(written.electives)} with a tab "
+            + f"and summary drafted and {offered - len(written.electives)} awaiting a draft",
+            f"  Model calls in this run: {written.calls}. "
+            + f"Drafts copied from an earlier year: {written.reused}",
+            *(f"  Not kept: {problem}" for problem in written.refused),
+        ]
     lines.append("")
     lines += [
         f"{wildcard} stands for {', '.join(codes)}, an assumption"

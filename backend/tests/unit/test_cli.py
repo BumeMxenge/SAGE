@@ -11,6 +11,7 @@ import pytest
 import sage.cli
 from sage.config import get_settings
 from sage.ingestion.checks import Check, Failure
+from sage.ingestion.electives import Written
 from sage.ingestion.ingest import Candidate, Sitting
 from sage.ingestion.sources import Reading
 from sage.ingestion.translate import Translations
@@ -179,6 +180,7 @@ def made_up_year() -> Candidate:
         readings=readings,
         rows={},
         translations=Translations(translations=(), calls=0, reused=0, refused=()),
+        written=Written(electives={}, calls=0, reused=0, refused=()),
         checks=(Check(name="Printed totals add up", failures=(totals,)),),
         expanded={},
         left_out=(),
