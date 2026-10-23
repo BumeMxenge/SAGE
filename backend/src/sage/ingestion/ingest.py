@@ -22,10 +22,11 @@ from sage.ingestion import (
     timetable,
     translate,
 )
-from sage.ingestion.drafting import Drafter
+from sage.ingestion.drafting import ModelDrafter
 from sage.ingestion.names import title_case
 from sage.ingestion.review import Problem, Review, Snapshot, compare
 from sage.shared.base import Row, canonical
+from sage.shared.language_model import LanguageModel
 from sage.shared.repositories import RuleRepository
 from sage.shared.rules import (
     TERM_BY_SUFFIX,
@@ -72,7 +73,11 @@ class Candidate(Row):
     carried: tuple[str, ...]
 
 
-def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Candidate:
+def ingest(
+    year: int, model: LanguageModel | None = None, data: Path = DATA
+) -> Candidate:
+    # model drafts what has no draft yet, as sage ingest --draft asks it to; without one, nothing is
+    # drafted
     manifest = sources.load(data / "sources" / str(year))
     previous = _latest_approved(year, data)
     book = handbook.Handbook(handbook.pages(manifest.path(manifest.handbook)))
@@ -112,7 +117,7 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Cand
     translated = translate.translate(
         strings,
         data / "rules" / str(year) / "drafts.json",
-        drafter,
+        ModelDrafter(model) if model else None,
         [cache for cache in caches if int(cache.parent.name) < year],
     )
     found = {(t.printed, t.need): t for t in translated.translations}
@@ -330,13 +335,13 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Cand
 
 
 def review_year(
-    year: int, drafter: Drafter | None = None, data: Path = DATA
+    year: int, model: LanguageModel | None = None, data: Path = DATA
 ) -> tuple[Candidate, Review]:
     # Ingests the year, compares it with the latest approved year before it, and writes the rows a
     # person must decide to review.json, with each decision there that still holds
     path = review_file(year, data)
     held = _read_review(path)
-    candidate = ingest(year, drafter, data)
+    candidate = ingest(year, model, data)
     review = _compare(candidate, held["rows"])
     _write_review(path, held["sittings"], review)
     return candidate, review

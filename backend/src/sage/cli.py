@@ -4,7 +4,7 @@ import json
 import subprocess
 import tempfile
 from collections import Counter, defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from datetime import datetime
 from pathlib import Path
 from typing import get_args
@@ -14,7 +14,6 @@ from uuid import UUID
 from pydantic import JsonValue
 
 from sage.config import get_settings, is_local
-from sage.ingestion.anthropic import ClaudeDrafter
 from sage.ingestion.ingest import (
     Candidate,
     Sitting,
@@ -27,6 +26,16 @@ from sage.ingestion.ingest import (
 )
 from sage.ingestion.review import DECISIONS, TREES, Review, ReviewRow, tree_fault
 from sage.ingestion.sources import SourceError
+from sage.shared.language_model import (
+    ModelUnavailable,
+    Response,
+    Said,
+    Schema,
+    Tokens,
+    Tool,
+    ToolResult,
+)
+from sage.shared.openai import OpenAIModel
 from sage.shared.repositories import AccountNotFound, YearInUse
 from sage.shared.rules import DeltaTable, RuleSet
 from sage.shared.seed import (
@@ -77,7 +86,7 @@ def main(argv: list[str] | None = None) -> None:
     ingest_command.add_argument(
         "--draft",
         action="store_true",
-        help="ask the drafting model for refused wording with no draft yet, and cache its drafts",
+        help="ask the language model for refused wording with no draft yet, and cache its drafts",
     )
 
     review_command = commands.add_parser(
@@ -244,25 +253,54 @@ def check_read_back(result: SeedResult) -> None:
         raise SystemExit(f"Her data didn't read back as written: {problems}")
 
 
+class Metered:
+    # SAGE's model as sage ingest --draft asks it, adding up every call's tokens for the cost line
+    def __init__(self, model: OpenAIModel) -> None:
+        self._model = model
+        self.model = model.model
+        self.tokens = Tokens()
+
+    def respond(
+        self,
+        instructions: str,
+        conversation: Sequence[Said | Response | ToolResult],
+        schema: Schema | None = None,
+        tools: Sequence[Tool] = (),
+        effort: str | None = None,
+    ) -> Response:
+        reply = self._model.respond(instructions, conversation, schema, tools, effort)
+        self.tokens += reply.tokens
+        return reply
+
+    @property
+    def cost(self) -> float:
+        return self._model.cost(self.tokens)
+
+
 def run_ingest(year: int, *, draft: bool) -> None:
-    drafter = None
+    model = None
     if draft:
         settings = get_settings()
-        if not settings.anthropic_api_key:
-            raise SystemExit("Add ANTHROPIC_API_KEY to backend/.env first")
-        drafter = ClaudeDrafter(settings.anthropic_api_key, settings.drafting_model)
+        if not settings.openai_api_key:
+            raise SystemExit("Add OPENAI_API_KEY to backend/.env first")
+        model = Metered(OpenAIModel(settings.openai_api_key, settings.language_model))
     try:
-        run, review = review_year(year, drafter)
+        run, review = review_year(year, model)
     except SourceError as error:
         raise SystemExit(f"Stopped: {error}") from None
+    except ModelUnavailable as error:
+        raise SystemExit(
+            f"Stopped, as the model can't be reached ({error}), so this run's drafts weren't "
+            + "kept: run it again"
+        ) from None
     print(report(run))
     print(review_report(review))
-    if drafter is not None:
-        tokens = drafter.tokens
+    if model is not None:
+        tokens = model.tokens
         print(
-            f"\nDrafting with {drafter.model}: {tokens['input']:,} tokens in, "
-            + f"{tokens['cached']:,} read from the provider's cache and "
-            + f"{tokens['output']:,} out, USD {drafter.cost:.4f}"
+            f"\nDrafting with {model.model}: {tokens.fresh:,} tokens in, "
+            + f"{tokens.cached:,} read from the provider's cache, {tokens.written:,} written "
+            + f"to it and {tokens.output:,} out, USD {model.cost:.4f}"
         )
 
 

@@ -23,6 +23,8 @@ from sage.ingestion.ingest import (
 )
 from sage.ingestion.review import Snapshot
 from sage.ingestion.sources import Reading
+from sage.shared.language_model import Response
+from sage.shared.memory.language_model import ScriptedModel
 from sage.shared.memory.rules import InMemoryRuleRepository
 from sage.shared.rules import (
     AllOf,
@@ -349,18 +351,6 @@ def test_a_year_ingests_into_a_candidate_rulebook(
     assert not (tmp_path / "rules").exists()
 
 
-class Drafter:
-    # Stands in for the model, and keeps what it's asked
-    model = "a made-up model"
-
-    def __init__(self):
-        self.asked = []
-
-    def draft(self, printed, need):
-        self.asked.append(printed)
-        return {"refer": printed}
-
-
 def test_a_year_takes_the_drafts_of_the_years_before_it(
     tmp_path, handbook_pdf, complementary_xlsx, timetable_block
 ):
@@ -384,12 +374,16 @@ def test_a_year_takes_the_drafts_of_the_years_before_it(
         cache.parent.mkdir(parents=True)
         drafts = {"concurrent": {co_requisite: {"model": "made up", "tree": tree}}}
         cache.write_text(json.dumps(drafts), encoding="utf-8")
-    drafter = Drafter()
+    model = ScriptedModel(
+        {"entry_rule": [Response(text=json.dumps({"rule": {"refer": BEGINNERS}}))]}
+    )
     # As sage ingest --draft runs it
-    run, _ = review_year(2026, drafter, data=tmp_path)
+    run, _ = review_year(2026, model, data=tmp_path)
     # Only the wording no earlier year drafted is asked for, and both drafts are kept where the next
     # run and the next year read them, so neither is drafted again
-    assert drafter.asked == [BEGINNERS]
+    assert [call.conversation[0].text for call in model.calls] == [
+        f"Course entry requirements: {BEGINNERS}"
+    ]
     kept = json.loads(
         (tmp_path / "rules" / "2026" / "drafts.json").read_text(encoding="utf-8")
     )

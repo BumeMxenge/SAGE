@@ -26,8 +26,9 @@ CALL_LIMIT = 45
 # connection or a timeout, too many requests, and a server error. Any other error, such as a bad key
 # or a malformed request, is a fault in SAGE, so it isn't caught.
 UNREACHABLE = (APIConnectionError, RateLimitError, InternalServerError)
-# USD per million tokens, by model, from developers.openai.com/api/docs/pricing on 22 October 2026.
-# Writing the cache costs 1.25 times fresh input, for its default 30 minutes.
+# USD per million tokens, by model, from developers.openai.com/api/docs/pricing on 22 October 2026,
+# checked again on 23 October. Writing the cache costs 1.25 times fresh input, for its default
+# 30 minutes.
 PRICES = {
     "gpt-6-luna": {"fresh": 0.10, "cached": 0.01, "written": 0.125, "output": 0.50}
 }

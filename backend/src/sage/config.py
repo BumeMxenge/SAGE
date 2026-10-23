@@ -28,13 +28,8 @@ class Settings(BaseSettings):
     # Hosted SAGE takes only Microsoft sign-ins. ATP-5's test window switches this on, so the load
     # test's email-provider accounts can sign in too, then switches it off again.
     accept_email_sign_in: bool = False
-    # The model that drafts rule trees the grammar can't read, and the key that pays for it, used
-    # only by `sage ingest --draft`. Claude Haiku 5.5 is E2's choice, until the electives branch
-    # moves drafting onto the language model below.
-    anthropic_api_key: str = ""
-    drafting_model: str = "claude-haiku-5-5"
-    # The language model behind the advisor, E4's choice, and the key that pays for it. The app
-    # won't start without the key.
+    # SAGE's one language model, E4's choice, behind the advisor and every draft `sage ingest
+    # --draft` asks for, and the key that pays for it. The app won't start without the key.
     language_model: str = "gpt-6-luna"
     openai_api_key: str = ""
 
