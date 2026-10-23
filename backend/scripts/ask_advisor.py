@@ -1,10 +1,14 @@
-# Asks the real advisor about Mbali's seeded plans, with no database: her seed goes into the
-# in-memory stores beside the approved snapshot of her plans' year, and the engine's eligibility
+# Asks the real advisor about a student's plans, with no database: Mbali's seed by default, another
+# seed file in its shape, or a student on track in a curriculum and year, as show_plans.py makes
+# one. Her record goes into the in-memory stores beside the approved snapshot of the year SAGE
+# plans, and a record with no plans gets them from the engine, as onboarding would. A set of more
+# than five plans needs her questionnaire answers before she can chat. The engine's eligibility
 # checker and Luna answer. It takes a plan or a pair, the term on screen, and one or more questions
 # asked in turn in one new chat, and prints each reply with what went into it, then the run's cost
 # and turn times. Every question calls OpenAI, which costs money, so OPENAI_API_KEY must be in
 # backend/.env.
 # From backend/: uv run python scripts/ask_advisor.py --plan V01 --term sem1 "First?" "Then?"
+# or: uv run python scripts/ask_advisor.py --curriculum EB022EEE02 --year 3 --plan V01 "First?"
 import argparse
 import json
 import logging
@@ -14,10 +18,15 @@ from pathlib import Path
 from typing import get_args
 from uuid import UUID
 
+from show_plans import ACCOUNT, on_track
+
 from sage.advisor.replies import Answered, GroundedAdvisor
 from sage.config import get_settings
 from sage.engine.eligibility import EntryRuleEligibility
+from sage.engine.generator import ClingoPlanGenerator
 from sage.features.chats import service as chats
+from sage.features.onboarding import service as onboarding
+from sage.features.questionnaire import service as questionnaire
 from sage.ingestion.ingest import approved_snapshot
 from sage.shared.advisor import Reply
 from sage.shared.language_model import Tokens
@@ -27,12 +36,12 @@ from sage.shared.openai import OpenAIModel
 from sage.shared.rulebook import Rulebook
 from sage.shared.rules import ResultSymbol, TermCode
 from sage.shared.seed import SEED_FILE, load_seed, seed
-from sage.shared.students import Chat, Plan
+from sage.shared.students import Chat, Plan, StudentState
 
 SYMBOLS = (
     Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "result_symbols.json"
 )
-ACCOUNT = UUID(int=1)  # a made-up account, as nothing outlives the run
+YEAR = 2026  # the year SAGE plans, whose approved rules every run loads
 
 
 class Recorded:
@@ -104,10 +113,30 @@ def main() -> None:
         help="a plan by its id, such as V01, once or twice for a pair",
     )
     parser.add_argument("--term", default="sem1", choices=get_args(TermCode))
+    parser.add_argument(
+        "--seed",
+        type=Path,
+        help="a seed file whose student to ask about, Mbali's if none",
+    )
+    parser.add_argument(
+        "--curriculum", help="a curriculum code, for an on-track student"
+    )
+    parser.add_argument(
+        "--year", type=int, help="her year of study, for an on-track student"
+    )
+    parser.add_argument(
+        "--answers",
+        type=json.loads,
+        help='her questionnaire answers, which over five plans need, as {"course": "EEE4121F"}',
+    )
     parser.add_argument("questions", nargs="+", help="asked in turn in one chat")
     arguments = parser.parse_args()
     if len(arguments.plan) > 2:
         parser.error("give one plan, or two for a pair")
+    if bool(arguments.curriculum) != bool(arguments.year):
+        parser.error("give --curriculum with --year")
+    if arguments.seed and arguments.curriculum:
+        parser.error("give --seed or --curriculum, not both")
     settings = get_settings()
     if not settings.openai_api_key:
         sys.exit("Set OPENAI_API_KEY in backend/.env first.")
@@ -120,19 +149,40 @@ def main() -> None:
         for row in json.loads(SYMBOLS.read_text(encoding="utf-8"))
     )
     rules, students = InMemoryRuleRepository(symbols), InMemoryStudentRepository()
-    mbali = load_seed(SEED_FILE, ACCOUNT)
-    for year in {plan_set.period for plan_set in mbali.plan_sets}:
-        rules.replace_year(approved_snapshot(year).rules)
-    seed(rules, students, mbali)
-    by_position = {plan.position: plan for plan in mbali.plans}
+    rules.replace_year(approved_snapshot(YEAR).rules)
+    rulebook = Rulebook(rules)
+    if arguments.curriculum:
+        student, history = on_track(
+            rulebook.year(YEAR), arguments.curriculum, arguments.year
+        )
+        state = StudentState(student=student, course_history=tuple(history))
+    else:
+        state = load_seed(arguments.seed or SEED_FILE, ACCOUNT)
+    seed(rules, students, state)
+    # A record with no plans gets them as onboarding gives them, from the engine
+    if students.current_plan_set(ACCOUNT) is None:
+        onboarding.complete(
+            ACCOUNT,
+            state.student.curriculum_code,
+            state.course_history,
+            students,
+            rulebook,
+            ClingoPlanGenerator(),
+        )
+    # She answers the questionnaire before she can chat, as the app asks her to
+    if arguments.answers:
+        questionnaire.answer(
+            students, rulebook, students.get(ACCOUNT).student, arguments.answers
+        )
+    plans = {plan.id: plan for plan in students.get(ACCOUNT).plans}
+    by_position = {plan.position: plan for plan in plans.values()}
     chosen = [by_position[int(plan.removeprefix("V"))].id for plan in arguments.plan]
     chat = chats.start(students, ACCOUNT, chosen[0], chosen[1] if chosen[1:] else None)
 
     model = OpenAIModel(settings.openai_api_key, settings.language_model)
     advisor = Recorded(
-        GroundedAdvisor(model, students, Rulebook(rules), EntryRuleEligibility())
+        GroundedAdvisor(model, students, rulebook, EntryRuleEligibility())
     )
-    plans = {plan.id: plan for plan in mbali.plans}
     costs, seconds = [], []
     for number, question in enumerate(arguments.questions, start=1):
         chats.ask(students, advisor, ACCOUNT, chat.id, question, arguments.term)
