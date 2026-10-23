@@ -182,6 +182,11 @@ const entries = {
     message: 'It may belong to another account. Start a new chat instead.',
     action: null,
   },
+  advisor_unavailable: {
+    title: "The Assistant Couldn't Reply",
+    message: "Your question wasn't saved. Try again in a moment.",
+    action: 'retry',
+  },
   network_error: {
     title: "Can't Reach SAGE",
     message: 'Check your internet connection, then try again.',

@@ -1,1 +1,1 @@
-# The conversational advisor, which fills shared/advisor.py. Until it lands, stubs.py stands in for it
+# The conversational advisor, which answers a student's questions and fills shared/advisor.py

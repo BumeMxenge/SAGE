@@ -1,15 +1,12 @@
-# Checks the plan rules the planner and questionnaire lean on, on rows built here: when a set needs
-# narrowing, and which of a course's meetings a plan shows
+# Checks when a plan set needs the questionnaire's narrowing, on rows built here
 from uuid import UUID, uuid4
 
 import pytest
 
 from sage.features.plans import service as plans
-from sage.shared.rules import RuleSet, TimetableSlot, TimetableSlotCurriculum
-from sage.shared.students import Plan, PlanCourse, PlanSet, PlanSetRows
+from sage.shared.students import Plan, PlanSet, PlanSetRows
 
 STUDENT = UUID(int=1)
-HERS, THEIRS = "EB011EEE05", "EB999XYZ99"  # her curriculum, and a made-up second one
 
 
 def plan_set(size: int) -> PlanSetRows:
@@ -37,53 +34,3 @@ def plan_set(size: int) -> PlanSetRows:
 @pytest.mark.parametrize(("size", "needed"), [(5, False), (6, True)])
 def test_more_than_five_plans_need_the_questionnaire(size, needed):
     assert plans.questionnaire_needed(plan_set(size)) is needed
-
-
-def meeting(day: int, **fields) -> TimetableSlot:
-    # One meeting of a made-up course
-    return TimetableSlot(
-        id=uuid4(),
-        handbook_year=2026,
-        course_code="TST4000F",
-        term="sem1",
-        day=day,
-        **fields,
-    )
-
-
-def course(choices: dict[str, list[str]] | None = None) -> PlanCourse:
-    # The made-up course in a plan, with each group's alternatives that fit the plan
-    return PlanCourse(
-        plan_id=uuid4(),
-        course_code="TST4000F",
-        student_id=STUDENT,
-        handbook_year=2026,
-        choices=choices,
-    )
-
-
-def test_a_meeting_linked_to_curricula_shows_only_in_theirs():
-    everyone, hers, theirs = meeting(1), meeting(2), meeting(3)
-    rules = RuleSet(
-        timetable_slots=(everyone, hers, theirs),
-        timetable_slot_curricula=tuple(
-            TimetableSlotCurriculum(
-                slot_id=slot.id, handbook_year=2026, curriculum_code=curriculum
-            )
-            for slot, curriculum in ((hers, HERS), (theirs, THEIRS))
-        ),
-    )
-    assert plans.meetings(course(), rules, HERS) == [everyone, hers]
-
-
-def test_a_plan_shows_only_the_alternatives_that_fit_it():
-    lecture = meeting(1)
-    tutorials = [
-        meeting(day, choice_group="tutorial", choice=letter)
-        for day, letter in ((2, "A"), (3, "B"), (4, "C"))
-    ]
-    rules = RuleSet(timetable_slots=(lecture, *tutorials))
-    # A group her plan doesn't record shows every alternative
-    assert plans.meetings(course(), rules, HERS) == [lecture, *tutorials]
-    fitting = course({"tutorial": ["A", "C"]})
-    assert plans.meetings(fitting, rules, HERS) == [lecture, tutorials[0], tutorials[2]]

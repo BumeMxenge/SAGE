@@ -107,6 +107,9 @@ class StudentRepository(Protocol):
     # Stores a new chat, and returns it with the time it was stored
     def add_chat(self, chat: Chat) -> Chat: ...
 
+    # Gives her chat this title while it has none, so a named chat is never renamed
+    def name_chat(self, student_id: UUID, chat_id: UUID, title: str) -> None: ...
+
     # The chat's messages in order, with what each cites, or None if the chat isn't hers
     def messages(
         self, student_id: UUID, chat_id: UUID

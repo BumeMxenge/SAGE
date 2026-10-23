@@ -286,6 +286,16 @@ class SupabaseStudentRepository:
         )
         return Chat.model_validate(rows[0])
 
+    def name_chat(self, student_id: UUID, chat_id: UUID, title: str) -> None:
+        (
+            self._client.table("chats")
+            .update({"title": title})
+            .eq("id", str(chat_id))
+            .eq("student_id", str(student_id))
+            .is_("title", "null")
+            .execute()
+        )
+
     def messages(
         self, student_id: UUID, chat_id: UUID
     ) -> tuple[CitedMessage, ...] | None:
