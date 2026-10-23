@@ -3,6 +3,8 @@
 # the engine's facts. Passages and plans reach Luna by short ids, P01 and V01 upwards, which cost a
 # few tokens where a UUID costs about 25, and which map back to their UUIDs.
 from collections import defaultdict
+from collections.abc import Sequence
+from datetime import time
 from typing import Any
 
 from sage.shared.language_model import Tool, strict_object
@@ -14,6 +16,20 @@ from sage.shared.students import Chat, Plan, PlanCourse, PlanReason
 from sage.shared.wording import in_words
 
 DAYS = {1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun"}
+# The weeks a meeting's term shows in, as the plan view's tabs: a quarter in its semester, a
+# full-year course in both, and practical training's "other" in none
+WEEKS: dict[str, tuple[str, ...]] = {
+    "q1": ("sem1",),
+    "q2": ("sem1",),
+    "sem1": ("sem1",),
+    "q3": ("sem2",),
+    "q4": ("sem2",),
+    "sem2": ("sem2",),
+    "full_year": ("sem1", "sem2"),
+    "winter": ("winter",),
+    "summer": ("summer",),
+    "other": (),
+}
 CODE = {"type": "string", "description": "A course code, such as EEE4118F"}
 CODES = {"type": "array", "items": {"type": "string"}}
 
@@ -47,10 +63,12 @@ class Evidence:
             key: [row for row in self.plan_set.plan_courses if row.plan_id == plan.id]
             for key, plan in self.plans.items()
         }
-        short = {plan.id: key for key, plan in self.plans.items()}
+        self.short = {plan.id: key for key, plan in self.plans.items()}
         # The plan she has open, or the pair she's comparing
         self.open = sorted(
-            short[plan_id] for plan_id in (chat.plan_id, chat.other_plan_id) if plan_id
+            self.short[plan_id]
+            for plan_id in (chat.plan_id, chat.other_plan_id)
+            if plan_id
         )
         self.passages = self._slice()
 
@@ -85,8 +103,9 @@ class Evidence:
         return "\n\n".join(parts)
 
     def context(self) -> str:
-        # What her message carries before the question: who she is, the open plan or the pair, the
-        # plan set's reasons that cover them, and the term on screen. Nothing that identifies her.
+        # What her message carries before the question: who she is, the open plan or the pair, each
+        # with its week, the plan set's reasons that cover them, and the term on screen. Nothing that
+        # identifies her.
         student = self.student
         curriculum = next(
             row for row in self.rules.curricula if row.code == student.curriculum_code
@@ -120,10 +139,15 @@ class Evidence:
         )
 
     def _reason(self, reason: PlanReason) -> str:
-        # Only a complementary slot's reason has details. Under it go the approved courses that fit
-        # the plan's timetable, marked as its details mark them: the engine's facts, as the plan's
+        # In a comparison, a plan's own reason is named with its plan, as each says "this plan". Only
+        # a complementary slot's reason has details. Under it go the approved courses that fit the
+        # plan's timetable, marked as its details mark them: the engine's facts, as the plan's
         # meetings are, so Luna may name them without a citation.
-        lines = [f"- {reason.message}"]
+        owner = ""
+        if len(self.open) == 2 and reason.plan_id is not None:
+            key = self.short[reason.plan_id]
+            owner = f"{key} {self.plans[key].name}: "
+        lines = [f"- {owner}{reason.message}"]
         if reason.details:
             details = reason.details
             for code in details["fits"]:
@@ -146,6 +170,9 @@ class Evidence:
             lines.append(
                 f"- {course.code} {course.name}: {course.credits} credits, {course.term}. {meets}"
             )
+        lines += week_words(
+            self.plan_courses[key], self.rules, self.student.curriculum_code
+        )
         return "\n".join(lines)
 
     def tools(self) -> list[Tool]:
@@ -276,6 +303,64 @@ def meeting_words(course: PlanCourse, rules: RuleSet, curriculum: str) -> str:
             )
             words.append(f"Attends one {group}: {listed}.")
     return " ".join(words) or "No meetings in the timetable."
+
+
+def week_words(
+    courses: Sequence[PlanCourse], rules: RuleSet, curriculum: str
+) -> list[str]:
+    # A plan's week in each term it meets, as the plan view draws it: each day's meetings in time
+    # order with their course codes, one with a day but no time last, and an alternative of a group
+    # with more than one left marked as one of its choices. Meetings with no printed day follow.
+    weeks: dict[str, dict[int | None, list[tuple[TimetableSlot, str]]]] = {
+        week: defaultdict(list) for week in ("sem1", "sem2", "winter", "summer")
+    }
+    for course in courses:
+        slots = meetings(course, rules, curriculum)
+        groups: dict[str, set[str | None]] = defaultdict(set)
+        for slot in slots:
+            if slot.choice_group is not None:
+                groups[slot.choice_group].add(slot.choice)
+        for slot in slots:
+            choices = (
+                groups[slot.choice_group] if slot.choice_group is not None else set()
+            )
+            notes = []
+            if len(choices) > 1:
+                notes.append(
+                    f"one of {len(choices)} {slot.choice_group} choices: {slot.choice}"
+                )
+            elif slot.kind:
+                notes.append(slot.kind)
+            if slot.term.startswith("q"):
+                notes.append(slot.term.upper())
+            hours = (
+                f"{slot.start_time:%H:%M} to {slot.end_time:%H:%M}"
+                if slot.start_time and slot.end_time
+                else "at no printed time"
+            )
+            words = f"{course.course_code} {hours}"
+            if notes:
+                words += f" ({', '.join(notes)})"
+            for week in WEEKS[slot.term]:
+                weeks[week][slot.day].append((slot, words))
+    lines = []
+    for week, days in weeks.items():
+        if not days:
+            continue
+        lines.append(f"Week in {week}, day by day")
+        for day in sorted(day for day in days if day is not None):
+            met = sorted(
+                days[day],
+                key=lambda item: (
+                    item[0].start_time or time.max,
+                    item[0].end_time or time.max,
+                ),
+            )
+            lines.append(f"- {DAYS[day]}: {', '.join(words for _, words in met)}")
+        if None in days:
+            undated = ", ".join(words for _, words in days[None])
+            lines.append(f"- No printed day: {undated}")
+    return lines
 
 
 def _labelled(slot: TimetableSlot) -> str:

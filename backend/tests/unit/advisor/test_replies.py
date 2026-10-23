@@ -29,6 +29,11 @@ from sage.shared.rulebook import Rulebook
 from sage.shared.students import Message
 from tests.unit.accounts import MBALI
 
+# A line of the week each plan adds to her message, which E4's message didn't hold
+WEEK = re.compile(
+    r"Week in \w+, day by day$|- (?:Mon|Tue|Wed|Thu|Fri|Sat|Sun|No printed day): "
+)
+
 
 def asks(name: str, **arguments) -> Response:
     # Luna asking for one tool
@@ -91,8 +96,10 @@ def short_id(evidence, section: str) -> str:
 )
 def test_her_request_is_the_one_e4_measured(advisor, chat_on, e4, chosen, own):
     # E4's evidence.py built every request E4 measured, so it is the oracle for Mbali's: the slice,
-    # the tools and the details in her message. Only the prompt's listed changes differ, and the
-    # message's order, as the stores give her courses in code order and her reasons by id.
+    # the tools and the details in her message. Only the prompt's listed changes differ, the week
+    # each plan adds, which test_evidence.py checks by hand, the plan named on its own reasons in a
+    # pair, and the message's order, as the stores give her courses in code order and her reasons by
+    # id.
     asked, model = advisor(answers("Made up."))
     asked.reply(chat_on(*chosen), "Made up?", "sem1")
     (call,) = model.calls
@@ -106,14 +113,17 @@ def test_her_request_is_the_one_e4_measured(advisor, chat_on, e4, chosen, own):
         for tool in e4.TOOLS
     )
     message = call.conversation[-1].text
+    weekless = [line for line in message.splitlines() if not WEEK.match(line)]
     expected = e4.context([f"V{n:02d}" for n in chosen], "sem1")
-    assert sorted(message.splitlines()) == sorted(
-        f"{expected}\n\nQuestion\nMade up?".splitlines()
-    )
+    # In the pair, V07's own reason carries its name from data/synthetic/mbali.json
+    named = f"- V07 Power, Robotics & Imaging: {own}"
+    if own:
+        expected = expected.replace(f"- {own}", named)
+    assert sorted(weekless) == sorted(f"{expected}\n\nQuestion\nMade up?".splitlines())
     # The set's own reasons come first, then the open plans', such as V07's
     if own:
         reasons = message.split("Reasons behind the plan set\n")[1]
-        assert reasons.split("\n\nQuestion")[0].splitlines()[-1] == f"- {own}"
+        assert reasons.split("\n\nQuestion")[0].splitlines()[-1] == named
 
 
 @pytest.mark.parametrize(

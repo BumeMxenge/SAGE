@@ -1,11 +1,12 @@
 # Checks what Luna is given on Mbali's seed and the approved 2026: her slice holds exactly the
 # passages chosen by key, each tool answers from her plans, her record and print as E4's did, a
 # missing term on screen says so, a complementary slot's fitting courses reach her message with
-# their marks, and a course's meetings are worded as the plan view shows them
+# their marks, a pair names each plan on its own reasons, and a course's meetings and a plan's week
+# are worded as the plan view shows them
 from datetime import time
 from uuid import UUID, uuid4
 
-from sage.advisor.evidence import Evidence, meeting_words
+from sage.advisor.evidence import Evidence, meeting_words, week_words
 from sage.engine.eligibility import EntryRuleEligibility
 from sage.shared.rulebook import Rulebook
 from sage.shared.rules import RuleSet, TimetableSlot
@@ -121,19 +122,17 @@ def test_a_question_with_no_term_on_screen_says_so(stores, chat_on):
     assert "- Term on screen: none" in found.context().splitlines()
 
 
-def test_a_slots_fitting_courses_reach_her_message_with_their_marks(stores, evidence):
-    # A made-up complementary slot on her first plan, in the engine's shape, with four approved
-    # courses that fit: one plain, one with a meeting at no printed time, one worth fewer than the
-    # line's 18 credits and one both. Each goes under the slot by the code and name the approved
-    # 2026 complementary workbook gives it.
-    students = stores[1]
+def add_slot_reason(students, position: int) -> PlanReason:
+    # A made-up complementary slot on her plan at this position, in the engine's shape, with four
+    # approved courses that fit: one plain, one with a meeting at no printed time, one worth fewer
+    # than the line's 18 credits and one both
     state = students.get(MBALI)
-    first = next(plan for plan in state.plans if plan.position == 1)
+    plan = next(plan for plan in state.plans if plan.position == position)
     slot = PlanReason(
         id=uuid4(),
-        plan_set_id=first.plan_set_id,
+        plan_set_id=plan.plan_set_id,
         student_id=MBALI,
-        plan_id=first.id,
+        plan_id=plan.id,
         kind="included",
         message="Add one approved complementary studies course: 4 fit this plan's timetable.",
         details={
@@ -148,6 +147,12 @@ def test_a_slots_fitting_courses_reach_her_message_with_their_marks(stores, evid
     students.replace(
         state.model_copy(update={"plan_reasons": (*state.plan_reasons, slot)})
     )
+    return slot
+
+
+def test_a_slots_fitting_courses_reach_her_message_with_their_marks(stores, evidence):
+    # Each goes under the slot by the code and name the approved 2026 complementary workbook gives it
+    slot = add_slot_reason(stores[1], 1)
     lines = evidence().context().splitlines()
     under = lines.index(f"- {slot.message}") + 1
     assert lines[under : under + 4] == [
@@ -161,14 +166,49 @@ def test_a_slots_fitting_courses_reach_her_message_with_their_marks(stores, evid
     ]
 
 
-def slot(day: int | None, hours: tuple[int, int] | None, **fields) -> TimetableSlot:
+def test_in_a_pair_each_plans_own_reasons_carry_its_name(stores, chat_on):
+    # Her seed gives V07 Power, Robotics & Imaging a reason of its own, about its Thursdays, and her
+    # set reasons that cover every plan (data/synthetic/mbali.json). A slot on V01 Power, Control &
+    # Robotics keeps its courses under its named line. Alone on V07, its "this plan" is the open one.
+    rules, students = stores
+    slot = add_slot_reason(students, 1)
+    own = "In semester 1 this plan has one class on Thursdays: CML4607F at 12:00."
+    every = (
+        "Every plan includes the five core courses: EEE4113F, CML4607F, EEE4124C, "
+        "EEE4125C and EEE4022S."
+    )
+
+    def reasons(*positions: int) -> list[str]:
+        found = Evidence(
+            chat_on(*positions),
+            "sem1",
+            students,
+            Rulebook(rules),
+            EntryRuleEligibility(),
+        )
+        return found.context().split("Reasons behind the plan set\n")[1].splitlines()
+
+    pair = reasons(1, 7)
+    assert {f"- V07 Power, Robotics & Imaging: {own}", f"- {every}"} <= set(pair)
+    named = pair.index(f"- V01 Power, Control & Robotics: {slot.message}")
+    assert pair[named + 1] == "  - EGS1007S Human & Physical Systems"
+    assert f"- {own}" in reasons(7)
+
+
+def slot(
+    day: int | None,
+    hours: tuple[int, int] | None,
+    course: str = "TST4000F",
+    term: str = "sem1",
+    **fields,
+) -> TimetableSlot:
     # One meeting of a made-up course, starting and ending on the hour
     start, end = hours or (None, None)
     return TimetableSlot(
         id=uuid4(),
         handbook_year=2026,
-        course_code="TST4000F",
-        term="sem1",
+        course_code=course,
+        term=term,
         day=day,
         start_time=time(start) if start is not None else None,
         end_time=time(end) if end is not None else None,
@@ -221,3 +261,72 @@ def test_meetings_are_worded_as_the_plan_view_shows_them():
         "Attends one lab: Wed and Thu (Wed 14:00 to 18:00, Thu 14:00 to 18:00) or Fri "
         "(Fri 14:00 to 18:00)."
     )
+
+
+def test_a_plans_week_lists_each_days_meetings_in_time_order():
+    # Made-up courses of every term, given out of time order. Worked out by hand: a quarter shows in
+    # its semester with its mark, a full-year course in both semesters, winter and summer in weeks of
+    # their own and "other" in none. A meeting with a day but no time ends its day, one with no day
+    # follows the days, and each lab alternative is one of two until one is chosen.
+    rules = RuleSet(
+        timetable_slots=(
+            slot(1, (9, 10), "EEE1000S", "sem2"),
+            slot(2, None, "EEE1000S", "sem2", kind="tutorial"),
+            slot(None, (12, 13), "EEE1000S", "sem2", kind="screening"),
+            slot(2, (14, 15), "DDD1000C", "q3", kind="lecture"),
+            slot(2, (14, 15), "DDD1000D", "q4"),
+            slot(2, (8, 9), "BBB1000H", "full_year"),
+            slot(1, (8, 9), "AAA1000F", kind="lecture"),
+            slot(3, (10, 11), "AAA1000F", kind="lecture"),
+            slot(5, (14, 17), "AAA1000F", kind="lab", choice_group="lab", choice="A"),
+            slot(4, (14, 17), "AAA1000F", kind="lab", choice_group="lab", choice="B"),
+            slot(1, (12, 13), "CCC1000A", "q1"),
+            slot(1, (12, 13), "CCC1000B", "q2"),
+            slot(3, (9, 10), "FFF1000L", "winter"),
+            slot(4, (9, 10), "GGG1000U", "summer"),
+            slot(5, (9, 10), "HHH1000X", "other"),
+        )
+    )
+    codes = ["EEE1000S", "DDD1000C", "DDD1000D", "BBB1000H", "AAA1000F"]
+    codes += ["CCC1000A", "CCC1000B", "FFF1000L", "GGG1000U", "HHH1000X"]
+    plan_id = uuid4()
+
+    def plan(lab: list[str] | None) -> list[PlanCourse]:
+        return [
+            PlanCourse(
+                plan_id=plan_id,
+                course_code=code,
+                student_id=UUID(int=1),
+                handbook_year=2026,
+                choices={"lab": lab} if lab and code == "AAA1000F" else None,
+            )
+            for code in codes
+        ]
+
+    assert week_words(plan(None), rules, "EB011EEE05") == [
+        "Week in sem1, day by day",
+        (
+            "- Mon: AAA1000F 08:00 to 09:00 (lecture), CCC1000A 12:00 to 13:00 (Q1), "
+            "CCC1000B 12:00 to 13:00 (Q2)"
+        ),
+        "- Tue: BBB1000H 08:00 to 09:00",
+        "- Wed: AAA1000F 10:00 to 11:00 (lecture)",
+        "- Thu: AAA1000F 14:00 to 17:00 (one of 2 lab choices: B)",
+        "- Fri: AAA1000F 14:00 to 17:00 (one of 2 lab choices: A)",
+        "Week in sem2, day by day",
+        "- Mon: EEE1000S 09:00 to 10:00",
+        (
+            "- Tue: BBB1000H 08:00 to 09:00, DDD1000C 14:00 to 15:00 (lecture, Q3), "
+            "DDD1000D 14:00 to 15:00 (Q4), EEE1000S at no printed time (tutorial)"
+        ),
+        "- No printed day: EEE1000S 12:00 to 13:00 (screening)",
+        "Week in winter, day by day",
+        "- Wed: FFF1000L 09:00 to 10:00",
+        "Week in summer, day by day",
+        "- Thu: GGG1000U 09:00 to 10:00",
+    ]
+    # With lab A chosen, it's a lab she attends, and her Thursday is free
+    assert week_words(plan(["A"]), rules, "EB011EEE05")[3:5] == [
+        "- Wed: AAA1000F 10:00 to 11:00 (lecture)",
+        "- Fri: AAA1000F 14:00 to 17:00 (lab)",
+    ]
