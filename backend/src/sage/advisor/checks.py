@@ -20,6 +20,9 @@ REFERRAL = "I couldn't give you a checked answer to this, so please ask your adv
 REFERRED = Reply(content=REFERRAL, referral=True)
 # Limiting words in a kept quote whose loss from the reply can change a condition
 CONDITIONS = ("at least", "only", "not", "except", "unless", "minimum", "maximum")
+# A table row's dotted leader: a run of three or more dots, or the ellipsis character
+LEADER = re.compile(r"\s*(?:\.{3,}|…)+\s*")
+WORD = re.compile(r"\w")
 CODE = re.compile(r"\b[A-Z]{3}\d{4}[A-Z]\b")
 TIME = re.compile(r"\b\d{1,2}:\d{2}\b")
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
@@ -108,18 +111,25 @@ def quotes_kept(
     quotes: Sequence[Quote], passages: dict[str, Passage]
 ) -> tuple[list[Quote], list[Quote]]:
     # The quotes kept and dropped: a quote counts only if it appears word for word in the passage it
-    # cites, ignoring line breaks and runs of spaces, as passages keep the PDF's line breaks
+    # cites, ignoring line breaks and runs of spaces, as passages keep the PDF's line breaks, and a
+    # dotted leader's length. A quote with no word, such as a bare leader, supports nothing.
     kept, dropped = [], []
     for quote in quotes:
         passage = passages.get(quote.passage_id)
         said = flat(quote.quote)
-        found = passage is not None and bool(said) and said in flat(passage.content)
+        found = (
+            passage is not None
+            and WORD.search(said) is not None
+            and said in flat(passage.content)
+        )
         (kept if found else dropped).append(quote)
     return kept, dropped
 
 
 def flat(text: str) -> str:
-    return " ".join(text.split())
+    # A table row's dots carry no words, so a leader of any length, with the spaces around it,
+    # counts as one
+    return " ".join(LEADER.sub(" … ", text).split())
 
 
 def flags(content: str, kept: Sequence[Quote], heard: str) -> list[Flag]:

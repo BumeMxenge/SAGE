@@ -51,6 +51,26 @@ def test_a_quote_counts_only_word_for_word_in_the_passage_it_cites(found):
     assert quotes_kept([*kept, *dropped], found.passages) == (kept, dropped)
 
 
+def test_a_dotted_leader_of_any_length_matches_print_and_stands_for_no_words(found):
+    # The ME fourth-year table prints "CML4607F Law for Engineers", a leader of 72 dots, then its 10
+    # credits and NQF level 8 (2026, page 58)
+    table = short_id(found, "Fourth Year Core Courses (ME)")
+    kept = [
+        Quote(passage_id=table, quote="CML4607F Law for Engineers ... 10"),
+        Quote(passage_id=table, quote="CML4607F Law for Engineers.......10 8"),
+        Quote(passage_id=table, quote="CML4607F Law for Engineers … 10"),
+    ]
+    dropped = [
+        # Two dots aren't a leader, a leader doesn't stand in for the words or numbers around it,
+        # and a bare leader holds no word
+        Quote(passage_id=table, quote="CML4607F Law for Engineers .. 10"),
+        Quote(passage_id=table, quote="CML4607F Law ........ 10"),
+        Quote(passage_id=table, quote="CML4607F Law for Engineers ........ 16"),
+        Quote(passage_id=table, quote=" ........ "),
+    ]
+    assert quotes_kept([*kept, *dropped], found.passages) == (kept, dropped)
+
+
 def test_a_reply_that_kept_no_quote_is_the_fixed_referral_and_one_with_none_stands(
     found,
 ):
