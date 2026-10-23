@@ -2,15 +2,17 @@
 // supporting actions such as Back, danger confirms a destructive action such as Remove Course, and
 // sign-in is onboarding's long dark button, as long as the sign-in form: Continue with UCT Email, and
 // Account Created's Next. Dark has sign-in's colours at a secondary button's size, as Done Editing
-// does. An icon can sit before the label, or stand alone: then the label names the button for screen
-// readers, as Compare does when the sidebar and the assistant are both open.
+// does. Suggestion is outlined too, but as wide as its place, its words at the start in regular weight
+// and wrapping when long: the assistant's suggested questions. An icon can sit before the label, or
+// stand alone: then the label names the button for screen readers, as Compare does when the sidebar
+// and the assistant are both open.
 import type { ReactNode } from 'react'
 import { Button as AriaButton, type ButtonProps as AriaButtonProps } from 'react-aria-components'
 import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import outline from '@/styles/outline.module.css'
 import styles from './Button.module.css'
 
-type Variant = 'primary' | 'secondary' | 'quiet' | 'sign-in' | 'dark' | 'danger'
+type Variant = 'primary' | 'secondary' | 'quiet' | 'sign-in' | 'dark' | 'danger' | 'suggestion'
 
 type ButtonProps = Omit<AriaButtonProps, 'className' | 'style' | 'children' | 'isPending'> & { variant?: Variant } & (
     | { icon?: PlainIconName; iconOnly?: false; children: ReactNode }
@@ -24,6 +26,7 @@ const variantClass: Record<Variant, string> = {
   'sign-in': styles.signIn,
   dark: styles.dark,
   danger: `${styles.primary} ${styles.danger}`,
+  suggestion: `${styles.suggestion} ${outline.outline}`,
 }
 
 export function Button({ variant = 'primary', icon, iconOnly, children, ...props }: ButtonProps) {
