@@ -148,9 +148,9 @@ class GroundedAdvisor:
             )
             raise AdvisorUnavailable() from error
         checked = self._checked(chat, evidence, earlier, done)
-        named = self._named(chat, naming) if naming else None
-        title = checked_title(named.text) if named else None
-        if named and title is None:
+        named = self._named(chat, naming) if naming is not None else None
+        title = checked_title(named.text) if named is not None else None
+        if named is not None and title is None:
             logger.warning(
                 "Advisor left chat %s unnamed: its title failed the check", chat.id
             )

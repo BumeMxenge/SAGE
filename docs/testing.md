@@ -11,8 +11,7 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 4. Test each rule once, at the lowest level that can see it. A refusal the transcript reader raises is tested in the reader's tests, and the API tests check only that one reaches the client as its problem code.
 5. Guards (signed out, outside UCT, staff, setup unfinished, questionnaire pending and another student's data) are checked once, in a sweep over every route the app serves, in `backend/tests/unit/shared/api/test_guards.py`. A new route that forgets a guard fails it automatically.
 6. No count snapshots of seed data unless the number is a stated requirement. The seed's own counts are checked once, in the seed tests.
-7. Tests of the advisor's stand-in, in `advisor/stubs.py`, are marked `@pytest.mark.stub("advisor")`. They prove wiring, never correctness, and are deleted when the advisor lands, as the engine's were when the engine did.
-8. Every workaround, cut or known limitation goes in [shortfalls.md](shortfalls.md) as it's found.
+7. Every workaround, cut or known limitation goes in [shortfalls.md](shortfalls.md) as it's found.
 
 ## Levels
 
@@ -46,6 +45,21 @@ The engine's tests build a small made-up year for each test, with every plan and
 | Solver | `engine/test_solver.py` | A co-requisite or prerequisite the plan meets a term too early or too late at each edge, or through a course that covers nothing it needs, a rule left open on two plan courses met by one, a prerequisite still to come shutting its course out, a year's courses or credits missed by one, meetings that touch taken for a clash, overlapping terms missed, a meeting linked to her curriculum or after one with no printed time missed, an alternative that fits left out, and a meeting with no printed time left unconditional |
 | Generator | `engine/test_generator.py`, `test_themes.py` | A 2026 elective with no theme word, a plan's name or combination wrong, a word two electives share written twice or out of their order, an elective with no word not named by its printed name, a spare elective, a pass counted twice, an owed or repeated course without its precedence, a core course she can't take kept in, a credit minimum one off or taking off the wrong course, a degree total for the wrong curriculum, a slot's courses, sections or forced sections wrong, a 576-credit place missed, filled twice or taken by a course under 8 credits, a reason that appears when it shouldn't or cites the wrong passage, a finished record or a year with nothing to take planned anyway, a conflict that names the wrong rule, plans out of order or past the cap, and ids that change between runs |
 
+## Advisor tests
+
+The advisor's tests run Mbali's seed against the approved 2026, with the engine's eligibility checker, and never call a model: a scripted model in `shared/memory/language_model.py` answers in Luna's place, each answer queued under the name of the schema it's held to, so the title call and the reply, which run at once, never take each other's. The client's own tests read three of Luna's real replies from E4's cache, copied into `backend/tests/fixtures/luna/`, through a fake transport in OpenAI's place.
+
+| Part | Where | The faults they catch |
+| --- | --- | --- |
+| Client | `shared/test_openai.py` | A request that isn't E4's, or that lets OpenAI store it, a tool call or text misread from Luna's replies, reasoning items not passed back, and an error the SDK doesn't retry taken for Luna being out of reach, or one it retries let through |
+| Evidence | `advisor/test_evidence.py` | A plan course or favourite missing from her slice, or a course that is neither in it, a hidden plan find_plan misses, reasons that aren't the set's when no plan fits, and an alternative or untimed meeting worded as one she attends |
+| Checks | `advisor/test_checks.py` | A quote kept that isn't word for word in the passage it cites, one cited to another passage or none, an empty quote, a reply that kept no quote left standing or one with no citations turned into a referral, a plan id left in a reply, and a title a word or a character past its limits |
+| Turn | `advisor/test_replies.py` | A plan offered that the turn's find_plan didn't return, the chat's own plan dropped, a seventh call, a flag that changes the reply or logs her words, more than five earlier exchanges or out of order, and a reply that waits for its title |
+| Chats | `features/chats/test_routes.py` | A provider error or a turn that ran over stored, even once its late reply comes, or reaching her as anything but `advisor_unavailable`, a title asked for a named chat, taken from a later question, or kept after a failed or invalid call |
+| Stores and startup | `database/test_repository_contract.py`, `test_main.py` | A named chat renamed, or named by another student, in both stores, and the app starting without its OpenAI key |
+
+Planted faults 31 to 33 sit in the advisor's checks: a quote counted wherever it appears in her slice, a plan offered from anywhere in her set, and a reply that kept no quote left standing.
+
 ## Acceptance tests
 
 ATP-1 asks how well ingestion reads print, and whether anything wrong gets into SAGE without a person seeing it. Its label sheets, in `tests/acceptance/atp1/labels/`, were filled from print and committed before any run. Its harness compares SAGE's readers, grammar, drafts and approved years with them, field by field, and its report gives each measure with a 95% Wilson interval, with and without the labeller's judgement calls. [The harness's README](../tests/acceptance/atp1/README.md) says what it compares and how to read the report.
@@ -57,11 +71,11 @@ ATP-1 asks how well ingestion reads print, and whether anything wrong gets into 
 
 ## The dependency check
 
-`make lint`, which `make check` and CI run, also runs import-linter's `lint-imports`. It reads every import in `backend/src/sage` without running the code, and checks the six contracts in `backend/pyproject.toml` that hold [the backend's dependency rule](architecture.md#backend-dependency-rule). Each contract was broken once by hand to see it fail: shared code importing a feature, one feature importing another, a feature importing the engine's stand-in, a feature importing Supabase's SDK, the `sage` command importing Anthropic's, and the plan generator importing clingo. An exception a contract lists that no import still uses fails the check too, so the list can't go stale.
+`make lint`, which `make check` and CI run, also runs import-linter's `lint-imports`. It reads every import in `backend/src/sage` without running the code, and checks the seven contracts in `backend/pyproject.toml` that hold [the backend's dependency rule](architecture.md#backend-dependency-rule). Each contract was broken once by hand to see it fail: shared code importing a feature, one feature importing another, a feature importing the engine's stand-in, a feature importing Supabase's SDK, the `sage` command importing Anthropic's, the plan generator importing clingo, and the advisor importing OpenAI's SDK or the engine. An exception a contract lists that no import still uses fails the check too, so the list can't go stale.
 
 ## Frontend
 
-The eight rules above apply to the frontend too. Its tests run with Vitest and Testing Library through `npm test` in `frontend/`. `make check` and CI's frontend job already call it, so there is no extra step.
+The seven rules above apply to the frontend too. Its tests run with Vitest and Testing Library through `npm test` in `frontend/`. `make check` and CI's frontend job already call it, so there is no extra step.
 
 | Test | What it checks | The fault it catches |
 | --- | --- | --- |
@@ -113,11 +127,11 @@ CI never runs it. It needs that stack, and screenshots differ between operating 
 | --- | --- | --- |
 | `make test` | The unit tests, then each file's lines that no unit test runs | 2 minutes |
 | `make mutation` | The share of mutants the unit tests catch, written to `backend/mutation-score.txt` | 20 minutes |
-| `make planted-faults` | Which of the 30 planted faults the unit tests catch, and the test that caught each: the 24 from my test review, two in the review and approval the thesis rests on, and four in the plan encoding, which mutmut can't change | 18 minutes |
+| `make planted-faults` | Which of the 33 planted faults the unit tests catch, and the test that caught each: the 24 from my test review, two in the review and approval the thesis rests on, four in the plan encoding, which mutmut can't change, and three in the advisor's guardrails | 18 minutes |
 
-Line coverage counts the lines that ran during the tests, not whether anything checked what they did, so it overstates. Mutation testing checks the checking. mutmut makes 7,346 copies of the code in `features/`, `shared/`, `ingestion/`, `engine/` and `advisor/`, each with one small change, such as `<` to `<=` or `5` to `6`. It runs the unit tests against each copy and counts the copies that make a test fail. A copy that makes the tests time out counts as caught. The 30 planted faults are plausible bugs chosen by hand, while mutmut makes every small change it can, most of them easy to catch, so its score runs higher.
+Line coverage counts the lines that ran during the tests, not whether anything checked what they did, so it overstates. Mutation testing checks the checking. mutmut makes 7,346 copies of the code in `features/`, `shared/`, `ingestion/`, `engine/` and `advisor/`, each with one small change, such as `<` to `<=` or `5` to `6`. It runs the unit tests against each copy and counts the copies that make a test fail. A copy that makes the tests time out counts as caught. The 33 planted faults are plausible bugs chosen by hand, while mutmut makes every small change it can, most of them easy to catch, so its score runs higher.
 
-The score leaves out the integration tests, code outside functions (such as the transcript reader's patterns), the adapters to outside services (the storage adapters, where student isolation is enforced, their in-memory fakes, and Claude's drafter), and the entry points, `main.py`, `cli.py` and `config.py`. The mutants that survive are listed below.
+The score leaves out the integration tests, code outside functions (such as the transcript reader's patterns), the adapters to outside services (the storage adapters, where student isolation is enforced, their in-memory fakes, Claude's drafter and OpenAI's client), and the entry points, `main.py`, `cli.py` and `config.py`. The mutants that survive are listed below.
 
 ## Numbers
 

@@ -7,15 +7,15 @@ Folders marked (planned) don't exist yet; each arrives with its first code.
 
 | Folder | What it does |
 | --- | --- |
-| `backend/src/sage/main.py` | The app's frame: it builds the FastAPI app, fills the interfaces in `shared/` with Supabase, the engine and the advisor's stand-in, and mounts each feature's routes. `config.py` reads the settings |
+| `backend/src/sage/main.py` | The app's frame: it builds the FastAPI app, fills the interfaces in `shared/` with Supabase, the engine and the advisor, which it builds on OpenAI's client, and mounts each feature's routes. `config.py` reads the settings |
 | `backend/src/sage/cli.py` | The `sage` command, such as `sage seed`, which loads the made-up student's data onto an account once her plans' year is loaded, `sage sign-in`, which prints a one-time link that signs her in on local Supabase, and `sage ingest --year <year>`, which reads a handbook year's sources, compares them with the latest approved year and writes what needs a person to `data/rules/<year>/review.json`, with `--draft` to have a model draft what the grammar can't read, `sage review --year <year>`, which walks a person through the pending rows one at a time in the terminal, `sage approve --year <year>`, which writes the approved year once none is pending, and `sage load --year <year>`, which writes an approved year to the database `SUPABASE_URL` names, passes over one held exactly as its snapshot, and replaces one held differently only with `--replace` |
 | `backend/src/sage/features/<feature>` | Everything one part of the API owns: its routes (`routes.py`), the service behind them (`service.py`) and its request and response bodies (`models.py`). The features are `health`, `accounts` (`/v1/me`), `onboarding`, `plans`, `questionnaire`, `electives`, `history` and `chats` |
 | `backend/src/sage/ingestion` | Turns sources into data: a student's transcript into her course history, a printed requirement into a rule tree (the grammar, with a model's draft where it refuses), and a year's handbook, timetable, complementary workbook and equivalences into a candidate rulebook, through one reader per source and checks across the sources. `review.py` reviews that rulebook by exception against the latest approved year, as one row per printed thing a person must decide, and checks each decision against the reading it was made on and the year as decided. An approved year is kept as its snapshot. `ingest.py` runs a year's ingestion, review, approval and load for the `sage` command, and `anthropic.py` is the model that drafts what the grammar refuses, through the `Drafter` interface in `drafting.py` |
 | `backend/src/sage/engine` | Generates every valid plan for a student's year, best first, with the reasons behind them, and reads entry rules for Explore Electives, filling `PlanGenerator` and `EligibilityChecker` in `shared/planning.py`. `evaluator.py` reads her record against an entry rule, `facts.py` and `plans.lp` set out her year for clingo, `solver.py` runs it, `reasons.py` words each reason with the passage it rests on, and `printed.py` holds what the handbook prints that no rule shape can: the degree's credit totals, the 576-credit curriculum's places and two notes on elective tables. `themes.py` holds my theme word for each 2026 elective, which names a plan, such as "Power, Control & Robotics" over its codes |
-| `backend/src/sage/advisor` | Will be the conversational agent: engine tools, scoped context (the handbook passages for her courses, with no embeddings or search), guardrails and prompts, filling `Advisor` in `shared/advisor.py`. Until it lands, `stubs.py` stands in |
-| `backend/src/sage/shared` | What two or more features or components use: the models and interfaces (the rule model, her rows, sign-in, every refusal, the stores, and the engine's and advisor's interfaces), the rule model in plain words (`wording.py`), the rulebook cache (`rulebook.py`), which adds to each year the meetings its course entries print and the department's timetable leaves out (`printed_meetings.py`), so every reader of a year's rules sees the same week, the made-up student (`seed.py`), the API's plumbing (`api/`: the guards, problem responses and shared bodies), Supabase (`supabase/`) and the in-memory fakes the unit tests use (`memory/`) |
+| `backend/src/sage/advisor` | The conversational agent, filling `Advisor` in `shared/advisor.py`. `evidence.py` builds what the model sees for one question: her slice of the handbook, chosen by key with no embeddings or search, the plan context, the short ids, and the three tools that serve the engine's facts. `replies.py` runs the turn through the language model, within 50 seconds, and names a chat from its first question. `checks.py` checks every reply before it's stored: each quote against its passage, the plan it offers and its plan ids, with two flags logged for a person to read. `prompt.md` is E4's system prompt with the changes its note lists |
+| `backend/src/sage/shared` | What two or more features or components use: the models and interfaces (the rule model, her rows, sign-in, every refusal, the stores, and the engine's and advisor's interfaces), the rule model in plain words (`wording.py`), the rulebook cache (`rulebook.py`), which adds to each year the meetings its course entries print and the department's timetable leaves out (`printed_meetings.py`), so every reader of a year's rules sees the same week, the made-up student (`seed.py`), the API's plumbing (`api/`: the guards, problem responses and shared bodies), Supabase (`supabase/`), the one language model as an interface (`language_model.py`) with OpenAI's adapter (`openai.py`), and the in-memory fakes the unit tests use (`memory/`), a scripted language model among them |
 | `backend/tests` | Unit and integration tests. The unit tests mirror the source, in `tests/unit/<package>/`. [testing.md](testing.md) has their rules and how to run them |
-| `backend/scripts` | Measures the tests: the planted faults, and the line `make mutation` writes. Makes the fresh local account for onboarding and its made-up transcript (`make sign-in-new`, `make transcript`) |
+| `backend/scripts` | Measures the tests: the planted faults, and the line `make mutation` writes. Makes the fresh local account for onboarding and its made-up transcript (`make sign-in-new`, `make transcript`). Prints the made-up student's plans (`show_plans.py`), and asks the real advisor about them with no database (`ask_advisor.py`), which calls OpenAI |
 | `frontend/` | React and TypeScript interface, deployed as static files. Its code is in `frontend/src`, in the five folders below, and Playwright's set-up and helpers are in `frontend/e2e` |
 | `frontend/src/app` | The app's frame. `routes.tsx` is the route table: each page's address, who may open it, the guard that sends everyone else home, and the page's file in its owner's folder, loaded when first opened. `Root` gives each page its title, and `RouteError` shows when a page can't open. `AppLayout` is the frame around the student's pages: the sidebar, with the logo, the main navigation and the account (`AccountMenu`: who is signed in, Appearance and Sign Out), beside the page. `PlanWorkspace`, `StaffPage` and `NotFoundPage` are stubs that wait for a second shell branch, and `ToastRegion` shows the toasts |
 | `frontend/src/features/<feature>` | Everything one feature owns: its page, own components (in `components/<Name>`), hooks, copy and tests. Deleting the folder removes the feature. `onboarding` holds the sign-in landing and onboarding, `history` the Course History page, `electives` its stub page, and `assistant` its first component, the chat box. M3 adds the rest: (planned) questionnaire and plan |
@@ -38,9 +38,10 @@ flowchart TB
                 rulebook["Rulebook cache"]
                 transcript["Transcript reader"]
                 engine["Engine (clingo)<br>behind shared/planning.py"]
-                advisor["Advisor stand-in<br>behind shared/advisor.py"]
+                advisor["Advisor<br>behind shared/advisor.py"]
             end
         end
+        openai["OpenAI's API:<br>GPT-6 Luna"]
     end
     subgraph supabase["Supabase (EU): Auth and Postgres"]
         auth["Auth"]
@@ -62,6 +63,7 @@ flowchart TB
     browser -->|"/v1 calls<br>with the token"| features
     features -->|"checks<br>each token"| auth
     features --> rulebook & transcript & engine & advisor
+    advisor -->|"a question with<br>its evidence and tools"| openai
     rulebook -->|"reads, kept<br>ten minutes"| rules
     features -->|"reads<br>and writes"| students
     students -.->|"point into"| rules
@@ -73,7 +75,7 @@ flowchart TB
     rules ~~~ sage
 ```
 
-A solid arrow shows who acts on whom. Each lane is one clock, and Supabase sits between them, where they meet. On every request, the student's browser loads the React app from Azure Storage and signs in through Supabase Auth with a UCT Microsoft account. The browser also reads the student's name from Microsoft Graph, and the name stays there. Each call to the backend on Azure Container Apps carries the sign-in token, which the backend checks with Supabase Auth. The backend reads rules through the `Rulebook` cache, reads and writes the student tables, and never writes rules. The engine builds each student's plans when she finishes setup, from the record she confirmed and the year's rules, and the advisor is still a stand-in that refers every question to a human advisor. Once a year, on a laptop, the `sage` command reads `data/sources/`, asks Anthropic's API for drafts only on a `--draft` run, and writes `data/rules/`. Only `sage load` writes rules to the database.
+A solid arrow shows who acts on whom. Each lane is one clock, and Supabase sits between them, where they meet. On every request, the student's browser loads the React app from Azure Storage and signs in through Supabase Auth with a UCT Microsoft account. The browser also reads the student's name from Microsoft Graph, and the name stays there. Each call to the backend on Azure Container Apps carries the sign-in token, which the backend checks with Supabase Auth. The backend reads rules through the `Rulebook` cache, reads and writes the student tables, and never writes rules. The engine builds each student's plans when she finishes setup, from the record she confirmed and the year's rules. The advisor answers each chat question through OpenAI's API, sending it with only the evidence needed to answer it, and checks every reply before it's stored. Once a year, on a laptop, the `sage` command reads `data/sources/`, asks Anthropic's API for drafts only on a `--draft` run, and writes `data/rules/`. Only `sage load` writes rules to the database.
 
 ### How code reaches Azure
 
@@ -105,7 +107,7 @@ An arrow shows who acts on whom. CI checks every pull request and every push to 
 ## Two clocks
 
 - **Once a year, on a laptop.** The `sage` command runs ingestion. `sage ingest`, `sage review` and `sage approve` touch only files in `data/`, until `sage load` writes the approved year into the rule tables.
-- **On every request, in the cloud.** The backend never writes rules. It reads the approved year into the `Rulebook` cache (`shared/rulebook.py`), which keeps each year for ten minutes, so a newly loaded year shows within that time with no redeploy. The cache adds to each year the meetings its course entries print and the department's timetable leaves out, such as CSC3002F's practicals, from `shared/printed_meetings.py`, so plan generation, a plan's meetings and the questionnaire all see the same week. The engine builds plans from it, and the advisor will build its briefing pack from the passages and the plan reasons.
+- **On every request, in the cloud.** The backend never writes rules. It reads the approved year into the `Rulebook` cache (`shared/rulebook.py`), which keeps each year for ten minutes, so a newly loaded year shows within that time with no redeploy. The cache adds to each year the meetings its course entries print and the department's timetable leaves out, such as CSC3002F's practicals, from `shared/printed_meetings.py`, so plan generation, a plan's meetings and the questionnaire all see the same week. The engine builds plans from it, and the advisor chooses each question's passages from it, by key.
 - **Supabase is where the two meet.** Student rows point into the rule tables, so the database refuses to remove a year a student's plan uses, and `sage seed` won't write a student's data until her plans' year is loaded.
 
 The [system diagram](#system-diagram) above draws both clocks, and the [ingestion data flow](#ingestion-data-flow) below follows one handbook year from its sources to the cache.
@@ -146,6 +148,7 @@ flowchart TB
         upload["Transcript PDF,<br>uploaded at onboarding"]
         reader["Transcript reader:<br>in memory, never stored"]
         history[("Course history in<br>the student tables")]
+        advisorFlow["Advisor"]
     end
 
     sources --> collect
@@ -167,11 +170,12 @@ flowchart TB
     snapshot --> load
     load -->|"writes"| tables
     tables -->|"read within ten minutes"| cache
+    cache -->|"her passages,<br>chosen by key"| advisorFlow
     upload --> reader
     reader -->|"rows the student confirms,<br>saved at Finish setup"| history
 ```
 
-An arrow shows where the data goes next. `sage ingest --year <year>` first checks each source's SHA-256 against `manifest.toml`, and a changed file stops the run. One reader per source then reads the handbook, the timetable workbook, the complementary workbook and the equivalences. The handbook reader crops off each page's running header, and the timetable reader is strict: a cell it can't place stops the run. Each printed requirement goes to the grammar first. A string it refuses takes its cached draft from `drafts.json`, and only a `--draft` run asks the model for a missing one, checking it against `EntryRule` before caching it. Without a draft, the string becomes a `refer` leaf. The handbook is cut into passages, one per printed unit, and the sources are checked against each other. The year is then compared with the latest approved year: a requirement printed in the same words carries over, a change read with certainty is accepted automatically, and everything else becomes a row in `review.json` with its causes. A person decides each row in `sage review`. `sage approve` reruns the reading, refuses while a row is pending or a check fails, and writes `rulebook.json`, which the next year is compared with. `sage load` writes the year unapproved and approves it last, so a load that stops partway never becomes the current year, and the `Rulebook` cache reads the new year within ten minutes. The transcript reader runs on the other clock: it reads a student's PDF in memory during onboarding and never stores it, and only the rows the student confirms are saved, at Finish setup.
+An arrow shows where the data goes next. `sage ingest --year <year>` first checks each source's SHA-256 against `manifest.toml`, and a changed file stops the run. One reader per source then reads the handbook, the timetable workbook, the complementary workbook and the equivalences. The handbook reader crops off each page's running header, and the timetable reader is strict: a cell it can't place stops the run. Each printed requirement goes to the grammar first. A string it refuses takes its cached draft from `drafts.json`, and only a `--draft` run asks the model for a missing one, checking it against `EntryRule` before caching it. Without a draft, the string becomes a `refer` leaf. The handbook is cut into passages, one per printed unit, and the sources are checked against each other. The year is then compared with the latest approved year: a requirement printed in the same words carries over, a change read with certainty is accepted automatically, and everything else becomes a row in `review.json` with its causes. A person decides each row in `sage review`. `sage approve` reruns the reading, refuses while a row is pending or a check fails, and writes `rulebook.json`, which the next year is compared with. `sage load` writes the year unapproved and approves it last, so a load that stops partway never becomes the current year, and the `Rulebook` cache reads the new year within ten minutes. The advisor chooses each student's passages from the cache by key, so a new year's passages reach its answers too. The transcript reader runs on the other clock: it reads a student's PDF in memory during onboarding and never stores it, and only the rows the student confirms are saved, at Finish setup.
 
 ## Backend dependency rule
 
@@ -181,8 +185,8 @@ Imports point inward, and `make check` enforces it: `make lint` checks import-li
 - Shared code never imports a feature, a component or an entry point. When two features need the same thing, it moves to `shared/`.
 - Features don't import each other, except where one is built on another: the questionnaire and chats use plans, and onboarding uses accounts, as Finish setup answers with `/v1/me`'s body. Plans and accounts import no feature. The contract lists these three, so a new one is a decision: list it there, or move the shared part to `shared/`.
 - Features reach the engine and the advisor only through `shared/planning.py` and `shared/advisor.py`, which `main.py` fills. So only `main.py` imports `engine/` and `advisor/`, and swapping in the real components never touches a feature.
-- The advisor may call the engine (its tools). The engine and ingestion never import each other or the advisor.
-- Each outside service's SDK has one home: Supabase's (`supabase`, `supabase_auth`, `postgrest` and `jwt`) in `shared/supabase/`, Anthropic's in `ingestion/anthropic.py`, its only user until the advisor needs a model too, and clingo's in `engine/solver.py`.
+- The advisor reaches the engine only through the eligibility checker `main.py` passes in, so it imports nothing but `shared/`. The engine and ingestion never import each other or the advisor.
+- Each outside service's SDK has one home: Supabase's (`supabase`, `supabase_auth`, `postgrest` and `jwt`) in `shared/supabase/`, OpenAI's in `shared/openai.py`, which fills the language model interface the advisor uses, Anthropic's in `ingestion/anthropic.py` until drafting moves to OpenAI's, and clingo's in `engine/solver.py`.
 - Year and department are data, not code. Nothing in the code tree is named after a programme.
 
 ## Frontend dependency rule
@@ -201,6 +205,9 @@ Imports run one way, and `frontend/scripts/check-tsx.ts` (run by `npm run lint`)
 - Supabase Auth keeps each account's UCT email, which contains the student number. SAGE needs it to identify the account and to check that a transcript belongs to the person uploading it. Supabase Auth also keeps Microsoft's identifiers for the account, but no name: SAGE never asks Microsoft for the profile scope, which is what would bring one.
 - SAGE works the student number out from the email when it needs it, and keeps no copy of its own.
 - A student's name comes from Microsoft Graph at sign-in and stays in their browser.
+- A question to the advisor goes to OpenAI's API with the evidence needed to answer it: the student's curriculum, the year they first registered and the year they're planning, the plans on screen with their courses and meetings, the reasons behind their plan set, their slice of the handbook, the chat's last five exchanges, and what the tools return, such as whether they may take a course. A chat's first question goes again, to name the chat. Their name, email address, student number and transcript lines never go.
+- SAGE's requests tell OpenAI not to store them, so OpenAI keeps them only in its abuse-monitoring logs, for up to 30 days, to detect misuse. OpenAI trains no model on API data unless an organisation opts in. SAGE's OpenAI project picks no data residency region, so OpenAI may process a question outside South Africa.
+- The advisor's logs hold ids, kinds, marks, token counts and seconds, never a student's words.
 
 ## Future work
 
