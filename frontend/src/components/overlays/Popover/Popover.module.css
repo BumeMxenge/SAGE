@@ -5,6 +5,10 @@
   display: flex;
   flex-direction: column;
   min-width: var(--trigger-width);
+
+  /* No wider than the plan switcher's list, with this padding and border, unless its button is: a long
+     option wraps rather than widening the panel */
+  max-width: max(var(--trigger-width), calc(var(--width-popover) + 2 * (var(--space-2) + 1px)));
   padding: var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);

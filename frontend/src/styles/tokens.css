@@ -84,6 +84,7 @@
   --size-icon-sm: 16px;
   --size-icon-md: 20px;
   --size-icon-lg: 32px;
+  --size-icon-xl: 48px; /* the picture over an empty term */
   --size-control-sm: 32px;
   --size-control-md: 36px;
   --size-control-lg: 48px;
@@ -94,6 +95,8 @@
   --size-logo-compact-small: 26px; /* the sidebar's, 80 by 26, as the planner draws it */
   --size-logo-mark: 28px;
   --size-logo-microsoft: 21px;
+  --size-hour: 70px; /* an hour of a plan's week, as tall as the prototype's rows */
+  --size-hour-compact: 58px; /* an hour of the week in a compare panel */
   --width-form: 392px; /* the sign-in form, and a blocking error page */
   --width-message: 320px; /* an error state's text, inside a region */
   --width-reading: 760px;
@@ -107,6 +110,9 @@
   --width-sidebar: 266px; /* the open sidebar, as measured */
   --width-rail: 62px; /* the collapsed sidebar, a rail of icons */
   --width-course-code: 80px; /* a course code's column, so each year's table starts its names alike */
+  --width-hours: 58px; /* the column of hours beside a plan's week */
+  --width-hours-compact: 34px; /* the same beside the week in a compare panel */
+  --width-compare-panel: 430px; /* a compare panel at its narrowest: with less room, the two stack */
 
   /* Motion. Hover changes are instant, as in the prototypes; these time everything that moves. */
   --duration-fast: 150ms; /* tooltips, menus and the Select list fading; a progress bar moving on */
