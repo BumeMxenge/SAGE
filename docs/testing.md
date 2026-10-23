@@ -67,7 +67,7 @@ Before ATP-3, the real advisor was also asked questions with known answers throu
 ATP-1 asks how well ingestion reads print, and whether anything wrong gets into SAGE without a person seeing it. Its label sheets, in `tests/acceptance/atp1/labels/`, were filled from print and committed before any run. Its harness compares SAGE's readers, grammar, drafts and approved years with them, field by field, and its report gives each measure with a 95% Wilson interval, with and without the labeller's judgement calls. [The harness's README](../tests/acceptance/atp1/README.md) says what it compares and how to read the report.
 
 - `make atp1` runs it from the held-out drafts its first run cached, so it calls no model and needs no key. A rerun reproduces the report byte for byte.
-- `make atp1 DRAFT=yes` made those drafts once, with the key in `backend/.env`, and refuses to draft again.
+- Those drafts were made once, with Claude Haiku 5.5, and the harness keeps no way to draft again: a new draft would be a retest.
 - The harness's own tests, in `tests/acceptance/atp1/test_scoring.py`, check its scoring with values worked out by hand. `make test` collects them, so CI runs them. None reads a source or calls a model.
 - `tests/acceptance/atp1/results/` keeps the first result. A fault it finds is fixed on its own branch, and the retest goes beside the first result, never over it.
 
