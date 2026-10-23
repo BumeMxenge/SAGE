@@ -1,0 +1,21 @@
+/* The questionnaire takes the full content width, for the prototype's 1040 px column (approved
+   difference 15), and its header keeps the reading width, as every page's does */
+.page {
+  max-width: var(--width-full);
+}
+
+/* Back, the step's button and how far the answers narrow her plans, in a row under the question */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  margin-top: var(--space-10);
+}
+
+.narrowing {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}
