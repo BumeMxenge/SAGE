@@ -60,6 +60,8 @@ The advisor's tests run Mbali's seed against the approved 2026, with the engine'
 
 Planted faults 31 to 33 sit in the advisor's checks: a quote counted wherever it appears in her slice, a plan offered from anywhere in her set, and a reply that kept no quote left standing.
 
+Before ATP-3, the real advisor was also asked questions with known answers through `backend/scripts/ask_advisor.py`: a live check on Mbali, a second round on three more made-up students, and a rerun of all 34 turns after the second round's fixes. [The advisor's validation](advisor-validation.md) lists every student, question, expected answer and outcome, so ATP-3 can use others.
+
 ## Acceptance tests
 
 ATP-1 asks how well ingestion reads print, and whether anything wrong gets into SAGE without a person seeing it. Its label sheets, in `tests/acceptance/atp1/labels/`, were filled from print and committed before any run. Its harness compares SAGE's readers, grammar, drafts and approved years with them, field by field, and its report gives each measure with a 95% Wilson interval, with and without the labeller's judgement calls. [The harness's README](../tests/acceptance/atp1/README.md) says what it compares and how to read the report.
