@@ -1,7 +1,7 @@
 # Checks the citation check and the referral it can force, on Mbali's slice of the approved 2026: a
 # quote counts only word for word in the passage it cites, and a reply that cited the handbook but
-# kept no quote becomes the fixed referral, while one that cites nothing stands as written. A chat's
-# title is checked at each edge.
+# kept no quote becomes the fixed referral, while one that cites nothing stands as written. A mark at
+# a kept quote's edge still counts, and a chat's title is checked at each edge.
 import json
 
 import pytest
@@ -12,6 +12,7 @@ from sage.advisor.checks import (
     Quote,
     check,
     checked_title,
+    flags,
     quotes_kept,
 )
 from sage.shared.advisor import Reply
@@ -95,6 +96,16 @@ def test_a_plan_id_in_a_reply_becomes_the_plans_name(found):
         "Plan Signals, Power & Robotics, has it, and so does "
         "Signals, Control & Robotics, but not Control, Robotics & Embedded."
     )
+
+
+def test_a_mark_at_the_edge_of_a_kept_quote_still_counts():
+    # The reply's level ends the first quote and its code begins the second, so the quotes hold
+    # both, and joined without a break they would run together as "8EEE4022S"
+    kept = [
+        Quote(passage_id="P01", quote="credits at NQF level 8"),
+        Quote(passage_id="P02", quote="EEE4022S Research Project"),
+    ]
+    assert flags("EEE4022S is at NQF level 8.", kept, "") == []
 
 
 @pytest.mark.parametrize(

@@ -258,16 +258,21 @@ def test_a_chat_is_named_once_from_its_first_question(
     )
     luna(model)
     chat = mbali.post("/v1/chats", json={"plan_id": plan_ids[1]}).json()
-    titles = []
+    titles, logged = [], []
     with caplog.at_level(logging.WARNING, logger="sage.advisor.replies"):
         for n in range(1, 5):
+            caplog.clear()
             response = ask(mbali, chat, {"content": f"Question {n}", "term": "sem1"})
             assert response.status_code == 201
             titles.append(chats_on(mbali, plan_ids[1]).json()[0]["title"])
+            logged.append([record.getMessage() for record in caplog.records])
     assert titles == [None, None, "Fridays This Semester", "Fridays This Semester"]
-    assert [record.getMessage() for record in caplog.records] == [
-        f"Advisor left chat {chat['id']} unnamed: RateLimitError",
-        f"Advisor left chat {chat['id']} unnamed: its title failed the check",
+    # Each exchange that left the chat unnamed says why, and the others say nothing
+    assert logged == [
+        [f"Advisor left chat {chat['id']} unnamed: RateLimitError"],
+        [f"Advisor left chat {chat['id']} unnamed: its title failed the check"],
+        [],
+        [],
     ]
     # Each title call named the chat from its first question
     asked = [call.conversation for call in model.calls if call.schema.name == "title"]

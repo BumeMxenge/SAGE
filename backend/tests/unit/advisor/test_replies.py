@@ -1,7 +1,8 @@
 # Checks a turn of the advisor on Mbali's seed, with a scripted model in Luna's place: the request is
 # the one E4 measured, a plan is offered only where it may be, a turn with no answer gets the fixed
-# referral, the checks that bite and each turn's tokens are logged without a student's words, the
-# earlier exchanges go in, and a chat is named without holding its reply up. Every expected value
+# referral, the checks that bite and each turn's tokens are logged without a student's words, what
+# the tools gave back counts as heard, the earlier exchanges go in, and a chat is named without
+# holding its reply up. Every expected value
 # comes from her seed, print, the script or E4's own evidence.py.
 import json
 import logging
@@ -127,12 +128,13 @@ def test_a_plan_is_offered_only_if_find_plan_returned_it_or_the_chat_is_on_it(
     finding = asks("find_plan", have=["EEE4118F"], avoid=["EEE4119F"])
     asked, model = advisor(finding, answers("Made up.", open_plan_id=offered))
     answered = asked.answer(chat_on(1), "Made up?", "sem1")
-    # The rest of the reply stands either way
+    # The rest of the reply stands either way, and only a plan it drops counts as dropped
     assert answered.reply == Reply(
         content="Made up.",
         referral=False,
         open_plan_id=positions[kept] if kept else None,
     )
+    assert answered.checked.unoffered == (None if kept else offered)
     # The call ran as Luna asked it, and its result went back after her message and Luna's call
     (called,) = answered.turn.called
     assert (called.name, called.arguments) == (
@@ -242,6 +244,22 @@ def test_checks_that_bite_are_logged_without_her_words_and_flags_change_nothing(
     words = set(re.findall(r"[a-z]{3,}", CODE.sub(" ", said).lower()))
     logged = " ".join(record.getMessage() for record in caplog.records).lower()
     assert [word for word in words if word in logged] == []
+
+
+def test_what_the_tools_gave_back_counts_as_heard_even_an_error(advisor, chat_on):
+    # find_plan asked for no course gives back an error and no plans. check_eligibility says she has
+    # passed EEE3096S Embedded Systems II, as her record shows for 2025. The reply names EEE3096S,
+    # which only that result holds, so it stands with no flag.
+    content = "You've already passed EEE3096S."
+    asked, model = advisor(
+        asks("find_plan", have=[], avoid=[]),
+        asks("check_eligibility", code="EEE3096S"),
+        answers(content),
+    )
+    answered = asked.answer(chat_on(1), "Made up?", "sem1")
+    assert "EEE3096S" not in model.calls[0].conversation[-1].text
+    assert answered.reply == Reply(content=content, referral=False)
+    assert answered.checked.flags == ()
 
 
 def test_each_turn_logs_its_calls_tokens_and_seconds(advisor, chat_on, caplog):
