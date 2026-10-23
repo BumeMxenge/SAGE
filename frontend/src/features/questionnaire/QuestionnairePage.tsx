@@ -1,11 +1,10 @@
 // The questionnaire, which /plan shows while her plan set is too long to compare and isn't answered.
-// It asks one question at a time, each with its answers in the API's order, which lists hearted
-// courses first. Show My Plans saves the answers, which hide every plan they don't keep, and
-// refreshes her set, so the plan workspace then opens the first plan they kept.
+// It asks one question at a time, each with its answers in the API's order. Show My Plans saves the
+// answers, which hide every plan they don't keep, and refreshes her set, so the plan workspace then
+// opens the first plan they kept.
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Button } from '@/components/actions/Button/Button.tsx'
-import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import { PageHeader } from '@/components/content/PageHeader/PageHeader.tsx'
 import { ChoiceChips } from '@/components/inputs/ChoiceChips/ChoiceChips.tsx'
 import { client, dataOf } from '@/lib/api.ts'
@@ -71,15 +70,7 @@ export function QuestionnairePage({ set }: { set: PlanSet }) {
             description={question.hint ?? undefined}
             choices={question.options.map((option) => ({
               value: option.id,
-              label: option.hearted ? (
-                <>
-                  {option.label}
-                  <Icon name="favorite" filled />
-                  <span className="visually-hidden">, favourite</span>
-                </>
-              ) : (
-                option.label
-              ),
+              label: option.label,
               unavailable: clash(plans, questions, answers, step, option),
             }))}
             value={answers[question.id] ?? null}

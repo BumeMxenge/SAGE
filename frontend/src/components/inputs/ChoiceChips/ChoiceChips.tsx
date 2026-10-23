@@ -4,14 +4,14 @@
 // An answer that can't be chosen still takes focus, so the arrow keys and a screen reader still reach
 // it: it is marked unavailable, pressing it changes nothing, and its reason is written under the chips
 // for everyone to read, never on hover alone.
-import { type ReactNode, useId } from 'react'
+import { useId } from 'react'
 import { ToggleButtonGroup } from 'react-aria-components'
 import { ChoiceChip } from './ChoiceChip.tsx'
 import styles from './ChoiceChips.module.css'
 
 export type Choice = {
   value: string
-  label: ReactNode
+  label: string
   unavailable?: string // why it can't be chosen, as a sentence
 }
 

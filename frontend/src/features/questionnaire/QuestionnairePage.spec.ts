@@ -49,7 +49,7 @@ function planOf(number: number, kept: number[]): Plan {
   return { id, period: 2026, position, name, combination, hidden, credits: { total: 144, by_term: {} }, courses: [], reasons: [] }
 }
 
-const option = (id: string, label: string, keeps: string[], hearted = false): Option => ({ id, label, hearted, keeps })
+const option = (id: string, label: string, keeps: string[]): Option => ({ id, label, hearted: false, keeps })
 
 // The prototype's course question, with made-up codes for its courses
 const courses = [
@@ -61,28 +61,26 @@ const courses = [
   option('TST4106F', 'Medical Imaging & Image Processing', keeping(4, 7, 10)),
 ]
 
-function questionnaireOf(courseOptions: Option[]): Questionnaire {
-  return {
-    needed: true,
-    questions: [
-      {
-        id: 'course',
-        prompt: 'Is there a course you already know you want?',
-        hint: 'Only plans that include it stay in.',
-        options: [...courseOptions, option('no_preference', 'No strong preference', keeping(...every))],
-      },
-      {
-        id: 'week',
-        prompt: 'How should the week feel?',
-        hint: null,
-        options: [
-          option('fewest_8am', 'Fewest 8am starts', keeping(8, 9, 10)),
-          option('lunch_free', 'Keep the 13:00 lunch hour free', keeping(1, 2, 3, 5, 6, 8, 9)),
-          option('no_preference', 'No preference', keeping(...every)),
-        ],
-      },
-    ],
-  }
+const questionnaire: Questionnaire = {
+  needed: true,
+  questions: [
+    {
+      id: 'course',
+      prompt: 'Is there a course you already know you want?',
+      hint: 'Only plans that include it stay in.',
+      options: [...courses, option('no_preference', 'No strong preference', keeping(...every))],
+    },
+    {
+      id: 'week',
+      prompt: 'How should the week feel?',
+      hint: null,
+      options: [
+        option('fewest_8am', 'Fewest 8am starts', keeping(8, 9, 10)),
+        option('lunch_free', 'Keep the 13:00 lunch hour free', keeping(1, 2, 3, 5, 6, 8, 9)),
+        option('no_preference', 'No preference', keeping(...every)),
+      ],
+    },
+  ],
 }
 
 // Mechatronics and Fewest 8am starts keep plans 8 to 10, the first of which /plan then opens
@@ -94,7 +92,7 @@ const allowed = { 'Access-Control-Allow-Origin': '*' }
 // The made-up API: her set needs narrowing until the answers are saved, and then her answers have
 // kept plans 8 to 10. A refusal, when given, answers the save instead, though the set is answered all
 // the same, as when she answered in another tab. It returns what the save sent.
-async function madeUpApi(page: Page, questionnaire = questionnaireOf(courses), refusal?: components['schemas']['Problem']) {
+async function madeUpApi(page: Page, refusal?: components['schemas']['Problem']) {
   let sent: unknown
   await page.route('**/v1/plans', (route) => route.fulfill({ json: setOf(sent === undefined ? null : kept), headers: allowed }))
   await page.route('**/v1/plans/*', (route) => {
@@ -185,7 +183,7 @@ test('a greyed answer takes focus, says why, and neither Space nor a click choos
 })
 
 test('a save refused as already answered moves on to her plans', async ({ page }) => {
-  await madeUpApi(page, questionnaireOf(courses), {
+  await madeUpApi(page, {
     type: 'about:blank',
     title: 'Conflict',
     status: 409,
@@ -301,23 +299,5 @@ test.describe('parity', () => {
       true,
     ),
     state('back', toWeek, (page) => page.getByRole('button', { name: 'Back', exact: true }), (page) => button(page, 'Back'), true),
-  ])
-})
-
-// Two hearted courses, which the API lists first. The prototype's questionnaire shows no hearts, so the
-// image shows React alone.
-test.describe('hearts', () => {
-  test.beforeEach(async ({ page }) => {
-    const hearted = [courses[3], courses[2]].map((course) => ({ ...course, hearted: true }))
-    await madeUpApi(page, questionnaireOf([...hearted, ...courses.filter((course) => !hearted.some(({ id }) => id === course.id))]))
-  })
-
-  parity('questionnaire', [
-    {
-      name: 'hearts',
-      prototype: 'registration-planner',
-      reach: async () => null,
-      react: { path: '/plan', reach: (page) => heading(page).waitFor(), element: main },
-    },
   ])
 })
