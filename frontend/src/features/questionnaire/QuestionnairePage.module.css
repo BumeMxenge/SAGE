@@ -4,6 +4,12 @@
   max-width: var(--width-full);
 }
 
+/* The question stands 40 px under the header, as the prototype's first does: 16 px more than the
+   header's own margin, as padding, which doesn't fold into that margin as a margin would */
+.question {
+  padding-top: var(--space-4);
+}
+
 /* Back, the step's button and how far the answers narrow her plans, in a row under the question */
 .actions {
   display: flex;

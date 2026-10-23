@@ -16,8 +16,10 @@
   color: var(--color-text-secondary);
 }
 
+/* The chips stand 16 px under the question's words, as the prototype's do */
 .chips {
   display: flex;
+  margin-top: var(--space-2);
   flex-wrap: wrap;
   gap: var(--space-3);
 }

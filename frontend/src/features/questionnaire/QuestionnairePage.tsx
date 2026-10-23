@@ -62,30 +62,32 @@ export function QuestionnairePage({ set }: { set: PlanSet }) {
         title="A Few Questions First"
         subtitle={`SAGE found ${plans.length} plans for ${set.period}. Your answers narrow them to a short list, and the rest stay at the foot of your plan list.`}
       />
-      {question && (
-        // A new question's chips are new chips, so the one that takes focus takes it as they appear
-        <ChoiceChips
-          key={question.id}
-          label={question.prompt}
-          description={question.hint ?? undefined}
-          choices={question.options.map((option) => ({
-            value: option.id,
-            label: option.hearted ? (
-              <>
-                {option.label}
-                <Icon name="favorite" filled />
-                <span className="visually-hidden">, favourite</span>
-              </>
-            ) : (
-              option.label
-            ),
-            unavailable: clash(plans, questions, answers, step, option),
-          }))}
-          value={answers[question.id] ?? null}
-          onChange={(option) => setAnswers(choose(plans, questions, answers, step, option))}
-          takeFocus={moved}
-        />
-      )}
+      <div className={styles.question}>
+        {question && (
+          // A new question's chips are new chips, so the one that takes focus takes it as they appear
+          <ChoiceChips
+            key={question.id}
+            label={question.prompt}
+            description={question.hint ?? undefined}
+            choices={question.options.map((option) => ({
+              value: option.id,
+              label: option.hearted ? (
+                <>
+                  {option.label}
+                  <Icon name="favorite" filled />
+                  <span className="visually-hidden">, favourite</span>
+                </>
+              ) : (
+                option.label
+              ),
+              unavailable: clash(plans, questions, answers, step, option),
+            }))}
+            value={answers[question.id] ?? null}
+            onChange={(option) => setAnswers(choose(plans, questions, answers, step, option))}
+            takeFocus={moved}
+          />
+        )}
+      </div>
       <div className={styles.actions}>
         {step > 0 && (
           <Button variant="quiet" icon="chevron_left" onPress={() => move(step - 1)}>
