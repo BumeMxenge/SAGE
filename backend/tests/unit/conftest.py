@@ -3,18 +3,21 @@
 # another student's, so tests can check neither ever sees the other's rows. The advisor here only
 # records and replies, as the API tests check the routes, and the advisor's own tests its answers.
 from collections.abc import Callable
+from concurrent.futures import Future
 from uuid import UUID
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from sage.advisor import replies
 from sage.engine.eligibility import EntryRuleEligibility
 from sage.engine.generator import ClingoPlanGenerator
 from sage.main import create_app
 from sage.shared.advisor import Reply
 from sage.shared.api import deps
 from sage.shared.auth import Identity
+from sage.shared.language_model import ModelUnavailable
 from sage.shared.memory.auth import FakeTokenVerifier
 from sage.shared.memory.rules import InMemoryRuleRepository
 from sage.shared.memory.students import InMemoryStudentRepository
@@ -47,6 +50,30 @@ class Advisor:
             open_plan_id=chat.plan_id,
             citations=(self.citation,),
         )
+
+
+class Inline:
+    # Runs each job as it's submitted, in place of the advisor's workers, so a title is always ready
+    # by the time its reply is
+    def __init__(self, **settings) -> None:
+        pass
+
+    def submit(self, job, *arguments) -> Future:
+        # A model's one error comes back through the future, as a real worker hands it back
+        done = Future()
+        try:
+            done.set_result(job(*arguments))
+        except ModelUnavailable as error:
+            done.set_exception(error)
+        return done
+
+    def shutdown(self, wait: bool) -> None:
+        pass
+
+
+@pytest.fixture
+def inline(monkeypatch) -> None:
+    monkeypatch.setattr(replies, "ThreadPoolExecutor", Inline)
 
 
 @pytest.fixture

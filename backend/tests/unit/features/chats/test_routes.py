@@ -2,8 +2,8 @@
 # whichever way round it was sent, a question and the advisor's reply are stored together, a bad
 # question or pair is refused, a question the advisor can't answer in time stores nothing, and a
 # chat is named once, from its first question. Who may reach a chat is in test_guards.py.
+import logging
 import threading
-from concurrent.futures import Future
 from uuid import UUID, uuid4
 
 import pytest
@@ -191,20 +191,25 @@ def luna(app, stores):
 
 
 def test_a_provider_error_stores_nothing_and_reaches_her_as_advisor_unavailable(
-    luna, mbali, one_plan_chat
+    luna, mbali, one_plan_chat, caplog
 ):
     luna(ScriptedModel({"reply": [ModelUnavailable("InternalServerError")]}))
     before = messages_in(mbali, one_plan_chat).json()
-    response = ask(mbali, one_plan_chat, QUESTION)
+    with caplog.at_level(logging.WARNING, logger="sage.advisor.replies"):
+        response = ask(mbali, one_plan_chat, QUESTION)
     assert (response.status_code, response.json()["code"]) == (
         503,
         "advisor_unavailable",
     )
     assert messages_in(mbali, one_plan_chat).json() == before
+    # The log names the chat and the error's kind, nothing more
+    assert [record.getMessage() for record in caplog.records] == [
+        f"Advisor unavailable in chat {one_plan_chat['id']}: InternalServerError"
+    ]
 
 
 def test_a_turn_that_runs_over_stores_nothing_even_once_its_reply_comes(
-    luna, mbali, plan_ids, monkeypatch
+    luna, mbali, plan_ids, monkeypatch, caplog
 ):
     monkeypatch.setattr(replies, "TURN_LIMIT", 0.2)
     late = Response(
@@ -215,11 +220,15 @@ def test_a_turn_that_runs_over_stores_nothing_even_once_its_reply_comes(
     luna(model)
     # A new chat, so its title is asked for too, and answers in time though the reply doesn't
     chat = mbali.post("/v1/chats", json={"plan_id": plan_ids[1]}).json()
-    response = ask(mbali, chat, QUESTION)
+    with caplog.at_level(logging.WARNING, logger="sage.advisor.replies"):
+        response = ask(mbali, chat, QUESTION)
     assert (response.status_code, response.json()["code"]) == (
         503,
         "advisor_unavailable",
     )
+    assert [record.getMessage() for record in caplog.records] == [
+        f"Advisor unavailable in chat {chat['id']}: the turn ran over 0.2 s"
+    ]
     # The model answers after all, and the turn it was in runs to its end
     model.release()
     for thread in threading.enumerate():
@@ -229,29 +238,9 @@ def test_a_turn_that_runs_over_stores_nothing_even_once_its_reply_comes(
     assert chats_on(mbali, plan_ids[1]).json()[0]["title"] is None
 
 
-class Inline:
-    # Runs each job as it's submitted, in place of the advisor's workers, so a title is always ready
-    # by the time its reply is
-    def __init__(self, **settings) -> None:
-        pass
-
-    def submit(self, job, *arguments) -> Future:
-        # The script's one error comes back through the future, as a real worker hands it back
-        done = Future()
-        try:
-            done.set_result(job(*arguments))
-        except ModelUnavailable as error:
-            done.set_exception(error)
-        return done
-
-    def shutdown(self, wait: bool) -> None:
-        pass
-
-
 def test_a_chat_is_named_once_from_its_first_question(
-    luna, mbali, plan_ids, monkeypatch
+    luna, mbali, plan_ids, inline, caplog
 ):
-    monkeypatch.setattr(replies, "ThreadPoolExecutor", Inline)
     answered = Response(
         text='{"content": "Made up.", "referral": false, "open_plan_id": null, "citations": []}'
     )
@@ -270,11 +259,16 @@ def test_a_chat_is_named_once_from_its_first_question(
     luna(model)
     chat = mbali.post("/v1/chats", json={"plan_id": plan_ids[1]}).json()
     titles = []
-    for n in range(1, 5):
-        response = ask(mbali, chat, {"content": f"Question {n}", "term": "sem1"})
-        assert response.status_code == 201
-        titles.append(chats_on(mbali, plan_ids[1]).json()[0]["title"])
+    with caplog.at_level(logging.WARNING, logger="sage.advisor.replies"):
+        for n in range(1, 5):
+            response = ask(mbali, chat, {"content": f"Question {n}", "term": "sem1"})
+            assert response.status_code == 201
+            titles.append(chats_on(mbali, plan_ids[1]).json()[0]["title"])
     assert titles == [None, None, "Fridays This Semester", "Fridays This Semester"]
+    assert [record.getMessage() for record in caplog.records] == [
+        f"Advisor left chat {chat['id']} unnamed: RateLimitError",
+        f"Advisor left chat {chat['id']} unnamed: its title failed the check",
+    ]
     # Each title call named the chat from its first question
     asked = [call.conversation for call in model.calls if call.schema.name == "title"]
     assert asked == [(Said(role="user", text="Question 1"),)] * 3

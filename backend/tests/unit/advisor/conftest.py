@@ -1,6 +1,10 @@
 # What the advisor's tests share: the evidence for a question in a chat on Mbali's seeded plans,
-# against the approved 2026, with the engine's eligibility checker
+# against the approved 2026, with the engine's eligibility checker, and E4's evidence.py as the
+# oracle for what E4 sent
+import importlib.util
 from collections.abc import Callable
+from pathlib import Path
+from types import ModuleType
 from uuid import uuid4
 
 import pytest
@@ -45,3 +49,20 @@ def evidence(stores, chat_on) -> Callable[[], Evidence]:
         )
 
     return build
+
+
+@pytest.fixture(scope="session")
+def e4() -> ModuleType:
+    # E4's evidence.py, which built every request E4 measured, from Mbali's seed and the approved
+    # 2026 with no engine. It imports only the backend, so it loads on its own.
+    path = (
+        Path(__file__).resolve().parents[4]
+        / "experiments"
+        / "advisor"
+        / "model-choice"
+        / "evidence.py"
+    )
+    spec = importlib.util.spec_from_file_location("e4_evidence", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module

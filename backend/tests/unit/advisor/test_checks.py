@@ -60,7 +60,10 @@ def test_a_reply_that_kept_no_quote_is_the_fixed_referral_and_one_with_none_stan
     stated = {"content": "Made up.", "referral": False, "open_plan_id": "V01"}
     # Every quote dropped: the fixed line, a referral, and no plan offered, though V01 is open
     unchecked = check(Answer(**stated, citations=(bad,)), found, {"V01"}, "")
-    assert unchecked.reply == Reply(content=REFERRAL, referral=True)
+    assert (unchecked.reply, unchecked.dropped) == (
+        Reply(content=REFERRAL, referral=True),
+        (bad,),
+    )
     # One of two kept: the reply stands, citing only the one kept, as its first
     one_kept = check(Answer(**stated, citations=(bad, good)), found, {"V01"}, "")
     assert (one_kept.reply.content, one_kept.reply.referral) == ("Made up.", False)
