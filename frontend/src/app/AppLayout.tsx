@@ -22,6 +22,10 @@ const pages: { href: string; label: string; icon: PlainIconName }[] = [
   { href: '/history', label: nav.history, icon: 'schedule' },
 ]
 
+// What the frame tells the page beside the sidebar: whether the sidebar and the assistant are both
+// open, leaving a plan so little room that its controls show only their icons, as the prototype's do
+export type PageRoom = { iconOnly: boolean }
+
 // Narrower windows start with the sidebar folded, as the prototype does, which also keeps a page usable
 // at 400% zoom (WCAG 1.4.10). Read inside the component, as the route table's tests load this file in
 // Node, which has no window.
@@ -112,7 +116,7 @@ export function AppLayout() {
         <AccountMenu collapsed={collapsed} onOpen={openForMenu} />
       </header>
       <main className={styles.main}>
-        <Outlet />
+        <Outlet context={{ iconOnly: !collapsed && assistantOpen } satisfies PageRoom} />
       </main>
       {planId && <AssistantRail open={assistantOpen} onOpenChange={setAssistantOpen} />}
     </div>
