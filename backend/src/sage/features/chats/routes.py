@@ -1,5 +1,5 @@
-# Chats about one plan or a pair of plans, and the questions she asks in them. Each answer is the
-# advisor stand-in's fixed reply until the real advisor arrives.
+# Chats about one plan or a pair of plans, and the questions she asks in them, which the advisor
+# answers
 from uuid import UUID
 
 from fastapi import APIRouter
@@ -17,11 +17,13 @@ from sage.shared import students as domain
 from sage.shared.api.deps import ONBOARDED_ERRORS, ChatAdvisor, Onboarded, Students
 from sage.shared.api.problems import errors
 from sage.shared.errors import (
+    AdvisorUnavailable,
     ChatNotFound,
     DifferentPlanSets,
     InvalidRequest,
     PlanNotFound,
     QuestionnairePending,
+    RulebookNotLoaded,
     SamePlan,
 )
 
@@ -81,7 +83,12 @@ def list_messages(
     status_code=201,
     summary="Ask a question in a chat, and get the advisor's reply",
     responses=errors(
-        *ONBOARDED_ERRORS, InvalidRequest, ChatNotFound, QuestionnairePending
+        *ONBOARDED_ERRORS,
+        InvalidRequest,
+        ChatNotFound,
+        QuestionnairePending,
+        RulebookNotLoaded,
+        AdvisorUnavailable,
     ),
 )
 def send_message(

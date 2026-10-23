@@ -206,6 +206,20 @@ class InMemoryStudentRepository:
         )
         return stored
 
+    def name_chat(self, student_id: UUID, chat_id: UUID, title: str) -> None:
+        state = self._students.get(student_id)
+        if state is None:
+            return
+        self._change(
+            student_id,
+            chats=tuple(
+                chat.model_copy(update={"title": title})
+                if chat.id == chat_id and chat.title is None
+                else chat
+                for chat in state.chats
+            ),
+        )
+
     def messages(
         self, student_id: UUID, chat_id: UUID
     ) -> tuple[CitedMessage, ...] | None:

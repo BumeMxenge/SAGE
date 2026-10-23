@@ -25,7 +25,7 @@ from sage.shared.errors import (
     RulebookNotLoaded,
     SamePlan,
 )
-from sage.shared.rules import RuleSet
+from sage.shared.rules import RuleSet, meetings
 from sage.shared.students import PlanReason, PlanSetRows
 
 router = APIRouter(prefix="/plans", tags=["plans"])
@@ -133,7 +133,7 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
                 ],
                 meetings=[
                     Meeting.model_validate(slot, from_attributes=True)
-                    for slot in plans.meetings(by_code[course.code], rules, curriculum)
+                    for slot in meetings(by_code[course.code], rules, curriculum)
                 ],
             )
             for course in courses

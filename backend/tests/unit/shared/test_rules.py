@@ -1,10 +1,24 @@
 # Checks the rule trees' shapes: a tree that doesn't fit is refused, an any needs a child, a rule
 # printed in another order is the same tree, and so is one grouped differently within its own kind
-# or wrapped in an all or an any of one. An Explore Electives tab must be one the frontend has.
+# or wrapped in an all or an any of one. An Explore Electives tab must be one the frontend has. A
+# course's meetings in a plan are her curriculum's, and the alternatives that fit the plan.
+from uuid import UUID, uuid4
+
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from sage.shared.rules import AllOf, Course, CourseGroupMember, CourseNeed, EntryRule
+from sage.shared.rules import (
+    AllOf,
+    Course,
+    CourseGroupMember,
+    CourseNeed,
+    EntryRule,
+    RuleSet,
+    TimetableSlot,
+    TimetableSlotCurriculum,
+    meetings,
+)
+from sage.shared.students import PlanCourse
 
 ENTRY_RULE = TypeAdapter(EntryRule)
 
@@ -183,3 +197,57 @@ def test_an_unknown_tab_is_refused():
             course_code="SLL1052F",
             category="cooking",
         )
+
+
+STUDENT = UUID(int=1)
+HERS, THEIRS = "EB011EEE05", "EB999XYZ99"  # her curriculum, and a made-up second one
+
+
+def meeting(day: int, **fields) -> TimetableSlot:
+    # One meeting of a made-up course
+    return TimetableSlot(
+        id=uuid4(),
+        handbook_year=2026,
+        course_code="TST4000F",
+        term="sem1",
+        day=day,
+        **fields,
+    )
+
+
+def course(choices: dict[str, list[str]] | None = None) -> PlanCourse:
+    # The made-up course in a plan, with each group's alternatives that fit the plan
+    return PlanCourse(
+        plan_id=uuid4(),
+        course_code="TST4000F",
+        student_id=STUDENT,
+        handbook_year=2026,
+        choices=choices,
+    )
+
+
+def test_a_meeting_linked_to_curricula_shows_only_in_theirs():
+    everyone, hers, theirs = meeting(1), meeting(2), meeting(3)
+    rules = RuleSet(
+        timetable_slots=(everyone, hers, theirs),
+        timetable_slot_curricula=tuple(
+            TimetableSlotCurriculum(
+                slot_id=slot.id, handbook_year=2026, curriculum_code=curriculum
+            )
+            for slot, curriculum in ((hers, HERS), (theirs, THEIRS))
+        ),
+    )
+    assert meetings(course(), rules, HERS) == [everyone, hers]
+
+
+def test_a_plan_shows_only_the_alternatives_that_fit_it():
+    lecture = meeting(1)
+    tutorials = [
+        meeting(day, choice_group="tutorial", choice=letter)
+        for day, letter in ((2, "A"), (3, "B"), (4, "C"))
+    ]
+    rules = RuleSet(timetable_slots=(lecture, *tutorials))
+    # A group her plan doesn't record shows every alternative
+    assert meetings(course(), rules, HERS) == [lecture, *tutorials]
+    fitting = course({"tutorial": ["A", "C"]})
+    assert meetings(fitting, rules, HERS) == [lecture, tutorials[0], tutorials[2]]

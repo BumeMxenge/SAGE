@@ -323,7 +323,7 @@ export interface components {
          * Code
          * @enum {string}
          */
-        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan" | "questionnaire_not_needed" | "questionnaire_answered" | "unknown_answer" | "no_plan_matches" | "course_not_found" | "different_plan_sets" | "questionnaire_pending" | "chat_not_found";
+        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan" | "questionnaire_not_needed" | "questionnaire_answered" | "unknown_answer" | "no_plan_matches" | "course_not_found" | "different_plan_sets" | "questionnaire_pending" | "chat_not_found" | "advisor_unavailable";
         /** Comparison */
         Comparison: {
             first: components["schemas"]["Plan"];
@@ -2042,6 +2042,15 @@ export interface operations {
             };
             /** @description internal_error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded, advisor_unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -2,14 +2,13 @@
 # Course names, credits, groups and meetings come from the rulebook of the plan's year.
 from collections import defaultdict
 from collections.abc import Iterable
-from datetime import time
 from typing import Any
 from uuid import UUID
 
 from sage.shared.errors import PlanNotFound, PlansNotReady, SamePlan
 from sage.shared.repositories import StudentRepository
-from sage.shared.rules import Course, RuleSet, TermCode, TimetableSlot, meetings_on
-from sage.shared.students import PlanCourse, PlanSetRows
+from sage.shared.rules import Course, RuleSet, TermCode
+from sage.shared.students import PlanSetRows
 
 
 def current_set(students: StudentRepository, student_id: UUID) -> PlanSetRows:
@@ -85,25 +84,3 @@ def group_keys(rules: RuleSet, curriculum: str) -> set[str]:
         if rule.curriculum_code == curriculum:
             walk(rule.rule.model_dump(mode="json"))
     return named
-
-
-def meetings(
-    course: PlanCourse, rules: RuleSet, curriculum: str
-) -> list[TimetableSlot]:
-    # The meetings she attends: the compulsory ones, and each alternative of a choice group that
-    # fits her plan, or every alternative of a group her plan doesn't record
-    chosen = course.choices or {}
-    attended = [
-        slot
-        for slot in meetings_on(rules, curriculum, course.course_code)
-        if slot.choice_group not in chosen or slot.choice in chosen[slot.choice_group]
-    ]
-    # Unknown days and times last
-    return sorted(
-        attended,
-        key=lambda slot: (
-            slot.day or 8,
-            slot.start_time or time.max,
-            slot.choice or "",
-        ),
-    )

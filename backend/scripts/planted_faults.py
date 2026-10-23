@@ -1,6 +1,7 @@
-# Plants each of the 30 faults in a copy of the backend, runs the unit tests, and reports which test
-# caught it: the 24 from my test review, two in the review and approval the thesis rests on, and four
-# in the plan encoding, which mutmut can't reach as it isn't Python. The tests first run on the copy
+# Plants each of the 33 faults in a copy of the backend, runs the unit tests, and reports which test
+# caught it: the 24 from my test review, two in the review and approval the thesis rests on, four in
+# the plan encoding, which mutmut can't reach as it isn't Python, and three in the advisor's
+# guardrails, so they count in this score too. The tests first run on the copy
 # with no fault, and any failure stops the script, as a broken copy would make every fault look
 # caught. The faults go into a temporary copy, so a run cut short never leaves one in the real code.
 # A fault whose text no longer matches is reported as not applied, never as caught.
@@ -132,7 +133,7 @@ FAULTS = [
     Fault(
         16,
         "plans: unchosen alternatives hidden",
-        "src/sage/features/plans/service.py",
+        "src/sage/shared/rules.py",
         "slot.choice_group not in chosen or slot.choice in chosen[slot.choice_group]",
         "slot.choice_group is None or slot.choice in chosen.get(slot.choice_group, ())",
     ),
@@ -234,6 +235,30 @@ FAULTS = [
         "src/sage/engine/plans.lp",
         "#project take/1.",
         "",
+    ),
+    Fault(
+        31,
+        "advisor: a quote found anywhere in her slice counts",
+        "src/sage/advisor/checks.py",
+        "            passage is not None\n"
+        "            and WORD.search(said) is not None\n"
+        "            and said in flat(passage.content)\n",
+        "            WORD.search(said) is not None\n"
+        "            and any(said in flat(p.content) for p in passages.values())\n",
+    ),
+    Fault(
+        32,
+        "advisor: any plan in her set can be offered",
+        "src/sage/advisor/checks.py",
+        "plan = evidence.plans[offered] if offered in offerable else None",
+        'plan = evidence.plans.get(offered or "")',
+    ),
+    Fault(
+        33,
+        "advisor: a reply that kept no quote stays an answer",
+        "src/sage/advisor/checks.py",
+        "    if answer.citations and not kept:\n        return Checked(REFERRED",
+        "    if False:\n        return Checked(REFERRED",
     ),
 ]
 

@@ -37,6 +37,7 @@ class Code(StrEnum):
     DIFFERENT_PLAN_SETS = "different_plan_sets"
     QUESTIONNAIRE_PENDING = "questionnaire_pending"
     CHAT_NOT_FOUND = "chat_not_found"
+    ADVISOR_UNAVAILABLE = "advisor_unavailable"
 
 
 class Refusal(Exception):
@@ -216,3 +217,10 @@ class QuestionnairePending(Refusal):
 class ChatNotFound(Refusal):
     status, code = 404, Code.CHAT_NOT_FOUND
     message = "There's no chat with that id on your account."
+
+
+class AdvisorUnavailable(Refusal):
+    status, code = 503, Code.ADVISOR_UNAVAILABLE
+    message = (
+        "The advisor can't answer right now, and your question wasn't saved. Try again."
+    )

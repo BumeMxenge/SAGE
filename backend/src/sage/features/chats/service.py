@@ -100,6 +100,8 @@ def ask(
         open_plan_id=reply.open_plan_id,
     )
     question, answer = students.add_exchange(asked, answered, reply.citations)
+    if reply.title is not None:
+        students.name_chat(student_id, chat.id, reply.title)
     return (
         CitedMessage(message=question),
         CitedMessage(message=answer, citations=reply.citations),
