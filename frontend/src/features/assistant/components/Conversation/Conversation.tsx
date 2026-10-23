@@ -1,0 +1,132 @@
+// One chat with SAGE. Empty, it says what SAGE can help with and offers questions to start from.
+// Otherwise its messages, oldest first: her questions in bubbles at the end of the line, and SAGE's
+// replies across the width. A question on its way waits at the foot of the conversation, under the
+// leaf saying SAGE is working, and one that failed says why where its reply would be, with Try Again
+// when trying again can help. The conversation is a log, so a screen reader reads each new message as
+// it arrives, and a tab stop, so the keyboard can scroll it (audit row 8). Sending in any way, and Try
+// Again, leave focus in the chat box, as the button pressed may vanish or grey out under her.
+import { useQuery } from '@tanstack/react-query'
+import { useEffect, useRef } from 'react'
+import { Button } from '@/components/actions/Button/Button.tsx'
+import { ErrorState } from '@/components/feedback/ErrorState/ErrorState.tsx'
+import { LeafPulse } from '@/components/feedback/LeafPulse/LeafPulse.tsx'
+import { ChatBox } from '@/features/assistant/components/ChatBox/ChatBox.tsx'
+import { Reply } from '@/features/assistant/components/Reply/Reply.tsx'
+import type { ApiError } from '@/lib/api.ts'
+import type { components } from '@/lib/api-types.ts'
+import { actionLabels, explain } from '@/lib/errors.ts'
+import type { PlanAddress } from '@/lib/planAddress.ts'
+import { queries } from '@/lib/queryKeys.ts'
+import styles from './Conversation.module.css'
+
+type PlanSummary = components['schemas']['PlanSummary']
+
+// A question this chat sent, while it waits for its reply or once it failed
+export type Sent = { content: string; error: ApiError | null }
+
+type ConversationProps = {
+  chatId: string | null // null for a new chat, which has nothing to read until its first question
+  address: PlanAddress
+  plans: PlanSummary[]
+  planName: string | null // null for a pair
+  waiting: boolean // a question on its way, here or in another chat, holds Send
+  sent: Sent | null
+  onSend: (question: string) => void
+  onRetry: () => void
+}
+
+export function Conversation({ chatId, address, plans, planName, waiting, sent, onSend, onRetry }: ConversationProps) {
+  const log = useRef<HTMLDivElement>(null)
+  const box = useRef<HTMLTextAreaElement>(null)
+  const read = useQuery({ ...queries.messages(chatId ?? ''), enabled: chatId !== null })
+  const messages = chatId === null ? [] : read.data
+  const count = messages?.length
+
+  // The newest message in view as each arrives, as a question goes and as one fails
+  useEffect(() => {
+    const end = log.current
+    if (end) end.scrollTop = end.scrollHeight
+  }, [chatId, count, sent?.content, sent?.error])
+
+  function ask(question: string) {
+    onSend(question)
+    box.current?.focus()
+  }
+
+  function tryAgain() {
+    onRetry()
+    box.current?.focus()
+  }
+
+  const intro =
+    planName === null
+      ? 'I can compare these two plans: their courses, credits and timetables, and where they differ.'
+      : `I can answer questions about ${planName}: its courses, credits and timetable, and the handbook rules behind them.`
+  const suggestions =
+    planName === null
+      ? ['How do these plans differ?', 'Which has the lighter workload?']
+      : ['Is this plan clash-free?', 'Can I swap an elective?']
+  const placeholder = planName === null ? 'Ask SAGE to compare these plans' : `Ask about ${planName}`
+  const failure = sent?.error ? explain(sent.error) : null
+
+  // Until the chat's messages arrive, nothing shows above the chat box, which stays put and holds Send.
+  // Its loading state comes with the app's others.
+  return (
+    <div className={styles.conversation}>
+      {messages !== undefined && messages.length === 0 && sent === null && (
+        <div className={styles.start}>
+          <p className={styles.intro}>{intro}</p>
+          {/* Left out while a question in another chat waits for its reply, as nothing more can go */}
+          {!waiting &&
+            suggestions.map((question) => (
+              <Button key={question} variant="suggestion" onPress={() => ask(question)}>
+                {question}
+              </Button>
+            ))}
+        </div>
+      )}
+      {messages !== undefined && (messages.length > 0 || sent !== null) && (
+        // A scrolling box must be a tab stop, or the keyboard can't scroll a conversation with nothing
+        // to press
+        // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+        <div ref={log} role="log" aria-label="Conversation" tabIndex={0} className={styles.log}>
+          {messages.map((message) =>
+            message.role === 'user' ? (
+              <p key={message.id} className={styles.question}>
+                <span className="visually-hidden">You asked: </span>
+                {message.content}
+              </p>
+            ) : (
+              <Reply key={message.id} reply={message} plans={plans} address={address} />
+            ),
+          )}
+          {sent && (
+            <p className={styles.question}>
+              <span className="visually-hidden">You asked: </span>
+              {sent.content}
+            </p>
+          )}
+        </div>
+      )}
+      {sent && sent.error === null && (
+        <div className={styles.status}>
+          <LeafPulse label="Working on your answer…" />
+        </div>
+      )}
+      {failure && (
+        <div className={styles.status}>
+          <ErrorState variant="message" icon="error" title={failure.title} message={failure.message} reference={failure.reference}>
+            {failure.action === 'retry' && (
+              <Button variant="secondary" icon="refresh" onPress={tryAgain}>
+                {actionLabels.retry}
+              </Button>
+            )}
+          </ErrorState>
+        </div>
+      )}
+      <div className={styles.box}>
+        <ChatBox ref={box} label="Ask SAGE" placeholder={placeholder} waiting={waiting || messages === undefined} onSend={ask} />
+      </div>
+    </div>
+  )
+}
