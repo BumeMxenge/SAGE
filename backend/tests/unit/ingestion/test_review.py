@@ -1,9 +1,14 @@
 # Checks a year is reviewed by exception against the previous approved year, on small rulebooks built
 # here: the first year is all new, an unchanged row carries over, a removal is always flagged, one row
 # covers every course printing the same words, like trees sit together, a DP draft is marked and a
-# failed check is always a reason to look. Then that decisions hold, are checked and set the year.
+# failed check is always a reason to look. Then that decisions hold, are checked and set the year,
+# and that a model's tab and summary are always reviewed, beside the requirement on the same course.
+import json
+from pathlib import Path
+
 from sage.ingestion.checks import Check, Failure
-from sage.ingestion.review import Snapshot, compare
+from sage.ingestion.ingest import review_file
+from sage.ingestion.review import ReviewRow, Snapshot, compare
 from sage.ingestion.sources import Reading
 from sage.shared.rules import (
     AllOf,
@@ -867,3 +872,194 @@ def test_each_decision_sets_the_year_and_is_recorded_with_its_change():
         "EEE3004F": needs("EEE2004F"),
     }
     assert review.rules.equivalences == ()
+
+
+# A made-up complementary course's passage, as the model reads it, and two summaries of it
+PASSAGE = (
+    "HST1013F Made Up History\nCourse outline: How made-up societies kept records."
+)
+SUMMARY = "How societies kept records. Students learn to read sources closely."
+LATER = "How societies kept their records. Students learn to argue from sources."
+
+
+def elective(code, tab, summary, rule=None, year=2026):
+    # A complementary course and its member row, as ingestion writes them from a model's draft
+    return (
+        course(code, rule, year).model_copy(update={"summary": summary}),
+        CourseGroupMember(
+            handbook_year=year,
+            group_key="complementary",
+            course_code=code,
+            category=tab,
+        ),
+    )
+
+
+def elective_readings(code, printed="No requirement printed", flag=None):
+    # The course's requirement, as printed, and the passage the model wrote its tab and summary from
+    return (
+        reading("courses", code, printed, flag, "p. 9"),
+        reading(
+            "course_group_members",
+            f"complementary/{code}",
+            PASSAGE,
+            "model_written",
+            "Courses row 3",
+        ),
+    )
+
+
+def test_a_model_written_row_is_always_sent_for_review():
+    # Its requirement is read with certainty, so only the model's writing needs a person
+    row, member = elective("HST1013F", "history", SUMMARY)
+    rules = RuleSet(courses=(row,), course_group_members=(member,))
+    review = compare(2026, rules, elective_readings("HST1013F"), ())
+    assert [(r.id, r.causes, r.covers, r.printed, r.new) for r in review.rows] == [
+        (
+            "elective/HST1013F",
+            ("model_written",),
+            {
+                "courses/HST1013F": "p. 9",
+                "course_group_members/complementary/HST1013F": "Courses row 3",
+            },
+            PASSAGE,
+            {"tab": "history", "summary": SUMMARY},
+        )
+    ]
+    assert [(d.entity, d.flag, d.approved) for d in review.deltas] == [
+        ("course_group_members", "model_written", None),
+        ("courses", "model_written", None),
+    ]
+
+
+def test_an_elective_carries_over_only_while_its_summary_does():
+    row, member = elective("HST1013F", "history", SUMMARY, year=2023)
+    previous = Snapshot(
+        rules=approved_2023(courses=(row,), course_group_members=(member,)),
+        readings=elective_readings("HST1013F"),
+    )
+
+    def run(summary):
+        row, member = elective("HST1013F", "history", summary)
+        rules = RuleSet(courses=(row,), course_group_members=(member,))
+        return compare(
+            2026, rules, elective_readings("HST1013F"), (), previous=previous
+        )
+
+    unchanged = run(SUMMARY)
+    assert (unchanged.rows, unchanged.carried) == ((), 2)
+    # The same passage and tab, but another summary
+    (changed,) = run(LATER).rows
+    assert (changed.old, changed.new) == (
+        {
+            "course_group_members/complementary/HST1013F": {
+                "tab": "history",
+                "summary": SUMMARY,
+            }
+        },
+        {"tab": "history", "summary": LATER},
+    )
+
+
+def test_two_rows_decide_their_own_columns_of_one_course():
+    # The grammar refused its requirement, and a model wrote its tab and summary
+    draft = Refer(refer="Permission of the convener.")
+    row, member = elective("HST1013F", "history", SUMMARY, draft)
+    rules = RuleSet(courses=(row,), course_group_members=(member,))
+    readings = elective_readings(
+        "HST1013F", "Permission of the convener.", "refused_free_text"
+    )
+
+    def run(decided=()):
+        return compare(2026, rules, readings, (), decided=decided)
+
+    rows = [row.model_dump(mode="json") for row in run().rows]
+    assert [row["id"] for row in rows] == ["requirement/HST1013F", "elective/HST1013F"]
+    tab_and_summary = {"tab": "society", "summary": LATER}
+    rows[1].update(decision="correct", corrected=tab_and_summary)
+    # The course's change waits for its requirement row, while its member's is settled
+    assert [(d.entity, d.approved) for d in run(rows).deltas] == [
+        ("course_group_members", True),
+        ("courses", None),
+    ]
+    rows[0].update(decision="correct", corrected={"refer": "Permission."})
+    review = run(rows)
+    assert review.settled
+    assert [(c.entry_rule, c.summary) for c in review.rules.courses] == [
+        (Refer(refer="Permission."), LATER)
+    ]
+    assert [m.category for m in review.rules.course_group_members] == ["society"]
+    # Each change holds both decisions, flagged with the first cause in DeltaFlag's order, where
+    # every refusal comes before model_written
+    corrected_course = row.model_copy(
+        update={"entry_rule": Refer(refer="Permission."), "summary": LATER}
+    ).model_dump(mode="json", exclude={"handbook_year"})
+    assert [
+        (d.entity, d.flag, d.approved, d.corrected_value) for d in review.deltas
+    ] == [
+        (
+            "course_group_members",
+            "model_written",
+            True,
+            {
+                "group_key": "complementary",
+                "course_code": "HST1013F",
+                "category": "society",
+            },
+        ),
+        ("courses", "refused_free_text", True, corrected_course),
+    ]
+
+
+def test_an_elective_with_no_usable_draft_can_only_be_corrected():
+    # HST1013F has no draft yet. SLL1017F is a language option, whose tab is fixed, with its draft.
+    language = "One language course. It teaches speaking."
+    rows, members = zip(
+        elective("HST1013F", None, None),
+        elective("SLL1017F", "languages", language),
+        strict=True,
+    )
+    rules = RuleSet(courses=rows, course_group_members=members)
+    readings = (*elective_readings("HST1013F"), *elective_readings("SLL1017F"))
+
+    def run(decided=()):
+        return compare(2026, rules, readings, (), decided=decided)
+
+    decided = [row.model_dump(mode="json") for row in run().rows]
+    for row in decided:
+        row["decision"] = "accept"
+    review = run(decided)
+    assert [problem.row for problem in review.problems] == ["elective/HST1013F"]
+    assert "no usable draft to accept" in review.problems[0].text
+    decided[0].update(
+        decision="correct", corrected={"tab": "history", "summary": SUMMARY}
+    )
+    assert run(decided).settled
+
+
+def test_the_87_decisions_of_2026_still_hold():
+    # The 87 rows decided on 18 October, from main's review.json before 2026 was approved again.
+    # Each must still be decided as it was, on the row it was decided on: a fingerprint SAGE still
+    # computes from the row as stored, so rereading the year keeps the decision.
+    then = json.loads(
+        (Path(__file__).with_name("decided_2026.json")).read_text("utf-8")
+    )
+    now = {
+        row["id"]: row
+        for row in json.loads(review_file(2026).read_text(encoding="utf-8"))["rows"]
+    }
+    fields = ("fingerprint", "decision", "corrected", "note")
+    assert len(then) == 87
+    assert [
+        row
+        for row in then
+        if {f: now[row["id"]][f] for f in fields} != {f: row[f] for f in fields}
+    ] == []
+    assert [
+        row["id"]
+        for row in then
+        if ReviewRow.model_validate(
+            {k: v for k, v in now[row["id"]].items() if k != "fingerprint"}
+        ).fingerprint
+        != row["fingerprint"]
+    ] == []

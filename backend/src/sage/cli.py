@@ -14,6 +14,7 @@ from uuid import UUID
 from pydantic import JsonValue
 
 from sage.config import get_settings, is_local
+from sage.ingestion.electives import LANGUAGES, TABS
 from sage.ingestion.ingest import (
     Candidate,
     Sitting,
@@ -527,9 +528,15 @@ def settle(
         decision = KEYS.get(key)
         if decision not in allowed:
             continue
-        corrected = corrected_tree(row, folder, edit) if decision == "correct" else None
-        if decision == "correct" and corrected is None:
-            continue
+        corrected = None
+        if decision == "correct":
+            corrected = (
+                corrected_elective(row, ask)
+                if row.kind == "elective"
+                else corrected_tree(row, folder, edit)
+            )
+            if corrected is None:
+                continue
         problems = sitting.decide(row.id, decision, corrected)
         if problems and all(problem.note for problem in problems):
             print(*(f"  {problem.text}" for problem in problems), sep="\n")
@@ -572,6 +579,26 @@ def corrected_tree(
         error = tree_fault(row.kind, tree)
         if error is None:
             return tree
+
+
+def corrected_elective(row: ReviewRow, ask: Callable[[str], str]) -> JsonValue:
+    # The tab picked from the numbered list, unless the row is a language option's, whose tab is
+    # fixed, then the summary as typed. Enter keeps either as drafted. None when neither changed, to
+    # choose again.
+    value = dict(row.new)
+    if not row.language:
+        tabs = [tab for tab in TABS if tab != LANGUAGES]
+        numbered = {str(n): tab for n, tab in enumerate(tabs, 1)}
+        print(*(f"  {n} {tab}" for n, tab in numbered.items()), sep="\n")
+        while (picked := ask(f"Tab, or Enter to keep {value['tab']}: ").strip()) and (
+            picked not in numbered
+        ):
+            continue
+        if picked:
+            value["tab"] = numbered[picked]
+    if summary := ask("Summary, or Enter to keep it: ").strip():
+        value["summary"] = summary
+    return None if value == row.new else value
 
 
 def open_in_code(path: Path) -> None:
@@ -622,6 +649,12 @@ def _described(kind: str, key: str | None, value: JsonValue) -> list[str]:
         words = in_words(TREES[kind].validate_python(value))
     elif kind == "equivalence":
         words = f"{value['course_code']} counts as {value['counts_as']}"
+    elif kind == "elective":
+        words = (
+            f"on the {value['tab']} tab: {value['summary']}"
+            if value["summary"]
+            else "nothing drafted yet"
+        )
     elif key and key.startswith("courses/"):
         entry = value["entry_rule"]
         rule = in_words(
