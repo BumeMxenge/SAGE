@@ -1,6 +1,7 @@
 # Checks what Luna is given on Mbali's seed and the approved 2026: her slice holds exactly the
 # passages chosen by key, each tool answers from her plans, her record and print as E4's did, a
-# missing term on screen says so, and a course's meetings are worded as the plan view shows them
+# missing term on screen says so, a complementary slot's fitting courses reach her message with
+# their marks, and a course's meetings are worded as the plan view shows them
 from datetime import time
 from uuid import UUID, uuid4
 
@@ -8,7 +9,7 @@ from sage.advisor.evidence import Evidence, meeting_words
 from sage.engine.eligibility import EntryRuleEligibility
 from sage.shared.rulebook import Rulebook
 from sage.shared.rules import RuleSet, TimetableSlot
-from sage.shared.students import PlanCourse
+from sage.shared.students import PlanCourse, PlanReason
 from tests.unit.accounts import MBALI
 
 
@@ -118,6 +119,46 @@ def test_a_question_with_no_term_on_screen_says_so(stores, chat_on):
         chat_on(1), None, students, Rulebook(rules), EntryRuleEligibility()
     )
     assert "- Term on screen: none" in found.context().splitlines()
+
+
+def test_a_slots_fitting_courses_reach_her_message_with_their_marks(stores, evidence):
+    # A made-up complementary slot on her first plan, in the engine's shape, with four approved
+    # courses that fit: one plain, one with a meeting at no printed time, one worth fewer than the
+    # line's 18 credits and one both. Each goes under the slot by the code and name the approved
+    # 2026 complementary workbook gives it.
+    students = stores[1]
+    state = students.get(MBALI)
+    first = next(plan for plan in state.plans if plan.position == 1)
+    slot = PlanReason(
+        id=uuid4(),
+        plan_set_id=first.plan_set_id,
+        student_id=MBALI,
+        plan_id=first.id,
+        kind="included",
+        message="Add one approved complementary studies course: 4 fit this plan's timetable.",
+        details={
+            "credits": 18,
+            "fits": ["EGS1007S", "BIO1004S", "PHI1010S", "REL1006S"],
+            "untimed": ["BIO1004S", "REL1006S"],
+            "fewer_credits": ["PHI1010S", "REL1006S"],
+            "sections": {},
+            "forced": {},
+        },
+    )
+    students.replace(
+        state.model_copy(update={"plan_reasons": (*state.plan_reasons, slot)})
+    )
+    lines = evidence().context().splitlines()
+    under = lines.index(f"- {slot.message}") + 1
+    assert lines[under : under + 4] == [
+        "  - EGS1007S Human & Physical Systems",
+        "  - BIO1004S Biological Diversity: a meeting with no printed time",
+        "  - PHI1010S Ethics: worth fewer than 18 credits",
+        (
+            "  - REL1006S Judaism, Christianity and Islam: a meeting with no printed time, "
+            "worth fewer than 18 credits"
+        ),
+    ]
 
 
 def slot(day: int | None, hours: tuple[int, int] | None, **fields) -> TimetableSlot:

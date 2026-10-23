@@ -10,7 +10,7 @@ from sage.shared.planning import EligibilityChecker
 from sage.shared.repositories import StudentRepository
 from sage.shared.rulebook import Rulebook
 from sage.shared.rules import Passage, RuleSet, TimetableSlot, meetings
-from sage.shared.students import Chat, Plan, PlanCourse
+from sage.shared.students import Chat, Plan, PlanCourse, PlanReason
 from sage.shared.wording import in_words
 
 DAYS = {1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun"}
@@ -94,7 +94,7 @@ class Evidence:
         open_ids = {self.plans[key].id for key in self.open}
         # The set's own reasons first, then the open plans'
         reasons = [
-            f"- {reason.message}"
+            self._reason(reason)
             for reason in sorted(
                 self.plan_set.plan_reasons,
                 key=lambda reason: reason.plan_id is not None,
@@ -118,6 +118,23 @@ class Evidence:
                 "Reasons behind the plan set\n" + "\n".join(reasons),
             ]
         )
+
+    def _reason(self, reason: PlanReason) -> str:
+        # Only a complementary slot's reason has details. Under it go the approved courses that fit
+        # the plan's timetable, marked as its details mark them: the engine's facts, as the plan's
+        # meetings are, so Luna may name them without a citation.
+        lines = [f"- {reason.message}"]
+        if reason.details:
+            details = reason.details
+            for code in details["fits"]:
+                marks = []
+                if code in details["untimed"]:
+                    marks.append("a meeting with no printed time")
+                if code in details["fewer_credits"]:
+                    marks.append(f"worth fewer than {details['credits']} credits")
+                course = f"  - {code} {self.courses[code].name}"
+                lines.append(f"{course}: {', '.join(marks)}" if marks else course)
+        return "\n".join(lines)
 
     def _plan(self, key: str) -> str:
         plan = self.plans[key]
