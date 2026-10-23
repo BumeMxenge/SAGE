@@ -240,8 +240,11 @@ FAULTS = [
         31,
         "advisor: a quote found anywhere in her slice counts",
         "src/sage/advisor/checks.py",
-        "found = passage is not None and bool(said) and said in flat(passage.content)",
-        "found = bool(said) and any(said in flat(p.content) for p in passages.values())",
+        "            passage is not None\n"
+        "            and WORD.search(said) is not None\n"
+        "            and said in flat(passage.content)\n",
+        "            WORD.search(said) is not None\n"
+        "            and any(said in flat(p.content) for p in passages.values())\n",
     ),
     Fault(
         32,
