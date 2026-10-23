@@ -108,7 +108,8 @@
   --width-popover: 320px; /* the plan switcher's list */
   --width-tooltip: 240px;
   --width-sidebar: 266px; /* the open sidebar, as measured */
-  --width-rail: 62px; /* the collapsed sidebar, a rail of icons */
+  --width-rail: 62px; /* the collapsed sidebar, a rail of icons, and the folded assistant */
+  --width-assistant: 360px; /* the open assistant, as measured */
   --width-course-code: 80px; /* a course code's column, so each year's table starts its names alike */
   --width-hours: 58px; /* the column of hours beside a plan's week */
   --width-hours-compact: 34px; /* the same beside the week in a compare panel */
