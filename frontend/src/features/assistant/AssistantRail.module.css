@@ -1,0 +1,72 @@
+/* The sidebar's twin on the right: as tall as the window and in view as the page scrolls, the page's
+   colour set apart by one line, not a grey panel. Opening and folding ease its width over the slow
+   motion token, clipping what doesn't fit yet, as the sidebar does. */
+.rail {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: var(--width-assistant);
+  height: 100dvh;
+  overflow: hidden;
+  border-left: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition: width var(--duration-slow) var(--easing);
+}
+
+/* Folded, a strip as wide as the sidebar's rail, with Open Assistant level with the sidebar's toggle,
+   which sits centred in a row one control high, and the word under it */
+.rail[data-folded] {
+  gap: var(--space-3);
+  align-items: center;
+  width: var(--width-rail);
+  padding-top: calc(var(--space-3) + (var(--size-control-md) - var(--size-control-sm)) / 2);
+}
+
+/* Written up the strip, reading from the bottom, as in the prototype */
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-secondary);
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+
+/* The chat icon, the title over what it reads, then the buttons, above one line, as in the prototype */
+.header {
+  --icon-size: var(--size-icon-md);
+
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-3) var(--space-2) var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  color: var(--color-text);
+}
+
+/* Cut short with an ellipsis when too long, as the prototype does */
+.reading {
+  margin: var(--space-1) 0 0;
+  overflow: hidden;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-heading);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-text-secondary);
+}

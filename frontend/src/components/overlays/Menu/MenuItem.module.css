@@ -1,3 +1,14 @@
+/* An icon sits just before the words, in the secondary colour, as the prototype's Chat History draws
+   it */
+.item {
+  gap: var(--space-2);
+  justify-content: flex-start;
+}
+
+.item > svg {
+  color: var(--color-text-secondary);
+}
+
 /* The chosen item in a section where one is chosen, such as Appearance, is semibold as well as filled.
    The fill alone is too faint to mark it (1.17:1), and hover paints almost the same grey. */
 .item[data-selected] {

@@ -1,9 +1,10 @@
 // The plan workspace. While her set is too long to compare and isn't answered, /plan shows the
 // questionnaire. Then /plan opens her first plan, replacing its own address so Back never returns to
-// it, or says why she has none. A plan's own address shows the plan view, and the assistant will sit
-// beside it.
+// it, or says why she has none. A plan's own address shows the plan view, with the assistant beside it
+// in the frame, and while the sidebar and the assistant are both open the plan's controls show only
+// their icons.
 import { useQuery } from '@tanstack/react-query'
-import { Navigate, useParams } from 'react-router'
+import { Navigate, useOutletContext, useParams } from 'react-router'
 import { EmptyState } from '@/components/feedback/EmptyState/EmptyState.tsx'
 import { PlanView } from '@/features/plan/PlanView.tsx'
 import { firstPlan } from '@/features/plan/planSet.ts'
@@ -11,11 +12,13 @@ import { QuestionnairePage } from '@/features/questionnaire/QuestionnairePage.ts
 import { pageNames } from '@/lib/copy.ts'
 import { planPath } from '@/lib/planAddress.ts'
 import { queries } from '@/lib/queryKeys.ts'
+import type { PageRoom } from './AppLayout.tsx'
 
 export function PlanWorkspace() {
   const { planId } = useParams()
+  const { iconOnly } = useOutletContext<PageRoom>()
   const { data: set } = useQuery(queries.plans())
-  if (planId) return <PlanView />
+  if (planId) return <PlanView iconOnly={iconOnly} />
   // Nothing shows until her plans arrive. Its loading state comes with the app's others.
   if (!set) return null
   if (set.questionnaire_needed) return <QuestionnairePage set={set} />

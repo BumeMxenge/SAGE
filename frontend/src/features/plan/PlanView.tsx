@@ -3,7 +3,9 @@
 // two plans sit side by side in panels until Done Comparing, Back or Escape. The header and the term's
 // row stay in view as the week scrolls beneath them. The address says which plans and term are open
 // (lib/planAddress.ts), so choosing any of them changes it, and what was on screen stays there while
-// the next plan arrives.
+// the next plan arrives. While the sidebar and the assistant are both open, Compare, Done Comparing
+// and the view's options show only their icons, each named in a tooltip, as the prototype's do when
+// the docked assistant takes their room.
 import { keepPreviousData, useQueries, useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-aria-components'
@@ -13,6 +15,7 @@ import { Card } from '@/components/content/Card/Card.tsx'
 import { ErrorState } from '@/components/feedback/ErrorState/ErrorState.tsx'
 import { Segment } from '@/components/inputs/SegmentedControl/Segment.tsx'
 import { SegmentedControl } from '@/components/inputs/SegmentedControl/SegmentedControl.tsx'
+import { Tooltip } from '@/components/overlays/Tooltip/Tooltip.tsx'
 import { ApiError } from '@/lib/api.ts'
 import { pageNames, termLabels } from '@/lib/copy.ts'
 import { actionLabels, explain } from '@/lib/errors.ts'
@@ -24,7 +27,7 @@ import { partnerOf } from './planSet.ts'
 import { coloursOf, weekOf } from './week.ts'
 import styles from './PlanView.module.css'
 
-export function PlanView() {
+export function PlanView({ iconOnly }: { iconOnly: boolean }) {
   const address = usePlanAddress()
   const { planId, compareWith, term } = address
   const navigate = useNavigate()
@@ -92,8 +95,16 @@ export function PlanView() {
         ))}
       </SegmentedControl>
       <SegmentedControl label="View" selectedKey={view} onChange={(key) => setView(key === 'list' ? 'list' : 'calendar')}>
-        <Segment id="calendar">Calendar</Segment>
-        <Segment id="list">Course List</Segment>
+        <Tooltip text="Calendar" isDisabled={!iconOnly}>
+          <Segment id="calendar" icon={iconOnly ? 'calendar_today' : undefined}>
+            Calendar
+          </Segment>
+        </Tooltip>
+        <Tooltip text="Course List" isDisabled={!iconOnly}>
+          <Segment id="list" icon={iconOnly ? 'format_list_bulleted' : undefined}>
+            Course List
+          </Segment>
+        </Tooltip>
       </SegmentedControl>
     </div>
   )
@@ -123,9 +134,16 @@ export function PlanView() {
             )}
             <p className={styles.credits}>{plan.credits.total} credits</p>
             {partner && (
-              <Button variant="secondary" icon="view_column_2" onPress={() => go({ compareWith: partner.id })}>
-                Compare
-              </Button>
+              <Tooltip text="Compare" isDisabled={!iconOnly}>
+                <Button
+                  variant="secondary"
+                  icon="view_column_2"
+                  iconOnly={iconOnly}
+                  onPress={() => go({ compareWith: partner.id })}
+                >
+                  Compare
+                </Button>
+              </Tooltip>
             )}
           </div>
           {controls}
@@ -139,9 +157,11 @@ export function PlanView() {
     <div className={styles.bar}>
       <div className={styles.header}>
         <h1 className={styles.title}>Comparing Plans</h1>
-        <Button variant="secondary" icon="close" onPress={() => go({ compareWith: null })}>
-          Done Comparing
-        </Button>
+        <Tooltip text="Done Comparing" isDisabled={!iconOnly}>
+          <Button variant="secondary" icon="close" iconOnly={iconOnly} onPress={() => go({ compareWith: null })}>
+            Done Comparing
+          </Button>
+        </Tooltip>
       </div>
       {controls}
     </div>

@@ -2,14 +2,16 @@
 // as the address changes while the sidebar stays as it is. The sidebar is the page's banner, holding
 // the logo, the main navigation (audit §5) and the account. It folds to a rail of icons and opens
 // again. Folded, the labels stay in the page, clipped from view, so each link keeps its name, and a
-// tooltip shows it beside the icon instead.
+// tooltip shows it beside the icon instead. At a plan's own address the assistant sits on the page's
+// other side, outside its main landmark, as the named aside approved difference 6 asks for.
 import { useEffect, useState } from 'react'
 import { Button, Link } from 'react-aria-components'
-import { Outlet, useLocation } from 'react-router'
+import { Outlet, useLocation, useParams } from 'react-router'
 import { IconButton } from '@/components/actions/IconButton/IconButton.tsx'
 import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import { Logo } from '@/components/brand/Logo/Logo.tsx'
 import { Tooltip } from '@/components/overlays/Tooltip/Tooltip.tsx'
+import { AssistantRail } from '@/features/assistant/AssistantRail.tsx'
 import { nav } from '@/lib/copy.ts'
 import { AccountMenu } from './AccountMenu.tsx'
 import styles from './AppLayout.module.css'
@@ -20,6 +22,10 @@ const pages: { href: string; label: string; icon: PlainIconName }[] = [
   { href: '/history', label: nav.history, icon: 'schedule' },
 ]
 
+// What the frame tells the page beside the sidebar: whether the sidebar and the assistant are both
+// open, leaving a plan so little room that its controls show only their icons, as the prototype's do
+export type PageRoom = { iconOnly: boolean }
+
 // Narrower windows start with the sidebar folded, as the prototype does, which also keeps a page usable
 // at 400% zoom (WCAG 1.4.10). Read inside the component, as the route table's tests load this file in
 // Node, which has no window.
@@ -27,7 +33,12 @@ const wideWindow = '(min-width: 1100px)'
 
 export function AppLayout() {
   const { pathname } = useLocation()
+  // Only a plan's own address names one
+  const { planId } = useParams()
   const [collapsed, setCollapsed] = useState(() => !window.matchMedia(wideWindow).matches)
+  // The assistant starts folded, as the prototype's does, and stays as she leaves it while she moves
+  // between pages
+  const [assistantOpen, setAssistantOpen] = useState(false)
   // A pressed toggle disappears as the sidebar changes shape, so the one that replaces it takes focus.
   // Only a press sets this: the window's width, or the account menu opening the sidebar, moves no focus.
   const [moveFocus, setMoveFocus] = useState(false)
@@ -105,8 +116,9 @@ export function AppLayout() {
         <AccountMenu collapsed={collapsed} onOpen={openForMenu} />
       </header>
       <main className={styles.main}>
-        <Outlet />
+        <Outlet context={{ iconOnly: !collapsed && assistantOpen } satisfies PageRoom} />
       </main>
+      {planId && <AssistantRail open={assistantOpen} onOpenChange={setAssistantOpen} />}
     </div>
   )
 }

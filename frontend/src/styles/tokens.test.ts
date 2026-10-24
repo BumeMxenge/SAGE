@@ -49,9 +49,9 @@ function value(name: string, theme: Theme): string {
 const surfaces = ['--color-surface', '--color-surface-raised', '--color-surface-muted', '--color-surface-field', '--color-brand-sand']
 const courseColours = [...tokens.light.keys()].filter((name) => name.startsWith('--color-course-'))
 
-// Placeholders use --color-text-secondary, so its check on --color-surface-field is the one a dark
-// field relies on to be identified
-const checks: { token: string; against: string[]; minimum: number; theme?: Theme }[] = [
+// Placeholders use --color-text-secondary, so its check on --color-surface-field is the one a field
+// relies on to be identified, as its border is pale in light and absent in dark
+const checks: { token: string; against: string[]; minimum: number }[] = [
   ...[
     '--color-text',
     '--color-text-secondary',
@@ -70,7 +70,6 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
   // The danger button's fill is the danger text colour
   { token: '--color-on-primary', against: ['--color-primary', '--color-surface-inverse', '--color-text-danger'], minimum: 4.5 },
   { token: '--color-on-fill', against: ['--color-sign-in', '--color-accent-fill', ...courseColours], minimum: 4.5 },
-  { token: '--color-border-field', against: surfaces, minimum: 3, theme: 'light' },
   { token: '--color-border-control', against: surfaces, minimum: 3 },
   { token: '--color-focus', against: surfaces, minimum: 3 },
   // Large accent text on the page, and the white tick on the tile it fills: 3:1, as text of 24 px or
@@ -80,8 +79,7 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
 ]
 
 describe.each(['light', 'dark'] as const)('%s theme', (theme) => {
-  const inTheme = checks.filter((check) => check.theme === undefined || check.theme === theme)
-  it.each(inTheme.map((check) => [check.token, check] as const))('%s meets its contrast', (_, check) => {
+  it.each(checks.map((check) => [check.token, check] as const))('%s meets its contrast', (_, check) => {
     for (const against of check.against) {
       expect(contrast(value(check.token, theme), value(against, theme)), `${check.token} on ${against}`).toBeGreaterThanOrEqual(
         check.minimum,
