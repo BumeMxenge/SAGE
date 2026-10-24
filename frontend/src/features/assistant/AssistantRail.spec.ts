@@ -5,12 +5,13 @@
 // question makes its chat with both plans; that a reply shows its sources, the line to her student
 // advisor and Open Plan, which opens a plan her answers hid; that advisor_unavailable keeps her
 // question and Try Again sends the same words to the same chat; that nothing more goes while a reply
-// is on its way; that the chat list is read again after a reply, so the advisor's title replaces New
-// Chat; that a question cut off on its way is checked against the chat before Try Again is offered;
-// that no assistant shows while her set still needs its questions answered; that Compare and the view
-// toggle show only their icons while the sidebar and the assistant are both open; and that the
-// toggles hand focus to each other. Then axe and the keyboard walk in both themes, and parity beside
-// the planner prototype, the loading sheet's case 03 and the error sheet's case 09.
+// is on its way, though a question in another plan or pair does; that the chat list is read again
+// after a reply, so the advisor's title replaces New Chat; that a question cut off on its way is
+// checked against the chat before Try Again is offered; that no assistant shows while her set still
+// needs its questions answered; that Compare and the view toggle show only their icons while the
+// sidebar and the assistant are both open; and that the toggles hand focus to each other. Then axe
+// and the keyboard walk in both themes, and parity beside the planner prototype, the loading sheet's
+// case 03 and the error sheet's case 09.
 import { expect, type Page, type Route, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../../e2e/axe.ts'
 import { walkKeyboard } from '../../../e2e/keyboard.ts'
@@ -282,6 +283,41 @@ test('while a reply is on its way, Enter sends nothing more and the next questio
   expect(asked.sent.map(({ content }) => content)).toEqual(['The first question'])
   await expect(chatBox(page)).toHaveValue('The second question')
   await expect(button(page, 'Send')).toBeEnabled()
+})
+
+test("a question on its way in a plan holds Send there alone: the pair's question goes, and the plan's reply still lands", async ({
+  page,
+}) => {
+  await herPlan(page)
+  let reply = () => {}
+  const replied = new Promise<void>((resolve) => {
+    reply = resolve
+  })
+  const asked = await madeUpChats(page, {
+    // Only the plan's question waits for its reply
+    answer: async ({ content }) => {
+      if (content === 'A question about the plan') await replied
+      return { reply: messageOf('assistant', `A made-up answer to ${content.toLowerCase()}.`) }
+    },
+  })
+  await openAssistant(page)
+  await ask(page, 'A question about the plan')
+  await expect(rail(page).getByText('Working on your answer…')).toBeVisible()
+
+  await button(page, 'Compare').click()
+  // The pair's empty chat offers its question only when nothing holds Send there
+  await button(page, 'How do these plans differ?').waitFor()
+  await ask(page, 'A question about the pair')
+  await expect(conversation(page)).toContainText('A made-up answer to a question about the pair.')
+
+  await button(page, 'Done Comparing').click()
+  await page.waitForURL((url) => !url.searchParams.has('compare'))
+  // The plan's question still waits where she left it
+  await expect(conversation(page)).toContainText('A question about the plan')
+  await expect(rail(page).getByText('Working on your answer…')).toBeVisible()
+  reply()
+  await expect(conversation(page)).toContainText('A made-up answer to a question about the plan.')
+  expect(asked.sent.map(({ content }) => content)).toEqual(['A question about the plan', 'A question about the pair'])
 })
 
 test("the chat list is read again after a reply, so the advisor's title replaces New Chat", async ({ page }) => {

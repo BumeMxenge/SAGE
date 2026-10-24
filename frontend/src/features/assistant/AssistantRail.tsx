@@ -3,13 +3,14 @@
 // the strip under it, as in the prototype. Open, its header names the plan or pair the address puts
 // on screen, and their chat fills the rest: the newest, the one she picked from Chat History, or a new
 // one. A new chat is made only as its first question goes, so New Chat leaves none behind. The
-// question being answered is kept here, not in the chat, so folding the assistant or moving between
-// chats keeps it, and only one is answered at a time: two at once would both be answered, saved and
-// paid for. There's no assistant while her set still needs its questions answered, as the API keeps
+// questions being answered are kept here, one for each plan and pair, not in the chat, so folding the
+// assistant or moving between chats keeps them. Each plan and pair answers one at a time, as two
+// questions in one chat at once would each be answered without seeing the other, but a question on
+// its way in one doesn't hold another. There's no assistant while her set still needs its questions answered, as the API keeps
 // chats closed then and the prototype shows the assistant only beside an open plan, nor beside a plan
 // that doesn't exist. Pressing a toggle moves focus to the one that replaces it, as the sidebar's do,
 // and what is folded away isn't there to take focus.
-import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query'
+import { useIsMutating, useMutation, useMutationState, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { IconButton } from '@/components/actions/IconButton/IconButton.tsx'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
@@ -38,8 +39,8 @@ type Turn = {
 // in time, a gateway's page, or a server error, which can come after the exchange is saved
 const unsure: ErrorCode[] = ['network_error', 'timeout', 'server_unavailable', 'internal_error']
 
-// One key for every question sent, so one on its way holds Send wherever she is
-const turnKey = ['turn']
+// A key for each plan and pair, so a question on its way holds Send in its own view alone
+const turnKey = (scope: string) => ['turn', scope]
 
 type AssistantRailProps = { open: boolean; onOpenChange: (open: boolean) => void }
 
@@ -51,20 +52,26 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
   const [moveFocus, setMoveFocus] = useState(false)
   // The chat open on each plan and pair: one she picked, or null for a new one. Unset, the newest.
   const [picked, setPicked] = useState<Partial<Record<string, string | null>>>({})
-  const [turn, setTurn] = useState<Turn | null>(null)
+  // The question last sent from each plan and pair, with its chat once that's made
+  const [turns, setTurns] = useState<Partial<Record<string, Turn>>>({})
   // The plan or pair on screen, from the reads the plan view makes
   const single = useQuery({ ...queries.plan(planId), enabled: compareWith === null })
   const pair = useQuery({ ...queries.comparison(planId, compareWith ?? planId), enabled: compareWith !== null })
   const { data: set } = useQuery(queries.plans())
   const chats = useQuery({ ...queries.chats(planId, compareWith ?? undefined), enabled: open })
-  const waiting = useIsMutating({ mutationKey: turnKey }) > 0
+  const waiting = useIsMutating({ mutationKey: turnKey(scope) }) > 0
   const asking = useMutation({
-    mutationKey: turnKey,
+    mutationKey: turnKey(scope),
     mutationFn: ask,
     // The question and its reply join the chat, and the reply may bring the chat its first title. Her
     // question stays on screen until they arrive.
     onSuccess: (chatId) => refresh.messageSent(chatId),
+    // Kept until she reloads: a finished question nothing watches is otherwise dropped after five
+    // minutes, taking with it a failure she left in another view
+    gcTime: Infinity,
   })
+  // How this view's last question went, from the cache, as asking follows only the latest anywhere
+  const outcome = useMutationState({ filters: { mutationKey: turnKey(scope) }, select: (mutation) => mutation.state }).at(-1)
 
   const error = compareWith === null ? single.error : pair.error
   if (error instanceof ApiError && error.code === 'plan_not_found') return null
@@ -99,7 +106,7 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
     queryClient.setQueryData(queries.messages(chat.id).queryKey, [])
     // The assistant follows the new chat, and Try Again goes to it
     setPicked((before) => ({ ...before, [question.scope]: chat.id }))
-    setTurn({ ...question, chatId: chat.id })
+    setTurns((before) => ({ ...before, [question.scope]: { ...question, chatId: chat.id } }))
     await refresh.chatStarted()
     return chat.id
   }
@@ -115,9 +122,11 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
 
   function send(content: string) {
     const question = { scope, planId, otherPlanId: compareWith, chatId, content, term }
-    setTurn(question)
+    setTurns((before) => ({ ...before, [scope]: question }))
     asking.mutate(question)
   }
+
+  const turn = turns[scope]
 
   function retry() {
     if (turn) asking.mutate(turn)
@@ -125,8 +134,8 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
 
   // This chat's question, while it waits or once it failed
   const sent =
-    turn !== null && turn.scope === scope && turn.chatId === chatId && (asking.isPending || asking.isError)
-      ? { content: turn.content, error: asking.error }
+    turn !== undefined && turn.chatId === chatId && (outcome?.status === 'pending' || outcome?.status === 'error')
+      ? { content: turn.content, error: outcome.error }
       : null
   // The open plan's name, or null for a pair. Undefined until the plan is read.
   const planName = compareWith === null ? single.data?.name : null

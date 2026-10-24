@@ -29,7 +29,7 @@ type ConversationProps = {
   address: PlanAddress
   plans: PlanSummary[]
   planName: string | null // null for a pair
-  waiting: boolean // a question on its way, here or in another chat, holds Send
+  waiting: boolean // a question on its way in this plan or pair, here or in its other chat, holds Send
   sent: Sent | null
   onSend: (question: string) => void
   onRetry: () => void
@@ -76,7 +76,7 @@ export function Conversation({ chatId, address, plans, planName, waiting, sent, 
       {messages !== undefined && messages.length === 0 && sent === null && (
         <div className={styles.start}>
           <p className={styles.intro}>{intro}</p>
-          {/* Left out while a question in another chat waits for its reply, as nothing more can go */}
+          {/* Left out while another of this view's chats waits for its reply, as nothing more can go here */}
           {!waiting && (
             <Button variant="suggestion" onPress={() => ask(suggestion)}>
               {suggestion}
