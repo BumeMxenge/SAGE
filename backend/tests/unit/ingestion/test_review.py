@@ -2,7 +2,8 @@
 # here: the first year is all new, an unchanged row carries over, a removal is always flagged, one row
 # covers every course printing the same words, like trees sit together, a DP draft is marked and a
 # failed check is always a reason to look. Then that decisions hold, are checked and set the year,
-# and that a model's tab and summary are always reviewed, beside the requirement on the same course.
+# and that a model's tab and summary are always reviewed, beside the requirement on the same course,
+# in one row for a course offered twice.
 import json
 from pathlib import Path
 
@@ -896,13 +897,14 @@ def elective(code, tab, summary, rule=None, year=2026):
 
 
 def elective_readings(code, printed="No requirement printed", flag=None):
-    # The course's requirement, as printed, and the passage the model wrote its tab and summary from
+    # The course's requirement, as printed, and the passage the model wrote its tab and summary
+    # from, which opens with the course's code
     return (
         reading("courses", code, printed, flag, "p. 9"),
         reading(
             "course_group_members",
             f"complementary/{code}",
-            PASSAGE,
+            PASSAGE.replace("HST1013F", code),
             "model_written",
             "Courses row 3",
         ),
@@ -1008,6 +1010,47 @@ def test_two_rows_decide_their_own_columns_of_one_course():
             },
         ),
         ("courses", "refused_free_text", True, corrected_course),
+    ]
+
+
+def test_one_row_decides_both_offerings_of_a_course():
+    # HST1013S prints HST1013F's passage at the same credits, so the two are one course, and its row
+    # shows the first offering's draft, which the second copies
+    rows, members = zip(
+        elective("HST1013F", "history", SUMMARY),
+        elective("HST1013S", "history", SUMMARY),
+        strict=True,
+    )
+    rules = RuleSet(courses=rows, course_group_members=members)
+    readings = (*elective_readings("HST1013F"), *elective_readings("HST1013S"))
+
+    def run(decided=()):
+        return compare(2026, rules, readings, (), decided=decided)
+
+    (row,) = run().rows
+    assert (row.id, sorted(row.covers), row.new) == (
+        "elective/HST1013F+S",
+        [
+            "course_group_members/complementary/HST1013F",
+            "course_group_members/complementary/HST1013S",
+            "courses/HST1013F",
+            "courses/HST1013S",
+        ],
+        {"tab": "history", "summary": SUMMARY},
+    )
+    decided = row.model_dump(mode="json") | {
+        "decision": "correct",
+        "corrected": {"tab": "society", "summary": LATER},
+    }
+    review = run([decided])
+    assert review.settled
+    assert [(c.code, c.summary) for c in review.rules.courses] == [
+        ("HST1013F", LATER),
+        ("HST1013S", LATER),
+    ]
+    assert [(m.course_code, m.category) for m in review.rules.course_group_members] == [
+        ("HST1013F", "society"),
+        ("HST1013S", "society"),
     ]
 
 

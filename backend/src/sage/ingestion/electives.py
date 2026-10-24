@@ -3,7 +3,9 @@
 # correcting the draft in the review. The year's electives.json caches each draft with its model and
 # the SHA-256 of the passage it read. A draft of an unchanged passage is kept, one an earlier year
 # made of the same passage is reused, and only a run that drafts asks the model for the rest. A draft
-# that breaks a rule is reported and not kept, and the run goes on.
+# that breaks a rule is reported and not kept, and the run goes on. A course offered in both
+# semesters with one passage is one course to a student, so its second offering takes the first's
+# draft, and its entry says so.
 import hashlib
 import json
 import re
@@ -15,7 +17,7 @@ from pydantic import JsonValue
 
 from sage.shared.base import Row
 from sage.shared.language_model import LanguageModel, Said, Schema, strict_object
-from sage.shared.rules import ElectiveTab
+from sage.shared.rules import ElectiveTab, offerings
 
 # The prompt after its opening note for people, split as the drafting prompt is
 PROMPT = (
@@ -61,19 +63,36 @@ class Written(Row):
 def write(
     passages: Mapping[str, str],
     languages: Collection[str],
+    credits: Mapping[str, int],
     cache: Path,
     model: LanguageModel | None,
     earlier: Sequence[Path] = (),
 ) -> Written:
-    # passages are what the model reads for each course, by code, and languages the codes of the
-    # language options
+    # passages are what the model reads for each course, by code, languages the codes of the
+    # language options, and credits each course's
     drafts = _read(cache)
+    # An earlier year's copy is left out, as the offering it copies may no longer match
     before = {
-        entry["sha256"]: entry for path in earlier for entry in _read(path).values()
+        entry["sha256"]: entry
+        for path in earlier
+        for entry in _read(path).values()
+        if "same_as" not in entry
     }
+    same = paired(passages, credits)
     electives, refused, calls, reused = {}, [], 0, 0
     for code, passage in sorted(passages.items()):
         digest = hashlib.sha256(passage.encode()).hexdigest()
+        if code in same:
+            # Sorted by code, so the first offering's draft is settled already
+            first = same[code]
+            if first not in electives:
+                continue
+            electives[code] = electives[first]
+            copy = {**drafts[first], "sha256": digest, "same_as": first}
+            if model is not None and drafts.get(code) != copy:
+                drafts[code] = copy
+                _save(cache, drafts)
+            continue
         entry = drafts.get(code)
         if model is not None and (entry is None or entry["sha256"] != digest):
             if digest in before:
@@ -88,16 +107,27 @@ def write(
                 entry["sha256"] = digest
             drafts[code] = entry
             # Saved after each draft, so a run that stops keeps what it paid for
-            cache.parent.mkdir(parents=True, exist_ok=True)
-            cache.write_text(
-                json.dumps(drafts, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
-                encoding="utf-8",
-            )
+            _save(cache, drafts)
         if entry is not None and entry["sha256"] == digest:
             electives[code] = Elective(tab=entry["tab"], summary=entry["summary"])
     return Written(
         electives=electives, calls=calls, reused=reused, refused=tuple(refused)
     )
+
+
+def paired(passages: Mapping[str, str], credits: Mapping[str, int]) -> dict[str, str]:
+    # Each offering whose passage is another offering's of the same course, apart from the code
+    # each passage opens with, and the first of them by code, so BUS1036S maps to BUS1036F
+    worth = {code: credits[code] for code in passages}
+    first = {
+        code: min(
+            other
+            for other in offerings(code, worth[code], worth)
+            if passages[other].removeprefix(other) == passages[code].removeprefix(code)
+        )
+        for code in passages
+    }
+    return {code: one for code, one in first.items() if one != code}
 
 
 def fault(value: JsonValue, language: bool) -> str | None:
@@ -155,3 +185,11 @@ def _draft(
 def _read(cache: Path) -> dict[str, dict]:
     # A year's drafts by course code
     return json.loads(cache.read_text(encoding="utf-8")) if cache.exists() else {}
+
+
+def _save(cache: Path, drafts: dict[str, dict]) -> None:
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(
+        json.dumps(drafts, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )

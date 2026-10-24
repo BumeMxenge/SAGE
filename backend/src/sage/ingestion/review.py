@@ -4,8 +4,9 @@
 # person must look at it: a refusal, a model's writing, a removal, an equivalence no handbook prints,
 # a course with no entry, a curriculum note or a failed check. Two rows may decide different columns
 # of one table row, as a course's requirement row decides its entry rule and its elective row its
-# summary. A person's decision on a row holds only while the row shows what it showed then, and the
-# code check runs again on the year as decided. An approved year is kept as a snapshot.
+# summary, and one elective row decides every offering of a course that prints one passage. A
+# person's decision on a row holds only while the row shows what it showed then, and the code check
+# runs again on the year as decided. An approved year is kept as a snapshot.
 import hashlib
 import json
 import re
@@ -197,15 +198,25 @@ def compare(
     ]
     rows: list[ReviewRow] = []
     by_words: dict[str, list[str]] = defaultdict(list)
+    offered: list[str] = []
     for key in wanted:
         if key.startswith("courses/"):
             # One row per printed requirement, so one decision covers every course printing it
             by_words[read[key].printed].append(key)
         elif key.startswith(ELECTIVE):
-            rows.append(_elective_row(key, read, before, after))
+            offered.append(key.removeprefix(ELECTIVE))
         else:
             rows.append(_row([key], read, before, after, failures))
     rows += [_row(keys, read, before, after, failures) for keys in by_words.values()]
+    # One elective row per course, so offerings that print one passage share one decision
+    same = electives.paired(
+        {code: read[ELECTIVE + code].printed for code in offered},
+        {code: after[f"courses/{code}"]["credits"] for code in offered},
+    )
+    by_course: dict[str, list[str]] = defaultdict(list)
+    for code in offered:
+        by_course[same.get(code, code)].append(code)
+    rows += [_elective_row(codes, read, before, after) for codes in by_course.values()]
 
     # A course and every list it left are one removal, and each other row is one of its own
     removed: dict[str, list[str]] = defaultdict(list)
@@ -561,23 +572,29 @@ def _row(
 
 
 def _elective_row(
-    key: str,
+    codes: Sequence[str],
     read: dict[str, Reading],
     before: dict[str, dict[str, JsonValue]],
     after: dict[str, dict[str, JsonValue]],
 ) -> ReviewRow:
     # A complementary course's tab and summary together, beside the passage the model read, with
-    # its course's row and its member row, whose columns they fill
-    code = key.rsplit("/", 1)[1]
-    course = f"courses/{code}"
+    # each offering's course row and member row, whose columns they fill. It's named for every
+    # offering, as elective/BUS1036F+S, and shows the first's draft, which the others copy.
+    keys = [ELECTIVE + code for code in codes]
+    covers = {}
+    for code, key in zip(codes, keys, strict=True):
+        covers |= {
+            f"courses/{code}": read[f"courses/{code}"].place,
+            key: read[key].place,
+        }
     return ReviewRow(
-        id=f"elective/{code}",
-        causes=_ordered({read[key].flag}),
-        covers={course: read[course].place, key: read[key].place},
-        printed=read[key].printed,
+        id=f"elective/{codes[0]}" + "".join(f"+{code[7:]}" for code in codes[1:]),
+        causes=_ordered({read[key].flag for key in keys}),
+        covers=covers,
+        printed=read[keys[0]].printed,
         failures=(),
-        old={key: _elective(before, key)} if key in before else {},
-        new=_elective(after, key),
+        old={key: _elective(before, key) for key in keys if key in before},
+        new=_elective(after, keys[0]),
         mark=None,
     )
 

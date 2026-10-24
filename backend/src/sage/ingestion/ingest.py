@@ -244,6 +244,7 @@ def ingest(
     written = electives.write(
         passages,
         {o.code for o in offerings if o.sheet == workbook.languages},
+        {course.code: course.credits for course in courses},
         data / "rules" / str(year) / ELECTIVES,
         model,
         [
