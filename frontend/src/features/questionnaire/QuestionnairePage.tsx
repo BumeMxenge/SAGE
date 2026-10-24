@@ -1,6 +1,6 @@
 // The questionnaire, which /plan shows while her plan set is too long to compare and isn't answered.
 // It asks its questions on one page, as the prototype does, each with its answers in the API's order,
-// so she sees an answer grey out, or clear, as she changes one above it. Show My Plans saves the
+// so she sees the other question's answers grey out as she chooses one. Show My Plans saves the
 // answers, which hide every plan they don't keep, and refreshes her set, so the plan workspace then
 // opens the first plan they kept.
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -11,7 +11,7 @@ import { ChoiceChips } from '@/components/inputs/ChoiceChips/ChoiceChips.tsx'
 import { client, dataOf } from '@/lib/api.ts'
 import type { components } from '@/lib/api-types.ts'
 import { queries, refresh } from '@/lib/queryKeys.ts'
-import { type Answers, askable, choose, clash, keptBy } from './answers.ts'
+import { type Answers, askable, clash, keptBy } from './answers.ts'
 import styles from './QuestionnairePage.module.css'
 
 type PlanSet = components['schemas']['PlanSet']
@@ -54,7 +54,7 @@ export function QuestionnairePage({ set }: { set: PlanSet }) {
         subtitle={`SAGE found ${plans.length} plans for ${set.period}. Your answers narrow them to a short list, and the rest stay at the foot of your plan list.`}
       />
       <div className={styles.questions}>
-        {questions.map((question, index) => (
+        {questions.map((question) => (
           <ChoiceChips
             key={question.id}
             label={question.prompt}
@@ -62,10 +62,10 @@ export function QuestionnairePage({ set }: { set: PlanSet }) {
             choices={question.options.map((option) => ({
               value: option.id,
               label: option.label,
-              unavailable: clash(plans, questions, answers, index, option),
+              unavailable: clash(plans, questions, answers, question, option),
             }))}
             value={answers[question.id] ?? null}
-            onChange={(option) => setAnswers(choose(plans, questions, answers, index, option))}
+            onChange={(option) => setAnswers({ ...answers, [question.id]: option ?? undefined })}
           />
         ))}
       </div>

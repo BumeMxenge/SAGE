@@ -1,10 +1,10 @@
 // The questionnaire, on made-up answers from the API, as answering is one-way and every worktree shares
 // the local database, so no check saves a real student's answers. Mbali's session signs the requests
 // the checks leave alone, such as GET /v1/me. Her made-up set of ten plans needs narrowing until the
-// answers are saved: /plan asks both questions on one page, changing the course clears a week answer
-// that no longer fits, a greyed answer takes focus, says why and can't be chosen, and Show My Plans
-// saves the answers by id and opens the first plan they kept. Then axe, the keyboard walk and
-// parity beside the planner prototype's questionnaire, in both themes.
+// answers are saved: /plan asks both questions on one page, an answer greys out against the other
+// question's whichever was chosen first, a greyed answer takes focus, says why and can't be chosen,
+// and Show My Plans saves the answers by id and opens the first plan they kept. Then axe, the keyboard
+// walk and parity beside the planner prototype's questionnaire, in both themes.
 // The questions are the prototype's own, with its plans and the plans each answer keeps, as the API
 // would send them: the API's labels for the week, and no direction question (approved difference 11).
 import { expect, type Page, type Route, test } from '@playwright/test'
@@ -139,16 +139,21 @@ test('/plan asks both questions, and Show My Plans saves the answers and opens t
   await expect(page).toHaveURL(/\/history$/)
 })
 
-test('changing the course clears a week answer that no longer fits', async ({ page }) => {
+test("an answer greys out against the other question's, whichever was chosen first", async ({ page }) => {
   await madeUpApi(page)
   await page.goto('/plan')
-  await answer(page, 'Mechatronics').click()
-  await answer(page, 'Fewest 8am starts').click()
-  // Energy Conversion II keeps plans 1 to 7, and Fewest 8am starts 8 to 10
-  await answer(page, 'Energy Conversion II').click()
-  await expect(page.getByRole('radio', { checked: true })).toHaveCount(1)
-  await expect(answer(page, 'Energy Conversion II')).toBeChecked()
-  await expect(answer(page, 'Fewest 8am starts')).toHaveAttribute('aria-disabled', 'true')
+  // Medical Imaging keeps plans 4, 7 and 10, and the free lunch hour none of them
+  const imaging = answer(page, 'Medical Imaging & Image Processing')
+  const lunch = answer(page, 'Keep the 13:00 lunch hour free')
+  await lunch.click()
+  await expect(imaging).toHaveAttribute('aria-disabled', 'true')
+  await expect(page.getByText('No plan has both ‘Keep the 13:00 lunch hour free’ and ‘Medical Imaging & Image Processing’.')).toBeVisible()
+  // Pressing the lunch hour again clears it, so the course can be chosen, and then greys the lunch hour
+  await lunch.click()
+  await imaging.click()
+  await expect(imaging).toBeChecked()
+  await expect(lunch).toHaveAttribute('aria-disabled', 'true')
+  await expect(page.getByText('No plan has both ‘Medical Imaging & Image Processing’ and ‘Keep the 13:00 lunch hour free’.')).toBeVisible()
 })
 
 test('a greyed answer takes focus, says why, and neither Space nor a click chooses it', async ({ page }) => {
