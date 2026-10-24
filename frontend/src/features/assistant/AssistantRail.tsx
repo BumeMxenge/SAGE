@@ -5,20 +5,18 @@
 // one. A new chat is made only as its first question goes, so New Chat leaves none behind. The
 // question being answered is kept here, not in the chat, so folding the assistant or moving between
 // chats keeps it, and only one is answered at a time: two at once would both be answered, saved and
-// paid for. While her set needs narrowing the API keeps chats closed, and the assistant says so. A
-// plan that doesn't exist has no assistant. Pressing a toggle moves focus to the one that replaces
-// it, as the sidebar's do, and what is folded away isn't there to take focus.
+// paid for. There's no assistant while her set still needs its questions answered, as the API keeps
+// chats closed then and the prototype shows the assistant only beside an open plan, nor beside a plan
+// that doesn't exist. Pressing a toggle moves focus to the one that replaces it, as the sidebar's do,
+// and what is folded away isn't there to take focus.
 import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Link } from 'react-aria-components'
 import { IconButton } from '@/components/actions/IconButton/IconButton.tsx'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
-import { EmptyState } from '@/components/feedback/EmptyState/EmptyState.tsx'
 import { Menu } from '@/components/overlays/Menu/Menu.tsx'
 import { MenuItem } from '@/components/overlays/Menu/MenuItem.tsx'
 import { MenuSection } from '@/components/overlays/Menu/MenuSection.tsx'
 import { ApiError, client, dataOf, type ErrorCode } from '@/lib/api.ts'
-import { actionLabels, explain } from '@/lib/errors.ts'
 import { type PlanTerm, usePlanAddress } from '@/lib/planAddress.ts'
 import { queryClient } from '@/lib/queryClient.ts'
 import { queries, refresh } from '@/lib/queryKeys.ts'
@@ -70,6 +68,9 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
 
   const error = compareWith === null ? single.error : pair.error
   if (error instanceof ApiError && error.code === 'plan_not_found') return null
+  // Nothing until her set is read, as the plan view waits for it too, and nothing while it still needs
+  // its questions answered
+  if (!set || set.questionnaire_needed) return null
 
   // Sends a question, first making its chat if it has none, and gives back the chat it went to
   async function ask(question: Turn): Promise<string> {
@@ -127,8 +128,6 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
     turn !== null && turn.scope === scope && turn.chatId === chatId && (asking.isPending || asking.isError)
       ? { content: turn.content, error: asking.error }
       : null
-  const closed =
-    chats.error instanceof ApiError && chats.error.code === 'questionnaire_pending' ? explain(chats.error) : null
   // The open plan's name, or null for a pair. Undefined until the plan is read.
   const planName = compareWith === null ? single.data?.name : null
   const reading =
@@ -180,15 +179,7 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
               onPress={toggle}
             />
           </header>
-          {closed && (
-            <EmptyState
-              level={3}
-              title={closed.title}
-              message={closed.message}
-              action={<Link href="/plan">{actionLabels.go_to_plan}</Link>}
-            />
-          )}
-          {chats.data && set && planName !== undefined && (
+          {chats.data && planName !== undefined && (
             <Conversation
               chatId={chatId}
               address={{ planId, compareWith, term }}

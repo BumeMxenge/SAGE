@@ -7,10 +7,10 @@
 // question and Try Again sends the same words to the same chat; that nothing more goes while a reply
 // is on its way; that the chat list is read again after a reply, so the advisor's title replaces New
 // Chat; that a question cut off on its way is checked against the chat before Try Again is offered;
-// that a set still needing narrowing keeps the chat closed; that Compare and the view toggle show only
-// their icons while the sidebar and the assistant are both open; and that the toggles hand focus to
-// each other. Then axe and the keyboard walk in both themes, and parity beside the planner prototype,
-// the loading sheet's case 03 and the error sheet's case 09.
+// that no assistant shows while her set still needs its questions answered; that Compare and the view
+// toggle show only their icons while the sidebar and the assistant are both open; and that the
+// toggles hand focus to each other. Then axe and the keyboard walk in both themes, and parity beside
+// the planner prototype, the loading sheet's case 03 and the error sheet's case 09.
 import { expect, type Page, type Route, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../../e2e/axe.ts'
 import { walkKeyboard } from '../../../e2e/keyboard.ts'
@@ -99,7 +99,6 @@ type Answer = { reply: Message; title?: string } | { refusal: Problem } | { drop
 type MadeUpChats = {
   chats?: Chat[]
   messages?: Record<string, Message[]>
-  closed?: boolean // her set needs narrowing
   answer?: (question: Question) => Answer | Promise<Answer>
 }
 
@@ -128,7 +127,6 @@ async function madeUpChats(page: Page, held: MadeUpChats = {}) {
     const chatId = url.pathname.split('/').at(3)
     if (chatId === undefined && request.method() === 'GET') {
       asked.lists.push(url.search)
-      if (held.closed) return refuse(route, refusalOf('questionnaire_pending', 409))
       const listed = chats.filter((chat) => holds(chat, url.searchParams.get('plan_id'), url.searchParams.get('other_plan_id')))
       return route.fulfill({ json: listed, headers: allowed })
     }
@@ -326,15 +324,19 @@ test('a question cut off on its way is checked against the chat: saved, its repl
   await expect(button(page, 'Try Again')).toBeVisible()
 })
 
-test('while her set needs narrowing the chat stays closed, with Go to My Plan, and passes axe', async ({ page }) => {
-  await herPlan(page)
-  await madeUpChats(page, { closed: true })
-  await button(page, 'Open Assistant').click()
-  await rest(page)
-  await expect(rail(page).getByRole('heading', { name: 'Answer the Questions First' })).toBeVisible()
-  await expect(rail(page).getByRole('link', { name: 'Go to My Plan' })).toHaveAttribute('href', '/plan')
-  await expect(chatBox(page)).toHaveCount(0)
-  await expectNoAxeViolations(page)
+test("there's no assistant beside a plan while her set still needs its questions answered", async ({ page }) => {
+  const { planId } = await herPlan(page)
+  // Her set as the API gives it, but still needing its questions answered
+  await page.route(
+    (url) => url.pathname === '/v1/plans',
+    async (route) => {
+      const set = (await (await route.fetch()).json()) as PlanSet
+      await route.fulfill({ json: { ...set, questionnaire_needed: true }, headers: allowed })
+    },
+  )
+  await page.goto(`/plan/${planId}`)
+  await page.getByRole('heading', { level: 1, name: 'Plan' }).waitFor()
+  await expect(rail(page)).toHaveCount(0)
 })
 
 test('Compare and the view toggle show only their icons while the sidebar and the assistant are both open', async ({ page }) => {
@@ -611,20 +613,6 @@ test.describe('parity', () => {
         element: rail,
       },
     },
-    // No prototype draws a closed chat, so React stands alone
-    state(
-      'closed',
-      () => Promise.resolve(null),
-      async (page) => {
-        await herPlan(page)
-        await madeUpChats(page, { closed: true })
-        await button(page, 'Open Assistant').click()
-        await rest(page)
-        await page.getByRole('heading', { name: 'Answer the Questions First' }).waitFor()
-        await settled(page)
-      },
-      rail,
-    ),
     state(
       'icon-only',
       async (page, theme) => {
