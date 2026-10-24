@@ -16,11 +16,22 @@
 }
 
 /* Folded, a strip as wide as the sidebar's rail, with Open Assistant level with the sidebar's toggle,
-   which sits centred in a row one control high */
+   which sits centred in a row one control high, and the word under it */
 .rail[data-folded] {
+  gap: var(--space-3);
   align-items: center;
   width: var(--width-rail);
   padding-top: calc(var(--space-3) + (var(--size-control-md) - var(--size-control-sm)) / 2);
+}
+
+/* Written up the strip, reading from the bottom, as in the prototype */
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-secondary);
+  writing-mode: vertical-rl;
+  rotate: 180deg;
 }
 
 /* The chat icon, the title over what it reads, then the buttons, above one line, as in the prototype */

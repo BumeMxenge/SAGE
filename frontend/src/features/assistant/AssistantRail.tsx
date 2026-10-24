@@ -1,6 +1,6 @@
 // The assistant, docked beside the plan at a plan's own address: the named aside approved difference
-// 6 asks for. Folded, it's a strip holding Open Assistant, the icon button approved difference 9 puts
-// in place of the prototype's rotated label. Open, its header names the plan or pair the address puts
+// 6 asks for. Folded, it's a strip holding Open Assistant, an icon button, with Assistant written up
+// the strip under it, as in the prototype. Open, its header names the plan or pair the address puts
 // on screen, and their chat fills the rest: the newest, the one she picked from Chat History, or a new
 // one. A new chat is made only as its first question goes, so New Chat leaves none behind. The
 // question being answered is kept here, not in the chat, so folding the assistant or moving between
@@ -193,14 +193,20 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
           )}
         </>
       ) : (
-        <IconButton
-          label="Open Assistant"
-          icon="chat_bubble"
-          // Only after a toggle press, never as a page opens: see moveFocus
-          // oxlint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus={moveFocus}
-          onPress={toggle}
-        />
+        <>
+          <IconButton
+            label="Open Assistant"
+            icon="chat_bubble"
+            // Only after a toggle press, never as a page opens: see moveFocus
+            // oxlint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus={moveFocus}
+            onPress={toggle}
+          />
+          {/* The aside and its button already say Assistant, so a screen reader doesn't hear it again */}
+          <span aria-hidden="true" className={styles.label}>
+            Assistant
+          </span>
+        </>
       )}
     </aside>
   )
