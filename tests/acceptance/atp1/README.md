@@ -28,6 +28,7 @@ An item is one labelled field of one row. It counts as reviewed when a review ro
 - A course's entry rule and printed text are reviewed when its row was decided, and its page only by its own year's decision.
 - A course's title, credits, NQF level and term are never shown, so they're always accepted without review.
 - No row shows a meeting, so every timetable and workbook meeting is accepted without review. A workbook meeting's book and page are reviewed when its course's requirement row was decided.
+- An elective row shows a course's tab and summary, none of these fields, so it reviews nothing here.
 - A held-out string the grammar reads is accepted without review, and one it refuses is reviewed, as SAGE would flag its draft. The entry's page is reviewed with any refused string.
 - An item SAGE holds nothing from, such as Labs D27's EEE2041F, which the 2026 manifest leaves out, is not stored.
 
@@ -59,4 +60,4 @@ The held-out drafts were made once, on the first run, with Claude Haiku 5.5 thro
 
 Verdicts come first, then each measure's tables. A rate carries its 95% Wilson interval, and a count with none wrong gives the one-sided 95% upper bound, 1 − 0.05^(1/n). Each table is given for all rows and without the judgement calls. Requirement trees lead with the held-out set, which no build branch opened. The course sheets are an in-sample check, as the grammar was written from their fields.
 
-The first result is committed on its own and kept. A rerun from the cache reproduces every file byte for byte, so `git status` shows any change. A fault the run finds is logged in `docs/shortfalls.md` and fixed on its own branch, and its retest goes beside this result, in a folder of its own, never over it.
+The first result is committed on its own and kept. At the tag `atp1-result`, `make atp1` reproduces every file byte for byte from the cache, so `git status` shows any change. On later data it measures that data: from 2026's approval again on 24 October, the change count holds five more equivalences and the review minutes hold that day's sittings, so rerun the first result from that tag. A fault the run finds is logged in `docs/shortfalls.md` and fixed on its own branch, and its retest goes beside this result, in a folder of its own, never over it.

@@ -109,12 +109,13 @@ def main() -> None:
 
 
 def decided(year: int) -> set[str]:
-    # The courses a row decided in the year's review covers
+    # The courses a decided row in the year's review covers, other than an elective row, which
+    # covers its course but shows its tab and summary, not its requirement or pages
     rows = json.loads(review_file(year).read_text(encoding="utf-8"))["rows"]
     return {
         key.removeprefix("courses/")
         for row in rows
-        if row["decision"] is not None
+        if row["decision"] is not None and not row["id"].startswith("elective/")
         for key in row["covers"]
         if key.startswith("courses/")
     }
