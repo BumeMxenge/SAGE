@@ -602,13 +602,13 @@ def corrected_elective(row: ReviewRow, ask: Callable[[str], str]) -> JsonValue:
         tabs = [tab for tab in TABS if tab != LANGUAGES]
         numbered = {str(n): tab for n, tab in enumerate(tabs, 1)}
         print(*(f"  {n} {tab}" for n, tab in numbered.items()), sep="\n")
-        while (picked := ask(f"Tab, or Enter to keep {value['tab']}: ").strip()) and (
-            picked not in numbered
-        ):
+        keep = f", or Enter to keep {value['tab']}" if value["tab"] else ""
+        while (picked := ask(f"Tab{keep}: ").strip()) and picked not in numbered:
             continue
         if picked:
             value["tab"] = numbered[picked]
-    if summary := ask("Summary, or Enter to keep it: ").strip():
+    keep = ", or Enter to keep it" if value["summary"] else ""
+    if summary := ask(f"Summary{keep}: ").strip():
         value["summary"] = summary
     return None if value == row.new else value
 
