@@ -81,8 +81,11 @@
 }
 
 /* An inline error is a tinted row: the icon, then the title over the message, in the tone's text
-   colour, which reaches 4.5:1 on its tint */
-.error-state[data-variant='inline'] {
+   colour, which reaches 4.5:1 on its tint. A message error is the same row with no tint, closer to its
+   icon and a size smaller, as case 09 draws a reply that failed: the icon in the danger colour and the
+   words in the danger text colour. */
+.error-state[data-variant='inline'],
+.error-state[data-variant='message'] {
   --icon-size: var(--size-icon-sm);
 
   display: grid;
@@ -91,9 +94,17 @@
   align-items: start;
   max-width: none;
   margin: 0;
+  text-align: start;
+}
+
+.error-state[data-variant='inline'] {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
-  text-align: start;
+}
+
+.error-state[data-variant='message'] {
+  column-gap: var(--space-2);
+  color: var(--color-text-danger);
 }
 
 .error-state[data-variant='inline'][data-tone='danger'] {
@@ -106,16 +117,24 @@
   background: var(--color-warning-tint);
 }
 
-.error-state[data-variant='inline'] .tile {
+.error-state[data-variant='inline'] .tile,
+.error-state[data-variant='message'] .tile {
   grid-row: span 3;
   width: auto;
   height: auto;
   background: none;
 }
 
+.error-state[data-variant='message'] .tile {
+  color: var(--color-danger);
+}
+
 .error-state[data-variant='inline'] .title,
 .error-state[data-variant='inline'] .message,
-.error-state[data-variant='inline'] .actions {
+.error-state[data-variant='inline'] .actions,
+.error-state[data-variant='message'] .title,
+.error-state[data-variant='message'] .message,
+.error-state[data-variant='message'] .actions {
   grid-column: 2;
   margin: 0;
   color: inherit;
@@ -126,6 +145,17 @@
   letter-spacing: normal;
 }
 
-.error-state[data-variant='inline'] .actions {
+.error-state[data-variant='message'] .title,
+.error-state[data-variant='message'] .message {
+  font-size: var(--font-size-sm);
+  letter-spacing: normal;
+}
+
+.error-state[data-variant='inline'] .actions,
+.error-state[data-variant='message'] .actions {
   align-items: flex-start;
+}
+
+.error-state[data-variant='message'] .actions {
+  margin-top: var(--space-2);
 }

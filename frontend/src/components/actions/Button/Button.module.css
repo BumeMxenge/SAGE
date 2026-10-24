@@ -102,6 +102,19 @@
   background: var(--color-hover);
 }
 
+/* A suggested question, outlined like secondary with its teal hover, as the prototype's suggestion
+   chips are: as wide as its place, its words at the start in regular weight, wrapping when long */
+.suggestion {
+  justify-content: flex-start;
+  width: 100%;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  text-align: start;
+}
+
 /* Only the icon shows, so the button is square */
 .icon-only {
   width: var(--size-control-md);

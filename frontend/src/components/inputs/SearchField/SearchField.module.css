@@ -9,8 +9,8 @@
   opacity: 0.55;
 }
 
-/* In light the border is the field's edge, at 3:1. In dark there is none: the shaded fill, the
-   magnifier and the placeholder identify the field. */
+/* A pale edge in light and none in dark, as in the prototype: the magnifier and the placeholder
+   identify the field, as WCAG 1.4.11 allows, and in dark its shaded fill too. */
 .input {
   width: 100%;
   min-height: var(--size-control-lg);
