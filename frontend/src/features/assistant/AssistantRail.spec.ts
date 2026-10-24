@@ -657,7 +657,7 @@ test.describe('parity', () => {
         ['new-chat', 'New chat', 'New Chat'],
         ['chat-history', 'Chat history', 'Chat History'],
         ['collapse-assistant', 'Collapse assistant', 'Collapse Assistant'],
-        ['suggestion', 'Is this plan clash-free?', 'Is this plan clash-free?'],
+        ['suggestion', 'Can I swap an elective?', 'Can I swap an elective?'],
       ] as const
     ).map(([name, designedName, builtName]) =>
       state(

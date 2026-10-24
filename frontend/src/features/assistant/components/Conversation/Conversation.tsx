@@ -1,4 +1,4 @@
-// One chat with SAGE. Empty, it says what SAGE can help with and offers questions to start from.
+// One chat with SAGE. Empty, it says what SAGE can help with and offers a question to start from.
 // Otherwise its messages, oldest first: her questions in bubbles at the end of the line, and SAGE's
 // replies across the width. A question on its way waits at the foot of the conversation, under the
 // leaf saying SAGE is working, and one that failed says why where its reply would be, with Try Again
@@ -62,10 +62,10 @@ export function Conversation({ chatId, address, plans, planName, waiting, sent, 
     planName === null
       ? 'I can compare these two plans: their courses, credits and timetables, and where they differ.'
       : `I can answer questions about ${planName}: its courses, credits and timetable, and the handbook rules behind them.`
-  const suggestions =
-    planName === null
-      ? ['How do these plans differ?', 'Which has the lighter workload?']
-      : ['Is this plan clash-free?', 'Can I swap an elective?']
+  // One question each, whose answer changes from plan to plan. The prototype's others have the same
+  // answer for every plan: the engine builds only clash-free plans, her plans carry about the same
+  // load, and bursary renewal isn't in the handbook.
+  const suggestion = planName === null ? 'How do these plans differ?' : 'Can I swap an elective?'
   const placeholder = planName === null ? 'Ask SAGE to compare these plans' : `Ask about ${planName}`
   const failure = sent?.error ? explain(sent.error) : null
 
@@ -77,12 +77,11 @@ export function Conversation({ chatId, address, plans, planName, waiting, sent, 
         <div className={styles.start}>
           <p className={styles.intro}>{intro}</p>
           {/* Left out while a question in another chat waits for its reply, as nothing more can go */}
-          {!waiting &&
-            suggestions.map((question) => (
-              <Button key={question} variant="suggestion" onPress={() => ask(question)}>
-                {question}
-              </Button>
-            ))}
+          {!waiting && (
+            <Button variant="suggestion" onPress={() => ask(suggestion)}>
+              {suggestion}
+            </Button>
+          )}
         </div>
       )}
       {messages !== undefined && (messages.length > 0 || sent !== null) && (
