@@ -77,6 +77,9 @@ export function PlanView({ iconOnly }: { iconOnly: boolean }) {
   if (read.length < set.plans.length) return null
   // The set's plans by position, then those on screen, which a link can open from an earlier set
   const byPosition = read.sort((a, b) => a.position - b.position)
+  // The plans her lists offer: those her answers kept, and any the assistant has offered since. A
+  // plan they hid is in no list.
+  const shown = set.plans.filter((summary) => !summary.hidden)
 
   const controls = (
     <div className={styles.controls}>
@@ -113,8 +116,9 @@ export function PlanView({ iconOnly }: { iconOnly: boolean }) {
     const plan = single.data
     if (!plan) return null
     const week = weekOf(plan, term)
-    // A plan from an earlier set, opened from a link, isn't one of this set's to switch between
-    const switchable = set.plans.length > 1 && set.plans.some((summary) => summary.id === plan.id)
+    // A plan from an earlier set, or one her answers hid, opened from a link or her history, isn't one
+    // to switch between, so it shows its name alone
+    const switchable = shown.length > 1 && shown.some((summary) => summary.id === plan.id)
     const partner = partnerOf(set.plans, plan)
     return (
       <>
@@ -125,7 +129,7 @@ export function PlanView({ iconOnly }: { iconOnly: boolean }) {
               <PlanSwitcher
                 label="Plan"
                 variant="outlined"
-                plans={set.plans}
+                plans={shown}
                 selected={plan.id}
                 onChange={(chosen) => go({ planId: chosen })}
               />
@@ -173,7 +177,7 @@ export function PlanView({ iconOnly }: { iconOnly: boolean }) {
   const secondWeek = weekOf(second, term)
   const colours = coloursOf([...byPosition, first, second])
   // Another plan to swap in for the second, when the set has one beyond these two
-  const swappable = set.plans.some((summary) => summary.id !== first.id && summary.id !== second.id)
+  const swappable = shown.some((summary) => summary.id !== first.id && summary.id !== second.id)
   return (
     <>
       {bar}
@@ -190,7 +194,7 @@ export function PlanView({ iconOnly }: { iconOnly: boolean }) {
               <PlanSwitcher
                 label="Compare with Another Plan"
                 variant="quiet"
-                plans={set.plans.filter((summary) => summary.id !== first.id)}
+                plans={shown.filter((summary) => summary.id !== first.id)}
                 selected={second.id}
                 onChange={(chosen) => go({ compareWith: chosen })}
               />
