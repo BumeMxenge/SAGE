@@ -120,6 +120,8 @@ test('/plan asks both questions, and Show My Plans saves the answers and opens t
   await page.getByRole('heading', { level: 1, name: 'Course History' }).waitFor()
   await page.getByRole('link', { name: 'Plan', exact: true }).click()
   await expect(heading(page)).toBeVisible()
+  // The plans her answers hide are in no list, so the subtitle promises nothing of them
+  await expect(page.getByText('SAGE found 10 plans for 2026. Your answers narrow them to a short list.', { exact: true })).toBeVisible()
   await expect(page).toHaveURL(/\/plan$/)
   const groups = page.getByRole('radiogroup')
   await expect(groups.nth(0)).toHaveAccessibleName('Is there a course you already know you want?')

@@ -51,7 +51,7 @@ export function QuestionnairePage({ set }: { set: PlanSet }) {
     <div className={styles.page}>
       <PageHeader
         title="A Few Questions First"
-        subtitle={`SAGE found ${plans.length} plans for ${set.period}. Your answers narrow them to a short list, and the rest stay at the foot of your plan list.`}
+        subtitle={`SAGE found ${plans.length} plans for ${set.period}. Your answers narrow them to a short list.`}
       />
       <div className={styles.questions}>
         {questions.map((question) => (
