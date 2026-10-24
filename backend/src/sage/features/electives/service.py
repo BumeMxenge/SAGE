@@ -31,7 +31,8 @@ TERMS: dict[TermCode, str] = {
     "other": "other",
 }
 NO_FIT = "Doesn't fit your plans' timetables."
-UNTIMED = "A meeting has no printed day or time, so check its times with your advisor."
+UNTIMED = "One of its classes has no set day or time, so check with your advisor."
+FEWER = "It's worth fewer credits than your complementary course needs, so check with your advisor."
 
 
 class Offering(Row):
@@ -44,8 +45,7 @@ class Offering(Row):
 
 
 class Card(Row):
-    # One course's offerings, by code, whose first offering's name, summary and convener stand for
-    # the course
+    # One course's offerings, by code, whose first offering's name and summary stand for the course
     offerings: tuple[Offering, ...]
     note: str | None
 
@@ -123,19 +123,19 @@ def _offering(
 
 
 def _note(found: Sequence[Offering]) -> str | None:
-    # Why nothing works, else what a working offering needs checked, else why one doesn't work
+    # Why nothing works, else why an offering doesn't work and then what a working one needs
+    # checked, as the card's one heart can't say which offering it hearts
     working = [offering for offering in found if offering.works]
     if not working:
         return _refusal(found[0]) or NO_FIT
-    checks = [check for offering in working if (check := _check(offering))]
-    if checks:
-        return checks[0]
-    if len(working) == len(found):
-        return None
-    refused = next(offering for offering in found if not offering.works)
-    terms = " and ".join(TERMS[offering.course.term] for offering in working)
-    fits = "offering fits" if len(working) == 1 else "offerings fit"
-    return _refusal(refused) or f"Only the {terms} {fits} your plans."
+    parts = []
+    if len(working) < len(found):
+        refused = next(offering for offering in found if not offering.works)
+        terms = " and ".join(TERMS[offering.course.term] for offering in working)
+        fits = "offering fits" if len(working) == 1 else "offerings fit"
+        parts.append(_refusal(refused) or f"Only the {terms} {fits} your plans.")
+    parts += [check for offering in working if (check := _check(offering))][:1]
+    return " ".join(parts) or None
 
 
 def _refusal(offering: Offering) -> str | None:
@@ -154,11 +154,7 @@ def _check(offering: Offering) -> str | None:
     if any(code in slot["untimed"] for slot in listed):
         return UNTIMED
     if listed and all(code in slot["fewer_credits"] for slot in listed):
-        needed = min(slot["credits"] for slot in listed)
-        return (
-            f"It's worth fewer than your plans' {needed}-credit complementary line, so check "
-            "it with your advisor."
-        )
+        return FEWER
     return None
 
 

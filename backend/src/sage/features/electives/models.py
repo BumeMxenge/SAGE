@@ -8,6 +8,7 @@ from sage.shared.rules import ElectiveTab, TermCode
 class Offering(BaseModel):
     code: str
     term: TermCode
+    convener: str | None  # each term's own, as a course's can differ
     hearted: bool
     can_heart: bool  # it works: the engine doesn't refuse it, and it fits her plans
 
@@ -19,7 +20,6 @@ class Elective(BaseModel):
     name: str
     credits: int
     summary: str | None  # the card's outline
-    convener: str | None
     hearted: bool  # any offering is
     can_heart: bool  # any offering can be
     note: str | None  # why she can't heart it, or what to check before taking it

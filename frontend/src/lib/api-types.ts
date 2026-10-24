@@ -383,8 +383,6 @@ export interface components {
             credits: number;
             /** Summary */
             summary: string | null;
-            /** Convener */
-            convener: string | null;
             /** Hearted */
             hearted: boolean;
             /** Can Heart */
@@ -561,6 +559,8 @@ export interface components {
              * @enum {string}
              */
             term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+            /** Convener */
+            convener: string | null;
             /** Hearted */
             hearted: boolean;
             /** Can Heart */

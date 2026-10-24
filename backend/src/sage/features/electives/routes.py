@@ -29,7 +29,6 @@ def get_electives(
                         name=card.offerings[0].course.name,
                         credits=card.offerings[0].course.credits,
                         summary=card.offerings[0].course.summary,
-                        convener=card.offerings[0].course.convener,
                         hearted=card.hearted,
                         can_heart=card.can_heart,
                         note=card.note,
@@ -37,6 +36,7 @@ def get_electives(
                             Offering(
                                 code=o.course.code,
                                 term=o.course.term,
+                                convener=o.course.convener,
                                 hearted=o.hearted,
                                 can_heart=o.works,
                             )

@@ -4,7 +4,7 @@
 # line, and each plan has its own.
 import pytest
 
-from sage.features.electives.service import NO_FIT, UNTIMED, cards
+from sage.features.electives.service import cards
 from sage.shared.planning import Eligibility
 from sage.shared.rules import Course, CourseGroupMember, RuleSet
 
@@ -41,10 +41,11 @@ F, S = course("HST1013F", "sem1"), course("HST1013S", "sem2")
 ELIGIBLE = Eligibility(status="eligible")
 PERMISSION = "It needs permission of the convener, which only your advisor can judge."
 NEEDS = "It needs HST1012F, which your record doesn't show yet."
-FEWER = (
-    "It's worth fewer than your plans' 18-credit complementary line, so check it with your "
-    "advisor."
-)
+# The note's words, as I gave them
+NO_FIT = "Doesn't fit your plans' timetables."
+ONLY_F = "Only the semester 1 offering fits your plans."
+UNTIMED = "One of its classes has no set day or time, so check with your advisor."
+FEWER = "It's worth fewer credits than your complementary course needs, so check with your advisor."
 
 
 def test_one_card_per_course_on_its_first_offerings_tab():
@@ -78,11 +79,13 @@ def test_one_card_per_course_on_its_first_offerings_tab():
         # No plan has a complementary slot, so only eligibility counts
         ((F, S), [], {}, None, [True, True]),
         # Only the first semester's offering fits
+        ((F, S), [slot("HST1013F")], {}, ONLY_F, [True, False]),
+        # Only the first semester's offering fits, and it needs a check, which the note adds
         (
             (F, S),
-            [slot("HST1013F")],
+            [slot("HST1013F", untimed=["HST1013F"])],
             {},
-            "Only the semester 1 offering fits your plans.",
+            f"{ONLY_F} {UNTIMED}",
             [True, False],
         ),
         # Both fit, but the engine refuses the second, so its reason is the note
@@ -157,10 +160,11 @@ def test_a_check_verdict_keeps_the_heart_with_its_reason():
     rules = RuleSet(
         courses=(F, S), course_group_members=(member(F.code), member(S.code))
     )
-    ((_, (card,)),) = cards(rules, eligibility, ("HST1013S",), [slot("HST1013F")])
-    # The check outranks the second offering not fitting, and the card shows her heart on it
+    slots = [slot("HST1013F", "HST1013S")]
+    ((_, (card,)),) = cards(rules, eligibility, ("HST1013S",), slots)
+    # Both still work, and the card shows her heart on the second
     assert (card.note, [o.works for o in card.offerings], card.hearted) == (
         PERMISSION,
-        [True, False],
+        [True, True],
         True,
     )
