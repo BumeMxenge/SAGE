@@ -161,7 +161,7 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
                       selectedKeys={chatId === null ? [] : [chatId]}
                     >
                       {chats.data.map((chat) => (
-                        <MenuItem key={chat.id} id={chat.id} onAction={() => pick(chat.id)}>
+                        <MenuItem key={chat.id} id={chat.id} icon="chat_bubble" onAction={() => pick(chat.id)}>
                           {chat.title ?? 'New Chat'}
                         </MenuItem>
                       ))}
