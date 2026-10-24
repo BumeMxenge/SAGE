@@ -2,7 +2,7 @@
 from fastapi import APIRouter
 
 from sage.features.electives import service as electives
-from sage.features.electives.models import Elective, Electives, Eligibility, Tab
+from sage.features.electives.models import Elective, Electives, Offering, Tab
 from sage.shared.api.deps import ONBOARDED_ERRORS, Checker, Onboarded, Rules, Students
 from sage.shared.api.problems import errors
 from sage.shared.errors import CourseNotFound, InvalidRequest, RulebookNotLoaded
@@ -12,7 +12,8 @@ router = APIRouter(tags=["electives"])
 
 @router.get(
     "/electives",
-    summary="The current year's electives by tab, with whether she may take each",
+    summary="The current year's electives by tab, one card per course, with whether she can "
+    "heart each offering",
     responses=errors(*ONBOARDED_ERRORS, RulebookNotLoaded),
 )
 def get_electives(
@@ -24,21 +25,28 @@ def get_electives(
                 key=tab,
                 courses=[
                     Elective(
-                        code=row.course.code,
-                        name=row.course.name,
-                        credits=row.course.credits,
-                        term=row.course.term,
-                        summary=row.course.summary,
-                        convener=row.course.convener,
-                        favourite=row.favourite,
-                        eligibility=Eligibility.model_validate(
-                            row.eligibility, from_attributes=True
-                        ),
+                        codes=[o.course.code for o in card.offerings],
+                        name=card.offerings[0].course.name,
+                        credits=card.offerings[0].course.credits,
+                        summary=card.offerings[0].course.summary,
+                        convener=card.offerings[0].course.convener,
+                        hearted=card.hearted,
+                        can_heart=card.can_heart,
+                        note=card.note,
+                        offerings=[
+                            Offering(
+                                code=o.course.code,
+                                term=o.course.term,
+                                hearted=o.hearted,
+                                can_heart=o.works,
+                            )
+                            for o in card.offerings
+                        ],
                     )
-                    for row in rows
+                    for card in cards
                 ],
             )
-            for tab, rows in electives.by_tab(students, rulebook, checker, student)
+            for tab, cards in electives.by_tab(students, rulebook, checker, student)
         ]
     )
 

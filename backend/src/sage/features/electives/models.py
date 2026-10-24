@@ -1,21 +1,29 @@
-# Explore Electives' bodies: each tab's courses, with whether she may take each and has hearted it
+# Explore Electives' bodies: each tab's courses, one card per course, with whether she can heart each
+# offering and has hearted it
 from pydantic import BaseModel
 
-from sage.shared.api.models import Course
-from sage.shared.planning import EligibilityStatus
-from sage.shared.rules import ElectiveTab
+from sage.shared.rules import ElectiveTab, TermCode
 
 
-class Eligibility(BaseModel):
-    status: EligibilityStatus
-    reason: str | None
+class Offering(BaseModel):
+    code: str
+    term: TermCode
+    hearted: bool
+    can_heart: bool  # it works: the engine doesn't refuse it, and it fits her plans
 
 
-class Elective(Course):
+class Elective(BaseModel):
+    # One course, offered once or in more than one term. Hearting the card hearts every offering she
+    # can heart, and unhearting it unhearts every one she hearted.
+    codes: list[str]
+    name: str
+    credits: int
     summary: str | None  # the card's outline
     convener: str | None
-    favourite: bool
-    eligibility: Eligibility
+    hearted: bool  # any offering is
+    can_heart: bool  # any offering can be
+    note: str | None  # why she can't heart it, or what to check before taking it
+    offerings: list[Offering]
 
 
 class Tab(BaseModel):

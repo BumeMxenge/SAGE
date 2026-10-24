@@ -165,7 +165,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The current year's electives by tab, with whether she may take each */
+        /** The current year's electives by tab, one card per course, with whether she can heart each offering */
         get: operations["getElectives"];
         put?: never;
         post?: never;
@@ -375,39 +375,29 @@ export interface components {
         };
         /** Elective */
         Elective: {
-            /** Code */
-            code: string;
+            /** Codes */
+            codes: string[];
             /** Name */
             name: string;
             /** Credits */
             credits: number;
-            /**
-             * Term
-             * @enum {string}
-             */
-            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
             /** Summary */
             summary: string | null;
             /** Convener */
             convener: string | null;
-            /** Favourite */
-            favourite: boolean;
-            eligibility: components["schemas"]["Eligibility"];
+            /** Hearted */
+            hearted: boolean;
+            /** Can Heart */
+            can_heart: boolean;
+            /** Note */
+            note: string | null;
+            /** Offerings */
+            offerings: components["schemas"]["Offering"][];
         };
         /** Electives */
         Electives: {
             /** Tabs */
             tabs: components["schemas"]["Tab"][];
-        };
-        /** Eligibility */
-        Eligibility: {
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "eligible" | "check" | "not_eligible";
-            /** Reason */
-            reason: string | null;
         };
         /** Exchange */
         Exchange: {
@@ -561,6 +551,20 @@ export interface components {
             content: string;
             /** Term */
             term?: ("q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other") | null;
+        };
+        /** Offering */
+        Offering: {
+            /** Code */
+            code: string;
+            /**
+             * Term
+             * @enum {string}
+             */
+            term: "q1" | "q2" | "q3" | "q4" | "sem1" | "sem2" | "full_year" | "winter" | "summer" | "other";
+            /** Hearted */
+            hearted: boolean;
+            /** Can Heart */
+            can_heart: boolean;
         };
         /** Option */
         Option: {
