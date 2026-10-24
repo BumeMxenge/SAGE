@@ -32,6 +32,7 @@ import Info from '@material-symbols/svg-400/rounded/info.svg?react'
 import ArrowDownward from '@material-symbols/svg-400/rounded/arrow_downward.svg?react'
 import FavoriteFilled from '@material-symbols/svg-400/rounded/favorite-fill.svg?react'
 import Block from '@material-symbols/svg-400/rounded/block.svg?react'
+import Stop from '@material-symbols/svg-400/rounded/stop-fill.svg?react'
 export const icons = {
   // Planner: Collapse Panel on the open sidebar, and Open Sidebar on the logo of the collapsed one
   dock_to_right: DockToRight,
@@ -103,6 +104,8 @@ export const icons = {
   // Planner: a questionnaire answer that keeps no plan with the answers before it, so the fade isn't
   // all that marks it (new design, approved difference 20)
   block: Block,
+  // Loading sheet: Send while a reply is on its way (case 03), the solid square the sheet draws
+  stop: Stop,
 }
 
 export type IconName = keyof typeof icons

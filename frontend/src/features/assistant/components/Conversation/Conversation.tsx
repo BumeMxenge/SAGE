@@ -124,7 +124,7 @@ export function Conversation({ chatId, address, plans, planName, waiting, sent, 
         </div>
       )}
       <div className={styles.box}>
-        <ChatBox ref={box} label="Ask SAGE" placeholder={placeholder} waiting={waiting || messages === undefined} onSend={ask} />
+        <ChatBox ref={box} label="Ask SAGE" placeholder={placeholder} held={messages === undefined} working={waiting} onSend={ask} />
       </div>
     </div>
   )

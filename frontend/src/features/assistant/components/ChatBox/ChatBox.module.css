@@ -80,6 +80,15 @@
   cursor: default;
 }
 
+/* While a reply is on its way, the working button: the square in the full circle, at the size that
+   draws the loading sheet's 10 px. It still can't be pressed. */
+.send[data-working] {
+  --icon-size: var(--size-icon-md);
+
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+}
+
 .send[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
