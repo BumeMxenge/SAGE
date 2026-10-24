@@ -1,7 +1,7 @@
 // A drop-down for choosing one option, such as the plan switcher or a course's outcome. It has no
 // visible label, as in the prototypes; the label is still there for screen readers. Options are
-// SelectItems, which SelectSections can group under a title. The placeholder shows until something is
-// chosen, and then only the chosen option's name: its codes and credits stay in the list. A long name
+// SelectItems. The placeholder shows until something is chosen, and then only the chosen option's
+// name: its codes and credits stay in the list. A long name
 // ends in an ellipsis within the plan switcher's width, and a screen reader still reads all of it. The
 // list opens below, from the left edge, as the plan switcher does. It is outlined, as the plan switcher
 // is, or plain, as the review's outcomes are in edit mode: the value and its arrow in the text around

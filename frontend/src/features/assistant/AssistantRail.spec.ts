@@ -3,7 +3,8 @@
 // shares. A catch-all refuses any chat request a check leaves unanswered, and fails the check. It
 // checks that the chat follows the address, for a plan and for a pair, and that a pair's first
 // question makes its chat with both plans; that a reply shows its sources, the line to her student
-// advisor and Open Plan, which opens a plan her answers hid; that advisor_unavailable keeps her
+// advisor and Open Plan, and a plan her answers hid that it offers joins her plan list at once and
+// opens as one of hers; that advisor_unavailable keeps her
 // question and Try Again sends the same words to the same chat; that nothing more goes while a reply
 // is on its way, though a question in another plan or pair does; that the chat list is read again
 // after a reply, so the advisor's title replaces New Chat; that a question cut off on its way is
@@ -217,20 +218,39 @@ test("the chat follows the address: a plan's own, then the pair's, whose first q
   expect(asked.sent.map(({ content, term }) => ({ content, term }))).toEqual([{ content: 'How do these plans differ?', term: 'sem1' }])
 })
 
-test('a reply shows its numbered sources, the line to her student advisor and Open Plan, which opens a plan her answers hid', async ({
+test('a reply shows its numbered sources, the line to her student advisor and Open Plan, and a plan her answers hid that it offers joins her plans', async ({
   page,
 }) => {
   const { set, planId } = await herPlan(page)
+  const open = set.plans.find((plan) => plan.id === planId)
   const hidden = set.plans.find((plan) => plan.hidden)
-  if (!hidden) throw new Error("Mbali's seed hides three plans")
-  const chat = chatOf(planId)
-  const reply = messageOf('assistant', clashFree, { citations: sources, referral: true, open_plan_id: hidden.id })
-  await madeUpChats(page, { chats: [chat], messages: { [chat.id]: [messageOf('user', 'Is this plan clash-free?'), reply] } })
+  if (!open || !hidden) throw new Error("Mbali's seed opens a kept plan first and hides three")
+  // Her set as the API reads it, showing the offered plan once the reply is saved, as the chats
+  // service does
+  let replied = false
+  await page.route('**/v1/plans', async (route) => {
+    const response = await route.fetch()
+    const read = (await response.json()) as PlanSet
+    const plans = read.plans.map((plan) => (plan.id === hidden.id ? { ...plan, hidden: !replied } : plan))
+    await route.fulfill({ response, json: { ...read, plans } })
+  })
+  await madeUpChats(page, {
+    answer: () => {
+      replied = true
+      return { reply: messageOf('assistant', clashFree, { citations: sources, referral: true, open_plan_id: hidden.id }) }
+    },
+  })
   await openAssistant(page)
+  await ask(page, 'Is this plan clash-free?')
   await expect(page.getByRole('list', { name: 'Sources' }).getByRole('listitem')).toHaveCount(2)
   await expect(rail(page).getByText('Your student advisor can help with this.')).toBeVisible()
+  // In her plan list at once, with no reload
+  await page.getByRole('button', { name: open.name }).click()
+  await expect(page.getByRole('option', { name: hidden.name })).toBeVisible()
+  await page.keyboard.press('Escape')
   await page.getByRole('link', { name: `Open ${hidden.name}` }).click()
   await page.waitForURL(`**/plan/${hidden.id}`)
+  // Now one of the plans she switches between, so the switcher names it
   await expect(page.getByRole('button', { name: hidden.name })).toBeVisible()
 })
 

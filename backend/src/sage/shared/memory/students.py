@@ -132,6 +132,20 @@ class InMemoryStudentRepository:
             ),
         )
 
+    def show_plan(self, student_id: UUID, plan_id: UUID) -> None:
+        state = self._students.get(student_id)
+        if state is None:
+            return
+        self._change(
+            student_id,
+            plans=tuple(
+                plan.model_copy(update={"hidden": False})
+                if plan.id == plan_id
+                else plan
+                for plan in state.plans
+            ),
+        )
+
     def save_answers(
         self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]
     ) -> None:
@@ -244,7 +258,10 @@ class InMemoryStudentRepository:
             messages=(*state.messages, *stored),
             message_citations=(*state.message_citations, *cited),
         )
-        self._citations[reply.id] = tuple(citations)
+        # Read back in position order, as Supabase keys and orders them
+        self._citations[reply.id] = tuple(
+            sorted(citations, key=lambda citation: citation.position)
+        )
         return stored
 
     def _stamp[T: (Chat, Message)](self, row: T) -> T:
