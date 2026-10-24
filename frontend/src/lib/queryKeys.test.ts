@@ -35,7 +35,7 @@ it.each([
   ['answering the questionnaire', () => refresh.questionnaireAnswered(), ['plans', 'plan', 'comparison']],
   ['a favourite', () => refresh.favouriteChanged(), ['questionnaire', 'electives']],
   ['starting a chat', () => refresh.chatStarted(), ['chats', 'pairChats']],
-  ['a sent message', () => refresh.messageSent(chat), ['chats', 'pairChats', 'messages']],
+  ['a sent message', () => refresh.messageSent(chat), ['plans', 'chats', 'pairChats', 'messages']],
   ['Finish Setup', () => refresh.setupFinished(), ['me', 'plans']],
 ])('%s refreshes exactly its reads', async (_, change, expected) => {
   for (const queryKey of Object.values(reads)) queryClient.setQueryData(queryKey, {})

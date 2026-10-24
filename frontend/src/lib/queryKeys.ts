@@ -52,8 +52,9 @@ export const refresh = {
   favouriteChanged: () => refreshing(allOf('/v1/electives'), allOf('/v1/questionnaire')),
   // A new chat joins the list for its plan or pair
   chatStarted: () => refreshing(allOf('/v1/chats')),
-  // The question and its reply join that chat, and a reply can bring the chat its first title
-  messageSent: (chatId: string) => refreshing(queries.messages(chatId).queryKey, allOf('/v1/chats')),
+  // The question and its reply join that chat, a reply can bring the chat its first title, and a plan
+  // her answers hid joins her set's shown plans when a reply offers it
+  messageSent: (chatId: string) => refreshing(queries.messages(chatId).queryKey, allOf('/v1/chats'), allOf('/v1/plans')),
   // Finish Setup completes the account and attaches its plans
   setupFinished: () => refreshing(queries.me().queryKey, allOf('/v1/plans')),
 }

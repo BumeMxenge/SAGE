@@ -63,8 +63,8 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
   const asking = useMutation({
     mutationKey: turnKey(scope),
     mutationFn: ask,
-    // The question and its reply join the chat, and the reply may bring the chat its first title. Her
-    // question stays on screen until they arrive.
+    // The question and its reply join the chat, the reply may bring the chat its first title, and a
+    // plan it offers joins her plan list. Her question stays on screen until they arrive.
     onSuccess: (chatId) => refresh.messageSent(chatId),
     // Kept until she reloads: a finished question nothing watches is otherwise dropped after five
     // minutes, taking with it a failure she left in another view
