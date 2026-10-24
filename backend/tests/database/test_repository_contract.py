@@ -294,6 +294,34 @@ def test_a_question_and_its_reply_are_stored_together_in_order(store):
     assert in_order[-2:] == [asked.id, answered.id]
 
 
+def test_two_quotes_of_one_passage_on_a_reply_are_both_kept_in_order(
+    store, approved_2026
+):
+    # The advisor quotes a table one row a citation, so a reply can cite one passage twice. They're
+    # handed over last first, so the order read back comes from their positions.
+    her = store.mbali.student.id
+    chat = chat_titled(store, "Fridays on Power, Control & Robotics")
+    passage = approved_2026.passages[0]
+    asked = Message(
+        id=uuid4(), chat_id=chat.id, student_id=her, role="user", content="Test"
+    )
+    answered = asked.model_copy(update={"id": uuid4(), "role": "assistant"})
+    first, second = (
+        Citation(
+            passage_id=passage.id,
+            position=position,
+            quote=quote,
+            source=passage.source,
+            section=passage.section,
+            page=passage.page,
+        )
+        for position, quote in ((1, "First row"), (2, "Second row"))
+    )
+    store.students.add_exchange(asked, answered, [second, first])
+    reply = store.students.messages(her, chat.id)[-1]
+    assert reply.citations == (first, second)
+
+
 @pytest.mark.integration
 def test_a_cited_reply_reads_back_with_its_passage(
     stores, new_account, seed_file, approved_2026

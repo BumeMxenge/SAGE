@@ -258,7 +258,10 @@ class InMemoryStudentRepository:
             messages=(*state.messages, *stored),
             message_citations=(*state.message_citations, *cited),
         )
-        self._citations[reply.id] = tuple(citations)
+        # Read back in position order, as Supabase keys and orders them
+        self._citations[reply.id] = tuple(
+            sorted(citations, key=lambda citation: citation.position)
+        )
         return stored
 
     def _stamp[T: (Chat, Message)](self, row: T) -> T:
