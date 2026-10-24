@@ -132,6 +132,20 @@ class InMemoryStudentRepository:
             ),
         )
 
+    def show_plan(self, student_id: UUID, plan_id: UUID) -> None:
+        state = self._students.get(student_id)
+        if state is None:
+            return
+        self._change(
+            student_id,
+            plans=tuple(
+                plan.model_copy(update={"hidden": False})
+                if plan.id == plan_id
+                else plan
+                for plan in state.plans
+            ),
+        )
+
     def save_answers(
         self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]
     ) -> None:

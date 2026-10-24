@@ -196,6 +196,21 @@ def test_hiding_plans_leaves_exactly_the_kept_ones_visible(store):
     assert current.plan_set.answers == {"course": "EEE4118F"}
 
 
+def test_showing_a_plan_shows_exactly_that_one_and_only_for_her(store):
+    # Her seeded set hides positions 2 to 4
+    her = store.mbali.student.id
+    second = next(plan.id for plan in store.mbali.plans if plan.position == 2)
+
+    def hidden() -> list[int]:
+        rows = store.students.current_plan_set(her)
+        return [plan.position for plan in rows.plans if plan.hidden]
+
+    store.students.show_plan(store.stranger, second)
+    assert hidden() == [2, 3, 4]
+    store.students.show_plan(her, second)
+    assert hidden() == [3, 4]
+
+
 def chat_titled(store: Store, title: str) -> Chat:
     return next(chat for chat in store.mbali.chats if chat.title == title)
 

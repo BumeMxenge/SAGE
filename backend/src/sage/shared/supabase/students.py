@@ -200,6 +200,15 @@ class SupabaseStudentRepository:
             .execute()
         )
 
+    def show_plan(self, student_id: UUID, plan_id: UUID) -> None:
+        (
+            self._client.table("plans")
+            .update({"hidden": False})
+            .eq("id", str(plan_id))
+            .eq("student_id", str(student_id))
+            .execute()
+        )
+
     def save_answers(
         self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]
     ) -> None:
