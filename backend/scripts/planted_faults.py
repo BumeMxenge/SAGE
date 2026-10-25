@@ -316,7 +316,7 @@ def plant(fault: Fault, copy: Path) -> str:
 def main() -> None:
     with tempfile.TemporaryDirectory() as work:
         copy = Path(work) / "backend"
-        for part in ("src", "tests"):
+        for part in ("src", "tests", "scripts"):
             shutil.copytree(
                 BACKEND / part,
                 copy / part,

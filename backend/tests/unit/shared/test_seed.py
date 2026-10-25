@@ -10,6 +10,7 @@ from sage.shared.memory.rules import InMemoryRuleRepository
 from sage.shared.memory.students import InMemoryStudentRepository
 from sage.shared.rules import HandbookVersion, RuleSet
 from sage.shared.seed import YearNotLoaded, counts, load_seed, seed
+from scripts import write_seed
 
 # Made-up account ids, standing in for two sign-in accounts
 ACCOUNT = UUID("00000000-0000-4000-8000-000000000001")
@@ -113,3 +114,11 @@ def test_nothing_is_written_until_her_plans_year_is_approved(seed_file, held):
     with pytest.raises(YearNotLoaded, match="2026"):
         seed(rules, students, load_seed(seed_file, ACCOUNT))
     assert students.get(ACCOUNT) is None
+
+
+def test_ziyelas_file_is_what_the_engine_builds_for_her_today():
+    # Her plans and reasons are the engine's, and the plans her answers hide the questionnaire's, so
+    # a change to either, or to the approved 2026, that would build her differently fails here until
+    # scripts/write_seed.py writes her file again
+    written = json.loads(write_seed.FILE.read_text(encoding="utf-8"))
+    assert write_seed.seed_file(write_seed.build()) == written

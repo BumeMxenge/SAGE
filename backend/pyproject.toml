@@ -51,6 +51,8 @@ packages = ["src/sage"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# So a test can build a student as the scripts do, from scripts/
+pythonpath = ["."]
 addopts = ["--import-mode=importlib", "--strict-markers"]
 markers = [
     "integration: needs local Supabase (make test-integration)",
@@ -81,6 +83,8 @@ do_not_mutate = [
     "src/sage/shared/memory/*",
 ]
 pytest_add_cli_args_test_selection = ["-m", "not integration"]
+# The tests import scripts/ as well as tests/, which mutmut copies on its own
+also_copy = ["scripts/"]
 
 # The dependency rule in docs/architecture.md, as contracts that make lint checks with lint-imports
 [tool.importlinter]

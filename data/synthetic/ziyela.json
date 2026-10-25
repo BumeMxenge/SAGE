@@ -1,0 +1,2875 @@
+{
+  "_readme": [
+    "Ziyela's seed for 2026: a made-up student, with no real person's data. scripts/write_seed.py writes this file, so run it again rather than editing it.",
+    "She is in her fourth year of Mechatronics (4-year) and has passed every course of her first three years except a complementary studies course, so each of her plans leaves an 18-credit complementary slot.",
+    "Her plans, their courses and their reasons are the engine's, as onboarding makes them. Her questionnaire answers are Mbali's, which hide the plans without EEE4119F.",
+    "As in mbali.json, each key is a table, rows carry no uuids or student_id, and rows that point at other rows use local keys. Her reasons cite no passage, so approving a year again never breaks a link.",
+    "fake_account holds her made-up email, which the tests' fake sign-in uses. sage seed never writes it: a real account brings its own email."
+  ],
+  "fake_account": {
+    "email": "ntwziy999@myuct.ac.za"
+  },
+  "students": [
+    {
+      "curriculum_code": "EB011EEE05",
+      "intake_year": 2023,
+      "onboarding_complete": true
+    }
+  ],
+  "course_history": [
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "CSC1015F",
+      "course_name": "Computer Science 1015",
+      "credits": 18,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "EEE1008F",
+      "course_name": "Introduction to Electrical Engineering A",
+      "credits": 12,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "MAM1020F",
+      "course_name": "Mathematics 1A for Engineers",
+      "credits": 18,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "PHY1012F",
+      "course_name": "Physics A for Engineers",
+      "credits": 18,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "CSC1016S",
+      "course_name": "Computer Science 1016",
+      "credits": 18,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "EEE1009S",
+      "course_name": "Introduction to Electrical Engineering B",
+      "credits": 12,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "MAM1021S",
+      "course_name": "Mathematics 1B for Engineers",
+      "credits": 18,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "PHY1013S",
+      "course_name": "Physics B for Engineers",
+      "credits": 18,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2023,
+      "term": "other",
+      "course_code": "EEE1000X",
+      "course_name": "Practical Training",
+      "credits": 0,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "EEE2045F",
+      "course_name": "Analogue Electronics",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "EEE2046F",
+      "course_name": "Embedded Systems I",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "EEE2048S",
+      "course_name": "Professional Communication for Electrical Engineering",
+      "credits": 8,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "MAM2083F",
+      "course_name": "Vector Calculus for Engineers",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "MEC1003F",
+      "course_name": "Engineering Drawing",
+      "credits": 8,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "MEC1009F",
+      "course_name": "Introduction to Engineering Mechanics",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "EEE2044S",
+      "course_name": "Introduction to Power Engineering",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "EEE2047S",
+      "course_name": "Signals and Systems I",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "MAM2084S",
+      "course_name": "Linear Algebra & Differential Equations for Engineers",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "PHY2010S",
+      "course_name": "Electromagnetism for Engineers",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3088F",
+      "course_name": "Electrical Engineering Design Principles",
+      "credits": 8,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3090F",
+      "course_name": "Electronic Devices & Circuits",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3091F",
+      "course_name": "Energy Conversion I",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3092F",
+      "course_name": "Signals & Systems II",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "MEC2047F",
+      "course_name": "Engineering Dynamics",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3094S",
+      "course_name": "Control Systems Engineering",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3096S",
+      "course_name": "Embedded Systems II",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3099S",
+      "course_name": "Engineering Design: Mechatronics",
+      "credits": 8,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "MEC2045S",
+      "course_name": "Applied Engineering Mechanics",
+      "credits": 16,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "other",
+      "course_code": "EEE3000X",
+      "course_name": "Practical Training",
+      "credits": 0,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "ASL1200S",
+      "course_name": "ASL1200S",
+      "credits": 8,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "CON2026S",
+      "course_name": "Project Management for Engineers",
+      "credits": 8,
+      "nqf_level": null,
+      "result": "1",
+      "mark": 75
+    }
+  ],
+  "favourites": [
+    {
+      "course_code": "SLL1002S"
+    },
+    {
+      "course_code": "FAM2000F"
+    },
+    {
+      "course_code": "SLL1057F"
+    }
+  ],
+  "plan_sets": [
+    {
+      "key": "2026-v1",
+      "period": 2026,
+      "version": 1,
+      "complete": true,
+      "answers": {
+        "course": "EEE4119F",
+        "week": "no_preference"
+      }
+    }
+  ],
+  "plans": [
+    {
+      "key": "P01",
+      "plan_set": "2026-v1",
+      "position": 1,
+      "name": "Signals, Power & Control",
+      "combination": "EEE4114F \u00b7 EEE4117F \u00b7 EEE4118F",
+      "hidden": true
+    },
+    {
+      "key": "P02",
+      "plan_set": "2026-v1",
+      "position": 2,
+      "name": "Signals, Power & Robotics",
+      "combination": "EEE4114F \u00b7 EEE4117F \u00b7 EEE4119F",
+      "hidden": false
+    },
+    {
+      "key": "P03",
+      "plan_set": "2026-v1",
+      "position": 3,
+      "name": "Signals, Control & Robotics",
+      "combination": "EEE4114F \u00b7 EEE4118F \u00b7 EEE4119F",
+      "hidden": false
+    },
+    {
+      "key": "P04",
+      "plan_set": "2026-v1",
+      "position": 4,
+      "name": "Power, Control & Robotics",
+      "combination": "EEE4117F \u00b7 EEE4118F \u00b7 EEE4119F",
+      "hidden": false
+    },
+    {
+      "key": "P05",
+      "plan_set": "2026-v1",
+      "position": 5,
+      "name": "Power, Control & Embedded",
+      "combination": "EEE4117F \u00b7 EEE4118F \u00b7 EEE4120F",
+      "hidden": true
+    },
+    {
+      "key": "P06",
+      "plan_set": "2026-v1",
+      "position": 6,
+      "name": "Power, Control & Imaging",
+      "combination": "EEE4117F \u00b7 EEE4118F \u00b7 HUB4049F",
+      "hidden": true
+    },
+    {
+      "key": "P07",
+      "plan_set": "2026-v1",
+      "position": 7,
+      "name": "Power, Robotics & Embedded",
+      "combination": "EEE4117F \u00b7 EEE4119F \u00b7 EEE4120F",
+      "hidden": false
+    },
+    {
+      "key": "P08",
+      "plan_set": "2026-v1",
+      "position": 8,
+      "name": "Power, Robotics & Imaging",
+      "combination": "EEE4117F \u00b7 EEE4119F \u00b7 HUB4049F",
+      "hidden": false
+    },
+    {
+      "key": "P09",
+      "plan_set": "2026-v1",
+      "position": 9,
+      "name": "Control, Robotics & Embedded",
+      "combination": "EEE4118F \u00b7 EEE4119F \u00b7 EEE4120F",
+      "hidden": false
+    },
+    {
+      "key": "P10",
+      "plan_set": "2026-v1",
+      "position": 10,
+      "name": "Control, Robotics & Imaging",
+      "combination": "EEE4118F \u00b7 EEE4119F \u00b7 HUB4049F",
+      "hidden": false
+    }
+  ],
+  "plan_courses": [
+    {
+      "plan": "P01",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P01",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P01",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P01",
+      "course_code": "EEE4114F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P01",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P01",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P01",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P01",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P02",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P02",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P02",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P02",
+      "course_code": "EEE4114F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P02",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P02",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P02",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P02",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P03",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P03",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P03",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P03",
+      "course_code": "EEE4114F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P03",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P03",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P03",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P03",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P04",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P04",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P04",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P04",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P04",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P04",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P04",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P04",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P05",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P05",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P05",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P05",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P05",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P05",
+      "course_code": "EEE4120F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P05",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P05",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P06",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P06",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P06",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P06",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P06",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P06",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P06",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P06",
+      "course_code": "HUB4049F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P07",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P07",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P07",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P07",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P07",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P07",
+      "course_code": "EEE4120F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P07",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P07",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P08",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P08",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P08",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P08",
+      "course_code": "EEE4117F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P08",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P08",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P08",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P08",
+      "course_code": "HUB4049F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P09",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P09",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P09",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P09",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P09",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P09",
+      "course_code": "EEE4120F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P09",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P09",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P10",
+      "course_code": "CML4607F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P10",
+      "course_code": "EEE4022S",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P10",
+      "course_code": "EEE4113F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P10",
+      "course_code": "EEE4118F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P10",
+      "course_code": "EEE4119F",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P10",
+      "course_code": "EEE4124C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P10",
+      "course_code": "EEE4125C",
+      "handbook_year": 2026,
+      "choices": null
+    },
+    {
+      "plan": "P10",
+      "course_code": "HUB4049F",
+      "handbook_year": 2026,
+      "choices": null
+    }
+  ],
+  "plan_reasons": [
+    {
+      "key": "r1",
+      "plan_set": "2026-v1",
+      "plan": null,
+      "course_code": null,
+      "kind": "included",
+      "message": "Every plan holds the core courses you still need this year: CML4607F, EEE4022S, EEE4113F, EEE4124C and EEE4125C.",
+      "details": null,
+      "passage_id": null
+    },
+    {
+      "key": "r2",
+      "plan_set": "2026-v1",
+      "plan": null,
+      "course_code": null,
+      "kind": "included",
+      "message": "Every plan takes at least 2 of EEE4117F, EEE4118F and EEE4119F.",
+      "details": null,
+      "passage_id": null
+    },
+    {
+      "key": "r3",
+      "plan_set": "2026-v1",
+      "plan": null,
+      "course_code": null,
+      "kind": "included",
+      "message": "Every plan takes at least 48 credits from EEE4114F, EEE4117F, EEE4118F, EEE4119F, EEE4120F and HUB4049F.",
+      "details": null,
+      "passage_id": null
+    },
+    {
+      "key": "r4",
+      "plan_set": "2026-v1",
+      "plan": null,
+      "course_code": null,
+      "kind": "included",
+      "message": "Every plan comes to at least 156 credits for the year, counting its complementary studies.",
+      "details": null,
+      "passage_id": null
+    },
+    {
+      "key": "r5",
+      "plan_set": "2026-v1",
+      "plan": null,
+      "course_code": null,
+      "kind": "excluded",
+      "message": "Plans with more electives than the rules ask for aren't listed. The handbook allows more, so ask your advisor if you want to add one.",
+      "details": null,
+      "passage_id": null
+    },
+    {
+      "key": "r6",
+      "plan_set": "2026-v1",
+      "plan": null,
+      "course_code": "EEE4022S",
+      "kind": "included",
+      "message": "EEE4022S needs one of EEE4114F, EEE4117F, EEE4118F, EEE4119F or EEE4120F, which every plan holds in time.",
+      "details": null,
+      "passage_id": null
+    },
+    {
+      "key": "r7",
+      "plan_set": "2026-v1",
+      "plan": "P01",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 52 fit this plan's timetable, 24 of them with a meeting that has no printed time. 29 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1002F",
+          "REL1006S",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1057F",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1002F",
+          "REL1006S",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1002F",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1057F",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1075F": {
+            "lecture": [
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    },
+    {
+      "key": "r8",
+      "plan_set": "2026-v1",
+      "plan": "P02",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 51 fit this plan's timetable, 24 of them with a meeting that has no printed time. 27 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1006S",
+          "REL2047F",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1006S",
+          "REL2047F",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1075F": {
+            "lecture": [
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    },
+    {
+      "key": "r9",
+      "plan_set": "2026-v1",
+      "plan": "P03",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 51 fit this plan's timetable, 23 of them with a meeting that has no printed time. 27 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FAM2000F",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1006S",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1006S",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1075F": {
+            "lecture": [
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    },
+    {
+      "key": "r10",
+      "plan_set": "2026-v1",
+      "plan": "P04",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 51 fit this plan's timetable, 24 of them with a meeting that has no printed time. 27 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1075F": {
+            "lecture": [
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    },
+    {
+      "key": "r11",
+      "plan_set": "2026-v1",
+      "plan": "P05",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 52 fit this plan's timetable, 25 of them with a meeting that has no printed time. 28 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1002F",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1002F",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1002F",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1075F": {
+            "lecture": [
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    },
+    {
+      "key": "r12",
+      "plan_set": "2026-v1",
+      "plan": "P06",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 52 fit this plan's timetable, 24 of them with a meeting that has no printed time. 28 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1002F",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1057F",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1002F",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1002F",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1057F",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    },
+    {
+      "key": "r13",
+      "plan_set": "2026-v1",
+      "plan": "P07",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 52 fit this plan's timetable, 25 of them with a meeting that has no printed time. 27 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1006S",
+          "REL2040F",
+          "REL2047F",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1006S",
+          "REL2040F",
+          "REL2047F",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1075F": {
+            "lecture": [
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    },
+    {
+      "key": "r14",
+      "plan_set": "2026-v1",
+      "plan": "P08",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 51 fit this plan's timetable, 24 of them with a meeting that has no printed time. 26 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1006S",
+          "REL2040F",
+          "REL2047F",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1006S",
+          "REL2040F",
+          "REL2047F",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    },
+    {
+      "key": "r15",
+      "plan_set": "2026-v1",
+      "plan": "P09",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 52 fit this plan's timetable, 24 of them with a meeting that has no printed time. 27 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FAM2000F",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1075F",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1075F": {
+            "lecture": [
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    },
+    {
+      "key": "r16",
+      "plan_set": "2026-v1",
+      "plan": "P10",
+      "course_code": null,
+      "kind": "included",
+      "message": "Add one approved complementary studies course: 51 fit this plan's timetable, 23 of them with a meeting that has no printed time. 26 of them are worth fewer than the table's 18 credits, so a plan that takes one is conditional: confirm it with your advisor.",
+      "details": {
+        "credits": 18,
+        "fits": [
+          "AGE1002S",
+          "AGE1005L",
+          "ASL1301S",
+          "AST1000S",
+          "BIO1004S",
+          "BUS1007S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "BUS2023S",
+          "BUS2024S",
+          "ECO1007S",
+          "ECO1008S",
+          "ECO1010S",
+          "ECO1011S",
+          "ECO2007S",
+          "EGS1007S",
+          "ELL1016S",
+          "FAM2000F",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "PHI1010S",
+          "PHI2016S",
+          "PHI2040S",
+          "PHI2043S",
+          "PHI2045S",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "untimed": [
+          "AGE1002S",
+          "AGE1005L",
+          "BIO1004S",
+          "BUS1036F",
+          "BUS1036S",
+          "BUS2010F",
+          "BUS2010S",
+          "ECO1010S",
+          "ECO1011S",
+          "MUZ1339H",
+          "MUZ1340H",
+          "REL1006S",
+          "REL2040F",
+          "REL2048S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1061S",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1136S"
+        ],
+        "fewer_credits": [
+          "ASL1301S",
+          "ELL1016S",
+          "FIN1009S",
+          "HST1014S",
+          "MUZ1340H",
+          "PHI1010S",
+          "REL1006S",
+          "SLL1002S",
+          "SLL1016S",
+          "SLL1017F",
+          "SLL1017S",
+          "SLL1018S",
+          "SLL1029F",
+          "SLL1029S",
+          "SLL1042S",
+          "SLL1061S",
+          "SLL1063S",
+          "SLL1074S",
+          "SLL1076S",
+          "SLL1082F",
+          "SLL1083S",
+          "SLL1097S",
+          "SLL1102S",
+          "SLL1122S",
+          "SLL1136S",
+          "SOC1005S"
+        ],
+        "sections": {
+          "BIO1004S": {
+            "practical": [
+              "A",
+              "C"
+            ]
+          },
+          "ECO1008S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO1011S": {
+            "lecture": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          "ECO2007S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "EGS1007S": {
+            "practical": [
+              "A"
+            ]
+          },
+          "PHI2043S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1002S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1061S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SLL1076S": {
+            "lecture": [
+              "A",
+              "B"
+            ]
+          },
+          "SOC1005S": {
+            "lecture": [
+              "A"
+            ]
+          }
+        },
+        "forced": {}
+      },
+      "passage_id": null
+    }
+  ],
+  "chats": [],
+  "messages": [],
+  "message_citations": []
+}
