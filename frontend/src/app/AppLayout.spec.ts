@@ -4,8 +4,8 @@
 // rail and the open menu. While the first load's guard waits on GET /v1/me, held, the frame shows,
 // the account as a skeleton and the address's skeleton beside it, and no page opens until the guard
 // lets it, with axe and a photograph beside what it turns into, and the frame sends no read of its own
-// before the guard decides, so a signed-out visitor asks the API nothing. Sign Out leaves showing no
-// skeleton.
+// before the guard decides, so a signed-out visitor asks the API nothing. Sign Out leaves asking the
+// API nothing and logging no error, and whoever signs in next on the same page sees nothing of hers.
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../e2e/axe.ts'
 import { walkKeyboard } from '../../e2e/keyboard.ts'
@@ -22,7 +22,7 @@ import {
 } from '../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../e2e/parity.ts'
 import { settled } from '../../e2e/settled.ts'
-import { mbali } from '../../e2e/visitors.ts'
+import { mbali, signInLink, visitAs } from '../../e2e/visitors.ts'
 
 test.use({ storageState: mbali })
 
@@ -149,14 +149,23 @@ test("a signed-out visitor at a plan's address goes to /sign-in having asked the
   await visitor.close()
 })
 
-test('Sign Out leaves nothing of the student in the browser', async ({ page }) => {
+// The app's Supabase client, as much of it as the next sign-in uses
+type SupabaseModule = {
+  supabase: { auth: { verifyOtp: (link: { token_hash: string; type: 'magiclink' }) => Promise<unknown> } }
+}
+
+test('Sign Out asks the API nothing on its way out, and leaves nothing of the student for whoever signs in next', async ({
+  page,
+}) => {
+  // make sign-in's link for the next sign-in takes 15 to 30 s
+  test.setTimeout(90_000)
   // Supabase's sign-out ends every session an account has, and local Supabase checks every token
   // with its Auth server, so a real one would sign out every other check running as Mbali. Answered
   // here, the browser's side runs as it would: supabase-js drops the session, and SAGE forgets the
   // rest. Without the header, the browser would refuse the answer as a failed request.
-  let asked = false
+  let loggedOut = false
   await page.route('**/auth/v1/logout*', async (route) => {
-    asked = true
+    loggedOut = true
     await route.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*' } })
   })
   await watchLoading(page)
@@ -175,16 +184,48 @@ test('Sign Out leaves nothing of the student in the browser', async ({ page }) =
   await page.getByRole('button', { name: /^Power, Control & Robotics/ }).waitFor()
   await settled(page)
   await forgetSeen(page)
+  const asked = apiReads(page)
+  const errors: string[] = []
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text())
+  })
   await named.click()
   await page.getByRole('menuitem', { name: 'Sign Out' }).click()
   await page.waitForURL('**/sign-in')
-  expect(asked).toBe(true)
-  // Sign Out empties the cache before it leaves, and the page it leaves shows no skeleton for it
+  await page.getByRole('heading', { level: 1 }).waitFor()
+  expect(loggedOut).toBe(true)
+  // The cache empties only once her pages have closed, so none of them asks for its reads again,
+  // unsigned, and the console logs no 401, and no skeleton shows for the reads it emptied
+  expect([...asked]).toEqual([])
+  expect(errors).toEqual([])
   expect((await seenLoading(page)).skeletons).toBe(0)
   const kept = await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('sage-name-')))
   expect(kept).toEqual([])
-  await page.goto('/plan')
+  // Her session has gone: her plans send whoever asks to sign in. On this page, not a reload, so what
+  // Sign Out left in its memory stays for the next sign-in to find.
+  await page.evaluate(() => {
+    history.pushState(null, '', '/plan')
+    dispatchEvent(new PopStateEvent('popstate'))
+  })
   await page.waitForURL('**/sign-in')
+
+  // The next person signs in on this page: a made-up student who hasn't finished setup. Anything of
+  // Mbali's left in the page, such as her account in the cache, would send them to her plans.
+  await visitAs(page, 'unfinished')
+  const tokenHash = new URL(signInLink('sign-in')).searchParams.get('token_hash')
+  if (!tokenHash) throw new Error("make sign-in's link carries no token")
+  await page.evaluate(async (hash) => {
+    // SAGE signs a link in only as a page loads, so the check does it through the app's own client,
+    // as the dev server serves it, then comes back to /, as every sign-in does
+    const client = '/src/lib/supabase.ts'
+    const { supabase } = (await import(client)) as SupabaseModule
+    await supabase.auth.verifyOtp({ token_hash: hash, type: 'magiclink' })
+    history.pushState(null, '', '/')
+    dispatchEvent(new PopStateEvent('popstate'))
+  }, tokenHash)
+  await page.waitForURL('**/onboarding')
+  await page.getByRole('heading', { level: 1 }).waitFor()
+  await expect(page.getByText(/DLMMBA999|Mbali|Power, Control & Robotics/)).toHaveCount(0)
 })
 
 test('the rail passes axe, and the keyboard walks it in order, each stop ringed', async ({ page }) => {

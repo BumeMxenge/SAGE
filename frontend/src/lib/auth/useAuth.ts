@@ -61,13 +61,19 @@ export function useAuth() {
     if (error) setError(error.message) // on success the browser has already left for Microsoft
   }
 
-  // The caller then goes to /sign-in. Everything read for this account leaves the cache with it, so
-  // the next person to sign in on this browser never sees it. It goes whatever Supabase answers: the
+  // Signs out of Supabase, leaves the student's pages as the caller says, then empties the cache, so
+  // nothing read for this account stays in the page for the next person to sign in on this browser.
+  // The cache empties only once her pages have closed, so none of them asks for its reads again,
+  // unsigned, on the way out. It empties whatever Supabase answers, and however leaving goes: the
   // student has asked to leave, and supabase-js drops the session even when its logout request fails.
-  async function signOut() {
+  async function signOut(leave: () => void | Promise<void>) {
     const { error } = await supabase.auth.signOut()
-    queryClient.clear()
     if (error) setError(error.message)
+    try {
+      await leave()
+    } finally {
+      queryClient.clear()
+    }
   }
 
   return { session, name, loading, error, signIn, signOut }

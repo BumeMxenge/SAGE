@@ -34,11 +34,8 @@ export function AccountMenu({ collapsed, onOpen }: AccountMenuProps) {
   const { appearance, choose } = useAppearance()
   const navigate = useNavigate()
 
-  async function signOutAndLeave() {
-    await signOut()
-    // Replacing the address, so Back can't return to a page that would only send them away
-    await navigate('/sign-in', { replace: true })
-  }
+  // To /sign-in, replacing the address, so Back can't return to a page that would only send them away
+  const signOutAndLeave = () => signOut(() => navigate('/sign-in', { replace: true }))
 
   return (
     <div className={styles.account} data-collapsed={collapsed || undefined}>

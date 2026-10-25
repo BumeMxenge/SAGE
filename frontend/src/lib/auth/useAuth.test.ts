@@ -14,16 +14,40 @@ afterEach(() => {
   queryClient.clear()
 })
 
-// A logout request that gets no answer fails as this, and supabase-js drops the session all the same
+// A logout request that gets no answer fails as this, and supabase-js drops the session all the same.
+// The cache empties only once she has left, so the pages still on screen as she leaves ask nothing
+// again, unsigned.
 it.each([
   ['succeeds', null],
   ['fails', new AuthRetryableFetchError('Failed to fetch', 0)],
-] as const)('Sign Out empties the cache when the logout request %s', async (_, error) => {
+] as const)('Sign Out leaves, then empties the cache, when the logout request %s', async (_, error) => {
   vi.spyOn(supabase.auth, 'signOut').mockResolvedValue({ error })
   queryClient.setQueryData(queries.history().queryKey, { cumulative_average: null, years: [] })
   const { result } = renderHook(() => useAuth())
+  let keptWhileLeaving = 0
 
-  await act(() => result.current.signOut())
+  await act(() =>
+    result.current.signOut(() => {
+      keptWhileLeaving = queryClient.getQueryCache().getAll().length
+    }),
+  )
+
+  expect(keptWhileLeaving).toBe(1)
+  expect(queryClient.getQueryCache().getAll()).toEqual([])
+})
+
+it('Sign Out empties the cache even when leaving fails', async () => {
+  vi.spyOn(supabase.auth, 'signOut').mockResolvedValue({ error: null })
+  queryClient.setQueryData(queries.history().queryKey, { cumulative_average: null, years: [] })
+  const { result } = renderHook(() => useAuth())
+
+  await act(() =>
+    expect(
+      result.current.signOut(() => {
+        throw new Error('A made-up failure to leave')
+      }),
+    ).rejects.toThrow('A made-up failure to leave'),
+  )
 
   expect(queryClient.getQueryCache().getAll()).toEqual([])
 })
