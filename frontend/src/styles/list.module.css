@@ -1,0 +1,84 @@
+/* The list-item look, defined once: the Select's options and the menus' items share it, so they
+   always match */
+.list {
+  min-height: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* The list itself shows no ring: its items do */
+.list[data-focus-visible] {
+  outline: none;
+}
+
+.item {
+  --icon-size: var(--size-icon-sm);
+
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--size-control-md);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.item[data-hovered] {
+  background: var(--color-hover);
+}
+
+.item[data-selected] {
+  background: var(--color-surface-muted);
+}
+
+/* Drawn inside its edges, which the scrolling list clips */
+.item[data-focus-visible] {
+  outline-offset: calc(var(--focus-ring-width) * -1);
+}
+
+.option {
+  align-items: flex-start;
+  padding: var(--space-3);
+}
+
+.destructive {
+  color: var(--color-text-danger);
+}
+
+/* An option's label holds all of its text, but lays none of it out */
+.content {
+  display: contents;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.label {
+  font-weight: var(--font-weight-semibold);
+}
+
+.description {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.detail {
+  flex: none;
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+.header {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}

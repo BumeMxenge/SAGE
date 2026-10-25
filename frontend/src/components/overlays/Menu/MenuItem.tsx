@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react'
 import { MenuItem as AriaMenuItem } from 'react-aria-components'
 import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
-import styles from '@/components/overlays/Popover/Popover.module.css'
+import styles from '@/styles/list.module.css'
 import itemStyles from './MenuItem.module.css'
 
 type MenuItemProps = {

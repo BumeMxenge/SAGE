@@ -2,7 +2,7 @@
 // figure on the right such as its credits. All of its text names it, so a screen reader hears what the
 // option shows (WCAG 2.5.3). The id is the key the Select reports when it is chosen.
 import { ListBoxItem, Text } from 'react-aria-components'
-import styles from '@/components/overlays/Popover/Popover.module.css'
+import styles from '@/styles/list.module.css'
 
 type SelectItemProps = { id: string; description?: string; detail?: string; children: string }
 

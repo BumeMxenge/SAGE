@@ -2,7 +2,7 @@
 // Match System, Light or Dark.
 import type { ReactNode } from 'react'
 import { Header, MenuSection as AriaMenuSection, type MenuSectionProps } from 'react-aria-components'
-import styles from '@/components/overlays/Popover/Popover.module.css'
+import styles from '@/styles/list.module.css'
 
 type Props = Pick<MenuSectionProps<object>, 'selectionMode' | 'selectedKeys'> & {
   title: string

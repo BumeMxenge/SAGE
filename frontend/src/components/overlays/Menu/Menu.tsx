@@ -6,7 +6,7 @@
 import type { ReactElement, ReactNode } from 'react'
 import { Menu as AriaMenu, MenuTrigger } from 'react-aria-components'
 import { Popover } from '@/components/overlays/Popover/Popover.tsx'
-import listStyles from '@/components/overlays/Popover/Popover.module.css'
+import listStyles from '@/styles/list.module.css'
 import styles from './Menu.module.css'
 
 type MenuProps = {
