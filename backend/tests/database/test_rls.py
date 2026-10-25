@@ -24,6 +24,20 @@ def test_she_reads_her_own_rows_and_a_stranger_reads_none(
     assert stranger.client.table(table).select("*").execute().data == []
 
 
+@pytest.mark.parametrize("table", STUDENT_TABLES)
+def test_no_browser_writes_a_students_rows(her, stranger, refused, table):
+    # Only the backend writes them, with the secret key, so neither her own browser nor anyone
+    # else's may add, change or remove one
+    column = "id" if table == "students" else "student_id"
+    for browser in (her.client, stranger.client):
+        refused(browser.table(table).insert({}), PERMISSION_DENIED)
+        changed = browser.table(table).update({column: str(her.id)})
+        refused(changed.eq(column, str(her.id)), PERMISSION_DENIED)
+        refused(
+            browser.table(table).delete().eq(column, str(her.id)), PERMISSION_DENIED
+        )
+
+
 @pytest.mark.parametrize("table", [*RULEBOOK_TABLES, *STUDENT_TABLES, "result_symbols"])
 def test_a_signed_out_browser_is_refused(anon, refused, table):
     refused(anon.table(table).select("*"), PERMISSION_DENIED)
