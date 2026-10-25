@@ -1,8 +1,7 @@
 # Runs ATP-1: SAGE's readers, grammar and drafts, and its two approved years, against the labels in
-# labels/, and writes one CSV per source to results/ for report.py. It reads the held-out drafts from
-# results/ and calls no model; with --draft it makes them first, once. make atp1 runs it from
-# backend/, with the folders it imports from on Python's path.
-import argparse
+# labels/, and writes one CSV per source to results/ for report.py. It reads the held-out drafts its
+# first run made from results/, and calls no model. make atp1 runs it from backend/, with the folders
+# it imports from on Python's path.
 import csv
 import hashlib
 import json
@@ -14,10 +13,8 @@ import count_changes
 import scoring
 import transcripts
 from labels.check_labels import NO_ENTRY, SHEETS, Row, clock, read
-from pydantic import JsonValue
 from scoring import ACCEPTED, NOT_STORED, REVIEWED
 
-from sage.config import get_settings
 from sage.ingestion import (
     complementary,
     grammar,
@@ -26,7 +23,6 @@ from sage.ingestion import (
     timetable,
     translate,
 )
-from sage.ingestion.anthropic import ClaudeDrafter
 from sage.ingestion.ingest import DATA, approved_snapshot, review_file
 from sage.ingestion.review import Snapshot
 from sage.ingestion.transcript import pdf_pages, read_lines
@@ -39,7 +35,6 @@ RESULTS = HERE / "results"
 # model's reply and what took its place, which translate doesn't keep when a reply isn't a tree
 DRAFTS = RESULTS / "drafts.json"
 REFUSALS = RESULTS / "refusals.json"
-DRAFTING = "make atp1 DRAFT=yes"
 YEARS = (2023, 2026)
 # The printed strings of an entry, by its field, with their column on the sheets and their need
 TEXTS = {
@@ -61,34 +56,12 @@ COLUMNS = (
 )
 
 
-class Recorded:
-    # The drafter, keeping every reply, so the record holds a draft translate doesn't keep because
-    # it isn't a rule tree
-    def __init__(self, drafter: ClaudeDrafter) -> None:
-        self.drafter = drafter
-        self.model = drafter.model
-        self.replies: dict[tuple[str, str], JsonValue] = {}
-
-    def draft(self, printed: str, need: translate.Need) -> JsonValue:
-        reply = self.replies[need, printed] = self.drafter.draft(printed, need)
-        return reply
-
-
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Runs ATP-1 against its labels and writes results/."
-    )
-    parser.add_argument(
-        "--draft",
-        action="store_true",
-        help="draft the held-out wording the grammar refuses, once, with backend/.env's key",
-    )
-    drafter = drafting() if parser.parse_args().draft else None
-    if drafter is None and not REFUSALS.exists():
+    if not REFUSALS.exists():
         raise SystemExit(
-            f"The held-out drafts aren't made yet: {DRAFTING}, from the repo root, makes them once"
+            "The held-out drafts are missing: results/ should hold the first result's drafts.json "
+            "and refusals.json, as committed"
         )
-    RESULTS.mkdir(exist_ok=True)
     manifests = {year: sources.load(DATA / "sources" / str(year)) for year in YEARS}
     books = {
         year: handbook.Handbook(handbook.pages(manifest.path(manifest.handbook)))
@@ -107,7 +80,7 @@ def main() -> None:
         ),
         "timetable": timetable_cells(manifests[2026], snapshots[2026]),
         "complementary": workbook_meetings(manifests[2026], seen[2026]),
-        "held_out": held_out(books[2026], drafter),
+        "held_out": held_out(books[2026]),
     }
     for name, rows in sheets.items():
         write(name, COLUMNS, rows)
@@ -135,27 +108,14 @@ def main() -> None:
     write("inputs", ("file", "sha256"), inputs(manifests))
 
 
-def drafting() -> Recorded:
-    # The drafter sage ingest --draft builds. The drafts are made once, as they're the first result's,
-    # and drafting again would be a new result.
-    if DRAFTS.exists() or REFUSALS.exists():
-        raise SystemExit(
-            "The held-out drafts are made already: make atp1 runs from them, and drafting again "
-            "would be a new result"
-        )
-    settings = get_settings()
-    if not settings.anthropic_api_key:
-        raise SystemExit("Add ANTHROPIC_API_KEY to backend/.env first")
-    return Recorded(ClaudeDrafter(settings.anthropic_api_key, settings.drafting_model))
-
-
 def decided(year: int) -> set[str]:
-    # The courses a row decided in the year's review covers
+    # The courses a decided row in the year's review covers, other than an elective row, which
+    # covers its course but shows its tab and summary, not its requirement or pages
     rows = json.loads(review_file(year).read_text(encoding="utf-8"))["rows"]
     return {
         key.removeprefix("courses/")
         for row in rows
-        if row["decision"] is not None
+        if row["decision"] is not None and not row["id"].startswith("elective/")
         for key in row["covers"]
         if key.startswith("courses/")
     }
@@ -369,10 +329,10 @@ def workbook_meetings(
     return rows
 
 
-def held_out(book: handbook.Handbook, drafter: Recorded | None) -> list[dict[str, str]]:
+def held_out(book: handbook.Handbook) -> list[dict[str, str]]:
     # Each held-out entry from the 2026 handbook, its strings through the grammar and, where it
-    # refuses one, the drafter. Each string is scored on its own: one the grammar reads is accepted
-    # without review, and a refused one is reviewed, as is the page of an entry with one.
+    # refuses one, the first result's draft. Each string is scored on its own: one the grammar reads
+    # is accepted without review, and a refused one is reviewed, as is the page of an entry with one.
     labels = read(LABELS / "held_out.xlsx")
     entries: dict[int, handbook.Entry | None] = {}
     stops: dict[int, str] = {}
@@ -388,8 +348,8 @@ def held_out(book: handbook.Handbook, drafter: Recorded | None) -> list[dict[str
         for field, (_, need) in TEXTS.items()
         if getattr(entry, field)
     ]
-    translated = translate.translate(strings, DRAFTS, drafter)
-    record(translated, drafter)
+    translated = translate.translate(strings, DRAFTS, None)
+    on_record(translated)
     found = {(t.printed, t.need): t for t in translated.translations}
     rows = []
     for number, label in labels.items():
@@ -471,40 +431,21 @@ def held_out(book: handbook.Handbook, drafter: Recorded | None) -> list[dict[str
     return rows
 
 
-def record(translated: translate.Translations, drafter: Recorded | None) -> None:
-    # The drafting run writes every refused string with its cause, the model's reply and what took
-    # its place. A later run checks each refused string is on that record, so none was left undrafted.
-    refused = [t for t in translated.translations if t.cause]
-    if drafter is not None:
-        kept = [
-            {
-                "need": t.need,
-                "printed": t.printed,
-                "cause": t.cause,
-                "model": drafter.model,
-                "reply": drafter.replies[t.need, t.printed],
-                "kept": t.drafted,
-                "in its place": translate.DRAFT.dump_python(t.tree, mode="json"),
-            }
-            for t in refused
-        ]
-        text = json.dumps(kept, indent=2, ensure_ascii=False)
-        REFUSALS.write_text(text + "\n", encoding="utf-8")
-        tokens = drafter.drafter.tokens
-        print(
-            f"Drafted {translated.calls} held-out strings with {drafter.model}: "
-            f"{tokens['input']:,} tokens in, {tokens['cached']:,} read from the provider's cache "
-            f"and {tokens['output']:,} out, USD {drafter.drafter.cost:.4f}"
-        )
-        return
+def on_record(translated: translate.Translations) -> None:
+    # The first run recorded every refused string with its cause, the model's reply and what took
+    # its place. Each refused string must be on that record, so none was left undrafted.
     held = json.loads(REFUSALS.read_text(encoding="utf-8"))
-    on_record = {(r["need"], r["printed"]) for r in held}
-    missing = [t.printed for t in refused if (t.need, t.printed) not in on_record]
+    recorded = {(r["need"], r["printed"]) for r in held}
+    missing = [
+        t.printed
+        for t in translated.translations
+        if t.cause and (t.need, t.printed) not in recorded
+    ]
     if missing:
         raise SystemExit(
             f"{len(missing)} held-out strings the grammar refuses aren't on the record of drafts, "
-            f"so the reader's wording has changed since. Drafting them is a new result: move "
-            f"results/ aside, then run {DRAFTING}"
+            "so the reader's wording has changed since. Drafting them would be a retest, on a "
+            "branch of its own"
         )
 
 

@@ -2,6 +2,7 @@
 # rule on these rows except the elective tab, the delta flag and the shape of each rule tree, which
 # only the backend checks.
 from collections import defaultdict
+from collections.abc import Mapping
 from datetime import time
 from functools import partial
 from typing import Annotated, Any, Literal, Self
@@ -241,6 +242,16 @@ class Course(Row):
     entry_rule: EntryRule | None = None
     convener: str | None = None
     summary: str | None = None
+
+
+def offerings(code: str, credits: int, worth: Mapping[str, int]) -> set[str]:
+    # A course's offerings among codes and their credits, itself included: each code whose first
+    # seven characters match at the same credits, so BUS1036F and BUS1036S are one course
+    return {
+        other
+        for other, each in worth.items()
+        if other[:7] == code[:7] and each == credits
+    }
 
 
 class CourseGroup(Row):

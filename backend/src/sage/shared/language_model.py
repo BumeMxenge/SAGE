@@ -83,6 +83,8 @@ class ToolResult(Row):
 
 
 class LanguageModel(Protocol):
+    model: str  # the model's name, which ingestion keeps with what it writes
+
     # The model's answer to the conversation under these instructions: held to the schema when one is
     # given, free to call the tools, and reasoning at the effort given or else at the model's default.
     # Raises ModelUnavailable when the model can't be reached.

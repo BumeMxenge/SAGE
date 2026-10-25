@@ -1,0 +1,690 @@
+[
+ {
+  "id": "requirement/SLL1064F",
+  "fingerprint": "8d7f8bcec0c3",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/EGS1007S",
+  "fingerprint": "b979273898a0",
+  "decision": "correct",
+  "corrected": {
+   "any": [
+    {
+     "course": "GEO1009F",
+     "need": "mark",
+     "min_mark": 50
+    },
+    {
+     "refer": "At least 50% for NSC Geography"
+    },
+    {
+     "refer": "For Humanities students: At least 50% for NSC Geography"
+    }
+   ]
+  },
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1063S",
+  "fingerprint": "b4436f5873da",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/BIO1004S",
+  "fingerprint": "2e3a0e12885a",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/BIO1000F",
+  "fingerprint": "38bc7d28ae02",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/GEO1009F",
+  "fingerprint": "3b5f184a772c",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1062F",
+  "fingerprint": "f3737d83d363",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1082F",
+  "fingerprint": "dc2038683453",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/FTX2000S",
+  "fingerprint": "1698222bbde5",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/BUS2023S",
+  "fingerprint": "294a0fbdef94",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/ECO1011F",
+  "fingerprint": "d4b4fa000f2a",
+  "decision": "correct",
+  "corrected": {
+   "any": [
+    {
+     "course": "ECO1010F",
+     "need": "mark",
+     "min_mark": 50
+    },
+    {
+     "course": "ECO1010S",
+     "need": "mark",
+     "min_mark": 50
+    },
+    {
+     "course": "ECO1110F",
+     "need": "mark",
+     "min_mark": 50
+    },
+    {
+     "course": "ECO1110S",
+     "need": "mark",
+     "min_mark": 50
+    },
+    {
+     "refer": "ECO1010F/S may be taken concurrently with ECO1011F/S if ECO1010F/S has been previously attempted."
+    }
+   ]
+  },
+  "note": "ECO1110F/S has no entry in the 2026 handbooks SAGE reads. Kept as printed: a student who passed it meets the rule. The concurrency sentence is a second route, so it joins the any, not the all."
+ },
+ {
+  "id": "requirement/PHI2044F",
+  "fingerprint": "0c34c5bba408",
+  "decision": "correct",
+  "corrected": {
+   "all": [
+    {
+     "min_year_of_study": 2
+    },
+    {
+     "any": [
+      {
+       "refer": "at least 50% for Matric mathematics"
+      },
+      {
+       "refer": "a pass for a MAM course"
+      },
+      {
+       "refer": "a lower intermediate score for the NBT in Quantitative Literacy"
+      }
+     ]
+    }
+   ]
+  },
+  "note": null
+ },
+ {
+  "id": "requirement/CSC1016S",
+  "fingerprint": "a0b986492967",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/CSC3002F",
+  "fingerprint": "4bb6c1b3a161",
+  "decision": "accept",
+  "corrected": null,
+  "note": "MAM1000W, MAM1004F, MAM1008S and MAM1031F are Science maths courses with no EBE entry. Kept as printed: a student who passed them meets the rule."
+ },
+ {
+  "id": "requirement/SLL1102S",
+  "fingerprint": "64d124e5754d",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1061S",
+  "fingerprint": "fb6f7a0c19fe",
+  "decision": "correct",
+  "corrected": {
+   "any": [
+    {
+     "course": "SLL1060F",
+     "need": "pass"
+    },
+    {
+     "refer": "or equivalent"
+    },
+    {
+     "all": [
+      {
+       "refer": "students with adequate level of French language acquisition may, by permission of the course convener, be admitted in SLL1061S"
+      },
+      {
+       "refer": "Note that “special admissions” exclude students coming from countries where French is spoken and/or taught; thus students who have studied French at high school, e.g. South Africa, Zimbabwe, and/or passed their Matric – with French as a foreign language - within the last three years at the day of registration are not allowed to register for this module."
+      }
+     ]
+    }
+   ]
+  },
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1074S",
+  "fingerprint": "62b801c8c953",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1076S",
+  "fingerprint": "49316b3cfcc5",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1083S",
+  "fingerprint": "2916725c5046",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1122S",
+  "fingerprint": "acd1cb21426d",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/ECO2007S",
+  "fingerprint": "78f4a828799b",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1050F",
+  "fingerprint": "3ea36c4d8f5a",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1017F",
+  "fingerprint": "16461a7f0727",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1121F",
+  "fingerprint": "218cc48d0a76",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1075F",
+  "fingerprint": "2829b493e172",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1073F",
+  "fingerprint": "69d7b193d3d5",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1042F",
+  "fingerprint": "02743dca8256",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/BUS1007S",
+  "fingerprint": "5c86b1531e13",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB822EEE02/3",
+  "fingerprint": "62c8dab8a781",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB009EEE01/2",
+  "fingerprint": "28355f6074f3",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB011EEE05/2",
+  "fingerprint": "1c04bb18ec43",
+  "decision": "accept",
+  "corrected": null,
+  "note": "The table prints 136 where the core rows add to 144. Accepted as printed: the printed total is a lower bound, and the core rows give 144."
+ },
+ {
+  "id": "rule/EB022EEE02/2",
+  "fingerprint": "566a253a763a",
+  "decision": "accept",
+  "corrected": null,
+  "note": "The table prints 136 where the core rows add to 144. Accepted as printed: the printed total is a lower bound, and the core rows give 144."
+ },
+ {
+  "id": "rule/EB809EEE01/2",
+  "fingerprint": "1a27cb4b6965",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB811EEE05/2",
+  "fingerprint": "98f13184014f",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB822EEE02/2",
+  "fingerprint": "e518d12a50a9",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB809EEE01/3",
+  "fingerprint": "ca00c852310f",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB811EEE05/3",
+  "fingerprint": "801a87a4181b",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB009EEE01/1",
+  "fingerprint": "28b2994012dd",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB022EEE02/1",
+  "fingerprint": "7ae883548a2d",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "rule/EB011EEE05/1",
+  "fingerprint": "9908e7444dc7",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/ECO1010F",
+  "fingerprint": "273b9c04ad7e",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1131F",
+  "fingerprint": "ffa26e7c81f8",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1023S",
+  "fingerprint": "1338f381a141",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/PHI2043F",
+  "fingerprint": "99df21d4335a",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/FAM2000F",
+  "fingerprint": "7f473b485b68",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/REL2040F",
+  "fingerprint": "1675529c2172",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/BUS1036F",
+  "fingerprint": "c247ad4e91fe",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/BUS1004F",
+  "fingerprint": "b068ed95d154",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1059S",
+  "fingerprint": "077a2cd45c46",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1051S",
+  "fingerprint": "b17d5aaddfe8",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1053S",
+  "fingerprint": "ad901e42961d",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1132S",
+  "fingerprint": "19c3c841def0",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL2058F",
+  "fingerprint": "22b8517a04dc",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/FAM2013F",
+  "fingerprint": "483312f2c124",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/PHI2012F",
+  "fingerprint": "16283e6f0dab",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/FAM2004S",
+  "fingerprint": "7738cf30d264",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/BUS2010F",
+  "fingerprint": "90548bd47c9a",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/ECO1008F",
+  "fingerprint": "75c73a8ea1d2",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/MUZ1340H",
+  "fingerprint": "dd4866149202",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/PSY1009F",
+  "fingerprint": "4e62c8dce587",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/MUZ1339H",
+  "fingerprint": "32a08684b7c2",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1016S",
+  "fingerprint": "8228de1a21da",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1022F",
+  "fingerprint": "2f516178c6d6",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1018S",
+  "fingerprint": "5fd16abb74da",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1101F",
+  "fingerprint": "663fb22872a9",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/SLL1060F",
+  "fingerprint": "8baa9017052c",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/ASL1200S",
+  "fingerprint": "a26577016183",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/CML4607F",
+  "fingerprint": "3c2c6fe43208",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/CON2026S",
+  "fingerprint": "5ee699e3e466",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/CSC3023F",
+  "fingerprint": "0fab3bc1e0f8",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/EEE1006F",
+  "fingerprint": "9e5d536d68f6",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/EEE1007S",
+  "fingerprint": "9132b1ee647e",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/EEE2051L",
+  "fingerprint": "f5fed17ea3b3",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/EEE2048F",
+  "fingerprint": "b9d548954e9e",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/EEE4105C",
+  "fingerprint": "56f13a67c244",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/EEE4122C",
+  "fingerprint": "68c75d3b4534",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/EEE4123C",
+  "fingerprint": "1dffffa60263",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/HUB4045F",
+  "fingerprint": "86cf62fe7aa9",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/MEC1003F",
+  "fingerprint": "6b5416c817bf",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "removal/HUB2005F",
+  "fingerprint": "7623f78390ce",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "equivalence/EEE1006F/EEE1008F",
+  "fingerprint": "ccbe18dc522b",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "equivalence/EEE1007S/EEE1009S",
+  "fingerprint": "6173284f4229",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "equivalence/EEE2048F/EEE2048S",
+  "fingerprint": "07ed527842e6",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "equivalence/EEE1009S/EEE1007S",
+  "fingerprint": "7e4397440399",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "equivalence/EEE1008F/EEE1006F",
+  "fingerprint": "e90ac5774224",
+  "decision": "accept",
+  "corrected": null,
+  "note": null
+ },
+ {
+  "id": "requirement/MEC2045S",
+  "fingerprint": "01b484d42712",
+  "decision": "accept",
+  "corrected": null,
+  "note": "MEC2023F/S has no entry in the 2026 handbook, most likely the code MEC2047F/S replaced. Kept as printed: a student who passed it meets the rule."
+ },
+ {
+  "id": "requirement/CSC2001F",
+  "fingerprint": "3ee632ca8b41",
+  "decision": "accept",
+  "corrected": null,
+  "note": "CSC1010H and CSC1011H are Science courses with no EBE entry. Kept as printed: a student who passed them meets the rule."
+ }
+]

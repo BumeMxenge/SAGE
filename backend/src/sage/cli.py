@@ -4,7 +4,7 @@ import json
 import subprocess
 import tempfile
 from collections import Counter, defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from datetime import datetime
 from pathlib import Path
 from typing import get_args
@@ -14,7 +14,7 @@ from uuid import UUID
 from pydantic import JsonValue
 
 from sage.config import get_settings, is_local
-from sage.ingestion.anthropic import ClaudeDrafter
+from sage.ingestion.electives import LANGUAGES, TABS
 from sage.ingestion.ingest import (
     Candidate,
     Sitting,
@@ -27,6 +27,16 @@ from sage.ingestion.ingest import (
 )
 from sage.ingestion.review import DECISIONS, TREES, Review, ReviewRow, tree_fault
 from sage.ingestion.sources import SourceError
+from sage.shared.language_model import (
+    ModelUnavailable,
+    Response,
+    Said,
+    Schema,
+    Tokens,
+    Tool,
+    ToolResult,
+)
+from sage.shared.openai import OpenAIModel
 from sage.shared.repositories import AccountNotFound, YearInUse
 from sage.shared.rules import DeltaTable, RuleSet
 from sage.shared.seed import (
@@ -77,7 +87,8 @@ def main(argv: list[str] | None = None) -> None:
     ingest_command.add_argument(
         "--draft",
         action="store_true",
-        help="ask the drafting model for refused wording with no draft yet, and cache its drafts",
+        help="ask the language model for every draft not cached yet, a rule tree for each refused "
+        "string and each complementary course's tab and summary, and cache them",
     )
 
     review_command = commands.add_parser(
@@ -244,25 +255,54 @@ def check_read_back(result: SeedResult) -> None:
         raise SystemExit(f"Her data didn't read back as written: {problems}")
 
 
+class Metered:
+    # SAGE's model as sage ingest --draft asks it, adding up every call's tokens for the cost line
+    def __init__(self, model: OpenAIModel) -> None:
+        self._model = model
+        self.model = model.model
+        self.tokens = Tokens()
+
+    def respond(
+        self,
+        instructions: str,
+        conversation: Sequence[Said | Response | ToolResult],
+        schema: Schema | None = None,
+        tools: Sequence[Tool] = (),
+        effort: str | None = None,
+    ) -> Response:
+        reply = self._model.respond(instructions, conversation, schema, tools, effort)
+        self.tokens += reply.tokens
+        return reply
+
+    @property
+    def cost(self) -> float:
+        return self._model.cost(self.tokens)
+
+
 def run_ingest(year: int, *, draft: bool) -> None:
-    drafter = None
+    model = None
     if draft:
         settings = get_settings()
-        if not settings.anthropic_api_key:
-            raise SystemExit("Add ANTHROPIC_API_KEY to backend/.env first")
-        drafter = ClaudeDrafter(settings.anthropic_api_key, settings.drafting_model)
+        if not settings.openai_api_key:
+            raise SystemExit("Add OPENAI_API_KEY to backend/.env first")
+        model = Metered(OpenAIModel(settings.openai_api_key, settings.language_model))
     try:
-        run, review = review_year(year, drafter)
+        run, review = review_year(year, model)
     except SourceError as error:
         raise SystemExit(f"Stopped: {error}") from None
+    except ModelUnavailable as error:
+        raise SystemExit(
+            f"Stopped, as the model can't be reached ({error}). Drafts already cached are "
+            + "kept: run it again to carry on"
+        ) from None
     print(report(run))
     print(review_report(review))
-    if drafter is not None:
-        tokens = drafter.tokens
+    if model is not None:
+        tokens = model.tokens
         print(
-            f"\nDrafting with {drafter.model}: {tokens['input']:,} tokens in, "
-            + f"{tokens['cached']:,} read from the provider's cache and "
-            + f"{tokens['output']:,} out, USD {drafter.cost:.4f}"
+            f"\nDrafting with {model.model}: {tokens.fresh:,} tokens in, "
+            + f"{tokens.cached:,} read from the provider's cache, {tokens.written:,} written "
+            + f"to it and {tokens.output:,} out, USD {model.cost:.4f}"
         )
 
 
@@ -305,6 +345,17 @@ def report(run: Candidate) -> str:
     lines += [
         f"  Not kept, as it isn't a rule tree: {p}" for p in run.translations.refused
     ]
+    offered = sum(r.flag == "model_written" for r in run.readings)
+    if offered:
+        written = run.written
+        lines += [
+            "",
+            f"Electives: {offered} complementary courses, {len(written.electives)} with a tab "
+            + f"and summary drafted and {offered - len(written.electives)} awaiting a draft",
+            f"  Model calls in this run: {written.calls}. "
+            + f"Drafts copied from an earlier year: {written.reused}",
+            *(f"  Not kept: {problem}" for problem in written.refused),
+        ]
     lines.append("")
     lines += [
         f"{wildcard} stands for {', '.join(codes)}, an assumption"
@@ -489,9 +540,15 @@ def settle(
         decision = KEYS.get(key)
         if decision not in allowed:
             continue
-        corrected = corrected_tree(row, folder, edit) if decision == "correct" else None
-        if decision == "correct" and corrected is None:
-            continue
+        corrected = None
+        if decision == "correct":
+            corrected = (
+                corrected_elective(row, ask)
+                if row.kind == "elective"
+                else corrected_tree(row, folder, edit)
+            )
+            if corrected is None:
+                continue
         problems = sitting.decide(row.id, decision, corrected)
         if problems and all(problem.note for problem in problems):
             print(*(f"  {problem.text}" for problem in problems), sep="\n")
@@ -534,6 +591,26 @@ def corrected_tree(
         error = tree_fault(row.kind, tree)
         if error is None:
             return tree
+
+
+def corrected_elective(row: ReviewRow, ask: Callable[[str], str]) -> JsonValue:
+    # The tab picked from the numbered list, unless the row is a language option's, whose tab is
+    # fixed, then the summary as typed. Enter keeps either as drafted. None when neither changed, to
+    # choose again.
+    value = dict(row.new)
+    if not row.language:
+        tabs = [tab for tab in TABS if tab != LANGUAGES]
+        numbered = {str(n): tab for n, tab in enumerate(tabs, 1)}
+        print(*(f"  {n} {tab}" for n, tab in numbered.items()), sep="\n")
+        keep = f", or Enter to keep {value['tab']}" if value["tab"] else ""
+        while (picked := ask(f"Tab{keep}: ").strip()) and picked not in numbered:
+            continue
+        if picked:
+            value["tab"] = numbered[picked]
+    keep = ", or Enter to keep it" if value["summary"] else ""
+    if summary := ask(f"Summary{keep}: ").strip():
+        value["summary"] = summary
+    return None if value == row.new else value
 
 
 def open_in_code(path: Path) -> None:
@@ -584,6 +661,12 @@ def _described(kind: str, key: str | None, value: JsonValue) -> list[str]:
         words = in_words(TREES[kind].validate_python(value))
     elif kind == "equivalence":
         words = f"{value['course_code']} counts as {value['counts_as']}"
+    elif kind == "elective":
+        words = (
+            f"on the {value['tab']} tab: {value['summary']}"
+            if value["summary"]
+            else "nothing drafted yet"
+        )
     elif key and key.startswith("courses/"):
         entry = value["entry_rule"]
         rule = in_words(

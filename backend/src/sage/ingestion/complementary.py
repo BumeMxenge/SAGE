@@ -4,7 +4,7 @@
 # sheets of offerings join the complementary group, and language options are its languages category.
 import re
 from collections import defaultdict
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from datetime import time
 from pathlib import Path
 from typing import Annotated, Literal, Self
@@ -13,6 +13,7 @@ import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
 from pydantic import Field, StringConstraints, ValidationError, model_validator
 
+from sage.ingestion.electives import LANGUAGES
 from sage.ingestion.names import title_case
 from sage.ingestion.sources import ComplementaryFile, Reading, SourceError, row_id
 from sage.shared.base import Row
@@ -21,6 +22,7 @@ from sage.shared.rules import (
     COURSE_CODE,
     TERM_BY_SUFFIX,
     CourseGroupMember,
+    ElectiveTab,
     Passage,
     TermCode,
     TimetableSlot,
@@ -186,17 +188,23 @@ def _valid[T: Row](model: type[T], where: str, fields: dict[str, object]) -> T:
 
 
 def members(
-    read: Complementary, year: int
+    read: Complementary,
+    year: int,
+    tabs: Mapping[str, ElectiveTab | None],
+    passages: Mapping[str, str],
 ) -> tuple[tuple[CourseGroupMember, ...], tuple[Reading, ...]]:
-    # Every offering joins the complementary group, with the row it's typed in. Language options
-    # are the languages category; the other categories, which a model would pick, aren't read yet
-    # (docs/shortfalls.md, 11 Oct).
+    # Every offering joins the complementary group, with the row it's typed in. Language options are
+    # the languages category, and each other offering takes the tab a model drafted for it, if any.
+    # Each reading holds the passage the model read, flagged as a model's writing, so a person
+    # checks its tab and summary.
     rows = tuple(
         CourseGroupMember(
             handbook_year=year,
             group_key=COMPLEMENTARY,
             course_code=offering.code,
-            category="languages" if offering.sheet == read.languages else None,
+            category=LANGUAGES
+            if offering.sheet == read.languages
+            else tabs.get(offering.code),
         )
         for offering in read.offerings
     )
@@ -205,7 +213,8 @@ def members(
             entity="course_group_members",
             key=f"{COMPLEMENTARY}/{offering.code}",
             place=f"{offering.sheet} row {offering.row}",
-            printed=f"{offering.code} {offering.name}",
+            printed=passages[offering.code],
+            flag="model_written",
         )
         for offering in read.offerings
     )
