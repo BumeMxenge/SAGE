@@ -7,7 +7,7 @@ from collections.abc import Iterable, Mapping
 from uuid import UUID
 
 from sage.shared.base import Row
-from sage.shared.rules import offerings
+from sage.shared.rules import first_offering
 from sage.shared.students import PlanReason
 
 
@@ -36,7 +36,7 @@ def plan_slots(reasons: Iterable[PlanReason]) -> list[PlanSlot]:
 def course_counts(slot: PlanSlot, credits: Mapping[str, int]) -> tuple[int, int]:
     # The courses that fit, joining a course's offerings as Explore Electives' cards do, and how many
     # of them have a fitting offering that needs a check with her advisor
-    course = {code: min(offerings(code, credits[code], credits)) for code in slot.fits}
+    course = {code: first_offering(code, credits) for code in slot.fits}
     checked = {
         course[code]
         for code in slot.fits

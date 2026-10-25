@@ -14,7 +14,7 @@ from sage.shared.errors import CourseNotFound
 from sage.shared.planning import Eligibility, EligibilityChecker
 from sage.shared.repositories import StudentRepository
 from sage.shared.rulebook import Rulebook
-from sage.shared.rules import Course, ElectiveTab, RuleSet, TermCode, offerings
+from sage.shared.rules import Course, ElectiveTab, RuleSet, TermCode, first_offering
 from sage.shared.slots import PlanSlot, plan_slots
 from sage.shared.students import Student
 
@@ -106,7 +106,7 @@ def cards(
     worth = {code: course.credits for code, course in courses.items()}
     by_course: dict[str, list[Course]] = defaultdict(list)
     for code in sorted(courses):
-        by_course[min(offerings(code, worth[code], worth))].append(courses[code])
+        by_course[first_offering(code, worth)].append(courses[code])
     tabs: dict[str, list[Card]] = defaultdict(list)
     for first, offered in by_course.items():
         found = [

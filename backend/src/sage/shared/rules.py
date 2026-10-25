@@ -254,6 +254,12 @@ def offerings(code: str, credits: int, worth: Mapping[str, int]) -> set[str]:
     }
 
 
+def first_offering(code: str, worth: Mapping[str, int]) -> str:
+    # The course a code is one offering of, named by its first offering, as Explore Electives' cards
+    # and a slot's course counts both join a course's offerings
+    return min(offerings(code, worth[code], worth))
+
+
 class CourseGroup(Row):
     handbook_year: int
     group_key: str
