@@ -92,12 +92,14 @@ export const routes: RouteObject[] = [
     // address draws her frame and its page's skeleton instead (below).
     HydrateFallback: () => null,
     children: [
-      // / keeps no one: it sends each visitor home
+      // / keeps no one: it sends each visitor home, so it draws nothing. Saying so tells React Router
+      // the page is empty on purpose, which it otherwise warns of.
       {
         index: true,
         loader: async () => {
           throw replace(home[await visitor()])
         },
+        Component: () => null,
       },
       page({
         path: '/sign-in',
