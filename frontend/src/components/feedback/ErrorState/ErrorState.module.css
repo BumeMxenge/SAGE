@@ -107,11 +107,6 @@
   color: var(--color-text-danger);
 }
 
-.error-state[data-variant='inline'][data-tone='danger'] {
-  color: var(--color-text-danger);
-  background: var(--color-danger-tint);
-}
-
 .error-state[data-variant='inline'][data-tone='warning'] {
   color: var(--color-text-warning);
   background: var(--color-warning-tint);

@@ -4,15 +4,15 @@ import type { ReactNode } from 'react'
 import { Header, MenuSection as AriaMenuSection, type MenuSectionProps } from 'react-aria-components'
 import styles from '@/components/overlays/Popover/Popover.module.css'
 
-type Props = Pick<MenuSectionProps<object>, 'selectionMode' | 'selectedKeys' | 'onSelectionChange'> & {
-  title?: string
+type Props = Pick<MenuSectionProps<object>, 'selectionMode' | 'selectedKeys'> & {
+  title: string
   children: ReactNode
 }
 
 export function MenuSection({ title, children, ...props }: Props) {
   return (
     <AriaMenuSection {...props}>
-      {title && <Header className={styles.header}>{title}</Header>}
+      <Header className={styles.header}>{title}</Header>
       {children}
     </AriaMenuSection>
   )

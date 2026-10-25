@@ -1,6 +1,6 @@
 // Where the student is in setting up: two named steps, each with a bar under it, full once done and
-// half full while current. The current step is marked for screen readers too. (ProgressBar would
-// announce a percentage, which misdescribes two named steps.)
+// half full while current. The current step is marked for screen readers too, by name rather than
+// as a percentage, which would misdescribe two named steps.
 import styles from './OnboardingSteps.module.css'
 
 const steps = [

@@ -4,10 +4,6 @@
   width: auto;
 }
 
-.full {
-  height: var(--size-logo-full);
-}
-
 .compact {
   height: var(--size-logo-compact);
 }

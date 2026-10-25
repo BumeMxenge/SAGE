@@ -90,7 +90,6 @@
   --size-control-lg: 48px;
   --size-target-min: 24px; /* WCAG 2.2 target size */
   --size-tile: 40px; /* the icon tile on an error state */
-  --size-logo-full: 96px; /* tall enough for the tagline to read */
   --size-logo-compact: 34px; /* the prototype's 104 by 34 */
   --size-logo-compact-small: 26px; /* the sidebar's, 80 by 26, as the planner draws it */
   --size-logo-mark: 28px;
@@ -116,7 +115,7 @@
   --width-compare-panel: 430px; /* a compare panel at its narrowest: with less room, the two stack */
 
   /* Motion. Hover changes are instant, as in the prototypes; these time everything that moves. */
-  --duration-fast: 150ms; /* tooltips, menus and the Select list fading; a progress bar moving on */
+  --duration-fast: 150ms; /* tooltips and lists fading, content arriving, a sign-in dot growing */
   --duration-slow: 300ms; /* a dialog rising over its dimmed backdrop; panels opening and closing */
   --easing: cubic-bezier(0.4, 0, 0.2, 1); /* starts briskly, settles gently */
   --duration-slide: 620ms; /* a strip sliding on by one, as the sign-in highlights do */

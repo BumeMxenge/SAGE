@@ -17,10 +17,7 @@ import styles from './Select.module.css'
 
 type Variant = 'outlined' | 'plain' | 'quiet'
 
-type SelectProps = Pick<
-  AriaSelectProps<object>,
-  'selectedKey' | 'defaultSelectedKey' | 'onSelectionChange' | 'placeholder' | 'name'
-> & {
+type SelectProps = Pick<AriaSelectProps<object>, 'selectedKey' | 'onSelectionChange' | 'placeholder'> & {
   label: string
   variant?: Variant
   children: ReactNode

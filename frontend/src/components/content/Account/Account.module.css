@@ -8,13 +8,6 @@
   text-align: start;
 }
 
-.account[data-blocked] {
-  width: 100%;
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-}
-
 .avatar {
   display: flex;
   flex: none;
@@ -28,11 +21,6 @@
   line-height: var(--line-height-tight);
   color: var(--color-on-fill);
   background: var(--color-accent-fill);
-}
-
-.account[data-blocked] .avatar {
-  color: var(--color-text-secondary);
-  background: var(--color-surface-muted);
 }
 
 .text {
