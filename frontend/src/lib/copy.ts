@@ -4,7 +4,7 @@
 import type { components } from './api-types.ts'
 import type { Appearance } from './useAppearance.ts'
 
-export const productName = 'SAGE'
+const productName = 'SAGE'
 
 export const nav = { plan: 'Plan', electives: 'Explore Electives', history: 'Course History' }
 

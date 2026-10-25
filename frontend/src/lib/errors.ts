@@ -197,7 +197,7 @@ const entries = {
   },
 } satisfies Record<ErrorCode, Entry>
 
-export type Explanation = {
+type Explanation = {
   title: string
   message: string
   action: ErrorAction | null

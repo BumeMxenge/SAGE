@@ -78,7 +78,7 @@ export const putFirst = (courses: Elective[], first: (card: Elective) => boolean
 
 // The tab on screen: the address's, if it's shown, else the first tab with a card that comes first,
 // such as a favourite on the filtered page, else the first tab
-export function openingTab(tabs: Tab[], asked: string | null, first: (card: Elective) => boolean = () => false): string | null {
+export function openingTab(tabs: Tab[], asked: string | null, first: (card: Elective) => boolean): string | null {
   const named = tabs.find((tab) => tab.key === asked) ?? tabs.find((tab) => tab.courses.some(first)) ?? tabs.at(0)
   return named?.key ?? null
 }

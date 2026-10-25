@@ -26,7 +26,7 @@ import styles from './Conversation.module.css'
 type PlanSummary = components['schemas']['PlanSummary']
 
 // A question this chat sent, while it waits for its reply or once it failed
-export type Sent = { content: string; error: ApiError | null }
+type Sent = { content: string; error: ApiError | null }
 
 type ConversationProps = {
   // null for a new chat, which has nothing to read until its first question, and undefined until her

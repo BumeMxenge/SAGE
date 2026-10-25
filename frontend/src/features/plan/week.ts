@@ -45,7 +45,7 @@ function optionsOf(kind: string, choices: string[]): string {
   return choices.some((choice) => choice.includes(' ')) ? `${named}: ${listed}` : `${named} ${listed}`
 }
 
-export type Block = {
+type Block = {
   key: string // unique in its week
   code: string
   name: string
@@ -209,7 +209,7 @@ export function weekOf(plan: Plan, tab: PlanTerm, preview?: PreviewMarks): Week 
 
 // The timetable's eight course colours, in the order it gives them out. The stylesheet maps each to
 // its --color-course-* token.
-export const courseColours = ['teal', 'orange', 'navy', 'pink', 'blue', 'ochre', 'purple', 'dark-teal'] as const
+const courseColours = ['teal', 'orange', 'navy', 'pink', 'blue', 'ochre', 'purple', 'dark-teal'] as const
 export type CourseColour = (typeof courseColours)[number]
 
 // A week's blocks row by row: the hour, then the day
