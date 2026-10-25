@@ -205,9 +205,16 @@ type Explanation = {
 }
 
 // The words for any error a screen catches. One that isn't an ApiError, such as a page whose code
-// failed to load, gets a server error's words.
+// failed to load, happened in the browser, so it has words of its own and no reference to quote.
 export function explain(error: unknown): Explanation {
-  if (!(error instanceof ApiError)) return { ...entries.internal_error, reference: undefined }
+  if (!(error instanceof ApiError)) {
+    return {
+      title: 'Something Went Wrong',
+      message: 'SAGE ran into a problem on this page. Reload it and try again.',
+      action: 'retry',
+      reference: undefined,
+    }
+  }
   const { title, message, action } = entries[error.code]
   return {
     title,
