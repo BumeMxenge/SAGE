@@ -69,14 +69,18 @@ export function ElectivesPage() {
 
   const notHers = plan.error?.code === 'plan_not_found'
   const failed = electives.error ?? (planId === null ? null : set.error) ?? (notHers ? null : plan.error)
-  const everyCourse = <Link href={electivesPath({ planId: null, tab: address.tab })}>{showEveryCourse}</Link>
+  // Every course, on the tab on screen
+  const everyCourse = (tab: string | null) => <Link href={electivesPath({ planId: null, tab })}>{showEveryCourse}</Link>
 
-  // The tabs with the cards matching the search, those that come first ahead of the rest
-  function tabsOf(tabs: Tab[], first: (card: Elective) => boolean): ReactNode {
+  // The tabs with the cards matching the search, and the one on screen. Searching opens the first tab
+  // with a match without changing the address, so clearing the search goes back to her tab.
+  function shownOf(tabs: Tab[], first: (card: Elective) => boolean) {
     const shown = keeping(tabs, (card) => matches(card, search))
-    // Searching opens the first tab with a match without changing the address, so clearing the
-    // search goes back to her tab
-    const selected = openingTab(shown, address.tab, first)
+    return { shown, selected: openingTab(shown, address.tab, first) }
+  }
+
+  // Those tabs, with the cards that come first ahead of the rest
+  function tabsOf({ shown, selected }: ReturnType<typeof shownOf>, first: (card: Elective) => boolean): ReactNode {
     if (selected === null) return <EmptyState title={noMatch} message={noMatchMessage(search)} />
     return (
       <CategoryTabs tabs={shown} selected={selected} onSelect={(tab) => void navigate(electivesPath({ ...address, tab }), { replace: true })}>
@@ -108,34 +112,39 @@ export function ElectivesPage() {
   } else if (!electives.data) {
     body = null
   } else if (planId === null) {
-    body = tabsOf(electives.data.tabs, none)
+    body = tabsOf(shownOf(electives.data.tabs, none), none)
   } else if (current && fitting.length > 0) {
     const count = fitting.reduce((total, tab) => total + tab.courses.length, 0)
+    const view = shownOf(fitting, favourite)
     body = (
       <>
         <p className={styles.notice}>
-          {showing(count, current.name)} {everyCourse}
+          {showing(count, current.name)} {everyCourse(view.selected)}
         </p>
-        {tabsOf(fitting, favourite)}
+        {tabsOf(view, favourite)}
       </>
     )
   } else if (current && plan.data) {
     body = (
-      <EmptyState title={nothingFits} message={plan.data.slots.map((slot) => slot.message).join(' ')} action={everyCourse} />
+      <EmptyState
+        title={nothingFits}
+        message={plan.data.slots.map((slot) => slot.message).join(' ')}
+        action={everyCourse(address.tab)}
+      />
     )
   } else if (notHers && plan.error) {
     const { title, message } = explain(plan.error)
     body = (
       <>
         <ErrorState variant="inline" tone="warning" icon="warning" title={title} message={message} />
-        {tabsOf(electives.data.tabs, none)}
+        {tabsOf(shownOf(electives.data.tabs, none), none)}
       </>
     )
   } else if (!current && plan.data) {
     body = (
       <>
         <p className={styles.notice}>{notCurrent}</p>
-        {tabsOf(electives.data.tabs, none)}
+        {tabsOf(shownOf(electives.data.tabs, none), none)}
       </>
     )
   }

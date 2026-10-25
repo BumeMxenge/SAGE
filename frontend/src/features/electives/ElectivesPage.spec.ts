@@ -232,7 +232,9 @@ test("a card with no note has no line at its foot, and one she can't heart shows
 
 test('the page passes axe and the keyboard walk, on a tab with a note and a heart', async ({ page }) => {
   await madeUpApi(page)
-  await openOn(page, 'Business & Management')
+  // Opened from its address, not a click, so the walk starts at the top of the page
+  await page.goto('/electives?tab=business')
+  await heart(page, 'Marketing I').waitFor()
   await expectNoAxeViolations(page)
   const stops = await walkKeyboard(page)
   expect(stops).toContain('tab "Business & Management" [selected]')
