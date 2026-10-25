@@ -235,7 +235,7 @@ def evaluate(
 def leaf(
     node: CourseNeed | StudentIn | MinYearOfStudy | Refer,
     record: Record,
-    plan: Plan | None = None,
+    plan: Plan | None,
 ) -> Value:
     if isinstance(node, Refer):
         return "unknown"

@@ -2,8 +2,7 @@
 # reads her year of study from her record and sets out what a plan must hold: the core she still
 # owes, the year's rules and any an earlier year left unmet, with what she has passed taken off, a
 # credit minimum, and the complementary credits and 576-credit places a plan leaves to her. The
-# solver lists every plan once, and the smallest conflict explains an empty set. The set comes back
-# unwritten and not yet complete.
+# solver lists every plan once, and a minimal conflict explains an empty set.
 import logging
 from collections.abc import Mapping, Sequence
 from uuid import UUID, uuid5
@@ -15,6 +14,7 @@ from sage.engine.facts import (
     Facts,
     Need,
     Problem,
+    candidates,
     facts,
     need,
     take,
@@ -99,9 +99,8 @@ class ClingoPlanGenerator:
         if len(ranked) > CAP:
             logger.warning("Kept the best %s of %s plans", CAP, len(ranked))
             ranked = ranked[:CAP]
-        candidates = (*problem.required, *problem.electives)
         chosen = {
-            plan.courses: self._solver.choices(written, plan, candidates)
+            plan.courses: self._solver.choices(written, plan, candidates(problem))
             if year.grouped & set(plan.courses)
             else {}
             for plan in ranked
@@ -131,9 +130,8 @@ class ClingoPlanGenerator:
         if not year.slots:
             return {}
         written = facts(problem, year.rules, year.record, year.extras(problem))
-        candidates = (*problem.required, *problem.electives)
         return {
-            plan.courses: self._solver.fits(written, plan, candidates)
+            plan.courses: self._solver.fits(written, plan, candidates(problem))
             for plan in ranked
         }
 
@@ -385,10 +383,11 @@ class Year:
         # The approved complementary courses a slot could list: not done, not a plan course, and
         # with an entry rule her record doesn't fail
         rules = {course.code: course.entry_rule for course in self.rules.courses}
-        candidates = {*problem.required, *problem.electives}
         return tuple(
             code
-            for code in sorted(set(self.record.members[COMPLEMENTARY]) - candidates)
+            for code in sorted(
+                set(self.record.members[COMPLEMENTARY]) - set(candidates(problem))
+            )
             if not self.record.done(code)
             and evaluate(rules[code], self.record).value != "not_met"
         )

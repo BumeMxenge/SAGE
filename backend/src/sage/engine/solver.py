@@ -1,7 +1,7 @@
 # Runs plans.lp over one student's facts with clingo, the engine's only use of it: every plan once,
 # the courses that fit beside a plan, with their sections and any of the plan's they force, the
-# alternatives of each of a plan's choice groups that fit it, and the smallest set of requirements
-# that leaves no plan.
+# alternatives of each of a plan's choice groups that fit it, and a minimal set of requirements that
+# leaves no plan.
 from collections.abc import Collection, Sequence
 from pathlib import Path
 
@@ -114,7 +114,7 @@ class Solver:
         return chosen
 
     def conflict(self, facts: Facts, order: Sequence[str]) -> list[str]:
-        # With no plan, the smallest set of switches that leaves none. clingo returns a set that
+        # With no plan, a minimal set of switches that leaves none. clingo returns a set that
         # does, its core; each of its switches is then dropped, in the order given, if the rest
         # still leave no plan, so the switches given first leave first.
         control = self._ground(facts)
