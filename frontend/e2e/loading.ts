@@ -49,8 +49,9 @@ export async function hold(page: Page, matches: (url: URL) => boolean, method = 
         route.request().method() === method
           ? route.fulfill({ status: problem.status, contentType: 'application/problem+json', json: problem, headers: allowed })
           : route.fallback()
-      await settle(answer)
+      // Refusing before the hold lets go, so no request slips through to the API between the two
       await page.route(matches, answer)
+      await settle(answer)
     },
   }
 }
