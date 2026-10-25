@@ -1874,7 +1874,6 @@ name = "sage-backend"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "anthropic" },
     { name = "clingo" },
     { name = "fastapi" },
     { name = "openai" },
@@ -1892,6 +1891,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "anthropic" },
     { name = "fpdf2" },
     { name = "httpx" },
     { name = "httpx2" },
@@ -1907,7 +1907,6 @@ mutation = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", specifier = ">=1.15.0" },
     { name = "clingo", specifier = ">=5.8.2" },
     { name = "fastapi", specifier = ">=0.115" },
     { name = "openai", specifier = ">=3.29.0" },
@@ -1925,6 +1924,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "anthropic", specifier = ">=1.15.0" },
     { name = "fpdf2", specifier = ">=2.8.9" },
     { name = "httpx", specifier = ">=0.28" },
     { name = "httpx2", specifier = ">=2.13.1" },

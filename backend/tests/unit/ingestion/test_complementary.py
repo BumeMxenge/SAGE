@@ -92,16 +92,32 @@ ROWS = {
 def test_offerings_become_members_meetings_and_passages(tmp_path, complementary_xlsx):
     path = complementary_xlsx(tmp_path / "complementary.xlsx", ROWS)
     workbook_read = read(path, SOURCE)
-    group, readings = members(workbook_read, 2026)
+    # A model drafted AGE1002S's tab and SLL1017F's summary, but nothing for ECO1007S yet
+    model_read = {
+        code: f"{code}'s passage" for code in ("AGE1002S", "ECO1007S", "SLL1017F")
+    }
+    group, readings = members(
+        workbook_read, 2026, {"AGE1002S": "science", "SLL1017F": None}, model_read
+    )
     assert [(m.course_code, m.category) for m in group] == [
-        ("AGE1002S", None),
+        ("AGE1002S", "science"),
         ("ECO1007S", None),
         ("SLL1017F", "languages"),
     ]
-    assert [(r.entity, r.key, r.place) for r in readings] == [
-        ("course_group_members", "complementary/AGE1002S", "Courses row 3"),
-        ("course_group_members", "complementary/ECO1007S", "Courses row 4"),
-        ("course_group_members", "complementary/SLL1017F", "Language options row 3"),
+    # Each holds the passage the model read, for a person to check its writing against
+    assert [(r.entity, r.key, r.place, r.printed, r.flag) for r in readings] == [
+        (
+            "course_group_members",
+            f"complementary/{code}",
+            place,
+            f"{code}'s passage",
+            "model_written",
+        )
+        for code, place in (
+            ("AGE1002S", "Courses row 3"),
+            ("ECO1007S", "Courses row 4"),
+            ("SLL1017F", "Language options row 3"),
+        )
     ]
     stored = slots(workbook_read, 2026)
     assert {

@@ -123,12 +123,11 @@ planted-faults:
 	@cd backend && uv run python scripts/planted_faults.py
 
 # ATP-1: SAGE against labels written from print, then the report, in tests/acceptance/atp1/results/.
-# It runs from the held-out drafts its first run cached, so it calls no model. DRAFT=yes makes them
-# first, once, with the key in backend/.env. The run also imports count_changes.py and the tests'
-# PDF printer, so their folders join Python's path.
+# It runs from the held-out drafts its first run cached, so it calls no model. The run also imports
+# count_changes.py and the tests' PDF printer, so their folders join Python's path.
 atp1:
 	@cd backend && $(ATP1_PATH):../experiments/ingestion:. \
-		uv run python ../tests/acceptance/atp1/run.py $(if $(DRAFT),--draft) && \
+		uv run python ../tests/acceptance/atp1/run.py && \
 		$(ATP1_PATH) uv run python ../tests/acceptance/atp1/report.py
 
 # Loads the made-up student onto one local account: make seed USER_ID=<account id>

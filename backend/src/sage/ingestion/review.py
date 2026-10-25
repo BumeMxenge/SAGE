@@ -1,10 +1,12 @@
 # Reviews a handbook year by exception, against the latest year approved before it. A row of the
 # year's rules that's unchanged since then carries over, and a change read with certainty is accepted
 # automatically. Everything else becomes a review row, one per printed thing, with every reason a
-# person must look at it: a refusal, a removal, an equivalence no handbook prints, a course with no
-# entry, a curriculum note or a failed check. A person's decision on a row holds only while the row
-# shows what it showed then, and the code check runs again on the year as decided. An approved year
-# is kept as a snapshot.
+# person must look at it: a refusal, a model's writing, a removal, an equivalence no handbook prints,
+# a course with no entry, a curriculum note or a failed check. Two rows may decide different columns
+# of one table row, as a course's requirement row decides its entry rule and its elective row its
+# summary, and one elective row decides every offering of a course that prints one passage. A
+# person's decision on a row holds only while the row shows what it showed then, and the code check
+# runs again on the year as decided. An approved year is kept as a snapshot.
 import hashlib
 import json
 import re
@@ -14,10 +16,12 @@ from typing import Literal, get_args
 
 from pydantic import JsonValue, TypeAdapter, ValidationError, computed_field
 
+from sage.ingestion import electives
 from sage.ingestion.checks import Check, tree_codes
 from sage.ingestion.sources import Reading
 from sage.shared.base import Row
 from sage.shared.rules import (
+    COMPLEMENTARY,
     NODE_KEYS,
     PRIMARY_KEYS,
     Course,
@@ -43,10 +47,18 @@ KINDS = {
     "curriculum_rules": ("rule", "rule"),
     "equivalences": ("equivalence", None),
 }
+# A complementary course in its group, whose elective row decides its tab with its course's summary
+ELECTIVE = f"course_group_members/{COMPLEMENTARY}/"
+# The column an elective row decides in each table, and the part of its value that fills it
+ELECTIVE_COLUMNS = {
+    "courses": ("summary", "summary"),
+    "course_group_members": ("category", "tab"),
+}
 # The decisions each kind of row takes, and the type a correction must be
 DECISIONS = {
     "requirement": ("accept", "correct", "reject"),
     "rule": ("accept", "correct", "reject"),
+    "elective": ("accept", "correct"),
     "equivalence": ("accept", "reject"),
     "removal": ("accept", "reject"),
     "no_entry": ("accept",),
@@ -89,6 +101,11 @@ class ReviewRow(Row):
     @property
     def kind(self) -> str:
         return self.id.split("/", 1)[0]
+
+    @property
+    def language(self) -> bool:
+        # Whether it's a language option's elective row, whose tab is fixed
+        return self.kind == "elective" and self.new["tab"] == electives.LANGUAGES
 
     @computed_field
     @property
@@ -147,11 +164,17 @@ def compare(
     after = _keyed(rules)
     read = {f"{r.entity}/{r.key}": r for r in readings}
     earlier = {f"{r.entity}/{r.key}": r for r in previous.readings} if previous else {}
-    # A row carries over when it holds what was approved and its words are printed as they were
+    # A row carries over when it holds what was approved and its words are printed as they were. An
+    # elective row shows its course's summary too, so it carries over only when that does as well.
     unchanged = {
         key
         for key, value in after.items()
-        if before.get(key) == value and earlier[key].printed == read[key].printed
+        if before.get(key) == value
+        and earlier[key].printed == read[key].printed
+        and (
+            not key.startswith(ELECTIVE)
+            or _elective(before, key) == _elective(after, key)
+        )
     }
 
     # Each failure counts against the table row it flags, every year, as a check is about this
@@ -175,13 +198,25 @@ def compare(
     ]
     rows: list[ReviewRow] = []
     by_words: dict[str, list[str]] = defaultdict(list)
+    offered: list[str] = []
     for key in wanted:
         if key.startswith("courses/"):
             # One row per printed requirement, so one decision covers every course printing it
             by_words[read[key].printed].append(key)
+        elif key.startswith(ELECTIVE):
+            offered.append(key.removeprefix(ELECTIVE))
         else:
             rows.append(_row([key], read, before, after, failures))
     rows += [_row(keys, read, before, after, failures) for keys in by_words.values()]
+    # One elective row per course, so offerings that print one passage share one decision
+    same = electives.paired(
+        {code: read[ELECTIVE + code].printed for code in offered},
+        {code: after[f"courses/{code}"]["credits"] for code in offered},
+    )
+    by_course: dict[str, list[str]] = defaultdict(list)
+    for code in offered:
+        by_course[same.get(code, code)].append(code)
+    rows += [_elective_row(codes, read, before, after) for codes in by_course.values()]
 
     # A course and every list it left are one removal, and each other row is one of its own
     removed: dict[str, list[str]] = defaultdict(list)
@@ -267,8 +302,11 @@ def compare(
         }
         places = kept | places
     failing = _rechecked(year, stored, places, entries)
-    covered = {key: row for row in rows for key in row.covers}
-    for row in rows:
+    # The code check reads entry rules and equivalences, which an elective row never decides, so a
+    # failure on a course is for its requirement row to explain, or the year's when it has none
+    checked = [row for row in rows if row.kind != "elective"]
+    covered = {key: row for row in checked for key in row.covers}
+    for row in checked:
         if row.decision is None or row.id in stuck:
             continue
         found = [
@@ -289,6 +327,11 @@ def compare(
         if key not in covered
         for text in texts
     ]
+    # Every row that decides a column of each table row
+    deciding: dict[str, list[ReviewRow]] = defaultdict(list)
+    for row in rows:
+        for key in row.covers:
+            deciding[key].append(row)
     return Review(
         year=year,
         compared_with=previous.year if previous else None,
@@ -296,7 +339,7 @@ def compare(
         carried=len(unchanged),
         rules=_decided(year, rules, stored),
         deltas=_deltas(
-            year, before, after, stored, covered, set(_pending(rows, problems))
+            year, before, after, stored, deciding, set(_pending(rows, problems))
         ),
         returned=returned,
         problems=tuple(problems),
@@ -347,10 +390,26 @@ def _faults(row: ReviewRow) -> list[str]:
     if row.note is not None and not isinstance(row.note, str):
         faults.append("note must be text in quotes")
     if row.decision == "correct":
-        if fault := tree_fault(row.kind, row.corrected):
+        # A corrected tab and summary are held to the checks a model's draft passes
+        fault = (
+            electives.fault(row.corrected, row.language)
+            if row.kind == "elective"
+            else tree_fault(row.kind, row.corrected)
+        )
+        if fault:
             faults.append(fault)
     elif row.corrected is not None:
         faults.append("corrected is filled, so the decision should be correct")
+    # Accepting keeps the draft, so an elective with no usable draft can only be corrected
+    if (
+        row.decision == "accept"
+        and row.kind == "elective"
+        and (fault := electives.fault(row.new, row.language))
+    ):
+        faults.append(
+            f"there's no usable draft to accept, as {fault}: correct it, or draft it "
+            + "with sage ingest --draft"
+        )
     # A rejected draft must never leave a course needing nothing
     if row.decision == "reject" and row.kind in TREES:
         missing = [
@@ -409,20 +468,21 @@ def _deltas(
     before: dict[str, dict[str, JsonValue]],
     after: dict[str, dict[str, JsonValue]],
     stored: dict[str, dict[str, JsonValue]],
-    covered: Mapping[str, ReviewRow],
+    deciding: Mapping[str, Sequence[ReviewRow]],
     pending: set[str],
 ) -> tuple[HandbookDelta, ...]:
-    # Each change with its decision: accepted as read, rejected for the previous approved year's
-    # row, or corrected to what the decision made it. One awaiting its decision is pending.
+    # Each change with its decisions: accepted as read, rejected for the previous approved year's
+    # row, or corrected to what the decisions made it. One awaiting any of its decisions is pending,
+    # and it's flagged with the first cause, in DeltaFlag's order, of the rows that decide it.
     deltas = []
     for key in sorted(before.keys() | after.keys()):
         old, new, kept = before.get(key), after.get(key), stored.get(key)
         if old == new == kept:
             continue
-        row = covered.get(key)
-        if row is None:
+        rows = deciding.get(key, ())
+        if not rows:
             approved, corrected = True, None
-        elif row.id in pending:
+        elif any(row.id in pending for row in rows):
             approved, corrected = None, None
         elif kept == new:
             approved, corrected = True, None
@@ -440,7 +500,9 @@ def _deltas(
                 new_value=new,
                 corrected_value=corrected,
                 approved=approved,
-                flag=row.causes[0] if row else None,
+                flag=min((row.causes[0] for row in rows), key=FLAGS.index)
+                if rows
+                else None,
             )
         )
     return tuple(deltas)
@@ -459,7 +521,11 @@ def _apply(
 ) -> None:
     # Each table row the decision covers, as the decision leaves it
     for key in row.covers:
-        if row.kind in TREES:
+        if row.kind == "elective":
+            value = row.corrected if row.decision == "correct" else row.new
+            column, part = ELECTIVE_COLUMNS[key.split("/", 1)[0]]
+            stored[key] = {**stored[key], column: value[part]}
+        elif row.kind in TREES:
             if row.decision == "correct":
                 trees = TREES[row.kind]
                 value = trees.dump_python(
@@ -503,6 +569,40 @@ def _row(
         new=decided(after[keys[0]]),
         mark="dp" if causes & REFUSALS and DP.search(printed) else None,
     )
+
+
+def _elective_row(
+    codes: Sequence[str],
+    read: dict[str, Reading],
+    before: dict[str, dict[str, JsonValue]],
+    after: dict[str, dict[str, JsonValue]],
+) -> ReviewRow:
+    # A complementary course's tab and summary together, beside the passage the model read, with
+    # each offering's course row and member row, whose columns they fill. It's named for every
+    # offering, as elective/BUS1036F+S, and shows the first's draft, which the others copy.
+    keys = [ELECTIVE + code for code in codes]
+    covers = {}
+    for code, key in zip(codes, keys, strict=True):
+        covers |= {
+            f"courses/{code}": read[f"courses/{code}"].place,
+            key: read[key].place,
+        }
+    return ReviewRow(
+        id=f"elective/{codes[0]}" + "".join(f"+{code[7:]}" for code in codes[1:]),
+        causes=_ordered({read[key].flag for key in keys}),
+        covers=covers,
+        printed=read[keys[0]].printed,
+        failures=(),
+        old={key: _elective(before, key) for key in keys if key in before},
+        new=_elective(after, keys[0]),
+        mark=None,
+    )
+
+
+def _elective(rows: dict[str, dict[str, JsonValue]], key: str) -> dict[str, JsonValue]:
+    # A complementary course's tab, from its member row, and its course's summary
+    course = rows[f"courses/{key.rsplit('/', 1)[1]}"]
+    return {"tab": rows[key]["category"], "summary": course["summary"]}
 
 
 def _keyed(rules: RuleSet) -> dict[str, dict[str, JsonValue]]:

@@ -20,6 +20,8 @@ class Call:
 
 
 class ScriptedModel:
+    model = "a scripted model"
+
     def __init__(
         self,
         script: Mapping[str | None, Iterable[Response | Exception]],
