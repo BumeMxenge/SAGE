@@ -149,13 +149,18 @@ test('the sidebar is open from 1100 px wide and folded below, as a page opens an
   await expect(open).toBeVisible()
 })
 
-test('choosing an appearance in the account menu changes the theme', async ({ page }, testInfo) => {
+test('choosing an appearance in the account menu changes the theme, and the privacy page follows it', async ({
+  page,
+}, testInfo) => {
   // The run's own theme would pass with a menu that did nothing, so this chooses the other one
   const other = testInfo.project.name === 'dark' ? 'Light' : 'Dark'
   await page.goto('/plan')
   await openMenu(page)
   await page.getByRole('menuitemradio', { name: other }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', other.toLowerCase())
+  // A static page outside the app, so it reads the stored choice itself. Its colours are its own.
+  await page.goto('/privacy.html')
+  await expect(page.locator('body')).toHaveCSS('background-color', other === 'Dark' ? 'rgb(20, 20, 20)' : 'rgb(255, 255, 255)')
 })
 
 test("while the first load's guard asks who is visiting, the frame shows with the address's skeleton, and the page opens only once it has decided", async ({

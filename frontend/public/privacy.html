@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="What SAGE stores about you, what its advisor sends to OpenAI, what its own records never hold, and how to withdraw" />
     <title>SAGE privacy</title>
+    <script src="/theme.js"></script>
     <style>
       body {
         margin: 2rem auto;
@@ -19,14 +20,13 @@
       a {
         color: #0b5cad;
       }
-      @media (prefers-color-scheme: dark) {
-        body {
-          color: #ececec;
-          background: #141414;
-        }
-        a {
-          color: #8ab8f0;
-        }
+      /* The appearance the student chose, as theme.js puts it on the page before it paints */
+      :root[data-theme='dark'] body {
+        color: #ececec;
+        background: #141414;
+      }
+      :root[data-theme='dark'] a {
+        color: #8ab8f0;
       }
     </style>
   </head>
@@ -56,7 +56,7 @@
       SAGE's advisor answers with GPT-6 Luna, a language model from OpenAI. When you ask a question,
       SAGE sends it to OpenAI with the evidence needed to answer it: your programme, the year you first
       registered and the year you're planning, the plans on your screen with their courses and class
-      times, the reasons behind your plans, the handbook passages for your programme and courses, the
+      times, the reasons behind your plans, the handbook passages for your programme, your plans' courses and the courses you've favourited, the
       chat's last five questions and replies, and what SAGE looks up to answer, such as whether you may
       take a course. The first question in each chat is sent once more, to give the chat its title.
     </p>
@@ -101,6 +101,6 @@
       Email: <a href="mailto:mxnbum001@myuct.ac.za">mxnbum001@myuct.ac.za</a>
     </p>
 
-    <p><small>Last updated 23 October 2026.</small></p>
+    <p><small>Last updated 25 October 2026.</small></p>
   </body>
 </html>
