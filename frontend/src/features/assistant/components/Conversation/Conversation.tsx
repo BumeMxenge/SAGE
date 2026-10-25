@@ -4,10 +4,13 @@
 // leaf saying SAGE is working, and one that failed says why where its reply would be, with Try Again
 // when trying again can help. The conversation is a log, so a screen reader reads each new message as
 // it arrives, and a tab stop, so the keyboard can scroll it (audit row 8). Sending in any way, and Try
-// Again, leave focus in the chat box, as the button pressed may vanish or grey out under her.
+// Again, leave focus in the chat box, as the button pressed may vanish or grey out under her. Until
+// her chats say which is the newest, and the open chat's messages arrive, bubble-shaped skeletons hold
+// the messages' place, and the chat box holds Send.
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
 import { Button } from '@/components/actions/Button/Button.tsx'
+import { Arrival } from '@/components/feedback/Arrival/Arrival.tsx'
 import { ErrorState } from '@/components/feedback/ErrorState/ErrorState.tsx'
 import { LeafPulse } from '@/components/feedback/LeafPulse/LeafPulse.tsx'
 import { ChatBox } from '@/features/assistant/components/ChatBox/ChatBox.tsx'
@@ -17,6 +20,7 @@ import type { components } from '@/lib/api-types.ts'
 import { actionLabels, explain } from '@/lib/errors.ts'
 import type { PlanAddress } from '@/lib/planAddress.ts'
 import { queries } from '@/lib/queryKeys.ts'
+import { ConversationSkeleton } from './ConversationSkeleton.tsx'
 import styles from './Conversation.module.css'
 
 type PlanSummary = components['schemas']['PlanSummary']
@@ -25,7 +29,9 @@ type PlanSummary = components['schemas']['PlanSummary']
 export type Sent = { content: string; error: ApiError | null }
 
 type ConversationProps = {
-  chatId: string | null // null for a new chat, which has nothing to read until its first question
+  // null for a new chat, which has nothing to read until its first question, and undefined until her
+  // chats say which is the newest
+  chatId: string | null | undefined
   address: PlanAddress
   plans: PlanSummary[]
   planName: string | null // null for a pair
@@ -38,8 +44,10 @@ type ConversationProps = {
 export function Conversation({ chatId, address, plans, planName, waiting, sent, onSend, onRetry }: ConversationProps) {
   const log = useRef<HTMLDivElement>(null)
   const box = useRef<HTMLTextAreaElement>(null)
-  const read = useQuery({ ...queries.messages(chatId ?? ''), enabled: chatId !== null })
+  const read = useQuery({ ...queries.messages(chatId ?? ''), enabled: typeof chatId === 'string' })
   const messages = chatId === null ? [] : read.data
+  // Her chats or this chat's messages still on their way
+  const reading = chatId === undefined || (chatId !== null && read.isPending)
   const count = messages?.length
 
   // The newest message in view as each arrives, as a question goes and as one fails
@@ -69,44 +77,55 @@ export function Conversation({ chatId, address, plans, planName, waiting, sent, 
   const placeholder = planName === null ? 'Ask SAGE to compare these plans' : `Ask about ${planName}`
   const failure = sent?.error ? explain(sent.error) : null
 
-  // Until the chat's messages arrive, nothing shows above the chat box, which stays put and holds Send.
-  // Its loading state comes with the app's others.
   return (
     <div className={styles.conversation}>
-      {messages !== undefined && messages.length === 0 && sent === null && (
-        <div className={styles.start}>
-          <p className={styles.intro}>{intro}</p>
-          {/* Left out while another of this view's chats waits for its reply, as nothing more can go here */}
-          {!waiting && (
-            <Button variant="suggestion" onPress={() => ask(suggestion)}>
-              {suggestion}
-            </Button>
-          )}
-        </div>
-      )}
-      {messages !== undefined && (messages.length > 0 || sent !== null) && (
-        // A scrolling box must be a tab stop, or the keyboard can't scroll a conversation with nothing
-        // to press
-        // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-        <div ref={log} role="log" aria-label="Conversation" tabIndex={0} className={styles.log}>
-          {messages.map((message) =>
-            message.role === 'user' ? (
-              <p key={message.id} className={styles.question}>
-                <span className="visually-hidden">You asked: </span>
-                {message.content}
-              </p>
-            ) : (
-              <Reply key={message.id} reply={message} plans={plans} address={address} />
-            ),
-          )}
-          {sent && (
-            <p className={styles.question}>
-              <span className="visually-hidden">You asked: </span>
-              {sent.content}
-            </p>
-          )}
-        </div>
-      )}
+      <Arrival
+        // Each plan's, pair's and chat's messages are a read of their own
+        key={`${address.planId} ${address.compareWith} ${chatId ?? ''}`}
+        data={messages}
+        waiting={reading}
+        skeleton={<ConversationSkeleton />}
+        status="Loading your chat…"
+      >
+        {(shown) => (
+          <>
+            {shown.length === 0 && sent === null && (
+              <div className={styles.start}>
+                <p className={styles.intro}>{intro}</p>
+                {/* Left out while another of this view's chats waits for its reply, as nothing more can go here */}
+                {!waiting && (
+                  <Button variant="suggestion" onPress={() => ask(suggestion)}>
+                    {suggestion}
+                  </Button>
+                )}
+              </div>
+            )}
+            {(shown.length > 0 || sent !== null) && (
+              // A scrolling box must be a tab stop, or the keyboard can't scroll a conversation with
+              // nothing to press
+              // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+              <div ref={log} role="log" aria-label="Conversation" tabIndex={0} className={styles.log}>
+                {shown.map((message) =>
+                  message.role === 'user' ? (
+                    <p key={message.id} className={styles.question}>
+                      <span className="visually-hidden">You asked: </span>
+                      {message.content}
+                    </p>
+                  ) : (
+                    <Reply key={message.id} reply={message} plans={plans} address={address} />
+                  ),
+                )}
+                {sent && (
+                  <p className={styles.question}>
+                    <span className="visually-hidden">You asked: </span>
+                    {sent.content}
+                  </p>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </Arrival>
       {sent && sent.error === null && (
         <div className={styles.status}>
           <LeafPulse label="Working on your answer…" />
