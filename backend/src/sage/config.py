@@ -28,9 +28,8 @@ class Settings(BaseSettings):
     # Hosted SAGE takes only Microsoft sign-ins. ATP-5's test window switches this on, so the load
     # test's email-provider accounts can sign in too, then switches it off again.
     accept_email_sign_in: bool = False
-    # SAGE's one language model, E4's choice, behind the advisor and every draft `sage ingest
-    # --draft` asks for, and the key that pays for it. The app won't start without the key.
-    language_model: str = "gpt-6-luna"
+    # The key that pays for SAGE's one language model (shared/openai.py). The app won't start
+    # without it.
     openai_api_key: str = ""
 
     @property

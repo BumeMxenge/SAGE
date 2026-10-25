@@ -22,7 +22,7 @@ from sage.features.plans import routes as plans
 from sage.features.questionnaire import routes as questionnaire
 from sage.shared.api import problems
 from sage.shared.errors import InternalError
-from sage.shared.openai import OpenAIModel
+from sage.shared.openai import MODEL, OpenAIModel
 from sage.shared.rulebook import Rulebook
 from sage.shared.supabase.auth import SupabaseTokenVerifier
 from sage.shared.supabase.client import connect
@@ -69,7 +69,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.rulebook = Rulebook(SupabaseRuleRepository(client))
     app.state.students = SupabaseStudentRepository(client)
     app.state.advisor = GroundedAdvisor(
-        OpenAIModel(settings.openai_api_key, settings.language_model),
+        OpenAIModel(settings.openai_api_key, MODEL),
         app.state.students,
         app.state.rulebook,
         app.state.eligibility_checker,

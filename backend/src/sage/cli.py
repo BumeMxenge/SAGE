@@ -36,7 +36,7 @@ from sage.shared.language_model import (
     Tool,
     ToolResult,
 )
-from sage.shared.openai import OpenAIModel
+from sage.shared.openai import MODEL, OpenAIModel
 from sage.shared.repositories import AccountNotFound, YearInUse
 from sage.shared.rules import DeltaTable, RuleSet
 from sage.shared.seed import (
@@ -291,7 +291,7 @@ def run_ingest(year: int, *, draft: bool) -> None:
         settings = get_settings()
         if not settings.openai_api_key:
             raise SystemExit("Add OPENAI_API_KEY to backend/.env first")
-        model = Metered(OpenAIModel(settings.openai_api_key, settings.language_model))
+        model = Metered(OpenAIModel(settings.openai_api_key, MODEL))
     try:
         run, review = review_year(year, model)
     except SourceError as error:
