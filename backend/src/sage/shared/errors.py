@@ -34,6 +34,7 @@ class Code(StrEnum):
     UNKNOWN_ANSWER = "unknown_answer"
     NO_PLAN_MATCHES = "no_plan_matches"
     COURSE_NOT_FOUND = "course_not_found"
+    COURSE_DOESNT_FIT = "course_doesnt_fit"
     DIFFERENT_PLAN_SETS = "different_plan_sets"
     QUESTIONNAIRE_PENDING = "questionnaire_pending"
     CHAT_NOT_FOUND = "chat_not_found"
@@ -202,6 +203,11 @@ class NoPlanMatches(Refusal):
 class CourseNotFound(Refusal):
     status, code = 404, Code.COURSE_NOT_FOUND
     message = "That course isn't in the current handbook."
+
+
+class CourseDoesntFit(Refusal):
+    status, code = 422, Code.COURSE_DOESNT_FIT
+    message = "That course isn't one of those that fit this plan's timetable."
 
 
 class DifferentPlanSets(Refusal):

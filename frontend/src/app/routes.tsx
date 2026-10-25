@@ -52,13 +52,24 @@ async function visitor(): Promise<Visitor> {
   }
 }
 
-// The loader of a page that one kind of visitor may open. Everyone else goes home, replacing the
-// address, so Back never returns to a page that sends them away, and a sign-in link's token leaves
-// no entry in the browser's history.
-const guard = (opens: Visitor) => async () => {
+// The loader of a page that one kind of visitor may open, and that may ask more of them. Everyone else
+// goes home, replacing the address, so Back never returns to a page that sends them away, and a
+// sign-in link's token leaves no entry in the browser's history.
+const guard = (opens: Visitor, needs?: () => Promise<boolean>) => async () => {
   const who = await visitor()
-  if (who !== opens) throw replace(home[who])
+  if (who !== opens || (needs && !(await needs()))) throw replace(home[who])
   return null
+}
+
+// Explore Electives is for choosing a complementary course, so it opens only for a student whose plans
+// have a slot for one, as her plan set says. Plans that aren't ready have none yet, and /plan says why.
+async function hasSlot(): Promise<boolean> {
+  try {
+    return (await queryClient.query(queries.plans())).has_slot
+  } catch (error) {
+    if (error instanceof ApiError && error.code === 'plans_not_ready') return false
+    throw error
+  }
 }
 
 // A student's page also says what the first load draws in her frame while the guard decides: the
@@ -70,13 +81,14 @@ type Page = {
   name: string
   load: () => Promise<{ Component: ComponentType<{ held?: boolean }> }>
   waiting?: 'held' | 'frame'
+  needs?: () => Promise<boolean>
 }
 
 const frameAlone = () => null
 
-const page = ({ path, opens, name, load, waiting }: Page): RouteObject => ({
+const page = ({ path, opens, name, load, waiting, needs }: Page): RouteObject => ({
   path,
-  loader: guard(opens),
+  loader: guard(opens, needs),
   handle: { title: pageTitle(name) },
   lazy: load,
   hydrateFallbackElement:
@@ -149,7 +161,8 @@ export const routes: RouteObject[] = [
             opens: 'student',
             name: pageNames.electives,
             load: async () => ({ Component: (await import('@/features/electives/ElectivesPage.tsx')).ElectivesPage }),
-            waiting: 'frame',
+            waiting: 'held',
+            needs: hasSlot,
           }),
           page({
             path: '/history',

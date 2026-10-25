@@ -13,6 +13,7 @@ const summary = (position: number, hidden = false): PlanSummary => ({
   combination: null,
   hidden,
   credits: 138,
+  to_choose: 0,
 })
 
 describe('the plan /plan opens', () => {

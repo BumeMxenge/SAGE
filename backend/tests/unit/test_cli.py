@@ -28,6 +28,7 @@ from sage.shared.rules import (
     TotalCredits,
     YearRules,
 )
+from scripts import write_seed
 
 ACCOUNT = UUID("00000000-0000-4000-8000-000000000001")
 
@@ -70,7 +71,10 @@ def test_local_supabase_is_seeded_without_asking(opened, database, monkeypatch, 
     monkeypatch.setattr("builtins.input", never_asked)
     sage.cli.run_seed(ACCOUNT, yes=False)
     assert opened == ["http://127.0.0.1:54321"]
-    assert "her data matches the file" in capsys.readouterr().out
+    output = capsys.readouterr().out
+    assert "her data matches the file" in output
+    # With no file asked for, it's Mbali's
+    assert "Seeded mbali.json" in output
 
 
 def test_a_hosted_project_needs_a_yes(opened, database, monkeypatch):
@@ -93,6 +97,31 @@ def test_missing_settings_stop_it_before_anything_else(opened, database):
     with pytest.raises(SystemExit, match="SUPABASE_URL"):
         sage.cli.run_seed(ACCOUNT, yes=True)
     assert opened == []
+
+
+def test_a_chosen_seed_file_is_the_one_seeded(opened, database, capsys):
+    database("http://127.0.0.1:54321")
+    sage.cli.main(["seed", "--user", str(ACCOUNT), "--file", str(write_seed.FILE)])
+    output = capsys.readouterr().out
+    assert "Seeded ziyela.json" in output
+    assert "her data matches the file" in output
+
+
+def test_a_chosen_seed_file_is_the_one_signed_in(opened, database, monkeypatch, capsys):
+    # Her own email makes the account, and the link is printed once her seed is on it
+    database("http://127.0.0.1:54321")
+    emails = []
+
+    def sign_in_token(client, email):
+        emails.append(email)
+        return ACCOUNT, "made-up-token"
+
+    monkeypatch.setattr(sage.cli, "sign_in_token", sign_in_token)
+    sage.cli.main(["sign-in", "--port", "3002", "--file", str(write_seed.FILE)])
+    assert emails == [write_seed.EMAIL]
+    assert (
+        capsys.readouterr().out == "http://localhost:3002/?token_hash=made-up-token\n"
+    )
 
 
 def test_sign_in_refuses_a_hosted_project(opened, database):

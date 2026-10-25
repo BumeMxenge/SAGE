@@ -140,6 +140,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/plans/{plan_id}/previews/{course_code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One of her plans as it would be with a course that fits it taken, saving nothing */
+        get: operations["getPreview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/questionnaire": {
         parameters: {
             query?: never;
@@ -323,7 +340,7 @@ export interface components {
          * Code
          * @enum {string}
          */
-        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan" | "questionnaire_not_needed" | "questionnaire_answered" | "unknown_answer" | "no_plan_matches" | "course_not_found" | "different_plan_sets" | "questionnaire_pending" | "chat_not_found" | "advisor_unavailable";
+        Code: "not_found" | "method_not_allowed" | "invalid_request" | "internal_error" | "not_signed_in" | "uct_account_required" | "students_only" | "rulebook_not_loaded" | "unknown_curriculum" | "unknown_result" | "not_a_pdf" | "file_too_large" | "transcript_unreadable" | "not_a_transcript" | "transcript_not_yours" | "transcript_incomplete" | "no_course_history" | "onboarding_incomplete" | "plans_not_ready" | "plan_not_found" | "same_plan" | "questionnaire_not_needed" | "questionnaire_answered" | "unknown_answer" | "no_plan_matches" | "course_not_found" | "course_doesnt_fit" | "different_plan_sets" | "questionnaire_pending" | "chat_not_found" | "advisor_unavailable";
         /** Comparison */
         Comparison: {
             first: components["schemas"]["Plan"];
@@ -365,6 +382,8 @@ export interface components {
             by_term: {
                 [key: string]: number;
             };
+            /** To Choose */
+            to_choose: number;
         };
         /** Curriculum */
         Curriculum: {
@@ -413,6 +432,15 @@ export interface components {
             field: string;
             /** Detail */
             detail: string;
+        };
+        /** ForcedSection */
+        ForcedSection: {
+            /** Course Code */
+            course_code: string;
+            /** Choice Group */
+            choice_group: string;
+            /** Choice */
+            choice: string;
         };
         /** Group */
         Group: {
@@ -565,6 +593,8 @@ export interface components {
             hearted: boolean;
             /** Can Heart */
             can_heart: boolean;
+            /** Plans */
+            plans: string[];
         };
         /** Option */
         Option: {
@@ -599,6 +629,8 @@ export interface components {
             courses: components["schemas"]["PlanCourse"][];
             /** Reasons */
             reasons: components["schemas"]["Reason"][];
+            /** Slots */
+            slots: components["schemas"]["Slot"][];
         };
         /** PlanCourse */
         PlanCourse: {
@@ -618,6 +650,14 @@ export interface components {
             /** Meetings */
             meetings: components["schemas"]["Meeting"][];
         };
+        /** PlanPreview */
+        PlanPreview: {
+            plan: components["schemas"]["Plan"];
+            /** Course Code */
+            course_code: string;
+            /** Forced */
+            forced: components["schemas"]["ForcedSection"][];
+        };
         /** PlanSet */
         PlanSet: {
             /** Period */
@@ -626,6 +666,8 @@ export interface components {
             version: number;
             /** Questionnaire Needed */
             questionnaire_needed: boolean;
+            /** Has Slot */
+            has_slot: boolean;
             /** Reasons */
             reasons: components["schemas"]["Reason"][];
             /** Plans */
@@ -648,6 +690,8 @@ export interface components {
             hidden: boolean;
             /** Credits */
             credits: number;
+            /** To Choose */
+            to_choose: number;
         };
         /** Problem */
         Problem: {
@@ -730,6 +774,24 @@ export interface components {
             curriculum_code: string;
             /** Lines */
             lines: components["schemas"]["ConfirmedLine"][];
+        };
+        /** Slot */
+        Slot: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "line" | "place";
+            /** Credits */
+            credits: number;
+            /** Replaces */
+            replaces: string | null;
+            /** Message */
+            message: string;
+            /** Fit Count */
+            fit_count: number;
+            /** Check Count */
+            check_count: number;
         };
         /** Tab */
         Tab: {
@@ -1295,6 +1357,92 @@ export interface operations {
                 };
             };
             /** @description invalid_request */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description internal_error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description rulebook_not_loaded */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getPreview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+                course_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanPreview"];
+                };
+            };
+            /** @description not_signed_in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description uct_account_required, students_only */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description plan_not_found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description onboarding_incomplete */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description invalid_request, course_doesnt_fit */
             422: {
                 headers: {
                     [name: string]: unknown;

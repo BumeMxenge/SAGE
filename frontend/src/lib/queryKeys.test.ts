@@ -16,6 +16,7 @@ const reads: Record<string, QueryKey> = {
   me: queries.me().queryKey,
   plans: queries.plans().queryKey,
   plan: queries.plan(plan).queryKey,
+  preview: queries.preview(plan, 'SLL1002S').queryKey,
   comparison: queries.comparison(plan, otherPlan).queryKey,
   questionnaire: queries.questionnaire().queryKey,
   electives: queries.electives().queryKey,
@@ -32,7 +33,7 @@ afterEach(() => {
 })
 
 it.each([
-  ['answering the questionnaire', () => refresh.questionnaireAnswered(), ['plans', 'plan', 'comparison']],
+  ['answering the questionnaire', () => refresh.questionnaireAnswered(), ['plans', 'plan', 'preview', 'comparison']],
   ['a favourite', () => refresh.favouriteChanged(), ['questionnaire', 'electives']],
   ['starting a chat', () => refresh.chatStarted(), ['chats', 'pairChats']],
   ['a sent message', () => refresh.messageSent(chat), ['plans', 'chats', 'pairChats', 'messages']],

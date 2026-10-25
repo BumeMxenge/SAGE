@@ -3,7 +3,7 @@
 # service.py. Each slot is a complementary slot's details as the engine writes them, on an 18-credit
 # line, and each plan has its own. Then that the page reads the slots of her current plan set, on
 # Mbali's seed.
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 
@@ -11,7 +11,8 @@ from sage.features.electives.service import by_tab, cards
 from sage.shared.planning import Eligibility
 from sage.shared.rulebook import Rulebook
 from sage.shared.rules import Course, CourseGroupMember, RuleSet
-from sage.shared.students import PlanReason, PlanSet, PlanSetRows
+from sage.shared.slots import PlanSlot
+from sage.shared.students import Plan, PlanReason, PlanSet, PlanSetRows
 from tests.unit.accounts import MBALI
 
 
@@ -32,7 +33,8 @@ def member(code, tab="history"):
     )
 
 
-def slot(*fits, untimed=(), fewer=()):
+def details(*fits, untimed=(), fewer=()):
+    # A slot's details as the engine writes them
     return {
         "credits": 18,
         "fits": list(fits),
@@ -43,6 +45,11 @@ def slot(*fits, untimed=(), fewer=()):
     }
 
 
+def slot(*fits, **marks):
+    return PlanSlot(plan_id=PLAN, message="Made up.", **details(*fits, **marks))
+
+
+PLAN = UUID(int=1)  # the plan whose slot each test's slots are
 F, S = course("HST1013F", "sem1"), course("HST1013S", "sem2")
 WINTER = course("HST1013L", "winter")
 ELIGIBLE = Eligibility(status="eligible")
@@ -217,13 +224,19 @@ def test_the_slots_of_her_current_plan_set_decide_what_works(stores):
 
     assert works() == (True, True)
     later = PlanSet(id=uuid4(), student_id=MBALI, period=2026, version=2)
+    plan = Plan(
+        id=uuid4(), plan_set_id=later.id, student_id=MBALI, position=1, name="Made Up"
+    )
     reason = PlanReason(
         id=uuid4(),
         plan_set_id=later.id,
         student_id=MBALI,
+        plan_id=plan.id,
         kind="included",
         message="One complementary course fits.",
-        details=slot("SLL1052F"),
+        details=details("SLL1052F"),
     )
-    students.add_plan_set(PlanSetRows(plan_set=later, plan_reasons=(reason,)))
+    students.add_plan_set(
+        PlanSetRows(plan_set=later, plans=(plan,), plan_reasons=(reason,))
+    )
     assert works() == (True, False)

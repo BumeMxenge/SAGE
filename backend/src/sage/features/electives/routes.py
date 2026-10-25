@@ -39,6 +39,7 @@ def get_electives(
                                 convener=o.course.convener,
                                 hearted=o.hearted,
                                 can_heart=o.works,
+                                plans=list(o.plans),
                             )
                             for o in card.offerings
                         ],

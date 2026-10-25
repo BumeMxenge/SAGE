@@ -1,32 +1,18 @@
-// A plan's week in one term, worked out with no markup and no sizes: which tab each term falls under,
-// the meetings the week draws, the hours it spans, each course's colour, and the line naming what has
-// no set time. A block's place is in minutes from the week's first hour and its lane among meetings at
-// the same time; the stylesheet turns those into a position against the hour's height.
+// A plan's week in one term, worked out with no markup and no sizes: the meetings the week draws, the
+// hours it spans, each course's colour, the line naming what has no set time, and in a preview, the
+// course it adds and the sections it fixes. A block's place is in minutes from the week's first hour
+// and its lane among meetings at the same time; the stylesheet turns those into a position against
+// the hour's height. Which tab each term falls under is the address's (lib/planAddress.ts).
 import type { components } from '@/lib/api-types.ts'
 import { termLabels } from '@/lib/copy.ts'
-import { type PlanTerm, planTerms } from '@/lib/planAddress.ts'
+import { inTerm, type PlanTerm, planTerms } from '@/lib/planAddress.ts'
+import { fixedByPreview } from './copy.ts'
 
 type Plan = components['schemas']['Plan']
 type PlanCourse = components['schemas']['PlanCourse']
 type Meeting = components['schemas']['Meeting']
 type TermCode = Meeting['term']
-
-// The tabs a term shows under: a quarter inside its semester, a full-year course in both semesters,
-// and practical training's "other" in none
-const tabsOf: Record<TermCode, readonly PlanTerm[]> = {
-  q1: ['sem1'],
-  q2: ['sem1'],
-  sem1: ['sem1'],
-  q3: ['sem2'],
-  q4: ['sem2'],
-  sem2: ['sem2'],
-  full_year: ['sem1', 'sem2'],
-  winter: ['winter'],
-  summer: ['summer'],
-  other: [],
-}
-
-export const inTerm = (term: TermCode, tab: PlanTerm) => tabsOf[term].includes(tab)
+type ForcedSection = components['schemas']['ForcedSection']
 
 // The mark beside a course that runs for one quarter of its semester, such as Q3
 export function quarterOf(term: TermCode): string | null {
@@ -72,7 +58,11 @@ export type Block = {
   quarter: string | null
   lane: number // its place among the meetings it overlaps, from 0
   lanes: number // how many lanes those meetings take
+  previewed: boolean // a meeting of the course a preview adds
 }
+
+// A preview's course, and the sections of the plan's own courses it fixes
+type PreviewMarks = { code: string; forced: ForcedSection[] }
 
 export type Week = {
   firstHour: number
@@ -86,6 +76,14 @@ type Draft = Omit<Block, 'start' | 'length' | 'options' | 'lane' | 'lanes'> & {
   ends: number
   kind: string
   choices: string[]
+  fixed: string | null // the section a preview fixes it to
+}
+
+// What a block says of its sections: the one a preview fixes, "Lab A, fixed by this preview", or the
+// alternatives left
+function optionsOfDraft({ kind, choices, fixed }: Pick<Draft, 'kind' | 'choices' | 'fixed'>): string | null {
+  if (fixed) return fixedByPreview(optionsOf(kind, [fixed]))
+  return choices.length > 0 ? optionsOf(kind, choices) : null
 }
 
 // One day's meetings in lanes. Each takes the first lane free when it starts, so meetings that only
@@ -107,12 +105,12 @@ function inLanes(day: Draft[], firstHour: number): Block[] {
     const free = laneEnds.findIndex((end) => end <= draft.begins)
     const lane = free === -1 ? laneEnds.length : free
     laneEnds[lane] = draft.ends
-    const { begins, ends, kind, choices, ...rest } = draft
+    const { begins, ends, kind, choices, fixed, ...rest } = draft
     const block: Block = {
       ...rest,
       start: begins - firstHour * 60,
       length: ends - begins,
-      options: choices.length > 0 ? optionsOf(kind, choices) : null,
+      options: optionsOfDraft({ kind, choices, fixed }),
       lane,
       lanes: 1,
     }
@@ -156,11 +154,13 @@ export const shortestWeek = { firstHour: 8, hours: 9 }
 
 // A plan's week in one term. It runs from 08:00 to 17:00, or further to fit its meetings. A course's
 // alternatives at the same day and time are one block naming them all, rather than lanes of their own,
-// and the meetings of a group with one alternative left draw as any other.
-export function weekOf(plan: Plan, tab: PlanTerm): Week {
+// and the meetings of a group with one alternative left draw as any other. In a preview, the course it
+// adds is marked, and so is each section of the plan's own courses it fixes.
+export function weekOf(plan: Plan, tab: PlanTerm, preview?: PreviewMarks): Week {
   const drafts = new Map<string, Draft>()
   for (const course of plan.courses) {
     const open = openGroupsOf(course)
+    const fixes = preview?.forced.filter((section) => section.course_code === course.code) ?? []
     course.meetings.forEach((meeting, index) => {
       if (!inTerm(meeting.term, tab) || !isTimed(meeting)) return
       const begins = minutesOf(meeting.start_time)
@@ -185,6 +185,8 @@ export function weekOf(plan: Plan, tab: PlanTerm): Week {
         kind: meeting.kind ?? group ?? 'option',
         choices: choice ? [choice] : [],
         quarter: quarterOf(meeting.term),
+        previewed: course.code === preview?.code,
+        fixed: fixes.find((section) => section.choice_group === meeting.choice_group && section.choice === meeting.choice)?.choice ?? null,
       })
     })
   }

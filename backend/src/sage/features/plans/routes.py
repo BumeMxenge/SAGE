@@ -1,5 +1,6 @@
 # Her plans: the current set, one plan in full, and two side by side. Students never edit a plan;
 # the questionnaire only hides some, and any of them still opens here.
+from collections.abc import Mapping
 from uuid import UUID
 
 from fastapi import APIRouter
@@ -8,17 +9,21 @@ from sage.features.plans import service as plans
 from sage.features.plans.models import (
     Comparison,
     Credits,
+    ForcedSection,
     Group,
     Meeting,
     Plan,
     PlanCourse,
+    PlanPreview,
     PlanSet,
     PlanSummary,
     Reason,
+    Slot,
 )
 from sage.shared.api.deps import ONBOARDED_ERRORS, Onboarded, Rules, Students
 from sage.shared.api.problems import errors
 from sage.shared.errors import (
+    CourseDoesntFit,
     InvalidRequest,
     PlanNotFound,
     PlansNotReady,
@@ -26,6 +31,7 @@ from sage.shared.errors import (
     SamePlan,
 )
 from sage.shared.rules import RuleSet, meetings
+from sage.shared.slots import PlanSlot, course_counts, plan_slots
 from sage.shared.students import PlanReason, PlanSetRows
 
 router = APIRouter(prefix="/plans", tags=["plans"])
@@ -80,12 +86,44 @@ def get_plan(
     return plan(rows, rulebook.year(rows.plan_set.period), student.curriculum_code)
 
 
+@router.get(
+    "/{plan_id}/previews/{course_code}",
+    summary="One of her plans as it would be with a course that fits it taken, saving nothing",
+    responses=errors(
+        *ONBOARDED_ERRORS,
+        InvalidRequest,
+        PlanNotFound,
+        CourseDoesntFit,
+        RulebookNotLoaded,
+    ),
+)
+def get_preview(
+    plan_id: UUID,
+    course_code: str,
+    student: Onboarded,
+    students: Students,
+    rulebook: Rules,
+) -> PlanPreview:
+    rows = plans.one_plan(students, student.id, plan_id)
+    taken, forced = plans.preview(rows, course_code)
+    return PlanPreview(
+        plan=plan(taken, rulebook.year(rows.plan_set.period), student.curriculum_code),
+        course_code=course_code,
+        forced=[
+            ForcedSection(course_code=course, choice_group=group, choice=choice)
+            for course, group, choice in forced
+        ],
+    )
+
+
 def plan_set(rows: PlanSetRows, rules: RuleSet) -> PlanSet:
     courses = plans.courses(rows, rules)
+    slots = plan_slots(rows.plan_reasons)
     return PlanSet(
         period=rows.plan_set.period,
         version=rows.plan_set.version,
         questionnaire_needed=plans.questionnaire_needed(rows),
+        has_slot=bool(slots),
         reasons=[
             reason(row, rules) for row in rows.plan_reasons if row.plan_id is None
         ],
@@ -97,6 +135,7 @@ def plan_set(rows: PlanSetRows, rules: RuleSet) -> PlanSet:
                 combination=row.combination,
                 hidden=row.hidden,
                 credits=sum(course.credits for course in courses[row.id]),
+                to_choose=plans.to_choose(slots, row.id),
             )
             for row in rows.plans
         ],
@@ -109,6 +148,9 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
     keys = plans.group_keys(rules, curriculum)
     labels = {group.group_key: group.label for group in rules.course_groups}
     by_code = {course.course_code: course for course in rows.plan_courses}
+    # The rows hold one plan, so every slot among their reasons is its own
+    slots = plan_slots(rows.plan_reasons)
+    worth = {course.code: course.credits for course in rules.courses}
     return Plan(
         id=row.id,
         period=rows.plan_set.period,
@@ -119,6 +161,7 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
         credits=Credits(
             total=sum(course.credits for course in courses),
             by_term=plans.credits_by_term(courses),
+            to_choose=plans.to_choose(slots, row.id),
         ),
         courses=[
             PlanCourse(
@@ -132,13 +175,26 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
                     if member.course_code == course.code and member.group_key in keys
                 ],
                 meetings=[
-                    Meeting.model_validate(slot, from_attributes=True)
-                    for slot in meetings(by_code[course.code], rules, curriculum)
+                    Meeting.model_validate(meeting, from_attributes=True)
+                    for meeting in meetings(by_code[course.code], rules, curriculum)
                 ],
             )
             for course in courses
         ],
         reasons=[reason(reason_row, rules) for reason_row in rows.plan_reasons],
+        slots=[slot(found, worth) for found in slots],
+    )
+
+
+def slot(found: PlanSlot, credits: Mapping[str, int]) -> Slot:
+    fit_count, check_count = course_counts(found, credits)
+    return Slot(
+        kind="place" if found.owed else "line",
+        credits=found.credits,
+        replaces=found.owed,
+        message=found.message,
+        fit_count=fit_count,
+        check_count=check_count,
     )
 
 

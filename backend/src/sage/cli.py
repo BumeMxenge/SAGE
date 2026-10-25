@@ -67,6 +67,9 @@ def main(argv: list[str] | None = None) -> None:
     seed_command.add_argument(
         "--yes", action="store_true", help="write to a hosted project without asking"
     )
+    seed_command.add_argument(
+        "--file", type=Path, default=SEED_FILE, help="the seed file, Mbali's if none"
+    )
 
     sign_in_command = commands.add_parser(
         "sign-in",
@@ -74,6 +77,9 @@ def main(argv: list[str] | None = None) -> None:
     )
     sign_in_command.add_argument(
         "--port", type=int, default=3000, help="the local frontend's port"
+    )
+    sign_in_command.add_argument(
+        "--file", type=Path, default=SEED_FILE, help="the seed file, Mbali's if none"
     )
 
     ingest_command = commands.add_parser(
@@ -126,9 +132,9 @@ def main(argv: list[str] | None = None) -> None:
 
     args = parser.parse_args(argv)
     if args.command == "seed":
-        run_seed(args.user, yes=args.yes)
+        run_seed(args.user, yes=args.yes, file=args.file)
     elif args.command == "sign-in":
-        run_sign_in(args.port)
+        run_sign_in(args.port, args.file)
     elif args.command == "ingest":
         run_ingest(args.year, draft=args.draft)
     elif args.command == "review":
@@ -156,9 +162,9 @@ def project(yes: bool) -> tuple[Client, str]:
     return connect(settings.supabase_url, settings.supabase_secret_key), host
 
 
-def run_seed(account: UUID, *, yes: bool) -> None:
+def run_seed(account: UUID, *, yes: bool, file: Path = SEED_FILE) -> None:
     # A bad file stops here, before anything is written
-    data = load_seed(SEED_FILE, account)
+    data = load_seed(file, account)
     client, host = project(yes)
     rules, students = SupabaseRuleRepository(client), SupabaseStudentRepository(client)
     try:
@@ -175,7 +181,7 @@ def run_seed(account: UUID, *, yes: bool) -> None:
             f"sage load --year {year} loads them"
         ) from None
 
-    print(f"Seeded {SEED_FILE.name} onto account {account} on {host}:")
+    print(f"Seeded {file.name} onto account {account} on {host}:")
     for table, count in result.written.items():
         print(f"  {table}: {count}")
     check_read_back(result)
@@ -228,23 +234,23 @@ def link(token: str, port: int) -> str:
     return f"http://localhost:{port}/?{urlencode({'token_hash': token})}"
 
 
-def run_sign_in(port: int) -> None:
+def run_sign_in(port: int, file: Path = SEED_FILE) -> None:
     client = local_client()
     rules, students = SupabaseRuleRepository(client), SupabaseStudentRepository(client)
-    file = json.loads(SEED_FILE.read_text(encoding="utf-8"))
+    seeded = json.loads(file.read_text(encoding="utf-8"))
     try:
         # Her plans need their year's rules, so nothing is written until they're loaded, not even
         # her account
-        require_loaded(rules, {row["period"] for row in file["plan_sets"]})
+        require_loaded(rules, {row["period"] for row in seeded["plan_sets"]})
     except YearNotLoaded as missing:
         raise SystemExit(
             f"Local Supabase doesn't hold the approved {missing.args[0]} rules her plans use: "
             "make load loads them"
         ) from None
-    account, token = sign_in_token(client, file["fake_account"]["email"])
+    account, token = sign_in_token(client, seeded["fake_account"]["email"])
     # Her seed goes on once, so changes made while trying the app survive the next sign-in
     if students.profile(account) is None:
-        check_read_back(seed(rules, students, load_seed(SEED_FILE, account)))
+        check_read_back(seed(rules, students, load_seed(file, account)))
     # Only the link, so a script such as Playwright's setup can read it
     print(link(token, port))
 

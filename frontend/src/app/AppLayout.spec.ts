@@ -6,6 +6,10 @@
 // lets it, with axe and a photograph beside what it turns into, and the frame sends no read of its own
 // before the guard decides, so a signed-out visitor asks the API nothing. Sign Out leaves asking the
 // API nothing and logging no error, and whoever signs in next on the same page sees nothing of hers.
+// Explore Electives shows only to a student whose plans have a complementary slot. Mbali's have none,
+// so her set is answered as if they had one, as the prototype draws all three links, except where a
+// check says otherwise: with her own set, the link's skeleton holds its row and then goes, and if the
+// read fails it goes and the link stays hidden.
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../e2e/axe.ts'
 import { walkKeyboard } from '../../e2e/keyboard.ts'
@@ -15,6 +19,7 @@ import {
   loading,
   photographArrival,
   read,
+  refusal,
   seenLoading,
   settledArrival,
   skeletons,
@@ -22,11 +27,23 @@ import {
 } from '../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../e2e/parity.ts'
 import { settled } from '../../e2e/settled.ts'
-import { mbali, signInLink, visitAs } from '../../e2e/visitors.ts'
+import { mbali, signInLink, visitAs, withSlot } from '../../e2e/visitors.ts'
 
 test.use({ storageState: mbali })
 
+test.beforeEach(async ({ page }) => {
+  await withSlot(page)
+})
+
 const sidebar = (page: Page) => page.getByRole('banner')
+const navigation = (page: Page) => sidebar(page).getByRole('navigation', { name: 'Main' })
+
+// Where an element sits on the screen
+async function box(element: Locator) {
+  const found = await element.boundingBox()
+  if (!found) throw new Error(`${element.toString()} isn't on screen`)
+  return found
+}
 // Mbali never has a name from Microsoft, so her account shows her student number
 const account = (page: Page) => sidebar(page).getByRole('button', { name: /DLMMBA999/ })
 
@@ -75,6 +92,37 @@ test('each link opens its page, and only that link is current, a plan of its own
     await expect(page.getByRole('heading', { level: 1, name })).toBeVisible()
     await expect(current).toHaveText(name)
   }
+})
+
+test("with no complementary slot in her plans, Explore Electives' row waits as a skeleton the size of a link, then goes, and Course History moves up once", async ({
+  page,
+}) => {
+  // Her own set, which has no slot
+  await page.unroute('**/v1/plans')
+  const set = await hold(page, read('/v1/plans'))
+  await page.goto('/history')
+  const history = navigation(page).getByRole('link', { name: 'Course History' })
+  await account(page).waitFor()
+  const skeleton = skeletons(navigation(page))
+  await expect(skeleton).toHaveCount(1)
+  await expect(navigation(page).getByRole('link')).toHaveText(['Plan', 'Course History'])
+  expect((await box(skeleton)).height).toBe((await box(navigation(page).getByRole('link', { name: 'Plan' }))).height)
+  await expectNoAxeViolations(page)
+  const waiting = await box(history)
+  await set.release()
+  await expect(skeleton).toHaveCount(0)
+  await expect(navigation(page).getByRole('link')).toHaveText(['Plan', 'Course History'])
+  expect((await box(history)).y).toBeLessThan(waiting.y)
+})
+
+test("if her plans can't be read, Explore Electives' skeleton goes and the link stays hidden", async ({ page }) => {
+  const set = await hold(page, read('/v1/plans'))
+  await page.goto('/history')
+  await account(page).waitFor()
+  await set.refuse(refusal('internal_error', 500))
+  // A failed read is tried again three times, 1, 2 and 4 s apart
+  await expect(skeletons(navigation(page))).toHaveCount(0, { timeout: 15_000 })
+  await expect(navigation(page).getByRole('link')).toHaveText(['Plan', 'Course History'])
 })
 
 test('folding and opening by keyboard leaves focus on the toggle that replaced the one pressed', async ({ page }) => {

@@ -40,9 +40,10 @@ function plan(courses: PlanCourse[]): Plan {
     name: 'A made-up plan',
     combination: null,
     hidden: false,
-    credits: { total: 0, by_term: {} },
+    credits: { total: 0, by_term: {}, to_choose: 0 },
     courses,
     reasons: [],
+    slots: [],
   }
 }
 
@@ -265,5 +266,36 @@ describe('the line naming what has no set time', () => {
 
   it('is left out when everything in the term has a time', () => {
     expect(weekOf(powerControlAndRobotics, 'sem1').noSetTimes).toBeNull()
+  })
+})
+
+describe('a preview', () => {
+  // The engine's preview of SLL1002S Word Power for an on-track ASPECT Mechatronics student, from the
+  // 2026 timetable: its lectures stay on B, Monday to Wednesday at 16:00, as B overlaps EEE3096S's lab
+  // B, Wednesday 14:00 to 17:45, so the preview fixes that lab to A, Friday 14:00 to 17:45. A made-up
+  // course with a lab A of its own, which the preview doesn't fix, stays unmarked.
+  const wordPower = course(
+    'SLL1002S',
+    'Word Power',
+    'sem2',
+    [MON, TUE, WED].map((weekday) => meeting('sem2', weekday, '16:00', '16:45', { kind: 'lecture', choice_group: 'lecture', choice: 'B' })),
+  )
+  const embedded = course('EEE3096S', 'Embedded Systems II', 'sem2', [
+    meeting('sem2', TUE, '10:00', '11:45'),
+    meeting('sem2', FRI, '14:00', '17:45', { kind: 'lab', choice_group: 'lab', choice: 'A' }),
+  ])
+  const madeUp = course('TST2000S', 'Made up', 'sem2', [meeting('sem2', THU, '14:00', '15:45', { kind: 'lab', choice_group: 'lab', choice: 'A' })])
+  const marks = { code: 'SLL1002S', forced: [{ course_code: 'EEE3096S', choice_group: 'lab', choice: 'A' }] }
+
+  it("marks the course it adds, and names the section it fixes on the plan's own course alone", () => {
+    const { blocks } = weekOf(plan([embedded, madeUp, wordPower]), 'sem2', marks)
+    expect(blocks.map(({ code, day: weekday, options, previewed }) => [code, weekday, options, previewed])).toEqual([
+      ['SLL1002S', MON, null, true],
+      ['EEE3096S', TUE, null, false],
+      ['SLL1002S', TUE, null, true],
+      ['SLL1002S', WED, null, true],
+      ['TST2000S', THU, null, false],
+      ['EEE3096S', FRI, 'Lab A, fixed by this preview', false],
+    ])
   })
 })

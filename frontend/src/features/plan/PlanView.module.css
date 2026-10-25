@@ -18,6 +18,26 @@
   color: var(--color-text);
 }
 
+/* A preview's line, saying nothing is saved, with End Preview beside it, over the week it draws, as
+   wide as the week */
+.previewing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: var(--width-full);
+  margin: 0 auto var(--space-4);
+}
+
+.preview-line {
+  margin: 0;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+}
+
 /* Compare's title, with Done Comparing at the far end */
 .title {
   margin: 0;
