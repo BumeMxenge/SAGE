@@ -80,3 +80,17 @@ def draft(
     # holding a rule, comes back as its text. That isn't a rule tree, so translate reports it
     # rather than keeping it, and the run goes on.
     return text
+
+
+def read_cache(path: Path) -> dict[str, dict]:
+    # A year's cached drafts, or none before its first run that drafts
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+
+
+def save_cache(path: Path, drafts: dict[str, dict]) -> None:
+    # In the layout the committed caches keep, so a run that changes nothing leaves them as they are
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(drafts, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
