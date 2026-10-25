@@ -5,7 +5,7 @@
 import { useSearchParams } from 'react-router'
 
 // The tab is the address's word for it, which the page opens only if it shows that tab
-export type ElectivesAddress = { planId: string | null; tab: string | null }
+type ElectivesAddress = { planId: string | null; tab: string | null }
 
 export function readElectivesAddress(query: URLSearchParams): ElectivesAddress {
   return { planId: query.get('plan') || null, tab: query.get('tab') || null }

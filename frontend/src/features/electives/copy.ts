@@ -3,7 +3,7 @@
 // build until it has words here.
 import type { components } from '@/lib/api-types.ts'
 
-export type ElectiveTab = components['schemas']['Tab']['key']
+type ElectiveTab = components['schemas']['Tab']['key']
 
 export const tabWords: Record<ElectiveTab, { label: string; sub: string }> = {
   arts: { label: 'Art, Music & Aesthetics', sub: 'Visual art and music' },

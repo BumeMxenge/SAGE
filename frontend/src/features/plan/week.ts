@@ -62,7 +62,7 @@ export type Block = {
 }
 
 // A preview's course, and the sections of the plan's own courses it fixes
-export type PreviewMarks = { code: string; forced: ForcedSection[] }
+type PreviewMarks = { code: string; forced: ForcedSection[] }
 
 export type Week = {
   firstHour: number

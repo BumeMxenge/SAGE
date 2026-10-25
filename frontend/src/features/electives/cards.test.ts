@@ -1,5 +1,5 @@
 // What a card says and which tab and cards Explore Electives shows, on made-up cards. The words and
-// choices are written out by hand from the prototype and B's card rules.
+// choices are written out by hand from the prototype and my card rules.
 import { describe, expect, it } from 'vitest'
 import type { components } from '@/lib/api-types.ts'
 import { codesOf, convenersOf, keeping, matches, openingTab, putFirst, termsOf, withHeart } from './cards.ts'
