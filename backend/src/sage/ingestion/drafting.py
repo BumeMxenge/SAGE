@@ -1,9 +1,8 @@
-# The interface a model that drafts rule trees implements, and the drafter that fills it on SAGE's one
-# language model. translate depends only on the interface, so its tests use a fake that never calls
-# a model.
+# Drafts a rule tree on SAGE's one language model for printed wording the grammar refused.
+# translate takes the model, so its tests use a fake that never calls one.
 import json
 from pathlib import Path
-from typing import Literal, Protocol
+from typing import Literal
 
 from pydantic import JsonValue
 
@@ -62,32 +61,22 @@ SCHEMA = Schema(
 )
 
 
-class Drafter(Protocol):
-    model: str  # the model's name, kept with each of its drafts
-
-    # A rule tree, as JSON, for printed wording the grammar refused. A co-requisite's leaves need the
-    # course taken alongside, the rest a pass.
-    def draft(self, printed: str, need: Literal["pass", "concurrent"]) -> JsonValue: ...
-
-
-class ModelDrafter:
-    # Drafts on SAGE's language model, asked as E2 asked GPT-6 Luna: E2's prompt, the field's name
-    # with its printed text, and the reply held to E2's schema. translate checks every draft against
-    # EntryRule before keeping it.
-    def __init__(self, model: LanguageModel) -> None:
-        self._model = model
-        self.model = model.model
-
-    def draft(self, printed: str, need: Literal["pass", "concurrent"]) -> JsonValue:
-        said = Said(role="user", text=f"{FIELDS[need]}: {printed}")
-        text = self._model.respond(PROMPT, [said], schema=SCHEMA).text or ""
-        try:
-            answer = json.loads(text)
-        except json.JSONDecodeError:
-            answer = None
-        if isinstance(answer, dict) and "rule" in answer:
-            return answer["rule"]
-        # Any other reply, such as one cut off, one that isn't JSON, or JSON that isn't an object
-        # holding a rule, comes back as its text. That isn't a rule tree, so translate reports it
-        # rather than keeping it, and the run goes on.
-        return text
+def draft(
+    model: LanguageModel, printed: str, need: Literal["pass", "concurrent"]
+) -> JsonValue:
+    # A rule tree, as JSON, for printed wording the grammar refused, asked as E2 asked GPT-6 Luna:
+    # E2's prompt, the field's name with its printed text, and the reply held to E2's schema. A
+    # co-requisite's leaves need the course taken alongside, the rest a pass. translate checks every
+    # draft against EntryRule before keeping it.
+    said = Said(role="user", text=f"{FIELDS[need]}: {printed}")
+    text = model.respond(PROMPT, [said], schema=SCHEMA).text or ""
+    try:
+        answer = json.loads(text)
+    except json.JSONDecodeError:
+        answer = None
+    if isinstance(answer, dict) and "rule" in answer:
+        return answer["rule"]
+    # Any other reply, such as one cut off, one that isn't JSON, or JSON that isn't an object
+    # holding a rule, comes back as its text. That isn't a rule tree, so translate reports it
+    # rather than keeping it, and the run goes on.
+    return text

@@ -24,7 +24,6 @@ from sage.ingestion import (
     timetable,
     translate,
 )
-from sage.ingestion.drafting import ModelDrafter
 from sage.ingestion.names import title_case
 from sage.ingestion.review import Problem, Review, Snapshot, compare
 from sage.shared.base import Row, canonical
@@ -123,7 +122,7 @@ def ingest(
     translated = translate.translate(
         strings,
         data / "rules" / str(year) / "drafts.json",
-        ModelDrafter(model) if model else None,
+        model,
         [cache for cache in caches if int(cache.parent.name) < year],
     )
     found = {(t.printed, t.need): t for t in translated.translations}

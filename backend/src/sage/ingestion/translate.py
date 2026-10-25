@@ -1,6 +1,6 @@
 # Turns printed requirements into rule trees, grammar first. The grammar reads wording with exactly one
-# reading. A string it refuses takes its draft from the year's drafts.json, or, when a drafter is
-# given, a model drafts it and the draft is cached there. Then wording an earlier year drafted takes
+# reading. A string it refuses takes its draft from the year's drafts.json, or, when a model is
+# given, the model drafts it and the draft is cached there. Then wording an earlier year drafted takes
 # that draft instead, so the same words never get two drafts. A draft is kept only if it's a rule
 # tree, or null where the model reads no requirement, as E2's prompt asks, and it stays flagged with
 # the grammar's cause for a person to check. A refused string with no draft yet stands as a refer
@@ -13,8 +13,9 @@ from typing import Literal
 from pydantic import TypeAdapter, ValidationError
 
 from sage.ingestion import grammar
-from sage.ingestion.drafting import Drafter
+from sage.ingestion.drafting import draft
 from sage.shared.base import Row
+from sage.shared.language_model import LanguageModel
 from sage.shared.rules import EntryRule, Refer, RefusalCause
 
 Need = Literal["pass", "concurrent"]
@@ -39,7 +40,7 @@ class Translations(Row):
 def translate(
     strings: Iterable[tuple[str, Need]],
     cache: Path,
-    drafter: Drafter | None,
+    model: LanguageModel | None,
     earlier: Sequence[Path] = (),
 ) -> Translations:
     drafts = _read(cache)
@@ -67,19 +68,19 @@ def translate(
         except grammar.Refused as refusal:
             cause = refusal.cause
         cached = drafts.get(need, {}).get(printed)
-        if cached is None and drafter is not None:
+        if cached is None and model is not None:
             if (need, printed) in before:
                 reused += 1
                 cached = before[need, printed]
             else:
                 calls += 1
-                draft = drafter.draft(printed, need)
+                drafted = draft(model, printed, need)
                 try:
-                    DRAFT.validate_python(draft)
+                    DRAFT.validate_python(drafted)
                 except ValidationError:
                     refused.append(printed)
                 else:
-                    cached = {"model": drafter.model, "tree": draft}
+                    cached = {"model": model.model, "tree": drafted}
             if cached is not None:
                 drafts.setdefault(need, {})[printed] = cached
         tree = DRAFT.validate_python(cached["tree"]) if cached else Refer(refer=printed)
