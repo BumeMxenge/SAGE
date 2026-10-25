@@ -151,6 +151,9 @@ function openGroupsOf(course: PlanCourse): Set<string> {
   return new Set([...choices].filter(([, each]) => each.size > 1).map(([group]) => group))
 }
 
+// The shortest week drawn, 08:00 to 17:00, and the week a plan's skeleton draws while it's on its way
+export const shortestWeek = { firstHour: 8, hours: 9 }
+
 // A plan's week in one term. It runs from 08:00 to 17:00, or further to fit its meetings. A course's
 // alternatives at the same day and time are one block naming them all, rather than lanes of their own,
 // and the meetings of a group with one alternative left draw as any other.
@@ -186,8 +189,8 @@ export function weekOf(plan: Plan, tab: PlanTerm): Week {
     })
   }
   const all = [...drafts.values()]
-  const firstHour = Math.min(8, ...all.map((draft) => Math.floor(draft.begins / 60)))
-  const lastHour = Math.max(17, ...all.map((draft) => Math.ceil(draft.ends / 60)))
+  const firstHour = Math.min(shortestWeek.firstHour, ...all.map((draft) => Math.floor(draft.begins / 60)))
+  const lastHour = Math.max(shortestWeek.firstHour + shortestWeek.hours, ...all.map((draft) => Math.ceil(draft.ends / 60)))
   const days = [...new Set(all.map((draft) => draft.day))].sort((a, b) => a - b)
   return {
     firstHour,

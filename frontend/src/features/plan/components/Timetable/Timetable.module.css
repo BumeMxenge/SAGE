@@ -54,8 +54,10 @@
 }
 
 /* A meeting's place from its numbers: down by its start and as tall as its length, both in minutes,
-   and across by its lane. Lanes and meetings that follow one another keep a small gap. */
-.block {
+   and across by its lane. Lanes and meetings that follow one another keep a small gap. A skeleton's
+   meeting takes its day's width. */
+.block,
+.waiting {
   --gap: var(--space-1);
 
   position: absolute;
@@ -63,6 +65,14 @@
   left: calc((100% + var(--gap)) / var(--lanes) * var(--lane));
   width: calc((100% + var(--gap)) / var(--lanes) - var(--gap));
   height: calc(var(--length) * var(--hour) / 60 - var(--gap));
+}
+
+.waiting {
+  --lane: 0;
+  --lanes: 1;
+}
+
+.block {
   padding: var(--space-2);
   overflow: hidden;
   border-radius: var(--radius-sm);

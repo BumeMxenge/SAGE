@@ -2,11 +2,12 @@
 // an h2 where the card sits straight under the page's h1, as the transcript's card does, so the
 // page's headings stay in order. A meta line, such as a file's size, sits right under the heading,
 // with the actions centred beside the two. Pages that need a more specific card, like an elective
-// card, build it from this one through its props.
+// card, build it from this one through its props. While a page's read is on its way, a skeleton
+// can stand in its title.
 import type { ReactNode } from 'react'
 import styles from './Card.module.css'
 
-type CardProps = { title: string; level?: 2 | 3; meta?: ReactNode; actions?: ReactNode; children?: ReactNode }
+type CardProps = { title: ReactNode; level?: 2 | 3; meta?: ReactNode; actions?: ReactNode; children?: ReactNode }
 
 export function Card({ title, level = 3, meta, actions, children }: CardProps) {
   const Heading = level === 2 ? 'h2' : 'h3'

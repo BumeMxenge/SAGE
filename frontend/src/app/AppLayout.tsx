@@ -12,6 +12,7 @@ import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import { Logo } from '@/components/brand/Logo/Logo.tsx'
 import { Tooltip } from '@/components/overlays/Tooltip/Tooltip.tsx'
 import { AssistantRail } from '@/features/assistant/AssistantRail.tsx'
+import type { View } from '@/features/plan/components/TermView/TermView.tsx'
 import { nav } from '@/lib/copy.ts'
 import { AccountMenu } from './AccountMenu.tsx'
 import styles from './AppLayout.module.css'
@@ -23,8 +24,11 @@ const pages: { href: string; label: string; icon: PlainIconName }[] = [
 ]
 
 // What the frame tells the page beside the sidebar: whether the sidebar and the assistant are both
-// open, leaving a plan so little room that its controls show only their icons, as the prototype's do
-export type PageRoom = { iconOnly: boolean }
+// open, leaving a plan so little room that its controls show only their icons, as the prototype's do,
+// and the plan's view, Calendar or Course List. The frame keeps the view, as it keeps the assistant
+// open or folded, so one chosen while her plan loads, at /plan or before the guard has decided on the
+// first load, stays when the plan opens, and as she moves between pages.
+export type PageRoom = { iconOnly: boolean; view: View; onViewChange: (view: View) => void }
 
 // Narrower windows start with the sidebar folded, as the prototype does, which also keeps a page usable
 // at 400% zoom (WCAG 1.4.10). Read inside the component, as the route table's tests load this file in
@@ -39,6 +43,7 @@ export function AppLayout() {
   // The assistant starts folded, as the prototype's does, and stays as she leaves it while she moves
   // between pages
   const [assistantOpen, setAssistantOpen] = useState(false)
+  const [view, setView] = useState<View>('calendar')
   // A pressed toggle disappears as the sidebar changes shape, so the one that replaces it takes focus.
   // Only a press sets this: the window's width, or the account menu opening the sidebar, moves no focus.
   const [moveFocus, setMoveFocus] = useState(false)
@@ -116,7 +121,7 @@ export function AppLayout() {
         <AccountMenu collapsed={collapsed} onOpen={openForMenu} />
       </header>
       <main className={styles.main}>
-        <Outlet context={{ iconOnly: !collapsed && assistantOpen } satisfies PageRoom} />
+        <Outlet context={{ iconOnly: !collapsed && assistantOpen, view, onViewChange: setView } satisfies PageRoom} />
       </main>
       {planId && <AssistantRail open={assistantOpen} onOpenChange={setAssistantOpen} />}
     </div>
