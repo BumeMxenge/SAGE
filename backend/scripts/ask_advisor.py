@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import get_args
 from uuid import UUID
 
-from show_plans import ACCOUNT, on_track
+from show_plans import ACCOUNT, SYMBOLS, on_track
 
 from sage.advisor.replies import Answered, GroundedAdvisor
 from sage.config import get_settings
@@ -38,9 +38,6 @@ from sage.shared.rules import ResultSymbol, TermCode
 from sage.shared.seed import SEED_FILE, load_seed, seed
 from sage.shared.students import Chat, Plan, StudentState
 
-SYMBOLS = (
-    Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "result_symbols.json"
-)
 YEAR = 2026  # the year SAGE plans, whose approved rules every run loads
 
 
