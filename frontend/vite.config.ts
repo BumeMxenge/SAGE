@@ -23,6 +23,21 @@ export default defineConfig({
   // serves SVG imports from allowed folders, and the default is this one.
   server: { ...port, fs: { allow: [searchForWorkspaceRoot(import.meta.dirname), '../assets/brand'] } },
   preview: port,
+  // The libraries every page loads with the app go in two files of their own, React with its router
+  // and the API and sign-in clients, so no file passes Vite's 500 kB warning. Each group takes its
+  // packages' own dependencies with it. React Aria stays split among the pages that use it.
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            { name: 'react', test: /node_modules[\\/](react|react-dom|react-router)[\\/]/ },
+            { name: 'clients', test: /node_modules[\\/](@supabase|@tanstack|openapi-fetch|openapi-react-query)[\\/]/ },
+          ],
+        },
+      },
+    },
+  },
   // css: true, because Vitest otherwise turns every stylesheet, even ?raw, into an empty string. The
   // settings are made up, on .test hosts that never resolve, so no test reads frontend/.env or reaches
   // a real service.
