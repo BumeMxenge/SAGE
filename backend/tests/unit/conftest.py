@@ -1,7 +1,8 @@
 # The app with its stores swapped for in-memory fakes, and a made-up token for each kind of account.
 # The rules are the approved 2026, and Mbali's data is seeded twice on them, on her account and on
-# another student's, so tests can check neither ever sees the other's rows. The advisor here only
-# records and replies, as the API tests check the routes, and the advisor's own tests its answers.
+# another student's, so tests can check neither ever sees the other's rows. Ziyela's is seeded beside
+# them, as her plans have a complementary slot. The advisor here only records and replies, as the
+# API tests check the routes, and the advisor's own tests its answers.
 from collections.abc import Callable
 from concurrent.futures import Future
 from uuid import UUID
@@ -24,7 +25,8 @@ from sage.shared.memory.students import InMemoryStudentRepository
 from sage.shared.rulebook import Rulebook
 from sage.shared.seed import load_seed, seed
 from sage.shared.students import Chat, Citation
-from tests.unit.accounts import MBALI, QRTILV, ZVSORW
+from scripts import write_seed
+from tests.unit.accounts import MBALI, NTWZIY, QRTILV, ZVSORW
 
 
 class Advisor:
@@ -87,6 +89,7 @@ def stores(
     rules.replace_year(approved_2026)
     for account in (MBALI, ZVSORW):
         seed(rules, students, load_seed(seed_file, account))
+    seed(rules, students, load_seed(write_seed.FILE, NTWZIY))
     return rules, students
 
 
@@ -101,6 +104,7 @@ def app(stores, fake_account, advisor) -> FastAPI:
         "mbali": Identity(id=MBALI, email=fake_account["email"]),
         "zvsorw": Identity(id=ZVSORW, email="zvsorw999@myuct.ac.za"),
         "qrtilv": Identity(id=QRTILV, email="qrtilv999@myuct.ac.za"),
+        "ntwziy": Identity(id=NTWZIY, email=write_seed.EMAIL),
         "staff": Identity(id=UUID(int=4), email="test.advisor@uct.ac.za"),
         "outsider": Identity(id=UUID(int=5), email="outsider@example.com"),
     }
@@ -129,6 +133,12 @@ def signed_in(app) -> Callable[[str], TestClient]:
 def mbali(signed_in) -> TestClient:
     # Signed in as Mbali, with her data as seeded
     return signed_in("mbali")
+
+
+@pytest.fixture
+def ziyela(signed_in) -> TestClient:
+    # Signed in as Ziyela, with her data as seeded
+    return signed_in("ntwziy")
 
 
 @pytest.fixture

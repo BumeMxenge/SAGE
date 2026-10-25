@@ -6,7 +6,7 @@
 # or what to check.
 from collections import defaultdict
 from collections.abc import Collection, Mapping, Sequence
-from typing import Any, get_args
+from typing import get_args
 from uuid import UUID
 
 from sage.shared.base import Row
@@ -15,6 +15,7 @@ from sage.shared.planning import Eligibility, EligibilityChecker
 from sage.shared.repositories import StudentRepository
 from sage.shared.rulebook import Rulebook
 from sage.shared.rules import Course, ElectiveTab, RuleSet, TermCode, offerings
+from sage.shared.slots import PlanSlot, plan_slots
 from sage.shared.students import Student
 
 # How a note names an offering's term
@@ -40,8 +41,13 @@ class Offering(Row):
     eligibility: Eligibility
     hearted: bool
     works: bool  # so she can heart it
-    # The complementary slots' details that list it among the courses that fit
-    listed: tuple[dict[str, Any], ...]
+    # The complementary slots that list it among the courses that fit
+    listed: tuple[PlanSlot, ...]
+
+    @property
+    def plans(self) -> tuple[UUID, ...]:
+        # The plans whose slots list it, each once, in the slots' order
+        return tuple(dict.fromkeys(slot.plan_id for slot in self.listed))
 
 
 class Card(Row):
@@ -76,9 +82,14 @@ def by_tab(
         rulebook.symbols(),
         student,
     )
-    # Only a complementary slot's reason has details
+    # Her current set's slots, by their plan's position, so each offering names its plans in order
     plan_set = students.current_plan_set(student.id)
-    slots = [r.details for r in plan_set.plan_reasons if r.details] if plan_set else []
+    slots = []
+    if plan_set:
+        position = {plan.id: plan.position for plan in plan_set.plans}
+        slots = sorted(
+            plan_slots(plan_set.plan_reasons), key=lambda slot: position[slot.plan_id]
+        )
     return cards(rules, eligibility, record.favourites, slots)
 
 
@@ -86,7 +97,7 @@ def cards(
     rules: RuleSet,
     eligibility: Mapping[str, Eligibility],
     favourites: Collection[str],
-    slots: Sequence[dict[str, Any]],
+    slots: Sequence[PlanSlot],
 ) -> list[tuple[ElectiveTab, list[Card]]]:
     # The tabs in ElectiveTab's order, leaving out empty ones. A course's card sits on its first
     # offering's tab.
@@ -110,9 +121,9 @@ def _offering(
     course: Course,
     eligibility: Eligibility,
     favourites: Collection[str],
-    slots: Sequence[dict[str, Any]],
+    slots: Sequence[PlanSlot],
 ) -> Offering:
-    listed = tuple(slot for slot in slots if course.code in slot["fits"])
+    listed = tuple(slot for slot in slots if course.code in slot.fits)
     return Offering(
         course=course,
         eligibility=eligibility,
@@ -151,9 +162,9 @@ def _check(offering: Offering) -> str | None:
         return offering.eligibility.reason
     listed = offering.listed
     code = offering.course.code
-    if any(code in slot["untimed"] for slot in listed):
+    if any(code in slot.untimed for slot in listed):
         return UNTIMED
-    if listed and all(code in slot["fewer_credits"] for slot in listed):
+    if listed and all(code in slot.fewer_credits for slot in listed):
         return FEWER
     return None
 

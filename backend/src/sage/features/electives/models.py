@@ -1,5 +1,7 @@
 # Explore Electives' bodies: each tab's courses, one card per course, with whether she can heart each
 # offering and has hearted it
+from uuid import UUID
+
 from pydantic import BaseModel
 
 from sage.shared.rules import ElectiveTab, TermCode
@@ -11,6 +13,8 @@ class Offering(BaseModel):
     convener: str | None  # each term's own, as a course's can differ
     hearted: bool
     can_heart: bool  # it works: the engine doesn't refuse it, and it fits her plans
+    # Her current set's plans, shown or hidden, whose complementary slots list it, by position
+    plans: list[UUID]
 
 
 class Elective(BaseModel):

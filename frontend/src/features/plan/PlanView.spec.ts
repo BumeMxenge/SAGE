@@ -191,8 +191,9 @@ const enginePlan: Plan = {
   name: engineName,
   combination: engineCombination,
   hidden: false,
-  credits: { total: 70, by_term: { sem1: 36, sem2: 34 } },
+  credits: { total: 70, by_term: { sem1: 36, sem2: 34 }, to_choose: 0 },
   reasons: [],
+  slots: [],
   courses: [
     {
       code: 'CSC3002F',
@@ -237,8 +238,9 @@ const engineSet: PlanSet = {
   period: 2026,
   version: 1,
   questionnaire_needed: false,
+  has_slot: false,
   reasons: [],
-  plans: [{ id: engineId, position: 1, name: engineName, combination: engineCombination, hidden: false, credits: 70 }],
+  plans: [{ id: engineId, position: 1, name: engineName, combination: engineCombination, hidden: false, credits: 70, to_choose: 0 }],
 }
 
 // The API is on another port, so each answer allows this page's origin, as the backend's CORS does
@@ -274,19 +276,20 @@ type PlanSummary = components['schemas']['PlanSummary']
 const fifty: PlanSummary[] = Array.from({ length: 50 }, (_, index) => {
   const position = index + 1
   const id = `00000000-0000-4000-8000-${String(position).padStart(9, '0')}999`
-  if (position === 50) return { id, position, name: 'Core Courses Only', combination: null, hidden: false, credits: 72 }
-  return { id, position, name: `Plan ${position} of 50`, combination: `TST4${String(position).padStart(3, '0')}F`, hidden: false, credits: 72 }
+  if (position === 50) return { id, position, name: 'Core Courses Only', combination: null, hidden: false, credits: 72, to_choose: 0 }
+  return { id, position, name: `Plan ${position} of 50`, combination: `TST4${String(position).padStart(3, '0')}F`, hidden: false, credits: 72, to_choose: 0 }
 })
 const fiftyPlans: Plan[] = fifty.map((summary) => ({
   ...summary,
   period: 2026,
-  credits: { total: 72, by_term: { sem1: 72 } },
+  credits: { total: 72, by_term: { sem1: 72 }, to_choose: 0 },
   courses: [],
   reasons: [],
+  slots: [],
 }))
 
 test('a set of 50 plans: the list stays in the window and scrolls to the last, which has no codes line', async ({ page }) => {
-  const set: PlanSet = { period: 2026, version: 1, questionnaire_needed: false, reasons: [], plans: fifty }
+  const set: PlanSet = { period: 2026, version: 1, questionnaire_needed: false, has_slot: false, reasons: [], plans: fifty }
   await page.route('**/v1/plans', (route) => route.fulfill({ json: set, headers: allowed }))
   await page.route('**/v1/plans/*', (route) =>
     route.fulfill({ json: fiftyPlans.find(({ id }) => route.request().url().endsWith(id)), headers: allowed }),
@@ -314,6 +317,7 @@ const noPlans: PlanSet = {
   period: 2026,
   version: 1,
   questionnaire_needed: false,
+  has_slot: false,
   reasons: [
     {
       kind: 'conflict',

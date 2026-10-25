@@ -8,6 +8,7 @@ from uuid import UUID
 from sage.shared.errors import PlanNotFound, PlansNotReady, SamePlan
 from sage.shared.repositories import StudentRepository
 from sage.shared.rules import Course, RuleSet, TermCode
+from sage.shared.slots import PlanSlot
 from sage.shared.students import PlanSetRows
 
 
@@ -62,6 +63,11 @@ def credits_by_term(courses: Iterable[Course]) -> dict[TermCode, int]:
     for course in courses:
         totals[course.term] += course.credits
     return dict(totals)
+
+
+def to_choose(slots: Iterable[PlanSlot], plan_id: UUID) -> int:
+    # The credits a plan leaves her to choose, which its credit line shows beside its courses'
+    return sum(slot.credits for slot in slots if slot.plan_id == plan_id)
 
 
 def group_keys(rules: RuleSet, curriculum: str) -> set[str]:

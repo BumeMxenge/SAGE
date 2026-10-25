@@ -1,5 +1,6 @@
 # Her plans: the current set, one plan in full, and two side by side. Students never edit a plan;
 # the questionnaire only hides some, and any of them still opens here.
+from collections.abc import Mapping
 from uuid import UUID
 
 from fastapi import APIRouter
@@ -15,6 +16,7 @@ from sage.features.plans.models import (
     PlanSet,
     PlanSummary,
     Reason,
+    Slot,
 )
 from sage.shared.api.deps import ONBOARDED_ERRORS, Onboarded, Rules, Students
 from sage.shared.api.problems import errors
@@ -26,6 +28,7 @@ from sage.shared.errors import (
     SamePlan,
 )
 from sage.shared.rules import RuleSet, meetings
+from sage.shared.slots import PlanSlot, course_counts, plan_slots
 from sage.shared.students import PlanReason, PlanSetRows
 
 router = APIRouter(prefix="/plans", tags=["plans"])
@@ -82,10 +85,12 @@ def get_plan(
 
 def plan_set(rows: PlanSetRows, rules: RuleSet) -> PlanSet:
     courses = plans.courses(rows, rules)
+    slots = plan_slots(rows.plan_reasons)
     return PlanSet(
         period=rows.plan_set.period,
         version=rows.plan_set.version,
         questionnaire_needed=plans.questionnaire_needed(rows),
+        has_slot=bool(slots),
         reasons=[
             reason(row, rules) for row in rows.plan_reasons if row.plan_id is None
         ],
@@ -97,6 +102,7 @@ def plan_set(rows: PlanSetRows, rules: RuleSet) -> PlanSet:
                 combination=row.combination,
                 hidden=row.hidden,
                 credits=sum(course.credits for course in courses[row.id]),
+                to_choose=plans.to_choose(slots, row.id),
             )
             for row in rows.plans
         ],
@@ -109,6 +115,9 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
     keys = plans.group_keys(rules, curriculum)
     labels = {group.group_key: group.label for group in rules.course_groups}
     by_code = {course.course_code: course for course in rows.plan_courses}
+    # The rows hold one plan, so every slot among their reasons is its own
+    slots = plan_slots(rows.plan_reasons)
+    worth = {course.code: course.credits for course in rules.courses}
     return Plan(
         id=row.id,
         period=rows.plan_set.period,
@@ -119,6 +128,7 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
         credits=Credits(
             total=sum(course.credits for course in courses),
             by_term=plans.credits_by_term(courses),
+            to_choose=plans.to_choose(slots, row.id),
         ),
         courses=[
             PlanCourse(
@@ -139,6 +149,19 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
             for course in courses
         ],
         reasons=[reason(reason_row, rules) for reason_row in rows.plan_reasons],
+        slots=[slot(found, worth) for found in slots],
+    )
+
+
+def slot(found: PlanSlot, credits: Mapping[str, int]) -> Slot:
+    fit_count, check_count = course_counts(found, credits)
+    return Slot(
+        kind="place" if found.owed else "line",
+        credits=found.credits,
+        replaces=found.owed,
+        message=found.message,
+        fit_count=fit_count,
+        check_count=check_count,
     )
 
 

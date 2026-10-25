@@ -32,6 +32,7 @@ function setOf(kept: number[] | null): PlanSet {
     period: 2026,
     version: 1,
     questionnaire_needed: kept === null,
+    has_slot: false,
     reasons: [],
     plans: every.map((number) => ({
       id: plan(number),
@@ -40,13 +41,14 @@ function setOf(kept: number[] | null): PlanSet {
       combination: null,
       hidden: kept !== null && !kept.includes(number),
       credits: 144,
+      to_choose: 0,
     })),
   }
 }
 
 function planOf(number: number, kept: number[]): Plan {
   const { id, position, name, combination, hidden } = setOf(kept).plans[number - 1]
-  return { id, period: 2026, position, name, combination, hidden, credits: { total: 144, by_term: {} }, courses: [], reasons: [] }
+  return { id, period: 2026, position, name, combination, hidden, credits: { total: 144, by_term: {}, to_choose: 0 }, courses: [], reasons: [], slots: [] }
 }
 
 const option = (id: string, label: string, keeps: string[]): Option => ({ id, label, hearted: false, keeps })

@@ -19,8 +19,8 @@ const first = '00000000-0000-4000-8000-000000000001'
 const second = '00000000-0000-4000-8000-000000000002'
 
 const plans: PlanSummary[] = [
-  { id: first, position: 1, name: 'Made-up Plan A', combination: null, hidden: false, credits: 138 },
-  { id: second, position: 2, name: 'Made-up Plan B', combination: null, hidden: true, credits: 138 },
+  { id: first, position: 1, name: 'Made-up Plan A', combination: null, hidden: false, credits: 138, to_choose: 0 },
+  { id: second, position: 2, name: 'Made-up Plan B', combination: null, hidden: true, credits: 138, to_choose: 0 },
 ]
 
 const alone: PlanAddress = { planId: first, compareWith: null, term: 'sem1' }

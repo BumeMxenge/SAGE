@@ -365,6 +365,8 @@ export interface components {
             by_term: {
                 [key: string]: number;
             };
+            /** To Choose */
+            to_choose: number;
         };
         /** Curriculum */
         Curriculum: {
@@ -565,6 +567,8 @@ export interface components {
             hearted: boolean;
             /** Can Heart */
             can_heart: boolean;
+            /** Plans */
+            plans: string[];
         };
         /** Option */
         Option: {
@@ -599,6 +603,8 @@ export interface components {
             courses: components["schemas"]["PlanCourse"][];
             /** Reasons */
             reasons: components["schemas"]["Reason"][];
+            /** Slots */
+            slots: components["schemas"]["Slot"][];
         };
         /** PlanCourse */
         PlanCourse: {
@@ -626,6 +632,8 @@ export interface components {
             version: number;
             /** Questionnaire Needed */
             questionnaire_needed: boolean;
+            /** Has Slot */
+            has_slot: boolean;
             /** Reasons */
             reasons: components["schemas"]["Reason"][];
             /** Plans */
@@ -648,6 +656,8 @@ export interface components {
             hidden: boolean;
             /** Credits */
             credits: number;
+            /** To Choose */
+            to_choose: number;
         };
         /** Problem */
         Problem: {
@@ -730,6 +740,24 @@ export interface components {
             curriculum_code: string;
             /** Lines */
             lines: components["schemas"]["ConfirmedLine"][];
+        };
+        /** Slot */
+        Slot: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "line" | "place";
+            /** Credits */
+            credits: number;
+            /** Replaces */
+            replaces: string | null;
+            /** Message */
+            message: string;
+            /** Fit Count */
+            fit_count: number;
+            /** Check Count */
+            check_count: number;
         };
         /** Tab */
         Tab: {

@@ -40,9 +40,10 @@ function plan(courses: PlanCourse[]): Plan {
     name: 'A made-up plan',
     combination: null,
     hidden: false,
-    credits: { total: 0, by_term: {} },
+    credits: { total: 0, by_term: {}, to_choose: 0 },
     courses,
     reasons: [],
+    slots: [],
   }
 }
 
