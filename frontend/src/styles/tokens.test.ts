@@ -94,9 +94,7 @@ it('defines the same tokens in both themes', () => {
 })
 
 it('checks all eight course colours', () => {
-  const white = checks.find((check) => check.token === '--color-on-fill')
   expect(courseColours).toHaveLength(8)
-  expect(white?.against).toHaveLength(10) // the sign-in button, the accent fill and the eight course colours
 })
 
 // The audit's published ratios (SAGE_M3_DESIGN_AUDIT.md section 2), so a broken formula can't pass

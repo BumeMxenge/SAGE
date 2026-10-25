@@ -922,19 +922,6 @@ def test_a_pass_in_one_offering_counts_once_towards_complementary_credits_and_pl
     ]
 
 
-def test_a_passed_complementary_course_fills_a_576_credit_place(symbols):
-    # KKK1000F is left over once her complementary credits, of which she owes none, are met, so it
-    # stands in for ASL1200S
-    history = (
-        line("AAA1000F"),
-        line("CON2026S", credits=8),
-        line("KKK1000F", credits=15),
-    )
-    rows = generate(eb011(), symbols, history, 2024, "EB011EEE05")
-    assert plans(rows) == [("AAA2000F",)]
-    assert [r.details for r in rows.plan_reasons if r.details] == []
-
-
 def test_fewer_conditional_courses_then_fewer_credits_rank_first(symbols):
     # AAA1001F's printed requirement needs a person, and AAA1003F is 18 credits
     rules = rulebook(

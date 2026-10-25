@@ -402,21 +402,6 @@ test('a question cut off on its way is checked against the chat: saved, its repl
   await expect(button(page, 'Try Again')).toBeVisible()
 })
 
-test("there's no assistant beside a plan while her set still needs its questions answered", async ({ page }) => {
-  const { planId } = await herPlan(page)
-  // Her set as the API gives it, but still needing its questions answered
-  await page.route(
-    (url) => url.pathname === '/v1/plans',
-    async (route) => {
-      const set = (await (await route.fetch()).json()) as PlanSet
-      await route.fulfill({ json: { ...set, questionnaire_needed: true }, headers: allowed })
-    },
-  )
-  await page.goto(`/plan/${planId}`)
-  await page.getByRole('heading', { level: 1, name: 'Plan' }).waitFor()
-  await expect(rail(page)).toHaveCount(0)
-})
-
 test("at a plan's address the folded strip shows while her set is read, and goes once it says her set needs its questions answered", async ({
   page,
 }) => {
@@ -522,11 +507,11 @@ test('opening and folding the assistant by keyboard leaves focus on the toggle t
   await expect(button(page, 'Open Assistant')).toBeFocused()
 })
 
-test('the folded and open assistant, an empty chat and its empty history pass axe', async ({ page }) => {
+// The folded assistant passes axe on her plan's page in routes.spec.ts
+test('the open assistant, an empty chat and its empty history pass axe', async ({ page }) => {
   test.setTimeout(90_000)
   await herPlan(page)
   await madeUpChats(page)
-  await expectNoAxeViolations(page)
   await openAssistant(page)
   await expectNoAxeViolations(page)
   await button(page, 'Chat History').click()

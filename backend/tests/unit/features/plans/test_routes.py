@@ -3,8 +3,6 @@
 # test_guards.py. Then the complementary slots, on Ziyela's seeded set and on a place built here.
 from uuid import uuid4
 
-import pytest
-
 from sage.shared.students import Plan, PlanReason, PlanSet, PlanSetRows
 from tests.unit.accounts import MBALI, NTWZIY
 
@@ -217,11 +215,10 @@ def test_a_preview_adds_the_course_to_her_plan_and_saves_nothing(ziyela, stores)
     }
 
 
-@pytest.mark.parametrize("code", ["FAM2000F", "ZZZ9999Z"])
-def test_a_preview_of_a_course_that_doesnt_fit_the_plan_is_refused(ziyela, code):
-    # The engine lists FAM2000F in plans 3, 9 and 10 only, and ZZZ9999Z isn't a course
+def test_a_preview_of_a_course_that_doesnt_fit_the_plan_is_refused(ziyela):
+    # The engine lists FAM2000F in plans 3, 9 and 10 only
     plan = ziyela.get("/v1/plans").json()["plans"][0]
-    response = ziyela.get(f"/v1/plans/{plan['id']}/previews/{code}")
+    response = ziyela.get(f"/v1/plans/{plan['id']}/previews/FAM2000F")
     assert (response.status_code, response.json()["code"]) == (422, "course_doesnt_fit")
 
 

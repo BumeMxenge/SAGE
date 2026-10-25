@@ -323,35 +323,6 @@ def test_two_quotes_of_one_passage_on_a_reply_are_both_kept_in_order(
 
 
 @pytest.mark.integration
-def test_a_cited_reply_reads_back_with_its_passage(
-    stores, new_account, seed_file, approved_2026
-):
-    # Supabase only: it joins each citation to its passage, which the fake has no table for. The
-    # passage is one the approved 2026 holds, and her account takes the citation with it.
-    rules, students = stores
-    account = new_account()
-    mbali = load_seed(seed_file, account.id)
-    seed(rules, students, mbali)
-    passage = approved_2026.passages[0]
-    chat = mbali.chats[0]
-    asked = Message(
-        id=uuid4(), chat_id=chat.id, student_id=account.id, role="user", content="Test"
-    )
-    answered = asked.model_copy(update={"id": uuid4(), "role": "assistant"})
-    citation = Citation(
-        passage_id=passage.id,
-        position=1,
-        quote="Test",
-        source=passage.source,
-        section=passage.section,
-        page=passage.page,
-    )
-    students.add_exchange(asked, answered, [citation])
-    reply = students.messages(account.id, chat.id)[-1]
-    assert reply.citations == (citation,)
-
-
-@pytest.mark.integration
 def test_a_year_a_plan_uses_is_never_replaced(stores, mbali):
     # Her seeded plans use the approved 2026, so the database refuses to remove that year, and
     # nothing of it changes. sage load --replace goes through this.

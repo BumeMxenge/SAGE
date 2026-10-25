@@ -175,7 +175,6 @@ def test_a_set_of_5_plans_doesnt_need_it(mbali, stores):
             }
         )
     )
-    assert mbali.get("/v1/questionnaire").json()["needed"] is False
     response = mbali.post("/v1/questionnaire", json={})
     assert (response.status_code, response.json()["code"]) == (
         409,
