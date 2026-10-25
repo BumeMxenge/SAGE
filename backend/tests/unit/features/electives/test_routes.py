@@ -1,6 +1,5 @@
 # Checks Explore Electives on Mbali's seeded set: hearting, which changes nothing the second time.
-# Whether she can heart each offering is checked in test_service.py. In the approved 2026 only the
-# language options have a tab, as the other tabs wait for M3's categories.
+# Whether she can heart each offering is checked in test_service.py.
 import pytest
 
 from tests.unit.accounts import MBALI

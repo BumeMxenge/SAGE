@@ -2,8 +2,10 @@
 # closed list, the languages tab for the language options alone, and a summary of one or two plain
 # sentences and at most 40 words, tested on both sides of each limit. Then that the job asks the
 # model from each passage alone, keeps a draft only while its passage is unchanged, reuses an
-# earlier year's, refuses a draft that breaks a rule and saves each as it's made, and that a course
-# offered twice with one passage has one draft. A scripted model answers, so no test calls a real one.
+# earlier year's but not its copy of another offering's, refuses a draft that breaks a rule or isn't
+# an object, saves each as it's made and writes nothing without a model, and that a course offered
+# twice with one passage has one draft, which leaves the courses after it alone. A scripted model
+# answers, so no test calls a real one.
 import hashlib
 import json
 
@@ -44,28 +46,40 @@ def test_a_tab_outside_the_list_is_refused(tab, language, refused):
     assert (fault({"tab": tab, "summary": SUMMARY}, language) is not None) == refused
 
 
+# Why each summary is refused, as the walk and the run report say it, so a summary that breaks one
+# rule is refused for that rule, not another
+SENTENCES = "the summary must be one or two sentences"
+MARKUP = "the summary must be plain text, with no markup or line breaks"
+MISSING = "the summary is missing"
+
+
 @pytest.mark.parametrize(
-    ("summary", "refused"),
+    ("summary", "reason"),
     [
         # 40 words in one sentence: 39 "Studies" and "history."
-        (" ".join(["Studies"] * 39) + " history.", False),
+        (" ".join(["Studies"] * 39) + " history.", None),
         # 41 words
-        (" ".join(["Studies"] * 40) + " history.", True),
-        ("One sentence about it.", False),
-        ("Three short sentences. About one course. Too many.", True),
-        ("A sentence with no end", True),
-        ("A **bold** claim about the course.", True),
-        ("A line about it.\nAnother line about it.", True),
-        ("   ", True),
-        (None, True),
+        (
+            " ".join(["Studies"] * 40) + " history.",
+            "the summary has 41 words, more than 40",
+        ),
+        ("One sentence about it.", None),
+        ("Three short sentences. About one course. Too many.", SENTENCES),
+        ("A sentence with no end", SENTENCES),
+        ("A **bold** claim about the course.", MARKUP),
+        ("A line about it.\nAnother line about it.", MARKUP),
+        ("   ", MISSING),
+        (None, MISSING),
     ],
 )
-def test_a_summary_is_one_or_two_plain_sentences_of_at_most_40_words(summary, refused):
-    assert (fault({"tab": "history", "summary": summary}, False) is not None) == refused
+def test_a_summary_is_one_or_two_plain_sentences_of_at_most_40_words(summary, reason):
+    assert fault({"tab": "history", "summary": summary}, False) == reason
 
 
 def test_a_value_without_both_parts_is_refused():
-    assert fault({"summary": SUMMARY}, True) is not None
+    assert (
+        fault({"summary": SUMMARY}, True) == 'it must be {"tab": ..., "summary": ...}'
+    )
 
 
 # What the model reads for a made-up course and a made-up language option, by code
@@ -107,10 +121,13 @@ def cached(cache, code, passage, summary, tab="history"):
 def test_each_course_is_asked_for_from_its_passage_alone(tmp_path):
     model = replies({"tab": "history", "summary": SUMMARY}, languages=[SUMMARY])
     written = write(PASSAGES, {"SLL1017F"}, CREDITS, tmp_path / "electives.json", model)
-    assert written.electives == {
-        "HST1013F": Elective(tab="history", summary=SUMMARY),
-        "SLL1017F": Elective(tab=None, summary=SUMMARY),
-    }
+    assert (written.electives, written.calls) == (
+        {
+            "HST1013F": Elective(tab="history", summary=SUMMARY),
+            "SLL1017F": Elective(tab=None, summary=SUMMARY),
+        },
+        2,
+    )
     # The prompt and the passage, and a language option asked for its summary alone
     assert [
         (call.instructions, call.conversation, call.schema) for call in model.calls
@@ -132,6 +149,20 @@ def test_a_tab_outside_the_list_is_refused_and_the_run_goes_on(tmp_path):
     )
     assert list(written.electives) == ["SLL1017F"]
     assert list(json.loads(cache.read_text(encoding="utf-8"))) == ["SLL1017F"]
+
+
+def test_a_reply_that_isnt_a_json_object_is_refused_and_the_run_goes_on(tmp_path):
+    model = ScriptedModel(
+        {
+            "elective": [Response(text="Made Up History is on the history tab.")],
+            "language_option": [Response(text=json.dumps({"summary": SUMMARY}))],
+        }
+    )
+    written = write(PASSAGES, {"SLL1017F"}, CREDITS, tmp_path / "electives.json", model)
+    assert (written.refused, list(written.electives)) == (
+        ("HST1013F: the reply isn't a JSON object",),
+        ["SLL1017F"],
+    )
 
 
 def test_a_cached_summary_is_not_drawn_again(tmp_path):
@@ -172,10 +203,11 @@ def test_a_changed_passage_is_drafted_again(tmp_path):
 def test_an_earlier_years_draft_of_the_same_passage_is_reused(tmp_path):
     earlier = tmp_path / "2025" / "electives.json"
     cached(earlier, "HST1013F", HISTORY, SUMMARY)
+    cached(earlier, "SLL1017F", SWAHILI, SUMMARY, tab=None)
     cache = tmp_path / "2026" / "electives.json"
     model = replies()
-    written = write({"HST1013F": HISTORY}, (), CREDITS, cache, model, [earlier])
-    assert (model.calls, written.calls, written.reused) == ([], 0, 1)
+    written = write(PASSAGES, {"SLL1017F"}, CREDITS, cache, model, [earlier])
+    assert (model.calls, written.calls, written.reused) == ([], 0, 2)
     # The year's own cache holds it too, so its drafts stand on their own
     assert json.loads(cache.read_text(encoding="utf-8")) == json.loads(
         earlier.read_text(encoding="utf-8")
@@ -223,9 +255,11 @@ def test_the_second_offering_takes_the_first_offerings_draft(tmp_path):
     cached(cache, "HST1013F", HISTORY, SUMMARY)
     cached(cache, "HST1013S", SECOND, "Another summary of it.", tab="logic")
     passages = {"HST1013F": HISTORY, "HST1013S": SECOND}
-    # Even with no model, it shows the first offering's draft
+    # Even with no model, it shows the first offering's draft, and writes nothing
+    before = cache.read_text(encoding="utf-8")
     shown = write(passages, (), CREDITS, cache, None).electives
     assert shown["HST1013S"] == Elective(tab="history", summary=SUMMARY)
+    assert cache.read_text(encoding="utf-8") == before
     # A run that drafts asks the model nothing, and records the copy
     model = replies()
     write(passages, (), CREDITS, cache, model)
@@ -237,6 +271,41 @@ def test_the_second_offering_takes_the_first_offerings_draft(tmp_path):
         "sha256": hashlib.sha256(SECOND.encode()).hexdigest(),
         "same_as": "HST1013F",
     }
+
+
+@pytest.mark.parametrize("drafted", [True, False])
+def test_a_course_after_a_pair_keeps_its_draft(tmp_path, drafted):
+    # HST1013F and HST1013S are one course, whose second offering shows the first's draft if it has
+    # one, and SLL1017F comes after them by code
+    cache = tmp_path / "electives.json"
+    cached(cache, "SLL1017F", SWAHILI, SUMMARY, tab=None)
+    if drafted:
+        cached(cache, "HST1013F", HISTORY, SUMMARY)
+    passages = PASSAGES | {"HST1013S": SECOND}
+    written = write(passages, {"SLL1017F"}, CREDITS, cache, None)
+    pair = ["HST1013F", "HST1013S"] if drafted else []
+    assert sorted(written.electives) == [*pair, "SLL1017F"]
+
+
+def test_an_earlier_years_copy_is_drafted_afresh(tmp_path):
+    # In 2025 HST1013S copied HST1013F's draft. In 2026 HST1013F prints a new outline, so the two
+    # are no longer one course, and HST1013S's copy of a draft of other words isn't reused.
+    earlier = tmp_path / "2025" / "electives.json"
+    cached(earlier, "HST1013F", HISTORY, SUMMARY)
+    cached(earlier, "HST1013S", SECOND, SUMMARY)
+    copies = json.loads(earlier.read_text(encoding="utf-8"))
+    copies["HST1013S"]["same_as"] = "HST1013F"
+    earlier.write_text(json.dumps(copies), encoding="utf-8")
+    passages = {
+        "HST1013F": f"{HISTORY} A new outline.",
+        "HST1013S": SECOND,
+    }
+    reply = {"tab": "history", "summary": SUMMARY}
+    model = replies(reply, reply)
+    written = write(
+        passages, (), CREDITS, tmp_path / "2026" / "electives.json", model, [earlier]
+    )
+    assert (written.calls, written.reused) == (2, 0)
 
 
 def test_the_prompt_defines_every_tab_the_model_may_pick():

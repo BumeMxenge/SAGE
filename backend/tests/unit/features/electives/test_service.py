@@ -1,12 +1,18 @@
 # Checks Explore Electives' cards on made-up rules: one card per course, on its first offering's tab,
 # and which offerings she can heart, with the card's one note, worked out by hand from the rule in
 # service.py. Each slot is a complementary slot's details as the engine writes them, on an 18-credit
-# line, and each plan has its own.
+# line, and each plan has its own. Then that the page reads the slots of her current plan set, on
+# Mbali's seed.
+from uuid import uuid4
+
 import pytest
 
-from sage.features.electives.service import cards
+from sage.features.electives.service import by_tab, cards
 from sage.shared.planning import Eligibility
+from sage.shared.rulebook import Rulebook
 from sage.shared.rules import Course, CourseGroupMember, RuleSet
+from sage.shared.students import PlanReason, PlanSet, PlanSetRows
+from tests.unit.accounts import MBALI
 
 
 def course(code, term, credits=18):
@@ -38,6 +44,7 @@ def slot(*fits, untimed=(), fewer=()):
 
 
 F, S = course("HST1013F", "sem1"), course("HST1013S", "sem2")
+WINTER = course("HST1013L", "winter")
 ELIGIBLE = Eligibility(status="eligible")
 PERMISSION = "It needs permission of the convener, which only your advisor can judge."
 NEEDS = "It needs HST1012F, which your record doesn't show yet."
@@ -116,6 +123,22 @@ def test_one_card_per_course_on_its_first_offerings_tab():
             UNTIMED,
             [True, True],
         ),
+        # Both offerings need that check, which the note says once
+        (
+            (F, S),
+            [slot("HST1013F", "HST1013S", untimed=["HST1013F", "HST1013S"])],
+            {},
+            UNTIMED,
+            [True, True],
+        ),
+        # Three offerings, of which the winter one fits no plan
+        (
+            (F, WINTER, S),
+            [slot("HST1013F", "HST1013S")],
+            {},
+            "Only the semester 1 and semester 2 offerings fit your plans.",
+            [True, False, True],
+        ),
         # Fewer credits than the only slot listing it needs
         (
             (F,),
@@ -168,3 +191,39 @@ def test_a_check_verdict_keeps_the_heart_with_its_reason():
         [True, True],
         True,
     )
+
+
+class Eligible:
+    # Finds every course eligible, so only her plans decide what works
+    def check(self, courses, history, rules, symbols, student):
+        return {course.code: ELIGIBLE for course in courses}
+
+
+def test_the_slots_of_her_current_plan_set_decide_what_works(stores):
+    # Mbali's seeded set has no complementary slot, so Greek IA and Latin IA both work. A later set
+    # whose slot lists Greek IA alone leaves Latin IA out.
+    rules, students = stores
+    rulebook, student = Rulebook(rules), students.profile(MBALI)
+
+    def works():
+        found = by_tab(students, rulebook, Eligible(), student)
+        codes = {
+            o.course.code: o.works
+            for _, tab in found
+            for card in tab
+            for o in card.offerings
+        }
+        return codes["SLL1052F"], codes["SLL1050F"]
+
+    assert works() == (True, True)
+    later = PlanSet(id=uuid4(), student_id=MBALI, period=2026, version=2)
+    reason = PlanReason(
+        id=uuid4(),
+        plan_set_id=later.id,
+        student_id=MBALI,
+        kind="included",
+        message="One complementary course fits.",
+        details=slot("SLL1052F"),
+    )
+    students.add_plan_set(PlanSetRows(plan_set=later, plan_reasons=(reason,)))
+    assert works() == (True, False)

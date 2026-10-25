@@ -1054,6 +1054,28 @@ def test_one_row_decides_both_offerings_of_a_course():
     ]
 
 
+def test_a_check_failing_on_a_course_is_for_its_requirement_row_to_explain():
+    # HST1013F's rule names a code the year doesn't hold. Its requirement row is decided with a note
+    # saying why it stands, and its elective row, which shows only the tab and summary, needs none.
+    rule = CourseNeed(course="EEE9998F", need="pass")
+    row, member = elective("HST1013F", "history", SUMMARY, rule)
+    rules = RuleSet(courses=(row,), course_group_members=(member,))
+    readings = elective_readings("HST1013F", "EEE9998F")
+    failed = Failure(
+        place="p. 9",
+        what="HST1013F's rule names EEE9998F, which isn't loaded, printed or equivalent",
+        flags=("courses", "HST1013F"),
+    )
+    checks = (Check(name=TREE_CODES, failures=(failed,)),)
+    rows = {
+        r.kind: r.model_dump(mode="json")
+        for r in compare(2026, rules, readings, checks).rows
+    }
+    rows["requirement"].update(decision="accept", note="Its convener confirmed it.")
+    rows["elective"]["decision"] = "accept"
+    assert compare(2026, rules, readings, checks, decided=list(rows.values())).settled
+
+
 def test_an_elective_with_no_usable_draft_can_only_be_corrected():
     # HST1013F has no draft yet. SLL1017F is a language option, whose tab is fixed, with its draft.
     language = "One language course. It teaches speaking."

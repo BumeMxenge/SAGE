@@ -3,7 +3,7 @@
 # a model.
 import json
 from pathlib import Path
-from typing import Any, Literal, Protocol
+from typing import Literal, Protocol
 
 from pydantic import JsonValue
 
@@ -22,38 +22,42 @@ PROMPT = (
 FIELDS = {"pass": "Course entry requirements", "concurrent": "Co-requisites"}
 
 
-def _node(children: dict[str, Any]) -> dict[str, Any]:
-    # A tree node: an all or any of children, or a leaf. The course leaf is split in two, so a
-    # min_mark comes with a mark leaf and only then.
-    branch = {"type": "array", "items": children, "minItems": 1}
-    return {
-        "anyOf": [
-            strict_object(all=branch),
-            strict_object(any=branch),
-            strict_object(
-                course={"type": "string"}, need={"enum": ["pass", "concurrent"]}
-            ),
-            strict_object(
-                course={"type": "string"},
-                need={"enum": ["mark"]},
-                min_mark={"type": "integer"},
-            ),
-            strict_object(
-                student_in={"type": "array", "items": {"type": "string"}, "minItems": 1}
-            ),
-            strict_object(min_year_of_study={"type": "integer"}),
-            strict_object(refer={"type": "string"}),
-        ]
-    }
-
-
+# A tree node's children, each a node
+BRANCH = {"type": "array", "items": {"$ref": "#/$defs/node"}, "minItems": 1}
 # E2's reply schema: {"rule": <tree>}, or {"rule": null} where the field asks for nothing. The tree
-# is recursive, and the API needs an object at the top, not a choice of nodes.
+# is recursive, and the API needs an object at the top, not a choice of nodes. A node is an all or
+# any of nodes, or a leaf, and the course leaf is split in two, so a min_mark comes with a mark leaf
+# and only then.
 SCHEMA = Schema(
     name="entry_rule",
     shape={
         **strict_object(rule={"anyOf": [{"$ref": "#/$defs/node"}, {"type": "null"}]}),
-        "$defs": {"node": _node({"$ref": "#/$defs/node"})},
+        "$defs": {
+            "node": {
+                "anyOf": [
+                    strict_object(all=BRANCH),
+                    strict_object(any=BRANCH),
+                    strict_object(
+                        course={"type": "string"},
+                        need={"enum": ["pass", "concurrent"]},
+                    ),
+                    strict_object(
+                        course={"type": "string"},
+                        need={"enum": ["mark"]},
+                        min_mark={"type": "integer"},
+                    ),
+                    strict_object(
+                        student_in={
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "minItems": 1,
+                        }
+                    ),
+                    strict_object(min_year_of_study={"type": "integer"}),
+                    strict_object(refer={"type": "string"}),
+                ]
+            }
+        },
     },
 )
 

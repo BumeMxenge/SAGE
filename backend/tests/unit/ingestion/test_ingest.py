@@ -100,6 +100,8 @@ PAGES = [
 NOT_STATED = "Not stated in course entry."
 # A reply of each kind a model is asked for
 SUMMARY = "A made-up course on made-up things. Students learn to think about them."
+# A summary an earlier year's run drafted
+EARLIER = "A made-up course from an earlier year. Students learn to read its evidence."
 DRAFTED = {
     "entry_rule": {"rule": {"refer": "Made up."}},
     "elective": {"tab": "history", "summary": SUMMARY},
@@ -398,22 +400,49 @@ def test_a_year_takes_the_drafts_of_the_years_before_it(
         cache.parent.mkdir(parents=True)
         drafts = {"concurrent": {co_requisite: {"model": "made up", "tree": tree}}}
         cache.write_text(json.dumps(drafts), encoding="utf-8")
+    # AGE1002S's tab and summary as 2023 drafted them from the passage it prints now, and
+    # ECO1007S's as a later year drafted them
+    passages = {
+        r.key: r.printed
+        for r in ingest(2026, data=tmp_path).readings
+        if r.flag == "model_written"
+    }
+    for year, code in ((2023, "AGE1002S"), (2027, "ECO1007S")):
+        digest = hashlib.sha256(passages[f"complementary/{code}"].encode()).hexdigest()
+        entry = {
+            "model": "made up",
+            "tab": "science",
+            "summary": EARLIER,
+            "sha256": digest,
+        }
+        cache = tmp_path / "rules" / str(year) / "electives.json"
+        cache.write_text(json.dumps({code: entry}), encoding="utf-8")
     model = ScriptedModel(
         {
             "entry_rule": [Response(text=json.dumps({"rule": {"refer": BEGINNERS}}))],
-            "elective": [Response(text=json.dumps(DRAFTED["elective"]))] * 2,
+            "elective": [Response(text=json.dumps(DRAFTED["elective"]))],
             "language_option": [Response(text=json.dumps(DRAFTED["language_option"]))],
         }
     )
     # As sage ingest --draft runs it
     run, _ = review_year(2026, model, data=tmp_path)
-    # Only the wording no earlier year drafted is asked for, and both drafts are kept where the next
-    # run and the next year read them, so neither is drafted again
+    # Only what no earlier year drafted is asked for, and every draft is kept where the next run and
+    # the next year read it, so none is drafted again
     assert [
         call.conversation[0].text
         for call in model.calls
         if call.schema.name == "entry_rule"
     ] == [f"Course entry requirements: {BEGINNERS}"]
+    assert [
+        call.conversation[0].text.split("\n")[0]
+        for call in model.calls
+        if call.schema.name == "elective"
+    ] == ["ECO1007S Economics for Engineers"]
+    electives = json.loads(
+        (tmp_path / "rules" / "2026" / "electives.json").read_text(encoding="utf-8")
+    )
+    assert sorted(electives) == ["AGE1002S", "ECO1007S", "SLL1017F"]
+    assert {c.code: c.summary for c in run.rules.courses}["AGE1002S"] == EARLIER
     kept = json.loads(
         (tmp_path / "rules" / "2026" / "drafts.json").read_text(encoding="utf-8")
     )
