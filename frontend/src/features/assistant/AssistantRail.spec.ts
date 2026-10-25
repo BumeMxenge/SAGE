@@ -10,12 +10,17 @@
 // after a reply, so the advisor's title replaces New Chat; that a question cut off on its way is
 // checked against the chat before Try Again is offered; that no assistant shows while her set still
 // needs its questions answered; that Compare and the view toggle show only their icons while the
-// sidebar and the assistant are both open; and that the toggles hand focus to each other. Then axe
+// sidebar and the assistant are both open; and that the toggles hand focus to each other. While its
+// reads are held on their way, the folded strip shows at a plan's address until her set says it needs
+// its questions answered, and open, the header renders at once over bubble-shaped skeletons, its plan
+// or pair's name a skeleton too, with Send held, each passing axe and photographed beside what it turns
+// into. After a reply, her set is read again with no skeleton, no blank switcher and no fade. Then axe
 // and the keyboard walk in both themes, and parity beside the planner prototype, the loading sheet's
 // case 03 and the error sheet's case 09.
 import { expect, type Page, type Route, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../../e2e/axe.ts'
 import { walkKeyboard } from '../../../e2e/keyboard.ts'
+import { forgetSeen, hold, loading, photographArrival, read, seenLoading, skeletons, watchLoading } from '../../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../../e2e/parity.ts'
 import { settled } from '../../../e2e/settled.ts'
 import { mbali } from '../../../e2e/visitors.ts'
@@ -393,6 +398,81 @@ test("there's no assistant beside a plan while her set still needs its questions
   await page.goto(`/plan/${planId}`)
   await page.getByRole('heading', { level: 1, name: 'Plan' }).waitFor()
   await expect(rail(page)).toHaveCount(0)
+})
+
+test("at a plan's address the folded strip shows while her set is read, and goes once it says her set needs its questions answered", async ({
+  page,
+}) => {
+  await herPlan(page)
+  // Her set as the API gives it, but still needing its questions answered, once it's let go
+  await page.route(read('/v1/plans'), async (route) => {
+    const set = (await (await route.fetch()).json()) as PlanSet
+    await route.fulfill({ json: { ...set, questionnaire_needed: true }, headers: allowed })
+  })
+  const set = await hold(page, read('/v1/plans'))
+  await page.reload()
+  await expect(button(page, 'Open Assistant')).toBeVisible()
+  await set.release()
+  await expect(rail(page)).toHaveCount(0)
+})
+
+test('open, the header shows at once over bubble-shaped skeletons, with Send held, until her chats arrive', async ({ page }, testInfo) => {
+  const { set, planId } = await herPlan(page)
+  const chat = chatOf(planId)
+  await madeUpChats(page, {
+    chats: [chat],
+    messages: { [chat.id]: [messageOf('user', 'A question about this plan'), messageOf('assistant', clashFree)] },
+  })
+  const chats = await hold(page, read('/v1/chats'))
+  await openAssistant(page)
+  await expect(rail(page).getByRole('heading', { level: 2, name: 'Assistant' })).toBeVisible()
+  await expect(rail(page)).toContainText(`Reading ${nameOf(set, planId)}`)
+  await expect(button(page, 'New Chat')).toBeVisible()
+  await expect(loading(page, 'Loading your chat…')).toBeAttached()
+  await expect(skeletons(rail(page)).first()).toBeVisible()
+  await chatBox(page).fill('A question while the chat loads')
+  await expect(button(page, 'Send')).toBeDisabled()
+  await expectNoAxeViolations(page)
+  await chatBox(page).fill('')
+  await photographArrival(page, testInfo, 'assistant', () => chats.release())
+  await expect(conversation(page)).toContainText(clashFree)
+})
+
+test("in compare, the pair's name is a skeleton until the pair is read", async ({ page }, testInfo) => {
+  const { set, planId } = await herPlan(page)
+  await madeUpChats(page)
+  await openAssistant(page)
+  await settled(page)
+  const pair = await hold(page, read('/v1/plans/compare'))
+  await button(page, 'Compare').click()
+  await page.waitForURL(/\?compare=/)
+  await rest(page)
+  const partner = new URL(page.url()).searchParams.get('compare') ?? ''
+  await expect(skeletons(rail(page)).first()).toBeVisible()
+  await expect(rail(page)).not.toContainText('Comparing')
+  await expectNoAxeViolations(page)
+  await photographArrival(page, testInfo, 'assistant-compare', () => pair.release())
+  await expect(rail(page)).toContainText(`Comparing ${nameOf(set, planId)} and ${nameOf(set, partner)}`)
+})
+
+test('after a reply, her set is read again with no skeleton, no blank switcher and no fade', async ({ page }) => {
+  await watchLoading(page)
+  await herPlan(page)
+  await madeUpChats(page)
+  await openAssistant(page)
+  await settled(page)
+  const switcher = await page.getByRole('button', { name: /^Power, Control & Robotics/ }).elementHandle()
+  await forgetSeen(page)
+  const set = await hold(page, read('/v1/plans'))
+  const readAgain = page.waitForRequest((request) => read('/v1/plans')(new URL(request.url())))
+  await ask(page, 'Is this plan clash-free?')
+  await expect(conversation(page)).toContainText('A made-up reply.')
+  // Held, so the check sees the page while the read is on its way
+  await readAgain
+  await settled(page)
+  expect(await seenLoading(page)).toEqual({ skeletons: 0, fades: 0 })
+  expect(await switcher.evaluate((element) => element.isConnected)).toBe(true)
+  await set.release()
 })
 
 test('Compare and the view toggle show only their icons while the sidebar and the assistant are both open', async ({ page }) => {

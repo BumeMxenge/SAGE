@@ -1,10 +1,13 @@
 // The frame around the student's pages, as Mbali: the sidebar's links, folding and the account menu,
 // then parity against the planner prototype in both themes, at rest and on hover. routes.spec.ts
 // already runs axe and the keyboard walk on every page with the sidebar open, so here they run on the
-// rail and the open menu.
+// rail and the open menu. While the first load's guard waits on GET /v1/me, held, the frame shows,
+// the account as a skeleton and the address's skeleton beside it, and no page opens until the guard
+// lets it, with axe and a photograph beside what it turns into. Sign Out leaves showing no skeleton.
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../e2e/axe.ts'
 import { walkKeyboard } from '../../e2e/keyboard.ts'
+import { forgetSeen, hold, loading, photographArrival, read, seenLoading, skeletons, watchLoading } from '../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../e2e/parity.ts'
 import { settled } from '../../e2e/settled.ts'
 import { mbali } from '../../e2e/visitors.ts'
@@ -83,6 +86,29 @@ test('choosing an appearance in the account menu changes the theme', async ({ pa
   await expect(page.locator('html')).toHaveAttribute('data-theme', other.toLowerCase())
 })
 
+test("while the first load's guard asks who is visiting, the frame shows with the address's skeleton, and the page opens only once it has decided", async ({
+  page,
+}, testInfo) => {
+  await page.goto('/plan')
+  await page.waitForURL(/\/plan\/[\w-]+$/)
+  const address = page.url()
+  const me = await hold(page, read('/v1/me'))
+  await page.reload()
+  await expect(sidebar(page).getByRole('link', { name: 'Course History', exact: true })).toBeVisible()
+  await expect(loading(page, 'Loading your account…')).toBeAttached()
+  await expect(skeletons(sidebar(page)).first()).toBeVisible()
+  await expect(loading(page, 'Loading your plan…')).toBeAttached()
+  await expect(skeletons(page.getByRole('main')).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Open Assistant' })).toBeVisible()
+  // No page has opened: the plan's own controls wait for the guard
+  await expect(page.getByRole('button', { name: /^Power, Control & Robotics/ })).toHaveCount(0)
+  expect(page.url()).toBe(address)
+  await expectNoAxeViolations(page)
+  await photographArrival(page, testInfo, 'first-load', () => me.release())
+  await expect(account(page)).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Power, Control & Robotics/ })).toBeVisible()
+})
+
 test('Sign Out leaves nothing of the student in the browser', async ({ page }) => {
   // Supabase's sign-out ends every session an account has, and local Supabase checks every token
   // with its Auth server, so a real one would sign out every other check running as Mbali. Answered
@@ -93,6 +119,7 @@ test('Sign Out leaves nothing of the student in the browser', async ({ page }) =
     asked = true
     await route.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*' } })
   })
+  await watchLoading(page)
   await page.goto('/plan')
   await opened(page)
   // A made-up name, kept as the sign-in keeps one from Microsoft
@@ -105,10 +132,15 @@ test('Sign Out leaves nothing of the student in the browser', async ({ page }) =
   await page.reload()
   const named = sidebar(page).getByRole('button', { name: /Mbali Dlamini/ })
   await expect(named).toContainText('MD')
+  await page.getByRole('button', { name: /^Power, Control & Robotics/ }).waitFor()
+  await settled(page)
+  await forgetSeen(page)
   await named.click()
   await page.getByRole('menuitem', { name: 'Sign Out' }).click()
   await page.waitForURL('**/sign-in')
   expect(asked).toBe(true)
+  // Sign Out empties the cache before it leaves, and the page it leaves shows no skeleton for it
+  expect((await seenLoading(page)).skeletons).toBe(0)
   const kept = await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('sage-name-')))
   expect(kept).toEqual([])
   await page.goto('/plan')

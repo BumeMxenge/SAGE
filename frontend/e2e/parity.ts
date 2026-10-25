@@ -67,13 +67,18 @@ async function photograph(element: Locator): Promise<Buffer> {
 // The two photographs on one image, labelled, the prototype's first
 async function sideBySide(browser: Browser, path: string, designed: Locator | null, built: Locator): Promise<void> {
   const shots = [...(designed ? [['Prototype', await photograph(designed)] as const] : []), ['React', await photograph(built)] as const]
+  await sheet(browser, path, shots)
+}
+
+// Labelled photographs side by side on one image, in the order given
+export async function sheet(browser: Browser, path: string, shots: (readonly [string, Buffer])[]): Promise<void> {
   const figures = shots
     .map(([label, png]) => `<figure><figcaption>${label}</figcaption><img src="data:image/png;base64,${png.toString('base64')}"></figure>`)
     .join('')
-  const sheet = await browser.newPage()
-  await sheet.setContent(
+  const page = await browser.newPage()
+  await page.setContent(
     `<style>body { margin: 0; } main { display: inline-flex; gap: 32px; align-items: flex-start; padding: 16px; font: 14px system-ui; background: #fff; } figure { margin: 0; } figcaption { margin-bottom: 8px; }</style><main>${figures}</main>`,
   )
-  await sheet.locator('main').screenshot({ path })
-  await sheet.close()
+  await page.locator('main').screenshot({ path })
+  await page.close()
 }
