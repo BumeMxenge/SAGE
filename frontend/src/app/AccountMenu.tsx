@@ -27,9 +27,8 @@ type AccountMenuProps = { collapsed: boolean; onOpen: () => void }
 export function AccountMenu({ collapsed, onOpen }: AccountMenuProps) {
   const { name, loading, signOut } = useAuth()
   // The guard's read, in the cache once it has decided, and on its way while the first load waits for
-  // it. The account only watches it, so it asks nothing of its own: nothing before the guard decides,
-  // and nothing again, unsigned, when Sign Out empties the cache. Not the suspense version, which
-  // would throw to the error page once the cache is empty.
+  // it. The account only watches it, so the first load's frame asks nothing of its own before the
+  // guard decides.
   const read = useQuery({ ...queries.me(), enabled: false })
   const { appearance, choose } = useAppearance()
   const navigate = useNavigate()
