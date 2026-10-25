@@ -7,8 +7,9 @@
 // it turns into. A refused read leaves no skeleton, and the plan from the cache shows none and fades
 // nothing in.
 // routes.spec.ts runs both on the plan itself and on a plan that doesn't exist. Then one engine-shaped
-// plan, a set of 50 plans and a set with none on made-up answers from the API, and parity beside the
-// planner prototype and the error sheet in both themes.
+// plan, a set of 50 plans, two plans with complementary slots, alone and compared, and a set with none
+// on made-up answers from the API, and parity beside the planner prototype and the error sheet in both
+// themes.
 // Her plans are her seed's (data/synthetic/mbali.json): ten, named as the engine names them, of which
 // her saved answers hid "Signals, Power & Control", "Power, Control & Embedded" and "Power, Control &
 // Imaging".
@@ -413,6 +414,114 @@ test('a set of 50 plans: the list stays in the window and scrolls to the last, w
   await expect(last).toHaveText(/^Core Courses Only\s*72 credits$/)
   await last.click()
   await page.waitForURL(`**/plan/${fifty[49].id}`)
+})
+
+// Two made-up plans with complementary slots, on made-up answers from the API. The first has one
+// 18-credit line that 47 courses fit, 35 of them needing a check, as the engine counts Ziyela's plan 2.
+// The second, for a student who still owes ASL1200S, has a place for it that 12 courses fit, and a
+// line nothing fits, in the engine's own words (engine/reasons.py).
+type Slot = components['schemas']['Slot']
+
+const slotIds = ['00000000-0000-4000-8000-000000000811', '00000000-0000-4000-8000-000000000812']
+const nothingFits =
+  "Add one approved complementary studies course, though none on the approved list fits this plan's timetable, so see your advisor."
+const line = (fields: Partial<Slot>): Slot => ({
+  kind: 'line',
+  credits: 18,
+  replaces: null,
+  message: "Add one approved complementary studies course: 51 fit this plan's timetable.",
+  fit_count: 47,
+  check_count: 35,
+  ...fields,
+})
+const slotPlans: Plan[] = [
+  [line({})],
+  [
+    line({ kind: 'place', credits: 8, replaces: 'ASL1200S', fit_count: 12, check_count: 0 }),
+    line({ message: nothingFits, fit_count: 0, check_count: 0 }),
+  ],
+].map((slots, index) => ({
+  ...enginePlan,
+  id: slotIds[index],
+  position: index + 1,
+  name: `Made-up Plan ${index + 1}`,
+  credits: { total: 138, by_term: { sem1: 36, sem2: 34 }, to_choose: slots.reduce((sum, slot) => sum + slot.credits, 0) },
+  slots,
+}))
+const slotSet: PlanSet = {
+  period: 2026,
+  version: 1,
+  questionnaire_needed: false,
+  has_slot: true,
+  reasons: [],
+  plans: slotPlans.map(({ id, position, name, combination, hidden, credits }) => ({
+    id,
+    position,
+    name,
+    combination,
+    hidden,
+    credits: credits.total,
+    to_choose: credits.to_choose,
+  })),
+}
+
+async function slotApi(page: Page): Promise<void> {
+  await page.route(
+    (url) => url.pathname.startsWith('/v1/plans') || url.pathname === '/v1/electives',
+    (route) => {
+      const { pathname } = new URL(route.request().url())
+      const answers: Record<string, unknown> = {
+        '/v1/plans': slotSet,
+        '/v1/plans/compare': { first: slotPlans[0], second: slotPlans[1], shared: [], only_first: [], only_second: [] },
+        '/v1/electives': { tabs: [] },
+      }
+      const json = answers[pathname] ?? slotPlans.find(({ id }) => pathname.endsWith(id))
+      return route.fulfill({ json, headers: allowed })
+    },
+  )
+}
+
+// A card, found inside whatever holds it by the heading it has
+const headed = (page: Page, level: number, name: string) => ({ has: page.getByRole('heading', { level, name, exact: true }) })
+
+test("a plan's slot card says what it needs and how many courses fit, and Browse opens Explore Electives showing only those", async ({
+  page,
+}, testInfo) => {
+  await slotApi(page)
+  await page.goto(`/plan/${slotIds[0]}`)
+  await expect(page.getByText('138 credits + 18 to choose', { exact: true })).toBeVisible()
+  const card = page.getByRole('article').filter(headed(page, 2, 'Complementary Studies'))
+  await expect(card.getByText('Add an 18-credit complementary studies course.')).toBeVisible()
+  await expect(card.getByText('47 courses fit this plan, 35 of them need a check with your advisor.')).toBeVisible()
+  await expectNoAxeViolations(page)
+  mkdirSync(images, { recursive: true })
+  await page.screenshot({ path: join(images, `slot-${testInfo.project.name}.png`), fullPage: true })
+  // The switcher gives each plan's credits the same way
+  await page.getByRole('button', { name: /^Made-up Plan 1/ }).click()
+  await expect(page.getByRole('option')).toHaveText([/138 credits \+ 18 to choose$/, /138 credits \+ 26 to choose$/])
+  await page.keyboard.press('Escape')
+  await card.getByRole('link', { name: 'Browse the 47 That Fit' }).click()
+  await page.waitForURL(`**/electives?plan=${slotIds[0]}`)
+})
+
+test("in compare each panel has its slots' cards, and a slot nothing fits gives the engine's words with nothing to browse", async ({
+  page,
+}, testInfo) => {
+  await slotApi(page)
+  await page.goto(`/plan/${slotIds[0]}?compare=${slotIds[1]}`)
+  const second = page.getByRole('article').filter(headed(page, 2, 'Made-up Plan 2'))
+  await expect(second.getByText('138 credits + 26 to choose', { exact: true })).toBeVisible()
+  const place = second.getByRole('article').filter(headed(page, 3, 'In Place of ASL1200S'))
+  await expect(place.getByText('An approved complementary course of at least 8 credits.')).toBeVisible()
+  await expect(place.getByText('12 courses fit this plan.')).toBeVisible()
+  await expect(place.getByRole('link', { name: 'Browse the 12 That Fit' })).toHaveAttribute('href', `/electives?plan=${slotIds[1]}`)
+  const nothing = second.getByRole('article').filter(headed(page, 3, 'Complementary Studies'))
+  await expect(nothing.getByText(nothingFits)).toBeVisible()
+  await expect(nothing.getByRole('link')).toHaveCount(0)
+  const first = page.getByRole('article').filter(headed(page, 2, 'Made-up Plan 1'))
+  await expect(first.getByRole('link', { name: 'Browse the 47 That Fit' })).toBeVisible()
+  await expectNoAxeViolations(page)
+  await page.screenshot({ path: join(images, `slot-compare-${testInfo.project.name}.png`), fullPage: true })
 })
 
 // The error sheet draws each planner case in light, then in dark

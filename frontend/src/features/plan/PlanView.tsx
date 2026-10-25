@@ -1,5 +1,6 @@
-// The plan view at /plan/:planId: a header with the plan switcher, the plan's credits and Compare, a row
-// with the term and the view, Calendar or Course List, then the term's week or list. With ?compare=,
+// The plan view at /plan/:planId: a header with the plan switcher, the plan's credits, with any its
+// complementary slots leave to choose, and Compare, a row with the term and the view, Calendar or
+// Course List, then the term's week or list and each slot's card. With ?compare=,
 // two plans sit side by side in panels until Done Comparing, Back or Escape. The header and the term's
 // row stay in view as the week scrolls beneath them. The address says which plans and term are open
 // (lib/planAddress.ts), so choosing any of them changes it, and what was on screen stays there while
@@ -28,6 +29,7 @@ import { PlanBar } from './components/PlanBar/PlanBar.tsx'
 import { PlanHeaderSkeleton } from './components/PlanBar/PlanHeaderSkeleton.tsx'
 import { PlanSwitcher } from './components/PlanSwitcher/PlanSwitcher.tsx'
 import { TermView, type View } from './components/TermView/TermView.tsx'
+import { creditsOf } from './copy.ts'
 import { partnerOf } from './planSet.ts'
 import { loadingPlan } from './PlanSkeleton.tsx'
 import { coloursOf, weekOf } from './week.ts'
@@ -138,7 +140,7 @@ export function PlanView({ iconOnly, view, onViewChange, held = false }: PlanVie
                     ) : (
                       <p className={styles.name}>{plan.name}</p>
                     )}
-                    <p className={styles.credits}>{plan.credits.total} credits</p>
+                    <p className={styles.credits}>{creditsOf(plan.credits.total, plan.credits.to_choose)}</p>
                     {partner && (
                       <Tooltip text="Compare" isDisabled={!iconOnly}>
                         <Button
@@ -217,13 +219,17 @@ export function PlanView({ iconOnly, view, onViewChange, held = false }: PlanVie
           const swappable = shown.some((summary) => summary.id !== first.id && summary.id !== second.id)
           return (
             <div className={styles.panels}>
-              <Card title={first.name} level={2} meta={<p className={styles.panelCredits}>{first.credits.total} credits</p>}>
+              <Card
+                title={first.name}
+                level={2}
+                meta={<p className={styles.panelCredits}>{creditsOf(first.credits.total, first.credits.to_choose)}</p>}
+              >
                 <TermView plan={first} term={term} view={view} week={weekOf(first, term)} colours={colours} compact />
               </Card>
               <Card
                 title={second.name}
                 level={2}
-                meta={<p className={styles.panelCredits}>{second.credits.total} credits</p>}
+                meta={<p className={styles.panelCredits}>{creditsOf(second.credits.total, second.credits.to_choose)}</p>}
                 actions={
                   swappable && (
                     <PlanSwitcher

@@ -49,3 +49,8 @@
 .card[data-unavailable] .title {
   color: var(--color-text-secondary);
 }
+
+/* Something still to choose: the same frame, dashed, as the upload drop zone draws a place to fill */
+.card[data-dashed] {
+  border-style: dashed;
+}
