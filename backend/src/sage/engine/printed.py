@@ -1,8 +1,8 @@
 # What a handbook prints that its approved rules can't hold, kept here until a rule shape can: the
 # degree's credit total, the 576-credit curriculum's two extra core courses and where each 2026
-# curriculum places them, and two notes on elective tables. Each place and note names the table whose
-# passage prints it. With the meetings in shared/printed_meetings.py and my theme words in themes.py, this
-# is the only curriculum data in the code, and docs/shortfalls.md logs each.
+# curriculum places them, and two notes on elective tables. Each place and note names the table
+# whose passage prints it. With the meetings in shared/printed_meetings.py and my theme words in
+# themes.py, this is the only curriculum data in the code, and docs/shortfalls.md logs each.
 from sage.shared.base import Row
 
 # The curricula whose first page prints their degree's credit total, in 2023 and 2026

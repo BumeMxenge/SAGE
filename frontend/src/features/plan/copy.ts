@@ -1,4 +1,4 @@
-// The plan view's words for a plan's credits and its complementary slots
+// The plan view's words for a plan's credits, its complementary slots and their previews
 
 // A plan's credits, and any its slots leave to choose, such as "138 credits + 18 to choose"
 export const creditsOf = (total: number, toChoose: number) =>

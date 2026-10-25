@@ -1,6 +1,6 @@
 # Rule trees in plain words, as a reviewer compares them with print and as the engine's reasons and
-# the advisor will word them, such as "MEC1009F or MEC1009S, and one of MEC2023F, MEC2023S, MEC2047F
-# or MEC2047S". "or" binds tighter than ", and", so an all inside another node is bracketed, and so is
+# the advisor word them, such as "MEC1009F or MEC1009S, and one of MEC2023F, MEC2023S, MEC2047F or
+# MEC2047S". "or" binds tighter than ", and", so an all inside another node is bracketed, and so is
 # a list with commas of its own in the middle of an all, where its commas would run into the all's.
 from sage.shared.rules import (
     AllOf,

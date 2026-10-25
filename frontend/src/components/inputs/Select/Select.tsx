@@ -1,12 +1,12 @@
 // A drop-down for choosing one option, such as the plan switcher or a course's outcome. It has no
 // visible label, as in the prototypes; the label is still there for screen readers. Options are
 // SelectItems. The placeholder shows until something is chosen, and then only the chosen option's
-// name: its codes and credits stay in the list. A long name
-// ends in an ellipsis within the plan switcher's width, and a screen reader still reads all of it. The
-// list opens below, from the left edge, as the plan switcher does. It is outlined, as the plan switcher
-// is, or plain, as the review's outcomes are in edit mode: the value and its arrow in the text around
-// them. Quiet shows its label in place of the value, for a choice the page already names beside it, as
-// Compare with Another Plan does under its panel's title.
+// name: its codes and credits stay in the list. A long name ends in an ellipsis within the plan
+// switcher's width, and a screen reader still reads all of it. The list opens below, from the left
+// edge, as the plan switcher does. It is outlined, as the plan switcher is, or plain, as the
+// review's outcomes are in edit mode: the value and its arrow in the text around them. Quiet shows
+// its label in place of the value, for a choice the page already names beside it, as Compare with
+// Another Plan does under its panel's title.
 import type { ReactNode } from 'react'
 import { Button, Label, Select as AriaSelect, type SelectProps as AriaSelectProps, SelectValue } from 'react-aria-components'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'

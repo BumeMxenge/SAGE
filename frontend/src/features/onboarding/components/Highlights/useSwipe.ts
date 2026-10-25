@@ -1,8 +1,8 @@
-// Turns one sideways gesture into one step: a swipe or a drag, by finger, pen or mouse, or a sideways
-// trackpad scroll. A trackpad goes on sending wheel events after the fingers lift, its momentum, so after
-// a step the stream is ignored for a rest, as the prototype's is: long enough for a gesture's momentum to
-// die down, and short enough that the next gesture counts while the last one still coasts.
-// It returns a ref for the element the gestures happen on.
+// Turns one sideways gesture into one step: a swipe or a drag, by finger, pen or mouse, or a
+// sideways trackpad scroll. A trackpad goes on sending wheel events after the fingers lift, its
+// momentum, so after a step the stream is ignored for a rest, as the prototype's is: long enough
+// for a gesture's momentum to die down, and short enough that the next gesture counts while the
+// last one still coasts. It returns a ref for the element the gestures happen on.
 import { useCallback } from 'react'
 
 // How far a swipe or a drag travels sideways before it counts, in CSS pixels

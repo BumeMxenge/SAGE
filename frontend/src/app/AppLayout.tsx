@@ -22,8 +22,6 @@ import { queries } from '@/lib/queryKeys.ts'
 import { AccountMenu } from './AccountMenu.tsx'
 import styles from './AppLayout.module.css'
 
-// Explore Electives is for choosing a complementary course, so it shows only to a student whose plans
-// have a slot for one
 const pages: { href: string; label: string; icon: PlainIconName; needsSlot?: boolean }[] = [
   { href: '/plan', label: nav.plan, icon: 'calendar_today' },
   { href: '/electives', label: nav.electives, icon: 'explore', needsSlot: true },

@@ -1,5 +1,5 @@
-# Each student's data in one dictionary, keyed by her account id. Reads come back in the order the
-# Supabase adapter returns them, so the two can be checked against each other.
+# Each student's data in one dictionary, keyed by her account id. Reads give back her rows in the
+# order they were written, where the Supabase adapter sorts each table by its ORDER.
 from collections.abc import Callable, Collection, Iterable, Sequence
 from datetime import UTC, datetime, timedelta
 from typing import Any

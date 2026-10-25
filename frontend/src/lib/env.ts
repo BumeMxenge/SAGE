@@ -9,7 +9,7 @@ function required(name: string, value: string | undefined): string {
 }
 
 export const env = {
-  apiUrl: required('VITE_API_URL', import.meta.env.VITE_API_URL).replace(/\/+$/, ''), // no trailing slash
+  apiUrl: required('VITE_API_URL', import.meta.env.VITE_API_URL).replace(/\/+$/, ''),
   supabaseUrl: required('VITE_SUPABASE_URL', import.meta.env.VITE_SUPABASE_URL),
   supabasePublishableKey: required(
     'VITE_SUPABASE_PUBLISHABLE_KEY',

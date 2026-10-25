@@ -1,7 +1,7 @@
 // Reads tokens.css and theme.css and checks WCAG 2.2 AA in both themes: 4.5:1 for text, and 3:1 for
-// the focus ring, the control border, the danger icon and, in light, the field border. In dark, fields have no border
-// and are identified by their placeholder, icon or label (approved difference 2). Decorative borders
-// and disabled text are left out, as WCAG allows.
+// the focus ring, the control border and the danger icon. A field's border is as pale as the
+// prototype's in light and absent in dark, as its placeholder, icon or label identifies it
+// (approved difference 2). Decorative borders and disabled text are left out, as WCAG allows.
 import { describe, expect, it } from 'vitest'
 import themeCss from './theme.css?raw'
 import tokensCss from './tokens.css?raw'

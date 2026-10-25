@@ -92,7 +92,8 @@ export function QuestionnairePage({ set, saving }: QuestionnairePageProps) {
               </div>
               <div className={styles.actions}>
                 <Button onPress={() => save.mutate(answers)}>Show My Plans</Button>
-                {/* An output is a polite status, so a screen reader hears the new count as she answers */}
+                {/* An output is a polite status, so a screen reader hears the new count as she
+                    answers */}
                 <output className={styles.narrowing}>
                   {narrowing(keptBy(plans, questions, answers).length, plans.length, answered)}
                 </output>

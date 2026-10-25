@@ -50,7 +50,8 @@
   background: var(--color-hover);
 }
 
-/* A value too long for the button ends in an ellipsis. Its text is all still there for screen readers. */
+/* A value too long for the button ends in an ellipsis. Its text is all still there for screen
+   readers. */
 .value {
   min-width: 0;
   overflow: hidden;

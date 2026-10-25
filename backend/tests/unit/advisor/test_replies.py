@@ -1,9 +1,9 @@
-# Checks a turn of the advisor on Mbali's seed, with a scripted model in Luna's place: the request is
-# the one E4 measured, a plan is offered only where it may be, a turn with no answer gets the fixed
-# referral, the checks that bite and each turn's tokens are logged without a student's words, what
-# the tools gave back counts as heard, the earlier exchanges go in, and a chat is named without
-# holding its reply up. Every expected value
-# comes from her seed, print, the script or E4's own evidence.py.
+# Checks a turn of the advisor on Mbali's seed, with a scripted model in Luna's place: the request
+# is the one E4 measured, a plan is offered only where it may be, a turn with no answer gets the
+# fixed referral, the checks that bite and each turn's tokens are logged without a student's words,
+# what the tools gave back counts as heard, the earlier exchanges go in, and a chat is named without
+# holding its reply up. Every expected value comes from her seed, print, the script or E4's own
+# evidence.py.
 import json
 import logging
 import re

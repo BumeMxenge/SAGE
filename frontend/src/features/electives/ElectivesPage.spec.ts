@@ -394,7 +394,8 @@ test.describe('parity with the loading sheet', () => {
       prototype: 'loading-states',
       reach: async (page, theme) => {
         await settled(page)
-        // The sheet draws case 04 in light, then in dark. Its page is two divs up from its search's words.
+        // The sheet draws case 04 in light, then in dark. Its page is two divs up from its search's
+        // words.
         return page
           .getByText('Search electives by code, topic or lecturer', { exact: true })
           .nth(theme === 'dark' ? 1 : 0)

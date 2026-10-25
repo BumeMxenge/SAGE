@@ -92,7 +92,8 @@ export function Conversation({ chatId, address, plans, planName, waiting, sent, 
             {shown.length === 0 && sent === null && (
               <div className={styles.start}>
                 <p className={styles.intro}>{intro}</p>
-                {/* Left out while another of this view's chats waits for its reply, as nothing more can go here */}
+                {/* Left out while another of this view's chats waits for its reply, as nothing more can
+                    go here */}
                 {!waiting && (
                   <Button variant="suggestion" onPress={() => ask(suggestion)}>
                     {suggestion}

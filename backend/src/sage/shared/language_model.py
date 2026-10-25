@@ -1,7 +1,7 @@
 # The one language model SAGE calls, as an interface: a call with instructions and the conversation
-# so far, and optionally a reply schema, tools and a reasoning effort. The advisor depends on this,
-# so the provider changes in one adapter, shared/openai.py, and the tests use a scripted fake that
-# never calls a model.
+# so far, and optionally a reply schema, tools and a reasoning effort. The advisor and ingestion
+# depend on this, so the provider changes in one adapter, shared/openai.py, and the tests use a
+# scripted fake that never calls a model.
 from collections.abc import Sequence
 from typing import Any, Literal, Protocol
 

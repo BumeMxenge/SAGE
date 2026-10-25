@@ -17,7 +17,8 @@
   background: var(--color-hover);
 }
 
-/* The heart takes the text colour, on or off. On shows it filled, so colour never tells the two apart. */
+/* The heart takes the text colour, on or off. On shows it filled, so colour never tells the two
+   apart. */
 .toggle {
   color: var(--color-text);
 }

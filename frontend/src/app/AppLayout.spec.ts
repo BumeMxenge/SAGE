@@ -47,8 +47,6 @@ async function box(element: Locator) {
 // Mbali never has a name from Microsoft, so her account shows her student number
 const account = (page: Page) => sidebar(page).getByRole('button', { name: /DLMMBA999/ })
 
-// The account waits for the name lookup, so the sidebar is whole once it shows
-// The page beside it arrives too, and fades in, before the checks read the window
 // Every request the page makes to the API from now on, by its path
 function apiReads(page: Page): string[] {
   const paths: string[] = []
@@ -59,6 +57,8 @@ function apiReads(page: Page): string[] {
   return paths
 }
 
+// The account waits for the name lookup, so the sidebar is whole once it shows
+// The page beside it arrives too, and fades in, before the checks read the window
 async function opened(page: Page): Promise<void> {
   await account(page).waitFor()
   await settledArrival(page)

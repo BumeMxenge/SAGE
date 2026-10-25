@@ -109,8 +109,9 @@ class ForcedSection(BaseModel):
 class PlanPreview(BaseModel):
     # What the plan would look like with one course taken in its complementary slot. Nothing is
     # saved: the plan itself never changes.
-    plan: Plan  # with the course added on its fitting sections, each forced section fixed, and the
-    # slot it fills left out
+    # With the course added on its fitting sections, each forced section fixed, and the slot it
+    # fills left out
+    plan: Plan
     course_code: str  # which of plan.courses is the preview
     forced: list[ForcedSection]
 

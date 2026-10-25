@@ -1,5 +1,5 @@
-// A plan's credits and its slot card's words, written out by hand from the wording settled at Stop 1,
-// with the counts on both sides of each plural and of "a" and "an"
+// A plan's credits and its slot card's words, written out by hand, with the counts on both sides of
+// each plural and of "a" and "an"
 import { expect, it } from 'vitest'
 import { browse, creditsOf, fitting, lineNeeds } from './copy.ts'
 

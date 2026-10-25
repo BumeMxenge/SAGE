@@ -10,7 +10,6 @@ import { defineConfig } from 'vitest/config'
 // own with `npm run dev -- --port 3001`
 const port = { port: 3000, strictPort: true }
 
-// https://vite.dev/config/
 export default defineConfig({
   // dimensions: false and titleProp let CSS size each SVG and give each logo its own title id.
   // runtimeConfig: false, so a stray .svgrrc can never change the output.
@@ -19,8 +18,8 @@ export default defineConfig({
   resolve: { tsconfigPaths: true, dedupe: ['react'] },
   // CSS Module classes are kebab-case in the stylesheet and camelCase in TypeScript: styles.iconButton
   css: { modules: { localsConvention: 'camelCaseOnly' } },
-  // The logos live in ../assets/brand, so the README and the app share one copy. The dev server only
-  // serves SVG imports from allowed folders, and the default is this one.
+  // The logos live in ../assets/brand, with the README's banner, so the brand files share a folder.
+  // The dev server only serves SVG imports from allowed folders, and the default is this one.
   server: { ...port, fs: { allow: [searchForWorkspaceRoot(import.meta.dirname), '../assets/brand'] } },
   preview: port,
   // The libraries every page loads with the app go in two files of their own, React with its router

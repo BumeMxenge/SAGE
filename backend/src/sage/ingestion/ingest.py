@@ -39,7 +39,7 @@ from sage.shared.rules import (
     RuleSet,
 )
 
-# Four folders up from this file: the repo root, as for the seed file
+# data/ in the repo root, as for the seed file
 DATA = Path(__file__).resolve().parents[4] / "data"
 # Each approved year's snapshot, as data/rules/<year>/ holds it
 SNAPSHOT = "rulebook.json"

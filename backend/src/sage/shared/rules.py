@@ -444,8 +444,8 @@ def meetings(
     )
 
 
-# Each table's primary key. The fake keys its rows by it, and a store reads rows in key order,
-# which gives every row one fixed place across pages
+# Each table's primary key. The fake keys its rows by it, and the Supabase store reads rows in key
+# order, which gives every row one fixed place across pages
 PRIMARY_KEYS: dict[str, tuple[str, ...]] = {
     "handbook_versions": ("year",),
     "curricula": ("handbook_year", "code"),

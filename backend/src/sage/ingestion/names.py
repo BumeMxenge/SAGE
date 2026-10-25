@@ -1,7 +1,7 @@
 # Course names as SAGE stores them. Handbooks print most titles in capitals, so a stored name is
-# title-cased by CP0's rule: minor words in lower case unless they open the title or follow a colon,
-# and single letters, Roman numerals, acronyms and anything with a digit kept as printed. The printed
-# capitals stay in the passage.
+# title-cased by my rule: minor words in lower case unless they open the title or follow a colon,
+# and single letters, Roman numerals, acronyms and anything with a digit kept as printed. The
+# printed capitals stay in the passage.
 import re
 
 # The minor words, Roman numerals and acronyms in the titles read

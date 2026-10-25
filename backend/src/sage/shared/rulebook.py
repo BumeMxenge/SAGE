@@ -11,7 +11,7 @@ from sage.shared.printed_meetings import timetabled
 from sage.shared.repositories import RuleRepository
 from sage.shared.rules import ResultSymbol, RuleSet
 
-TIME_LIMIT = 600  # seconds, the same as supabase-auth keeps the token signing keys
+TIME_LIMIT = 600  # seconds, so a newly loaded year shows within ten minutes
 
 
 class Rulebook:

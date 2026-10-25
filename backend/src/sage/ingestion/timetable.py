@@ -1,8 +1,9 @@
-# Reads the department's timetable workbook, by CP0's readings. Each sheet is a grid of year blocks,
-# with the days of each semester across and the handbook's periods down. A block of merged cells is
-# one meeting, from its first period's start to its last period's end, and a cell naming several
-# sections, as in "(2278 or 2483)", is parallel groups at one time, so one meeting. The reader is
-# strict: every cell on a sheet it reads is placed, or the run stops and names it.
+# Reads the department's timetable workbook, by my readings of its layout (docs/shortfalls.md). Each
+# sheet is a grid of year blocks, with the days of each semester across and the handbook's periods
+# down. A block of merged cells is one meeting, from its first period's start to its last period's
+# end, and a cell naming several sections, as in "(2278 or 2483)", is parallel groups at one time,
+# so one meeting. The reader is strict: every cell on a sheet it reads is placed, or the run stops
+# and names it.
 import re
 from collections.abc import Mapping, Sequence
 from datetime import time

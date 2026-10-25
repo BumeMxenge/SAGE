@@ -1,7 +1,8 @@
-// A plan's courses in one term, a table for each list the handbook puts them on, such as Fourth Year
-// Core Courses (ME), with the list's credits that term. A course that runs for one quarter of its
-// semester is marked so, and so is the course a preview adds. While the plan is on its way, one table of skeleton rows stands in for them,
-// hidden from screen readers, under the real column headers.
+// A plan's courses in one term, a table for each list the handbook puts them on, such as Fourth
+// Year Core Courses (ME), with the list's credits that term. A course that runs for one quarter of
+// its semester is marked so, and so is the course a preview adds. While the plan is on its way, one
+// table of skeleton rows stands in for them, hidden from screen readers, under the real column
+// headers.
 import { DataTable, type DataTableColumn } from '@/components/content/DataTable/DataTable.tsx'
 import { Skeleton } from '@/components/feedback/Skeleton/Skeleton.tsx'
 import type { components } from '@/lib/api-types.ts'

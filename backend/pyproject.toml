@@ -25,8 +25,8 @@ sage = "sage.cli:main"
 
 [dependency-groups]
 dev = [
-    # Never called: make test collects ATP-1's test_scoring.py, which imports scoring, then E2's
-    # score.py, then its drafting.py, which imports it
+    # Never called: E2's drafting.py imports it, and make test imports that file from the drafter's
+    # test, and through ATP-1's test_scoring.py, which imports scoring, then E2's score.py
     "anthropic>=1.15.0",
     "fpdf2>=2.8.9",
     "httpx>=0.28", # the token tests serve Supabase's replies through it
@@ -51,7 +51,7 @@ packages = ["src/sage"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-# So a test can build a student as the scripts do, from scripts/
+# So tests can import scripts/ and tests/ as packages
 pythonpath = ["."]
 addopts = ["--import-mode=importlib", "--strict-markers"]
 markers = [
@@ -89,7 +89,7 @@ also_copy = ["scripts/"]
 # The dependency rule in docs/architecture.md, as contracts that make lint checks with lint-imports
 [tool.importlinter]
 root_package = "sage"
-include_external_packages = true # so the last two contracts can name outside packages
+include_external_packages = true # so the last four contracts can name outside packages
 
 [[tool.importlinter.contracts]]
 name = "Imports point inward"
