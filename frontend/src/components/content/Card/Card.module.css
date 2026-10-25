@@ -50,7 +50,9 @@
   color: var(--color-text-secondary);
 }
 
-/* Something still to choose: the same frame, dashed, as the upload drop zone draws a place to fill */
+/* Something still to choose: the frame dashed, as the upload drop zone draws a place to fill, in the
+   control border's colour, as the decorative border's dashes barely show on white */
 .card[data-dashed] {
   border-style: dashed;
+  border-color: var(--color-border-control);
 }
