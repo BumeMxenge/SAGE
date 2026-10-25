@@ -9,10 +9,12 @@ from sage.features.plans import service as plans
 from sage.features.plans.models import (
     Comparison,
     Credits,
+    ForcedSection,
     Group,
     Meeting,
     Plan,
     PlanCourse,
+    PlanPreview,
     PlanSet,
     PlanSummary,
     Reason,
@@ -21,6 +23,7 @@ from sage.features.plans.models import (
 from sage.shared.api.deps import ONBOARDED_ERRORS, Onboarded, Rules, Students
 from sage.shared.api.problems import errors
 from sage.shared.errors import (
+    CourseDoesntFit,
     InvalidRequest,
     PlanNotFound,
     PlansNotReady,
@@ -81,6 +84,36 @@ def get_plan(
 ) -> Plan:
     rows = plans.one_plan(students, student.id, plan_id)
     return plan(rows, rulebook.year(rows.plan_set.period), student.curriculum_code)
+
+
+@router.get(
+    "/{plan_id}/previews/{course_code}",
+    summary="One of her plans as it would be with a course that fits it taken, saving nothing",
+    responses=errors(
+        *ONBOARDED_ERRORS,
+        InvalidRequest,
+        PlanNotFound,
+        CourseDoesntFit,
+        RulebookNotLoaded,
+    ),
+)
+def get_preview(
+    plan_id: UUID,
+    course_code: str,
+    student: Onboarded,
+    students: Students,
+    rulebook: Rules,
+) -> PlanPreview:
+    rows = plans.one_plan(students, student.id, plan_id)
+    taken, forced = plans.preview(rows, course_code)
+    return PlanPreview(
+        plan=plan(taken, rulebook.year(rows.plan_set.period), student.curriculum_code),
+        course_code=course_code,
+        forced=[
+            ForcedSection(course_code=course, choice_group=group, choice=choice)
+            for course, group, choice in forced
+        ],
+    )
 
 
 def plan_set(rows: PlanSetRows, rules: RuleSet) -> PlanSet:

@@ -99,6 +99,22 @@ class Plan(BaseModel):
     slots: list[Slot]
 
 
+class ForcedSection(BaseModel):
+    # A section of one of the plan's own courses that a previewed course leaves as the only one
+    course_code: str
+    choice_group: str
+    choice: str
+
+
+class PlanPreview(BaseModel):
+    # What the plan would look like with one course taken in its complementary slot. Nothing is
+    # saved: the plan itself never changes.
+    plan: Plan  # with the course added on its fitting sections, each forced section fixed, and the
+    # slot it fills left out
+    course_code: str  # which of plan.courses is the preview
+    forced: list[ForcedSection]
+
+
 class Comparison(BaseModel):
     first: Plan
     second: Plan

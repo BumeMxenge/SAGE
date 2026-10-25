@@ -167,6 +167,11 @@ const entries = {
     message: "It isn't in this year's handbook, so it can't be added.",
     action: null,
   },
+  course_doesnt_fit: {
+    title: "That Course Doesn't Fit This Plan",
+    message: "It isn't one of the courses that fit this plan's timetable.",
+    action: null,
+  },
   different_plan_sets: {
     title: "These Plans Can't Share a Chat",
     message: 'One of these plans has been replaced. Choose two plans from your current list.',

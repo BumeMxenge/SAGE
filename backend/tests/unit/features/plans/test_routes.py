@@ -3,8 +3,10 @@
 # test_guards.py. Then the complementary slots, on Ziyela's seeded set and on a place built here.
 from uuid import uuid4
 
+import pytest
+
 from sage.shared.students import Plan, PlanReason, PlanSet, PlanSetRows
-from tests.unit.accounts import MBALI
+from tests.unit.accounts import MBALI, NTWZIY
 
 
 def test_her_set_has_10_plans_and_7_still_visible(mbali):
@@ -169,6 +171,31 @@ def test_a_place_names_the_course_it_stands_in_for(mbali, stores):
     assert (slot["kind"], slot["credits"], slot["replaces"]) == ("place", 8, "ASL1200S")
     summary = mbali.get("/v1/plans").json()
     assert (summary["has_slot"], summary["plans"][0]["to_choose"]) == (True, 8)
+
+
+def test_a_preview_adds_the_course_to_her_plan_and_saves_nothing(ziyela, stores):
+    # Her plan 2's slot lists SLL1002S, a 15-credit course, on 138 credits. How its sections narrow
+    # and fix her plan's own is checked in test_service.py, on a plan where that shows.
+    plan = ziyela.get("/v1/plans").json()["plans"][1]
+    held = stores[1].get(NTWZIY)
+    preview = ziyela.get(f"/v1/plans/{plan['id']}/previews/SLL1002S").json()
+    assert (preview["course_code"], preview["forced"]) == ("SLL1002S", [])
+    courses = {course["code"]: course for course in preview["plan"]["courses"]}
+    assert courses["SLL1002S"]["credits"] == 15
+    assert (preview["plan"]["credits"]["total"], preview["plan"]["slots"]) == (153, [])
+    assert stores[1].get(NTWZIY) == held
+    assert "SLL1002S" not in {
+        course["code"]
+        for course in ziyela.get(f"/v1/plans/{plan['id']}").json()["courses"]
+    }
+
+
+@pytest.mark.parametrize("code", ["FAM2000F", "ZZZ9999Z"])
+def test_a_preview_of_a_course_that_doesnt_fit_the_plan_is_refused(ziyela, code):
+    # The engine lists FAM2000F in plans 3, 9 and 10 only, and ZZZ9999Z isn't a course
+    plan = ziyela.get("/v1/plans").json()["plans"][0]
+    response = ziyela.get(f"/v1/plans/{plan['id']}/previews/{code}")
+    assert (response.status_code, response.json()["code"]) == (422, "course_doesnt_fit")
 
 
 def test_no_complete_set_means_plans_arent_ready(mbali, stores):
