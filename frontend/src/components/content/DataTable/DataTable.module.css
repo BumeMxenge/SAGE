@@ -95,11 +95,6 @@
   overflow-y: auto;
 }
 
-.scroll:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
-}
-
 /* The caption is one large control tall, its text centred on a row of buttons a page may set beside
    it, with room below them as in the prototype. The headers stick just below it. */
 .scroll .caption {

@@ -50,6 +50,10 @@
   color: var(--color-text);
   background: transparent;
   resize: none;
+}
+
+/* The box around it shows the ring instead */
+.textarea[data-focus-visible] {
   outline: none;
 }
 
@@ -87,9 +91,4 @@
 
   color: var(--color-on-primary);
   background: var(--color-primary);
-}
-
-.send[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
 }

@@ -49,11 +49,6 @@
   border-color: var(--color-text);
 }
 
-.chip[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
-}
-
 /* An answer that can't be chosen fades as in the prototype. It is aria-disabled, so axe treats its
    faded text as an inactive control's, which WCAG 1.4.3 exempts. */
 .chip[data-unavailable] {

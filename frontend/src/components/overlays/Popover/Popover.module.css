@@ -28,6 +28,10 @@
   min-height: 0;
   max-height: 60vh;
   overflow-y: auto;
+}
+
+/* The list itself shows no ring: its items do */
+.list[data-focus-visible] {
   outline: none;
 }
 
@@ -44,7 +48,6 @@
   font-size: var(--font-size-md);
   color: var(--color-text);
   cursor: pointer;
-  outline: none;
 }
 
 .item[data-hovered] {
@@ -55,8 +58,8 @@
   background: var(--color-surface-muted);
 }
 
+/* Drawn inside its edges, which the scrolling list clips */
 .item[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: calc(var(--focus-ring-width) * -1);
 }
 

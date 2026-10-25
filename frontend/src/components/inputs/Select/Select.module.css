@@ -58,11 +58,6 @@
   white-space: nowrap;
 }
 
-.trigger[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
-}
-
 /* An unset value is quieter, and turns teal with the outline on hover */
 .value[data-placeholder] {
   font-weight: var(--font-weight-regular);

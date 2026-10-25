@@ -37,7 +37,6 @@
 /* The ring is drawn over the border, so focus reads as the field's edge darkening, as in the
    prototype */
 .input[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: calc(var(--focus-ring-width) * -1);
 }
 
@@ -69,11 +68,6 @@
 
 .clear[data-hovered] {
   background: var(--color-hover);
-}
-
-.clear[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
 }
 
 /* Nothing typed, nothing to clear. React Aria sets data-empty on the field. */

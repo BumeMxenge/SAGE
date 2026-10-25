@@ -41,7 +41,6 @@
 
 /* Drawn inside its edges, which the rail clips */
 .log:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: calc(var(--focus-ring-width) * -1);
 }
 

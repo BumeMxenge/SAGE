@@ -9,11 +9,6 @@
   transform: translateX(-50%);
 }
 
-.region[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
-}
-
 .toast {
   --icon-size: var(--size-icon-sm);
 
@@ -28,11 +23,6 @@
   color: var(--color-on-primary);
   background: var(--color-surface-inverse);
   box-shadow: var(--shadow-overlay);
-}
-
-.toast[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
 }
 
 /* The ring sits on the toast's dark surface, where the navy focus colour is hard to see, so these
@@ -70,8 +60,8 @@
   background: var(--color-hover);
 }
 
+/* Light on the toast's dark fill */
 .action[data-focus-visible],
 .close[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-on-primary);
-  outline-offset: var(--focus-ring-offset);
+  outline-color: var(--color-on-primary);
 }
