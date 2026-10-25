@@ -4,7 +4,7 @@
 //
 // With ?plan=, from a plan's slot card, the page keeps only the courses whose offerings fit that
 // plan, as the API lists them, with her favourites first as the page opened, and says which plan.
-// A plan that isn't one of hers, or isn't one of her current plans, shows every course and says
+// Each card there previews its fitting offerings in that plan's week. A plan that isn't one of hers, or isn't one of her current plans, shows every course and says
 // why, and a current plan nothing fits shows its slot's own words.
 //
 // While a read the page needs is on its way, loading case 04 shows: the title and the search render
@@ -23,9 +23,10 @@ import { EmptyState } from '@/components/feedback/EmptyState/EmptyState.tsx'
 import { ErrorState } from '@/components/feedback/ErrorState/ErrorState.tsx'
 import { SearchField } from '@/components/inputs/SearchField/SearchField.tsx'
 import type { components } from '@/lib/api-types.ts'
-import { pageNames } from '@/lib/copy.ts'
+import { pageNames, termLabels } from '@/lib/copy.ts'
 import { electivesPath, useElectivesAddress } from '@/lib/electivesAddress.ts'
 import { actionLabels, explain } from '@/lib/errors.ts'
+import { previewPath } from '@/lib/planAddress.ts'
 import { queries } from '@/lib/queryKeys.ts'
 import { fits, keeping, matches, openingTab, putFirst } from './cards.ts'
 import { CategoryTabs } from './components/CategoryTabs/CategoryTabs.tsx'
@@ -37,6 +38,10 @@ import {
   noMatchMessage,
   notCurrent,
   nothingFits,
+  preview,
+  previewOf,
+  previewTerm,
+  previewTermOf,
   searchPlaceholder,
   showEveryCourse,
   showing,
@@ -85,14 +90,38 @@ export function ElectivesPage({ held = false }: { held?: boolean }) {
     return { shown, selected: openingTab(shown, address.tab, first) }
   }
 
-  // Those tabs, with the cards that come first ahead of the rest
-  function tabsOf({ shown, selected }: ReturnType<typeof shownOf>, first: (card: Elective) => boolean): ReactNode {
+  // Each of a card's offerings that fits the plan, as a button that previews it in the plan's week
+  function previewsOf(card: Elective, inPlan: string): ReactNode {
+    const offerings = card.offerings.filter((offering) => offering.plans.includes(inPlan))
+    return offerings.map((offering) => {
+      const term = termLabels[offering.term]
+      return (
+        <Button
+          key={offering.code}
+          variant="secondary"
+          aria-label={offerings.length > 1 ? previewTermOf(term, card.name) : previewOf(card.name)}
+          onPress={() => void navigate(previewPath(inPlan, offering.code, offering.term))}
+        >
+          {offerings.length > 1 ? previewTerm(term) : preview}
+        </Button>
+      )
+    })
+  }
+
+  // Those tabs, with the cards that come first ahead of the rest, and on the page filtered to a
+  // current plan, each card's previews in it
+  function tabsOf({ shown, selected }: ReturnType<typeof shownOf>, first: (card: Elective) => boolean, previewIn: string | null = null): ReactNode {
     if (selected === null) return <EmptyState title={noMatch} message={noMatchMessage(search)} />
     return (
       <CategoryTabs tabs={shown} selected={selected} onSelect={(tab) => void navigate(electivesPath({ ...address, tab }), { replace: true })}>
         {(tab) =>
           putFirst(tab.courses, first).map((card) => (
-            <ElectiveCard key={card.codes[0]} card={card} onHeartChange={(heart) => hearting.mutate({ card, heart })} />
+            <ElectiveCard
+              key={card.codes[0]}
+              card={card}
+              onHeartChange={(heart) => hearting.mutate({ card, heart })}
+              previews={previewIn === null ? undefined : previewsOf(card, previewIn)}
+            />
           ))
         }
       </CategoryTabs>
@@ -130,7 +159,7 @@ export function ElectivesPage({ held = false }: { held?: boolean }) {
         <p className={styles.notice}>
           {showing(count, current.name)} {everyCourse(view.selected)}
         </p>
-        {tabsOf(view, favourite)}
+        {tabsOf(view, favourite, current.id)}
       </>
     )
   } else if (current && plan.data) {

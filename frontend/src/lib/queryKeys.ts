@@ -23,6 +23,13 @@ export const queries = {
   plans: () => read(openapi.queryOptions('get', '/v1/plans')),
   plan: (planId: string) =>
     read(openapi.queryOptions('get', '/v1/plans/{plan_id}', { params: { path: { plan_id: planId } } })),
+  // One course previewed in a plan's complementary slot
+  preview: (planId: string, courseCode: string) =>
+    read(
+      openapi.queryOptions('get', '/v1/plans/{plan_id}/previews/{course_code}', {
+        params: { path: { plan_id: planId, course_code: courseCode } },
+      }),
+    ),
   comparison: (first: string, second: string) =>
     read(openapi.queryOptions('get', '/v1/plans/compare', { params: { query: { first, second } } })),
   questionnaire: () => read(openapi.queryOptions('get', '/v1/questionnaire')),
@@ -46,8 +53,15 @@ async function refreshing(...keys: QueryKey[]): Promise<void> {
 
 // What each change refreshes. A screen calls one once its change has saved.
 export const refresh = {
-  // The answers hide plans, and the plan set, each plan and each comparison say which are hidden
-  questionnaireAnswered: () => refreshing(allOf('/v1/plans'), allOf('/v1/plans/{plan_id}'), allOf('/v1/plans/compare')),
+  // The answers hide plans, and the plan set, each plan, each preview and each comparison say which
+  // are hidden
+  questionnaireAnswered: () =>
+    refreshing(
+      allOf('/v1/plans'),
+      allOf('/v1/plans/{plan_id}'),
+      allOf('/v1/plans/{plan_id}/previews/{course_code}'),
+      allOf('/v1/plans/compare'),
+    ),
   // A heart shows on its elective, and the questionnaire lists hearted courses first
   favouriteChanged: () => refreshing(allOf('/v1/electives'), allOf('/v1/questionnaire')),
   // A new chat joins the list for its plan or pair

@@ -53,7 +53,7 @@ export function PlanWorkspace({ held = false }: { held?: boolean }) {
   if (first) {
     return (
       <>
-        <Navigate replace to={planPath({ planId: first.id, compareWith: null, term })} />
+        <Navigate replace to={planPath({ planId: first.id, compareWith: null, term, preview: null })} />
         {waited && skeleton}
       </>
     )

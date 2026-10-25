@@ -1,11 +1,13 @@
 // A plan's week in one term: Monday to Friday across the top, the hours down the side, and each
 // meeting a block in its course's colour, as tall as the meeting is long. The days and hours are for
 // the eye. To a screen reader each day is a list named by the day, and each block says its course,
-// its times and any options it stands for. The course list is the plain equivalent of the whole week.
+// its times and any options it stands for. A preview's course is dashed inside its edge, and says so to
+// a screen reader. The course list is the plain equivalent of the whole week.
 // Compact is the smaller week inside a compare panel, whose blocks leave the times to the hours beside
 // them. While the plan is on its way it draws the shortest week, its days and hours, with skeleton
 // meetings where loading case 01 draws them.
 import { Skeleton } from '@/components/feedback/Skeleton/Skeleton.tsx'
+import { inThisPreview } from '../../copy.ts'
 import { type CourseColour, shortestWeek, type Week } from '../../week.ts'
 import styles from './Timetable.module.css'
 
@@ -70,11 +72,16 @@ export function Timetable(props: TimetableProps) {
                   key={block.key}
                   className={styles.block}
                   data-colour={colours.get(block.code)}
+                  data-previewed={block.previewed || undefined}
                   style={{ '--start': block.start, '--length': block.length, '--lane': block.lane, '--lanes': block.lanes }}
                 >
                   <p className={styles.code}>
                     {block.code}
-                    <span className="visually-hidden"> {block.name}</span>
+                    <span className="visually-hidden">
+                      {' '}
+                      {block.name}
+                      {block.previewed && `, ${inThisPreview}`}
+                    </span>
                   </p>
                   <p className={styles.detail}>
                     {block.quarter}

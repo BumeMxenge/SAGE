@@ -218,7 +218,7 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
           {set && planName !== undefined && (chatId !== undefined || chats.isPending) && (
             <Conversation
               chatId={chatId}
-              address={{ planId, compareWith, term }}
+              address={{ planId, compareWith, term, preview: null }}
               plans={set.plans}
               planName={planName}
               waiting={waiting}

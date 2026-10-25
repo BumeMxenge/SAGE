@@ -1,8 +1,9 @@
 // One plan's term, as its week or its list, alone or in a compare panel. A term with no courses says
 // so, under the panel's title in compare. Under the week, a line names what it can't draw. Under the
 // week or the list, in the same column, each of the plan's complementary slots has its card, in every
-// term, as a slot is the year's. While the plan is on its way, the week's or the list's skeleton takes
-// its place.
+// term, as a slot is the year's. On a plan alone, the first slot's card offers her favourites that fit
+// as previews, as the API says which plans a course fits but not which slot. While the plan is on its
+// way, the week's or the list's skeleton takes its place.
 import type { ReactNode } from 'react'
 import { EmptyState } from '@/components/feedback/EmptyState/EmptyState.tsx'
 import type { components } from '@/lib/api-types.ts'
@@ -18,7 +19,8 @@ type Plan = components['schemas']['Plan']
 export type View = 'calendar' | 'list'
 
 type TermViewProps = { view: View; compact?: boolean } & (
-  | { plan: Plan; term: PlanTerm; week: Week; colours: ReadonlyMap<string, CourseColour> }
+  // previewed is the code of the course a preview adds
+  | { plan: Plan; term: PlanTerm; week: Week; colours: ReadonlyMap<string, CourseColour>; previewed?: string }
   // The plan is on its way
   | { plan: null }
 )
@@ -32,7 +34,7 @@ export function TermView(props: TermViewProps) {
       </div>
     )
   }
-  const { plan, term, week, colours } = props
+  const { plan, term, week, colours, previewed } = props
   const courses = termCourses(plan, term)
   let content: ReactNode
   if (courses.length === 0) {
@@ -45,7 +47,7 @@ export function TermView(props: TermViewProps) {
       />
     )
   } else if (view === 'list') {
-    content = <CourseList courses={courses} />
+    content = <CourseList courses={courses} previewed={previewed} />
   } else {
     content = (
       <>
@@ -58,7 +60,7 @@ export function TermView(props: TermViewProps) {
     <div className={styles.termView}>
       {content}
       {plan.slots.map((slot, index) => (
-        <SlotCard key={index} slot={slot} planId={plan.id} level={compact ? 3 : 2} />
+        <SlotCard key={index} slot={slot} planId={plan.id} level={compact ? 3 : 2} offerPreviews={!compact && index === 0} />
       ))}
     </div>
   )

@@ -44,7 +44,7 @@ export function Reply({ reply, plans, address }: ReplyProps) {
       )}
       {reply.referral && <p className={styles.referral}>Your student advisor can help with this.</p>}
       {offered !== null && !openAlone && (
-        <Link href={planPath({ planId: offered, compareWith: null, term: address.term })} className={styles.openPlan}>
+        <Link href={planPath({ planId: offered, compareWith: null, term: address.term, preview: null })} className={styles.openPlan}>
           Open {name ?? 'Plan'}
         </Link>
       )}

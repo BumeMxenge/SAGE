@@ -23,7 +23,7 @@ const plans: PlanSummary[] = [
   { id: second, position: 2, name: 'Made-up Plan B', combination: null, hidden: true, credits: 138, to_choose: 0 },
 ]
 
-const alone: PlanAddress = { planId: first, compareWith: null, term: 'sem1' }
+const alone: PlanAddress = { planId: first, compareWith: null, term: 'sem1', preview: null }
 
 function replyOf(fields: Partial<Message>): Message {
   return {
@@ -66,7 +66,7 @@ it('adds the line to her student advisor on a referral, and not otherwise', () =
 })
 
 it('opens the plan it offers alone, named from her set, at the term on screen, from compare too', () => {
-  const comparing: PlanAddress = { planId: first, compareWith: second, term: 'sem2' }
+  const comparing: PlanAddress = { planId: first, compareWith: second, term: 'sem2', preview: null }
   render(<Reply reply={replyOf({ open_plan_id: second })} plans={plans} address={comparing} />)
   const link = screen.getByRole('link', { name: 'Open Made-up Plan B' })
   expect(link.getAttribute('href')).toBe('/plan/00000000-0000-4000-8000-000000000002?term=sem2')

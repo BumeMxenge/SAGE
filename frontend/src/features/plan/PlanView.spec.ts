@@ -7,9 +7,10 @@
 // it turns into. A refused read leaves no skeleton, and the plan from the cache shows none and fades
 // nothing in.
 // routes.spec.ts runs both on the plan itself and on a plan that doesn't exist. Then one engine-shaped
-// plan, a set of 50 plans, two plans with complementary slots, alone and compared, and a set with none
-// on made-up answers from the API, and parity beside the planner prototype and the error sheet in both
-// themes.
+// plan, a set of 50 plans, two plans with complementary slots, alone and compared, a preview of a
+// favourite in a slot from the engine's own output, with its loading, its refusal and her favourites'
+// skeleton and failure, and a set with none, on made-up answers from the API, and parity beside the
+// planner prototype and the error sheet in both themes.
 // Her plans are her seed's (data/synthetic/mbali.json): ten, named as the engine names them, of which
 // her saved answers hid "Signals, Power & Control", "Power, Control & Embedded" and "Power, Control &
 // Imaging".
@@ -522,6 +523,180 @@ test("in compare each panel has its slots' cards, and a slot nothing fits gives 
   await expect(first.getByRole('link', { name: 'Browse the 47 That Fit' })).toBeVisible()
   await expectNoAxeViolations(page)
   await page.screenshot({ path: join(images, `slot-compare-${testInfo.project.name}.png`), fullPage: true })
+})
+
+// An on-track ASPECT Mechatronics student's one plan in her fourth year, and the engine's preview of
+// SLL1002S Word Power in it, as the API answers them from the 2026 timetable, trimmed to the two
+// courses the preview changes. Word Power keeps lecture B, Monday to Wednesday at 16:00, which overlaps
+// EEE3096S's lab B, Wednesday 14:00 to 17:45, so the preview fixes the lab to A, Friday 14:00 to 17:45.
+// The credits are the engine's: 96 with 18 to choose, and 111 with Word Power's 15. Her favourites are
+// Word Power, which fits the plan, and a course that fits none of hers.
+type PlanPreview = components['schemas']['PlanPreview']
+type PlanCourse = components['schemas']['PlanCourse']
+type Elective = components['schemas']['Elective']
+
+const aspectId = '00000000-0000-4000-8000-000000000821'
+const aspectLectures = [2, 3].map((weekday) => meeting('sem2', weekday, '10:00', '11:45'))
+const aspectLabA = meeting('sem2', 5, '14:00', '17:45', { kind: 'lab', choice_group: 'lab', choice: 'A' })
+const embedded = (meetings: Meeting[]): PlanCourse => ({
+  code: 'EEE3096S',
+  name: 'Embedded Systems II',
+  credits: 16,
+  term: 'sem2',
+  groups: [{ key: 'EB811EEE05-y4-core', label: 'Fourth Year Core Courses (ME)' }],
+  meetings,
+})
+const aspectPlan: Plan = {
+  id: aspectId,
+  period: 2026,
+  position: 1,
+  name: 'Core Courses Only',
+  combination: null,
+  hidden: false,
+  credits: { total: 96, by_term: { sem1: 56, sem2: 40 }, to_choose: 18 },
+  reasons: [],
+  slots: [line({ fit_count: 35, check_count: 25 })],
+  courses: [
+    embedded([...aspectLectures, meeting('sem2', 3, '14:00', '17:45', { kind: 'lab', choice_group: 'lab', choice: 'B' }), aspectLabA]),
+  ],
+}
+const wordPower: PlanPreview = {
+  plan: {
+    ...aspectPlan,
+    credits: { total: 111, by_term: { sem1: 56, sem2: 55 }, to_choose: 0 },
+    slots: [],
+    courses: [
+      embedded([...aspectLectures, aspectLabA]),
+      {
+        code: 'SLL1002S',
+        name: 'Word Power',
+        credits: 15,
+        term: 'sem2',
+        groups: [{ key: 'complementary', label: 'Approved complementary studies courses' }],
+        meetings: [1, 2, 3].map((weekday) => meeting('sem2', weekday, '16:00', '16:45', { kind: 'lecture', choice_group: 'lecture', choice: 'B' })),
+      },
+    ],
+  },
+  course_code: 'SLL1002S',
+  forced: [{ course_code: 'EEE3096S', choice_group: 'lab', choice: 'A' }],
+}
+const favourite = (name: string, code: string, plans: string[]): Elective => ({
+  codes: [code],
+  name,
+  credits: 15,
+  summary: null,
+  hearted: true,
+  can_heart: true,
+  note: null,
+  offerings: [{ code, term: 'sem2', convener: null, hearted: true, can_heart: true, plans }],
+})
+
+async function aspectApi(page: Page): Promise<void> {
+  const set: PlanSet = {
+    period: 2026,
+    version: 1,
+    questionnaire_needed: false,
+    has_slot: true,
+    reasons: [],
+    plans: [{ id: aspectId, position: 1, name: 'Core Courses Only', combination: null, hidden: false, credits: 96, to_choose: 18 }],
+  }
+  const answers: Record<string, unknown> = {
+    '/v1/plans': set,
+    [`/v1/plans/${aspectId}`]: aspectPlan,
+    [`/v1/plans/${aspectId}/previews/SLL1002S`]: wordPower,
+    '/v1/electives': {
+      tabs: [
+        {
+          key: 'literature',
+          courses: [favourite('Word Power', 'SLL1002S', [aspectId]), favourite('Writing & Editing in the Media', 'FAM2000F', [])],
+        },
+      ],
+    },
+  }
+  await page.route(
+    (url) => url.pathname in answers,
+    (route) => route.fulfill({ json: answers[new URL(route.request().url()).pathname], headers: allowed }),
+  )
+}
+
+const previewing = 'Previewing Word Power in this plan. Nothing is saved.'
+
+test("a favourite on the slot card previews it in the week, its meetings dashed and the lab it fixes named, until End Preview or Back", async ({
+  page,
+}, testInfo) => {
+  await aspectApi(page)
+  await page.goto(`/plan/${aspectId}`)
+  const slot = page.getByRole('article').filter(headed(page, 2, 'Complementary Studies'))
+  // Only the favourite that fits this plan
+  await expect(slot.getByRole('button', { name: /^Preview/ })).toHaveText(['Preview Word Power'])
+  const preview = await hold(page, read(`/v1/plans/${aspectId}/previews/SLL1002S`))
+  await slot.getByRole('button', { name: 'Preview Word Power' }).click()
+  // On Sem 2, Word Power's semester
+  await page.waitForURL(`**/plan/${aspectId}?preview=SLL1002S&term=sem2`)
+  await expect(loading(page, 'Loading the preview…')).toBeAttached()
+  await expect(skeletons(main(page)).first()).toBeVisible()
+  await expectNoAxeViolations(page)
+  await preview.release()
+  await expect(page.getByText(previewing)).toBeVisible()
+  await expect(page.getByText('96 credits + 15 with Word Power', { exact: true })).toBeVisible()
+  const monday = day(page, 'Monday').getByRole('listitem')
+  await expect(monday).toHaveCount(1)
+  await expect(monday).toHaveAttribute('data-previewed', 'true')
+  await expect(monday).toContainText('SLL1002S Word Power, in this preview')
+  await expect(day(page, 'Friday').getByText('Lab A, fixed by this preview')).toBeVisible()
+  await expect(day(page, 'Wednesday').getByText('Lab B')).toHaveCount(0)
+  // Word Power fills the plan's one slot, so its card has gone
+  await expect(slot).toHaveCount(0)
+  await expectNoAxeViolations(page)
+  mkdirSync(images, { recursive: true })
+  await page.screenshot({ path: join(images, `preview-${testInfo.project.name}.png`), fullPage: true })
+  await page.getByRole('radio', { name: 'Course List' }).click()
+  await expect(page.getByRole('cell', { name: 'Word Power Preview' })).toBeVisible()
+  await page.getByRole('radio', { name: 'Calendar' }).click()
+
+  // End Preview replaces the address, leaving the plan as it was
+  await page.getByRole('button', { name: 'End Preview' }).click()
+  await page.waitForURL(`**/plan/${aspectId}?term=sem2`)
+  await expect(page.getByText('96 credits + 18 to choose', { exact: true })).toBeVisible()
+  await expect(day(page, 'Wednesday').getByText('Lab B')).toBeVisible()
+  // Starting one pushes the address, so Back ends it
+  await slot.getByRole('button', { name: 'Preview Word Power' }).click()
+  await expect(page.getByText(previewing)).toBeVisible()
+  await page.goBack()
+  await page.waitForURL(`**/plan/${aspectId}?term=sem2`)
+  await expect(page.getByText(previewing)).toHaveCount(0)
+})
+
+test("a preview that doesn't fit says why over the plan as it is, with End Preview and nothing to try again", async ({ page }) => {
+  await aspectApi(page)
+  await page.route(read(`/v1/plans/${aspectId}/previews/FAM2000F`), (route) =>
+    route.fulfill({ status: 422, contentType: 'application/problem+json', json: refusal('course_doesnt_fit', 422), headers: allowed }),
+  )
+  await page.goto(`/plan/${aspectId}?preview=FAM2000F&term=sem2`)
+  const alert = page.getByRole('alert').filter({ hasText: "That Course Doesn't Fit This Plan" })
+  await expect(alert).toBeVisible()
+  await expect(alert.getByRole('button', { name: 'Try Again' })).toHaveCount(0)
+  await expect(page.getByText('96 credits + 18 to choose', { exact: true })).toBeVisible()
+  await expect(day(page, 'Wednesday').getByText('Lab B')).toBeVisible()
+  await expectNoAxeViolations(page)
+  await alert.getByRole('button', { name: 'End Preview' }).click()
+  await page.waitForURL(`**/plan/${aspectId}?term=sem2`)
+  await expect(alert).toHaveCount(0)
+})
+
+test('her favourites on the slot card wait as skeletons, and a read that fails says so with Try Again', async ({ page }) => {
+  await aspectApi(page)
+  const favourites = await hold(page, read('/v1/electives'))
+  await page.goto(`/plan/${aspectId}`)
+  const slot = page.getByRole('article').filter(headed(page, 2, 'Complementary Studies'))
+  await expect(skeletons(slot)).toHaveCount(2)
+  await expect(loading(page, 'Loading your favourites…')).toBeAttached()
+  await favourites.refuse(refusal('internal_error', 500))
+  // A failed read is tried again three times, 1, 2 and 4 s apart
+  await expect(slot.getByRole('button', { name: 'Try Again' })).toBeVisible({ timeout: 15_000 })
+  await expect(skeletons(slot)).toHaveCount(0)
+  await expect(slot.getByRole('link', { name: 'Browse the 35 That Fit' })).toBeVisible()
+  await expectNoAxeViolations(page)
 })
 
 // The error sheet draws each planner case in light, then in dark

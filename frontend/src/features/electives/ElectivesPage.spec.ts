@@ -7,7 +7,8 @@
 // back and a toast says so; that when the undo fails too, the electives are read again and the card
 // shows what saved; that a card with no note has no line at its foot, and one she can't heart shows
 // its note and no heart. Then the page filtered to one plan: only the courses that fit it, her
-// favourites first on the tab with one, which opens first, and a reload keeps the filter; a plan
+// favourites first on the tab with one, which opens first, and a reload keeps the filter; each card
+// previews the offerings that fit, opening the plan with the preview in its address; a plan
 // that isn't hers, and one from an earlier set, show every course and say why; and a current plan
 // nothing fits shows its slot's own words. While the courses are on their way, loading case 04's
 // skeleton holds the page under its title and search, and goes when they land, or once the read has
@@ -437,6 +438,26 @@ test('filtered to a plan, it keeps only what fits, her favourites first on the t
   await page.getByRole('link', { name: 'Show Every Course' }).click()
   await expect(page).toHaveURL(/\/electives\?tab=languages$/)
   await expect(cardNames(page)).toHaveText(['French 1A', 'Greek IA', 'isiXhosa for Beginners'])
+})
+
+test('filtered to a plan, each card previews the offerings that fit it in its week, one for each term when two do', async ({ page }) => {
+  // Plan 1 takes both of French 1A's offerings and isiXhosa's one
+  await madeUpApi(page)
+  // What the plan's page reads once a preview opens it
+  await page.route('**/v1/plans/*/previews/*', (route) =>
+    route.fulfill({ json: { plan: planOf(plan(1), 1), course_code: 'SLL1017S', forced: [] }, headers: allowed }),
+  )
+  await page.route(
+    (url) => url.pathname === '/v1/chats',
+    (route) => route.fulfill({ json: [], headers: allowed }),
+  )
+  await page.goto(`/electives?plan=${plan(1)}&tab=languages`)
+  await expect(cardNamed(page, 'isiXhosa for Beginners').getByRole('button', { name: 'Preview isiXhosa for Beginners' })).toHaveText('Preview')
+  const french = cardNamed(page, 'French 1A')
+  await expect(french.getByRole('button', { name: /^Preview/ })).toHaveText(['Preview Sem 1', 'Preview Sem 2'])
+  await expectNoAxeViolations(page)
+  await french.getByRole('button', { name: 'Preview Sem 2 of French 1A' }).click()
+  await page.waitForURL(`**/plan/${plan(1)}?preview=SLL1017S&term=sem2`)
 })
 
 test("a plan that isn't hers, or isn't one of her current plans, shows every course and says why", async ({ page }) => {

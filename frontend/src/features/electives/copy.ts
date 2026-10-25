@@ -33,6 +33,13 @@ export const showing = (count: number, plan: string) =>
 
 export const showEveryCourse = 'Show Every Course'
 
+// A card's previews in the plan the page is filtered to: "Preview", or for a course offered in two
+// terms that fit, "Preview Sem 1" and "Preview Sem 2", each named in full for a screen reader
+export const preview = 'Preview'
+export const previewTerm = (term: string) => `Preview ${term}`
+export const previewOf = (name: string) => `Preview ${name}`
+export const previewTermOf = (term: string, name: string) => `Preview ${term} of ${name}`
+
 export const notCurrent = "This plan isn't one of your current plans, so every course is shown."
 
 export const nothingFits = 'No Course Fits This Plan'

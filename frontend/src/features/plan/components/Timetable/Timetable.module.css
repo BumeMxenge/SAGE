@@ -82,6 +82,12 @@
   color: var(--color-on-fill);
 }
 
+/* The course a preview adds, dashed inside its edge, as it isn't part of the plan. The line over the
+   week names it, so the dashes aren't all that mark it. */
+.block[data-previewed] {
+  border: 1px dashed var(--color-on-fill);
+}
+
 .timetable[data-compact] .block {
   padding: var(--space-1);
 }
