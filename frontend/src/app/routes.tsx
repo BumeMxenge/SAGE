@@ -1,8 +1,8 @@
 // The browser's addresses: one route for each page, saying who may open it and where its page lives.
 // A page loads only when first opened, from a fixed file in the folder of the branch that builds it,
-// so a later branch replaces that file and never edits this table. The student's frame loads with the
-// app, so the first load can show it while the guard decides. The table lives in app/, as lib/ may
-// not import a feature.
+// and that branch adds the page's guard and its first-load fallback to this table. The student's
+// frame loads with the app, so the first load can show it while the guard decides. The table lives in
+// app/, as lib/ may not import a feature.
 import { isCancelledError } from '@tanstack/react-query'
 import { type ComponentType, lazy } from 'react'
 import { replace, type RouteObject } from 'react-router'
