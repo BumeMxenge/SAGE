@@ -393,7 +393,11 @@ test('a question cut off on its way is checked against the chat: saved, its repl
   await expect(conversation(page)).toContainText('A made-up reply, saved before the drop.')
   await expect(rail(page).getByText("Can't Reach SAGE")).toHaveCount(0)
 
-  await ask(page, 'A question the API lost')
+  // The reply shows once the chat is read again, and Send waits until the chat list and her set are
+  // too, so the next question goes once Send is ready, as she would send it
+  await chatBox(page).fill('A question the API lost')
+  await expect(button(page, 'Send')).toBeEnabled()
+  await chatBox(page).press('Enter')
   await expect(rail(page).getByText("Can't Reach SAGE")).toBeVisible()
   await expect(button(page, 'Try Again')).toBeVisible()
 })
