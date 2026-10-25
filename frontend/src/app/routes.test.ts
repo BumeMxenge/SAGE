@@ -2,9 +2,10 @@
 // The guard sweep, like the backend's in tests/unit/shared/api/test_guards.py: every page in the
 // real route table, opened by every kind of visitor, in a memory router. Who may open each page, and
 // where each visitor belongs, are written out by hand from the foundations brief, so a page that
-// forgets its rule, or one added without a line here, fails. GET /v1/me is answered in place of the
-// network, through the real client and its middleware. It runs in Node, because Node's Request
-// refuses jsdom's AbortSignal.
+// forgets its rule, or one added without a line here, fails. GET /v1/me, and GET /v1/plans with a
+// complementary slot, which Explore Electives needs, are answered in place of the network, through
+// the real client and its middleware. It runs in Node, because Node's Request refuses jsdom's
+// AbortSignal.
 import type { Session } from '@supabase/supabase-js'
 import { createMemoryRouter, type RouteObject } from 'react-router'
 import { afterEach, expect, it, vi } from 'vitest'
@@ -54,6 +55,7 @@ const home: Record<Visitor, string> = {
 }
 
 type Me = components['schemas']['Me']
+type PlanSet = components['schemas']['PlanSet']
 type Problem = components['schemas']['Problem']
 
 // Made-up accounts: Mbali has finished setup, and Ilvane hasn't
@@ -61,15 +63,26 @@ const mbali: Me = { email: 'dlmmba999@myuct.ac.za', account: 'student', student_
 const ilvane: Me = { email: 'qrtilv999@myuct.ac.za', account: 'student', student_number: 'QRTILV999', onboarding_complete: false }
 const staff: Me = { email: 'test.advisor@uct.ac.za', account: 'staff', student_number: null, onboarding_complete: false }
 
-const answer = (body: Me) => new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+// A plan set with a complementary slot or without one
+const setOf = (hasSlot: boolean): PlanSet => ({
+  period: 2026,
+  version: 1,
+  questionnaire_needed: false,
+  has_slot: hasSlot,
+  reasons: [],
+  plans: [],
+})
+
+const answer = (body: Me | PlanSet) => new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
 
 function refusal(code: Problem['code'], status: number): Response {
   const body: Problem = { type: 'about:blank', title: 'Refused', status, detail: 'A made-up refusal.', code }
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/problem+json' } })
 }
 
-// Each kind of visitor, by what their browser holds and what GET /v1/me says to them
-type Visit = { who: string; is: Visitor; me?: () => Response }
+// Each kind of visitor, by what their browser holds and what GET /v1/me says to them, and what GET
+// /v1/plans does, if not a set with a slot
+type Visit = { who: string; is: Visitor; me?: () => Response; plans?: () => Response }
 const visits: Visit[] = [
   { who: 'a signed-out visitor', is: 'signed_out' },
   { who: 'a visitor whose session the API refuses', is: 'signed_out', me: () => refusal('not_signed_in', 401) },
@@ -83,8 +96,10 @@ const session = { access_token: 'made-up-token' } as Session
 
 // The visitor's browser and the API's answer to them. It returns the session's spy, to see when the
 // guard first asks.
-function arrive({ me }: Visit) {
-  if (me) network.mockImplementation(async () => me())
+const pathOf = (input: RequestInfo | URL) => new URL(input instanceof Request ? input.url : input).pathname
+
+function arrive({ me, plans = () => answer(setOf(true)) }: Visit) {
+  if (me) network.mockImplementation(async (input) => (pathOf(input) === '/v1/plans' ? plans() : me()))
   return vi
     .spyOn(supabase.auth, 'getSession')
     .mockResolvedValue(me ? { data: { session }, error: null } : { data: { session: null }, error: null })
@@ -144,6 +159,16 @@ it.each(Object.keys(opens))('%s, opened by every kind of visitor', async (path) 
     // Sent away, the address is replaced, so Back doesn't return to a page that sends them away again
     if (!allowed) expect(historyAction, `${path}, opened by ${visit.who}, replaces the address`).toBe('REPLACE')
   }
+})
+
+it.each([
+  ['whose plans have no complementary slot', () => answer(setOf(false))],
+  ["whose plans aren't ready", () => refusal('plans_not_ready', 409)],
+])('/electives sends a student %s to her plan', async (_, plans) => {
+  const { location, historyAction } = await open('/electives', { who: 'Mbali', is: 'student', me: () => answer(mbali), plans })
+
+  expect(location.pathname).toBe('/plan')
+  expect(historyAction).toBe('REPLACE')
 })
 
 it('/ sends every visitor home', async () => {

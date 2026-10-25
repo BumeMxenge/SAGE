@@ -37,11 +37,21 @@ test.describe('as Mbali', () => {
     await check(page, '/plan', [], /^\/plan\/[\w-]+$/)
   })
 
-  for (const path of ['/plan/00000000-0000-4000-8000-000000000001', '/electives', '/history', '/no-such-page']) {
+  for (const path of ['/plan/00000000-0000-4000-8000-000000000001', '/history', '/no-such-page']) {
     test(path, async ({ page }) => {
       await check(page, path)
     })
   }
+
+  test('/electives', async ({ page }) => {
+    // Explore Electives opens only for a student whose plans have a complementary slot. Mbali's have
+    // none, so her set is answered as if they had one, and the page shows her own electives.
+    await page.route('**/v1/plans', async (route) => {
+      const response = await route.fetch()
+      await route.fulfill({ response, json: { ...(await response.json()), has_slot: true } })
+    })
+    await check(page, '/electives')
+  })
 
   for (const [who, path] of [
     ['staff', '/staff'],

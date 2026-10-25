@@ -2,24 +2,31 @@
 // as the address changes while the sidebar stays as it is. The sidebar is the page's banner, holding
 // the logo, the main navigation (audit §5) and the account. It folds to a rail of icons and opens
 // again. Folded, the labels stay in the page, clipped from view, so each link keeps its name, and a
-// tooltip shows it beside the icon instead. At a plan's own address the assistant sits on the page's
-// other side, outside its main landmark, as the named aside approved difference 6 asks for.
+// tooltip shows it beside the icon instead. Explore Electives shows only to a student whose plans have
+// a complementary slot. At a plan's own address the assistant sits on the page's other side, outside
+// its main landmark, as the named aside approved difference 6 asks for.
+import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Button, Link } from 'react-aria-components'
 import { Outlet, useLocation, useParams } from 'react-router'
 import { IconButton } from '@/components/actions/IconButton/IconButton.tsx'
 import { Icon, type PlainIconName } from '@/components/brand/Icon/Icon.tsx'
 import { Logo } from '@/components/brand/Logo/Logo.tsx'
+import { Arrival } from '@/components/feedback/Arrival/Arrival.tsx'
+import { Skeleton } from '@/components/feedback/Skeleton/Skeleton.tsx'
 import { Tooltip } from '@/components/overlays/Tooltip/Tooltip.tsx'
 import { AssistantRail } from '@/features/assistant/AssistantRail.tsx'
 import type { View } from '@/features/plan/components/TermView/TermView.tsx'
 import { nav } from '@/lib/copy.ts'
+import { queries } from '@/lib/queryKeys.ts'
 import { AccountMenu } from './AccountMenu.tsx'
 import styles from './AppLayout.module.css'
 
-const pages: { href: string; label: string; icon: PlainIconName }[] = [
+// Explore Electives is for choosing a complementary course, so it shows only to a student whose plans
+// have a slot for one
+const pages: { href: string; label: string; icon: PlainIconName; needsSlot?: boolean }[] = [
   { href: '/plan', label: nav.plan, icon: 'calendar_today' },
-  { href: '/electives', label: nav.electives, icon: 'explore' },
+  { href: '/electives', label: nav.electives, icon: 'explore', needsSlot: true },
   { href: '/history', label: nav.history, icon: 'schedule' },
 ]
 
@@ -47,6 +54,10 @@ export function AppLayout() {
   // A pressed toggle disappears as the sidebar changes shape, so the one that replaces it takes focus.
   // Only a press sets this: the window's width, or the account menu opening the sidebar, moves no focus.
   const [moveFocus, setMoveFocus] = useState(false)
+  // Her plan set says whether she has a slot. It is read only once the guard's read says she is a
+  // student, so the first load's frame asks nothing of its own before the guard decides.
+  const me = useQuery({ ...queries.me(), enabled: false })
+  const set = useQuery({ ...queries.plans(), enabled: me.data?.account === 'student' && me.data.onboarding_complete })
 
   // Narrowing the window past the width folds the sidebar, and widening it opens it again
   useEffect(() => {
@@ -109,14 +120,25 @@ export function AppLayout() {
           )}
         </div>
         <nav aria-label="Main" className={styles.nav}>
-          {pages.map(({ href, label, icon }) => (
-            <Tooltip key={href} text={label} placement="end" isDisabled={!collapsed}>
-              <Link href={href} aria-current={isCurrent(href) ? 'page' : undefined} className={styles.link}>
-                <Icon name={icon} />
-                {label}
-              </Link>
-            </Tooltip>
-          ))}
+          {pages.map(({ href, label, icon, needsSlot }) => {
+            const link = (
+              <Tooltip key={href} text={label} placement="end" isDisabled={!collapsed}>
+                <Link href={href} aria-current={isCurrent(href) ? 'page' : undefined} className={styles.link}>
+                  <Icon name={icon} />
+                  {label}
+                </Link>
+              </Tooltip>
+            )
+            if (!needsSlot) return link
+            // A skeleton the size of a link holds its row while her set loads, so the links under it
+            // move at most once. Without a slot, or if the read fails, no link shows. It has no status
+            // line: the link simply joins the navigation when it comes.
+            return (
+              <Arrival key={href} data={set.data} waiting={set.isPending} skeleton={<Skeleton variant="control" />}>
+                {({ has_slot }) => has_slot && link}
+              </Arrival>
+            )
+          })}
         </nav>
         <AccountMenu collapsed={collapsed} onOpen={openForMenu} />
       </header>
