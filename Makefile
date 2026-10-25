@@ -130,11 +130,16 @@ atp1:
 		uv run python ../tests/acceptance/atp1/run.py && \
 		$(ATP1_PATH) uv run python ../tests/acceptance/atp1/report.py
 
-# Loads the made-up student onto one local account: make seed USER_ID=<account id>
+# The seed file of a student other than Mbali, as FILE=data/synthetic/ziyela.json, for the targets
+# below. It is made absolute, as they run from backend/.
+SEED_FILE_OPTION = $(if $(FILE),--file "$(abspath $(FILE))")
+
+# Loads the made-up student onto one local account: make seed USER_ID=<account id>, with FILE= for
+# another seed file than Mbali's
 seed:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
-		uv run sage seed --user "$(USER_ID)"
+		uv run sage seed --user "$(USER_ID)" $(SEED_FILE_OPTION)
 
 # Loads every approved year, each data/rules/<year>/rulebook.json, into local Supabase, as after make
 # check-db wipes it. A year held exactly as its snapshot is passed over, so a newly approved year loads
@@ -150,12 +155,13 @@ load:
 
 # Prints a one-time link that signs Mbali in on the local frontend, with no password and no
 # Microsoft. On a fresh local database it first makes her account and loads her seed. PORT=3001 or
-# 3002 points the link at a worktree's frontend. Only the link goes to stdout, for scripts to read.
+# 3002 points the link at a worktree's frontend, and FILE=data/synthetic/ziyela.json signs in the
+# student of another seed file instead. Only the link goes to stdout, for scripts to read.
 sign-in:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
-		uv run sage sign-in $(if $(PORT),--port $(PORT)) && \
-		echo "Open that link in your browser to sign in as Mbali. It works once, within an hour." >&2
+		uv run sage sign-in $(if $(PORT),--port $(PORT)) $(SEED_FILE_OPTION) && \
+		echo "Open that link in your browser to sign in as $(if $(FILE),the student in $(FILE),Mbali). It works once, within an hour." >&2
 
 # Prints a one-time link for Ilvane, a second made-up student, who hasn't finished setup. Each run
 # first deletes her account and everything it saved, so onboarding starts fresh, and never touches
