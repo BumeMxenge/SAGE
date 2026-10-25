@@ -1,0 +1,4 @@
+/* The folded assistant strip's place, kept clear beside the plan until it opens with her plan */
+.plan-skeleton {
+  margin-inline-end: var(--width-rail);
+}

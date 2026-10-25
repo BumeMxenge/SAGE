@@ -1,7 +1,11 @@
 // The plan view as Mbali: /plan opens her first plan, the switcher and Compare's list leave out the
 // plans her answers hid, one of which opens by its address with its name alone, choosing a plan or a
 // term changes the address, Compare pairs the next plan her answers kept and returns on Done
-// Comparing, Escape or Back, every view passes axe and the keyboard walks compare.
+// Comparing, Escape or Back, every view passes axe and the keyboard walks compare. While her plans are
+// held on their way, loading case 01 shows, its term and view live, in the calendar and the list, as
+// do compare's panels and /plan's wait for her set: each passes axe and is photographed beside the page
+// it turns into. A refused read leaves no skeleton, and the plan from the cache shows none and fades
+// nothing in.
 // routes.spec.ts runs both on the plan itself and on a plan that doesn't exist. Then one engine-shaped
 // plan, a set of 50 plans and a set with none on made-up answers from the API, and parity beside the
 // planner prototype and the error sheet in both themes.
@@ -13,6 +17,17 @@ import { join } from 'node:path'
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../../e2e/axe.ts'
 import { walkKeyboard } from '../../../e2e/keyboard.ts'
+import {
+  forgetSeen,
+  hold,
+  loading,
+  photographArrival,
+  read,
+  refusal,
+  seenLoading,
+  skeletons,
+  watchLoading,
+} from '../../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../../e2e/parity.ts'
 import { settled } from '../../../e2e/settled.ts'
 import { mbali } from '../../../e2e/visitors.ts'
@@ -116,6 +131,8 @@ test('Compare pairs the next plan her answers kept, and Done Comparing, Escape a
 })
 
 test('every view passes axe, and the keyboard walks compare', async ({ page }) => {
+  // Eight axe runs and a keyboard walk, which took up to 28 s under a full run's load
+  test.setTimeout(90_000)
   const choose = (name: string) => page.getByRole('radio', { name }).click()
   await openPlan(page)
   await switcher(page).click()
@@ -146,6 +163,96 @@ test('every view passes axe, and the keyboard walks compare', async ({ page }) =
   // Each panel's empty term sits under the panel's own title
   await expect(page.getByRole('heading', { level: 3, name: 'No Courses This Term' })).toHaveCount(2)
   await expectNoAxeViolations(page)
+})
+
+// Every read of her set and her plans
+const planReads = (url: URL) => url.pathname.startsWith('/v1/plans')
+
+test('while her plans are on their way, case 01 shows with the term and view live, and the plan replaces it', async ({
+  page,
+}, testInfo) => {
+  await openPlan(page)
+  const plans = await hold(page, planReads)
+  await page.reload()
+  await expect(loading(page, 'Loading your plan…')).toBeAttached()
+  await expect(skeletons(main(page)).first()).toBeVisible()
+  await expect(page.getByRole('radio', { name: 'Sem 1' })).toBeChecked()
+  await expect(page.getByRole('radio', { name: 'Calendar' })).toBeChecked()
+  await expect(day(page, 'Monday')).toHaveCount(0)
+  await expectNoAxeViolations(page)
+  await photographArrival(page, testInfo, 'plan', () => plans.release())
+  await expect(switcher(page)).toBeVisible()
+  await expect(day(page, 'Monday').getByText('EEE4117F')).toBeVisible()
+})
+
+test("choosing Course List while her plans are on their way shows the list's skeleton, and her list replaces it", async ({
+  page,
+}, testInfo) => {
+  await openPlan(page)
+  const plans = await hold(page, planReads)
+  await page.reload()
+  await page.getByRole('radio', { name: 'Course List' }).click()
+  await expect(skeletons(main(page)).first()).toBeVisible()
+  // The list's skeleton, not the week's
+  await expect(main(page).getByText('Mon', { exact: true })).toHaveCount(0)
+  await expect(page.getByRole('table')).toHaveCount(0)
+  await expectNoAxeViolations(page)
+  await photographArrival(page, testInfo, 'plan-list', () => plans.release())
+  await expect(page.getByRole('radio', { name: 'Course List' })).toBeChecked()
+  await expect(page.getByRole('table').first()).toBeVisible()
+})
+
+test("in compare, the bar shows at once over each panel's skeleton, which the pair replaces", async ({ page }, testInfo) => {
+  await openPlan(page)
+  const pair = await hold(page, read('/v1/plans/compare'))
+  await compareButton(page).click()
+  await expect(page.getByRole('heading', { level: 1, name: 'Comparing Plans' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Done Comparing' })).toBeVisible()
+  await expect(page.getByRole('radio', { name: 'Sem 1' })).toBeChecked()
+  await expect(loading(page, 'Loading your plans…')).toBeAttached()
+  await expect(skeletons(main(page)).first()).toBeVisible()
+  await expectNoAxeViolations(page)
+  await photographArrival(page, testInfo, 'compare', () => pair.release())
+  await expect(page.getByRole('heading', { level: 2 })).toHaveText(['Power, Control & Robotics', 'Signals, Power & Robotics'])
+})
+
+test("/plan shows the plan's skeleton until her set arrives, then her first plan replaces it", async ({ page }, testInfo) => {
+  const set = await hold(page, read('/v1/plans'))
+  await page.goto('/plan')
+  await expect(loading(page, 'Loading your plan…')).toBeAttached()
+  await expect(skeletons(main(page)).first()).toBeVisible()
+  await expectNoAxeViolations(page)
+  await photographArrival(page, testInfo, 'plan-at-plan', async () => {
+    await set.release()
+    await page.waitForURL(planAddress)
+  })
+  await expect(switcher(page)).toBeVisible()
+})
+
+test('a refused read leaves no skeleton', async ({ page }) => {
+  await openPlan(page)
+  const plan = await hold(page, read(new URL(page.url()).pathname.replace('/plan/', '/v1/plans/')))
+  await page.reload()
+  await expect(skeletons(main(page)).first()).toBeVisible()
+  // A refusal isn't tried again, so the read has failed at once
+  await plan.refuse(refusal('invalid_request', 422))
+  await expect(skeletons(main(page))).toHaveCount(0)
+  await expect(loading(page)).toHaveCount(0)
+})
+
+test('back from another page, her plan shows from the cache at once, with no skeleton and no fade', async ({ page }) => {
+  await watchLoading(page)
+  await openPlan(page)
+  await page.getByRole('link', { name: 'Course History', exact: true }).click()
+  await page.getByRole('table').first().waitFor()
+  // Course History's own fade-in ends first, as its events come a frame after it starts
+  await settled(page)
+  await forgetSeen(page)
+  await page.getByRole('link', { name: 'Plan', exact: true }).click()
+  await page.waitForURL(planAddress)
+  await switcher(page).waitFor()
+  await settled(page)
+  expect(await seenLoading(page)).toEqual({ skeletons: 0, fades: 0 })
 })
 
 // One plan made up from the engine's real cases, on a made-up answer from the API, cut down to the
@@ -470,7 +577,12 @@ parity('plan', [
       await settled(page)
       return inSheet(page, theme, "This plan doesn't exist").locator('..')
     },
-    react: { path: missingPlan, element: (page) => page.getByRole('heading', { level: 1 }).locator('..') },
+    react: {
+      path: missingPlan,
+      // The plan's skeleton shows until the API says there's no such plan
+      reach: (page) => page.getByRole('heading', { level: 1, name: "This Plan Doesn't Exist" }).waitFor(),
+      element: (page) => page.getByRole('heading', { level: 1 }).locator('..'),
+    },
   },
   state('switcher', steps.plan, designedSwitcher, switcher, true),
   state('compare-button', steps.plan, (page) => page.getByRole('button', { name: 'Compare', exact: true }), compareButton, true),

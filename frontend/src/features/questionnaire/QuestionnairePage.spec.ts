@@ -3,13 +3,18 @@
 // the checks leave alone, such as GET /v1/me. Her made-up set of ten plans needs narrowing until the
 // answers are saved: /plan asks both questions on one page, an answer greys out against the other
 // question's whichever was chosen first, a greyed answer takes focus, says why and can't be chosen,
-// and Show My Plans saves the answers by id and opens the first plan they kept. Then axe, the keyboard
-// walk and parity beside the planner prototype's questionnaire, in both themes.
+// and Show My Plans saves the answers by id and opens the first plan they kept. While the questions
+// are held on their way, the title and subtitle show over the questions' skeletons, and Show My Plans
+// gives way at once to the plan's skeleton while the answers save, until her first kept plan opens, or
+// a refused save brings back her answers as she left them. Each skeleton passes axe and is
+// photographed beside the page it turns into. Then axe, the keyboard walk and parity beside the
+// planner prototype's questionnaire, in both themes.
 // The questions are the prototype's own, with its plans and the plans each answer keeps, as the API
 // would send them: the API's labels for the week, and no direction question (approved difference 11).
 import { expect, type Page, type Route, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../../e2e/axe.ts'
 import { walkKeyboard } from '../../../e2e/keyboard.ts'
+import { hold, loading, photographArrival, read, refusal, skeletons } from '../../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../../e2e/parity.ts'
 import { settled } from '../../../e2e/settled.ts'
 import { mbali } from '../../../e2e/visitors.ts'
@@ -113,7 +118,9 @@ async function madeUpApi(page: Page, refusal?: components['schemas']['Problem'])
 const heading = (page: Page) => page.getByRole('heading', { level: 1, name: 'A Few Questions First' })
 const answer = (page: Page, name: string) => page.getByRole('radio', { name, exact: true })
 const showMyPlans = (page: Page) => page.getByRole('button', { name: 'Show My Plans' })
-const narrowing = (page: Page) => page.locator('output')
+// The line beside Show My Plans, an output as a page's loading status lines are too
+const narrowing = (page: Page) => page.locator('output', { hasNotText: /^Loading / })
+const questions = (page: Page) => page.getByRole('radiogroup')
 
 test('/plan asks both questions, and Show My Plans saves the answers and opens the first plan they kept', async ({ page }) => {
   const sent = await madeUpApi(page)
@@ -141,6 +148,56 @@ test('/plan asks both questions, and Show My Plans saves the answers and opens t
   // /plan's address was replaced, so Back skips the questionnaire
   await page.goBack()
   await expect(page).toHaveURL(/\/history$/)
+})
+
+test("while the questions are on their way, the title and subtitle show over the questions' skeletons, which the questions replace", async ({
+  page,
+}, testInfo) => {
+  await madeUpApi(page)
+  const asked = await hold(page, read('/v1/questionnaire'))
+  await page.goto('/plan')
+  await expect(heading(page)).toBeVisible()
+  await expect(page.getByText('SAGE found 10 plans for 2026. Your answers narrow them to a short list.', { exact: true })).toBeVisible()
+  await expect(loading(page, 'Loading your questions…')).toBeAttached()
+  await expect(skeletons(page.getByRole('main')).first()).toBeVisible()
+  await expect(questions(page)).toHaveCount(0)
+  await expectNoAxeViolations(page)
+  await photographArrival(page, testInfo, 'questionnaire', () => asked.release())
+  await expect(questions(page)).toHaveCount(2)
+})
+
+test("Show My Plans gives way at once to the plan's skeleton, and a refused save brings back her answers as she left them", async ({
+  page,
+}) => {
+  await madeUpApi(page)
+  await page.goto('/plan')
+  await answer(page, 'Mechatronics').click()
+  const save = await hold(page, read('/v1/questionnaire'), 'POST')
+  await showMyPlans(page).click()
+  await expect(heading(page)).toHaveCount(0)
+  await expect(loading(page, 'Loading your plan…')).toBeAttached()
+  await expect(skeletons(page.getByRole('main')).first()).toBeVisible()
+  await expectNoAxeViolations(page)
+  await save.refuse(refusal('no_plan_matches', 422))
+  await expect(heading(page)).toBeVisible()
+  await expect(answer(page, 'Mechatronics')).toBeChecked()
+  await expect(narrowing(page)).toHaveText('This keeps 7 of your 10 plans.')
+  await expect(loading(page)).toHaveCount(0)
+})
+
+test("while her answers save, the plan's skeleton stays until her first kept plan opens", async ({ page }, testInfo) => {
+  const sent = await madeUpApi(page)
+  await page.goto('/plan')
+  await answer(page, 'Mechatronics').click()
+  await answer(page, 'Fewest 8am starts').click()
+  const save = await hold(page, read('/v1/questionnaire'), 'POST')
+  await showMyPlans(page).click()
+  await expect(loading(page, 'Loading your plan…')).toBeAttached()
+  await photographArrival(page, testInfo, 'show-my-plans', async () => {
+    await save.release()
+    await page.waitForURL(`**/plan/${plan(8)}`)
+  })
+  expect(sent()).toEqual({ course: 'TST4103F', week: 'fewest_8am' })
 })
 
 test("an answer greys out against the other question's, whichever was chosen first", async ({ page }) => {
@@ -242,7 +299,8 @@ function state(
     react: {
       path: '/plan',
       reach: async (page) => {
-        await heading(page).waitFor()
+        // The title shows at once, and the questions once they arrive
+        await questions(page).first().waitFor()
         await steps.built(page)
         await settled(page)
       },

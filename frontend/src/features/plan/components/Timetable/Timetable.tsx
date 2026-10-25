@@ -3,8 +3,10 @@
 // the eye. To a screen reader each day is a list named by the day, and each block says its course,
 // its times and any options it stands for. The course list is the plain equivalent of the whole week.
 // Compact is the smaller week inside a compare panel, whose blocks leave the times to the hours beside
-// them.
-import type { CourseColour, Week } from '../../week.ts'
+// them. While the plan is on its way it draws the shortest week, its days and hours, with skeleton
+// meetings where loading case 01 draws them.
+import { Skeleton } from '@/components/feedback/Skeleton/Skeleton.tsx'
+import { type CourseColour, shortestWeek, type Week } from '../../week.ts'
 import styles from './Timetable.module.css'
 
 const days = [
@@ -15,59 +17,82 @@ const days = [
   { day: 5, short: 'Fri', long: 'Friday' },
 ]
 
+// The hours the skeleton's meetings start, each day, each an hour long, as loading case 01 places them
+const waitingStarts: Record<number, number[]> = { 1: [8, 10, 12], 2: [8, 10, 12], 3: [8, 10, 12, 14], 4: [10, 12], 5: [8, 10, 12, 14] }
+const waitingLength = 60
+
 const clock = (hour: number) => `${String(hour).padStart(2, '0')}:00`
 
-type TimetableProps = {
-  week: Week
-  colours: ReadonlyMap<string, CourseColour>
-  compact?: boolean
-}
+type TimetableProps = { compact?: boolean } & (
+  | { week: Week; colours: ReadonlyMap<string, CourseColour> }
+  // The plan is on its way
+  | { week: null }
+)
 
-export function Timetable({ week, colours, compact = false }: TimetableProps) {
-  const hours = Array.from({ length: week.hours }, (_, index) => week.firstHour + index)
+export function Timetable(props: TimetableProps) {
+  const { firstHour, hours } = props.week ?? shortestWeek
+  const compact = props.compact ?? false
   return (
-    <div className={styles.timetable} data-compact={compact || undefined} style={{ '--hours': week.hours }}>
+    <div className={styles.timetable} data-compact={compact || undefined} style={{ '--hours': hours }}>
       {days.map(({ day, short }) => (
         <span key={day} aria-hidden="true" className={styles.dayLabel}>
           {short}
         </span>
       ))}
       <div aria-hidden="true" className={styles.hours}>
-        {hours.map((hour) => (
+        {Array.from({ length: hours }, (_, index) => firstHour + index).map((hour) => (
           <span key={hour}>{clock(hour)}</span>
         ))}
       </div>
-      {days.map(({ day, long }) => (
-        <ul key={day} aria-label={long} className={styles.day}>
-          {week.blocks
-            .filter((block) => block.day === day)
-            .map((block) => (
-              <li
-                key={block.key}
-                className={styles.block}
-                data-colour={colours.get(block.code)}
-                style={{ '--start': block.start, '--length': block.length, '--lane': block.lane, '--lanes': block.lanes }}
-              >
-                <p className={styles.code}>
-                  {block.code}
-                  <span className="visually-hidden"> {block.name}</span>
-                </p>
-                <p className={styles.detail}>
-                  {block.quarter}
-                  <span aria-hidden="true" className={styles.times}>
-                    {block.quarter && ' · '}
-                    {block.from}–{block.to}
-                  </span>
-                  <span className="visually-hidden">
-                    {' '}
-                    {block.from} to {block.to}
-                  </span>
-                </p>
-                {block.options && <p className={styles.detail}>{block.options}</p>}
-              </li>
-            ))}
-        </ul>
-      ))}
+      {days.map(({ day, long }) => {
+        if (props.week === null) {
+          return (
+            <div key={day} className={styles.day}>
+              {waitingStarts[day].map((hour) => (
+                <span
+                  key={hour}
+                  className={styles.waiting}
+                  style={{ '--start': (hour - firstHour) * 60, '--length': waitingLength }}
+                >
+                  <Skeleton variant="block" />
+                </span>
+              ))}
+            </div>
+          )
+        }
+        const { colours } = props
+        return (
+          <ul key={day} aria-label={long} className={styles.day}>
+            {props.week.blocks
+              .filter((block) => block.day === day)
+              .map((block) => (
+                <li
+                  key={block.key}
+                  className={styles.block}
+                  data-colour={colours.get(block.code)}
+                  style={{ '--start': block.start, '--length': block.length, '--lane': block.lane, '--lanes': block.lanes }}
+                >
+                  <p className={styles.code}>
+                    {block.code}
+                    <span className="visually-hidden"> {block.name}</span>
+                  </p>
+                  <p className={styles.detail}>
+                    {block.quarter}
+                    <span aria-hidden="true" className={styles.times}>
+                      {block.quarter && ' · '}
+                      {block.from}–{block.to}
+                    </span>
+                    <span className="visually-hidden">
+                      {' '}
+                      {block.from} to {block.to}
+                    </span>
+                  </p>
+                  {block.options && <p className={styles.detail}>{block.options}</p>}
+                </li>
+              ))}
+          </ul>
+        )
+      })}
     </div>
   )
 }

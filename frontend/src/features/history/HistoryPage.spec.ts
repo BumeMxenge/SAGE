@@ -1,16 +1,80 @@
 // Course History as Mbali: its title and cumulative average stay in view as the page scrolls, the page
 // stands in from its margins beside the sidebar, open or folded, and parity beside the planner prototype
 // in both themes, the page as it opens and her newest year in full, as a photograph stops at the
-// window's edge.
-// routes.spec.ts already runs axe and the keyboard walk on this page once its h1 shows, and the page
-// shows nothing until her record has arrived, so those checks see her tables. Nothing here is
-// interactive, so there is no hover.
+// window's edge. While her record is held on its way, loading case 05 shows, passes axe and is
+// photographed beside the page it turns into; a refused read leaves no skeleton; and the page from the
+// cache shows none and fades nothing in.
+// routes.spec.ts already runs axe and the keyboard walk on this page once its record has arrived.
+// Nothing here is interactive, so there is no hover.
 import { expect, type Locator, type Page, test } from '@playwright/test'
+import { expectNoAxeViolations } from '../../../e2e/axe.ts'
+import {
+  forgetSeen,
+  hold,
+  loading,
+  photographArrival,
+  read,
+  refusal,
+  seenLoading,
+  skeletons,
+  watchLoading,
+} from '../../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../../e2e/parity.ts'
 import { settled } from '../../../e2e/settled.ts'
 import { mbali } from '../../../e2e/visitors.ts'
 
 test.use({ storageState: mbali })
+
+const title = (page: Page) => page.getByRole('heading', { level: 1, name: 'Course History' })
+// Her newest year's table, once her record has arrived. The skeleton's table is hidden from screen
+// readers, so it never matches.
+const newestYear = (page: Page) => page.getByRole('table', { name: /^2025 / })
+
+test("while her record is on its way, the title and the average's label show over a year's skeleton, which her record replaces", async ({
+  page,
+}, testInfo) => {
+  await watchLoading(page)
+  const record = await hold(page, read('/v1/history'))
+  await page.goto('/history')
+  await expect(title(page)).toBeVisible()
+  await expect(page.getByText('Cumulative Average:')).toBeVisible()
+  await expect(loading(page, 'Loading your course history…')).toBeAttached()
+  await expect(skeletons(page.getByRole('main')).first()).toBeVisible()
+  // The year's skeleton, under its real column headers
+  await expect(page.getByRole('main').getByText('Result', { exact: true })).toBeVisible()
+  await expectNoAxeViolations(page)
+  await photographArrival(page, testInfo, 'history', () => record.release())
+  await expect(newestYear(page)).toBeVisible()
+  await expect(page.getByText(/^Cumulative Average: \d+\.\d%$/)).toBeVisible()
+  // What took the skeleton's place faded in
+  expect((await seenLoading(page)).fades).toBeGreaterThan(0)
+})
+
+test('a refused read leaves no skeleton', async ({ page }) => {
+  const record = await hold(page, read('/v1/history'))
+  await page.goto('/history')
+  await expect(skeletons(page.getByRole('main')).first()).toBeVisible()
+  // A refusal isn't tried again, so the read has failed at once
+  await record.refuse(refusal('invalid_request', 422))
+  await expect(skeletons(page.getByRole('main'))).toHaveCount(0)
+  await expect(loading(page)).toHaveCount(0)
+  await expect(title(page)).toBeVisible()
+})
+
+test('back from another page, her record shows from the cache at once, with no skeleton and no fade', async ({ page }) => {
+  await watchLoading(page)
+  await page.goto('/history')
+  await newestYear(page).waitFor()
+  await page.getByRole('link', { name: 'Plan', exact: true }).click()
+  await page.getByRole('button', { name: 'Compare', exact: true }).waitFor()
+  // The plan's own fade-in ends first, as its events come a frame after it starts
+  await settled(page)
+  await forgetSeen(page)
+  await page.getByRole('link', { name: 'Course History', exact: true }).click()
+  await newestYear(page).waitFor()
+  await settled(page)
+  expect(await seenLoading(page)).toEqual({ skeletons: 0, fades: 0 })
+})
 
 async function scrollToFoot(page: Page): Promise<void> {
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
@@ -19,17 +83,16 @@ async function scrollToFoot(page: Page): Promise<void> {
 // From 400 px tall the header stays at the top of the window, as the prototype's does. One pixel
 // shorter, it scrolls away with the tables, as it would cover too much of the screen.
 test('the title and cumulative average stay in view to the foot of the page, from 400 px tall', async ({ page }) => {
-  const title = page.getByRole('heading', { level: 1, name: 'Course History' })
   const average = page.getByText('Cumulative Average:')
   await page.setViewportSize({ width: 1280, height: 400 })
   await page.goto('/history')
-  await title.waitFor()
+  await newestYear(page).waitFor()
   await scrollToFoot(page)
-  await expect(title).toBeInViewport()
+  await expect(title(page)).toBeInViewport()
   await expect(average).toBeInViewport()
   await page.setViewportSize({ width: 1280, height: 399 })
   await scrollToFoot(page)
-  await expect(title).not.toBeInViewport()
+  await expect(title(page)).not.toBeInViewport()
   await expect(average).not.toBeInViewport()
 })
 
@@ -64,7 +127,7 @@ async function insets(page: Page): Promise<{ title: number; tableLeft: number; t
 test('the title and tables stand 24 px inside the margins from 768 px wide, beside the sidebar open or folded', async ({ page }) => {
   const inset = { title: 24, tableLeft: 24, tableRight: 24, average: 24 }
   await page.goto('/history')
-  await page.getByRole('heading', { level: 1 }).waitFor()
+  await newestYear(page).waitFor()
   expect(await insets(page)).toEqual(inset)
   await page.getByRole('button', { name: 'Collapse Sidebar' }).click()
   await settled(page)
@@ -84,7 +147,7 @@ async function prototypeHistory(page: Page, theme: Theme): Promise<void> {
 }
 
 async function opened(page: Page): Promise<void> {
-  await page.getByRole('heading', { level: 1 }).waitFor()
+  await newestYear(page).waitFor()
   await settled(page)
 }
 

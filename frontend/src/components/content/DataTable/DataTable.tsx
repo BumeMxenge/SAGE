@@ -12,7 +12,8 @@ export type DataTableColumn = { key: string; header: string; align?: 'start' | '
 export type DataTableRow = { id: string; cells: Record<string, ReactNode> }
 
 type DataTableProps = {
-  caption: string
+  // Its title, or a skeleton in its place while a page's read is on its way
+  caption: ReactNode
   // Figures at the end of the caption's line, such as a year's average and credits. Being in the
   // caption, they are part of the table's name. Only for a table that doesn't scroll: they wrap under
   // the caption in a narrow window, and a scrollable table's caption has a fixed height.

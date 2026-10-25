@@ -1,0 +1,43 @@
+/* The header and the term's row, over the term. They reach up over the main area's top margin, so the
+   header sits as near the top as the prototype's, and from 400 px tall they stay at the top of the
+   window as the week scrolls beneath them, as Course History's header does. Their own background
+   hides what passes beneath. */
+.bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin-top: calc(var(--space-10) * -1);
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-6);
+  background: var(--color-surface);
+}
+
+@media (height >= 400px) {
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+  }
+}
+
+/* The plan and its credits at the start, and the actions after them at the far end */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* The skeleton's credits, in the credits' text, pushing Compare's to the far end as they do */
+.credits {
+  margin-inline-end: auto;
+  font-size: var(--font-size-sm);
+}
