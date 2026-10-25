@@ -7,7 +7,17 @@
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../e2e/axe.ts'
 import { walkKeyboard } from '../../e2e/keyboard.ts'
-import { forgetSeen, hold, loading, photographArrival, read, seenLoading, skeletons, watchLoading } from '../../e2e/loading.ts'
+import {
+  forgetSeen,
+  hold,
+  loading,
+  photographArrival,
+  read,
+  seenLoading,
+  settledArrival,
+  skeletons,
+  watchLoading,
+} from '../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../e2e/parity.ts'
 import { settled } from '../../e2e/settled.ts'
 import { mbali } from '../../e2e/visitors.ts'
@@ -19,8 +29,10 @@ const sidebar = (page: Page) => page.getByRole('banner')
 const account = (page: Page) => sidebar(page).getByRole('button', { name: /DLMMBA999/ })
 
 // The account waits for the name lookup, so the sidebar is whole once it shows
+// The page beside it arrives too, and fades in, before the checks read the window
 async function opened(page: Page): Promise<void> {
   await account(page).waitFor()
+  await settledArrival(page)
   await settled(page)
 }
 

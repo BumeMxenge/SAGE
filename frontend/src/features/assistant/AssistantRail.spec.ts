@@ -20,7 +20,17 @@
 import { expect, type Page, type Route, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../../e2e/axe.ts'
 import { walkKeyboard } from '../../../e2e/keyboard.ts'
-import { forgetSeen, hold, loading, photographArrival, read, seenLoading, skeletons, watchLoading } from '../../../e2e/loading.ts'
+import {
+  forgetSeen,
+  hold,
+  loading,
+  photographArrival,
+  read,
+  seenLoading,
+  settledArrival,
+  skeletons,
+  watchLoading,
+} from '../../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../../e2e/parity.ts'
 import { settled } from '../../../e2e/settled.ts'
 import { mbali } from '../../../e2e/visitors.ts'
@@ -170,12 +180,15 @@ const conversation = (page: Page) => page.getByRole('log', { name: 'Conversation
 const chatBox = (page: Page) => page.getByRole('textbox', { name: 'Ask SAGE' })
 const button = (page: Page, name: string) => page.getByRole('button', { name, exact: true })
 
-// /plan as it opens her first plan: her set, as the page read it, and the plan's id
+// /plan as it opens her first plan, once the plan has arrived and faded in: her set, as the page read
+// it, and the plan's id
 async function herPlan(page: Page): Promise<{ set: PlanSet; planId: string }> {
   const read = page.waitForResponse((response) => new URL(response.url()).pathname === '/v1/plans')
   await page.goto('/plan')
   const set = (await (await read).json()) as PlanSet
   await page.waitForURL(planAddress)
+  await settledArrival(page)
+  await settled(page)
   return { set, planId: new URL(page.url()).pathname.replace('/plan/', '') }
 }
 

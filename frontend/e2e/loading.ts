@@ -132,8 +132,9 @@ export async function photographArrival(
   ])
 }
 
-// No skeleton or loading status line left on the page
+// No skeleton or loading status line left on the page. A read can take several seconds when a full run
+// loads the machine, so it waits longer than Playwright's 5 s.
 export async function settledArrival(page: Page): Promise<void> {
-  await expect(loading(page)).toHaveCount(0)
-  await expect(skeletons(page)).toHaveCount(0)
+  await expect(loading(page)).toHaveCount(0, { timeout: 15_000 })
+  await expect(skeletons(page)).toHaveCount(0, { timeout: 15_000 })
 }

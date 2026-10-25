@@ -67,6 +67,8 @@ test('back from another page, her record shows from the cache at once, with no s
   await newestYear(page).waitFor()
   await page.getByRole('link', { name: 'Plan', exact: true }).click()
   await page.getByRole('button', { name: 'Compare', exact: true }).waitFor()
+  // The plan's own fade-in ends first, as its events come a frame after it starts
+  await settled(page)
   await forgetSeen(page)
   await page.getByRole('link', { name: 'Course History', exact: true }).click()
   await newestYear(page).waitFor()

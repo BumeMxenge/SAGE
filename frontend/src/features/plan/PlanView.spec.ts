@@ -245,6 +245,8 @@ test('back from another page, her plan shows from the cache at once, with no ske
   await openPlan(page)
   await page.getByRole('link', { name: 'Course History', exact: true }).click()
   await page.getByRole('table').first().waitFor()
+  // Course History's own fade-in ends first, as its events come a frame after it starts
+  await settled(page)
   await forgetSeen(page)
   await page.getByRole('link', { name: 'Plan', exact: true }).click()
   await page.waitForURL(planAddress)
