@@ -33,8 +33,10 @@ export function AccountMenu({ collapsed, onOpen }: AccountMenuProps) {
   const { appearance, choose } = useAppearance()
   const navigate = useNavigate()
 
-  // To /sign-in, replacing the address, so Back can't return to a page that would only send them away
-  const signOutAndLeave = () => signOut(() => navigate('/sign-in', { replace: true }))
+  // To /sign-in, replacing the address, so Back can't return to a page that would only send them away.
+  // flushSync draws the move at once rather than as a transition, so her pages have closed before
+  // signOut empties the cache, and none of them shows its skeleton or asks for its reads again.
+  const signOutAndLeave = () => signOut(() => navigate('/sign-in', { replace: true, flushSync: true }))
 
   return (
     <div className={styles.account} data-collapsed={collapsed || undefined}>
