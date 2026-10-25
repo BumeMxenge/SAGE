@@ -199,7 +199,10 @@ def slot(found: PlanSlot, credits: Mapping[str, int]) -> Slot:
 
 
 def reason(row: PlanReason, rules: RuleSet) -> Reason:
-    passage = next((p for p in rules.passages if p.id == row.passage_id), None)
+    passage = None
+    if row.passage_id:
+        # Its year's rules hold every passage its reasons cite, so a missing one is a fault
+        (passage,) = (p for p in rules.passages if p.id == row.passage_id)
     return Reason(
         kind=row.kind,
         message=row.message,

@@ -173,6 +173,33 @@ def test_a_place_names_the_course_it_stands_in_for(mbali, stores):
     assert (summary["has_slot"], summary["plans"][0]["to_choose"]) == (True, 8)
 
 
+def test_a_reason_names_the_passage_it_cites(mbali, stores):
+    # A later set for Mbali, made up, whose one plan's reason cites a passage of the approved 2026
+    cited = stores[0].get(2026).passages[0]
+    later = PlanSet(id=uuid4(), student_id=MBALI, period=2026, version=2, complete=True)
+    plan = Plan(
+        id=uuid4(), plan_set_id=later.id, student_id=MBALI, position=1, name="Made Up"
+    )
+    because = PlanReason(
+        id=uuid4(),
+        plan_set_id=later.id,
+        student_id=MBALI,
+        plan_id=plan.id,
+        kind="included",
+        message="A made-up reason.",
+        passage_id=cited.id,
+    )
+    stores[1].add_plan_set(
+        PlanSetRows(plan_set=later, plans=(plan,), plan_reasons=(because,))
+    )
+    (shown,) = mbali.get(f"/v1/plans/{plan.id}").json()["reasons"]
+    assert (shown["source"], shown["section"], shown["page"]) == (
+        cited.source,
+        cited.section,
+        cited.page,
+    )
+
+
 def test_a_preview_adds_the_course_to_her_plan_and_saves_nothing(ziyela, stores):
     # Her plan 2's slot lists SLL1002S, a 15-credit course, on 138 credits. How its sections narrow
     # and fix her plan's own is checked in test_service.py, on a plan where that shows.
