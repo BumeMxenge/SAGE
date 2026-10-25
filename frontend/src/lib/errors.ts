@@ -6,31 +6,19 @@
 import { ApiError, type ErrorCode } from './api.ts'
 
 // What gets the student past an error. The screen that shows it builds its own button from the name.
-export type ErrorAction =
-  | 'retry'
-  | 'sign_in_again'
-  | 'use_another_account'
-  | 'sign_out'
-  | 'upload_another'
-  | 'go_to_plan'
-  | 'finish_setup'
+type ErrorAction = 'retry' | 'go_to_plan'
 
 // Each action's button, so every screen names the same action the same way
 export const actionLabels: Record<ErrorAction, string> = {
   retry: 'Try Again',
-  sign_in_again: 'Sign In Again',
-  use_another_account: 'Use a Different Account',
-  sign_out: 'Sign Out',
-  upload_another: 'Upload a Different File',
   go_to_plan: 'Go to My Plan',
-  finish_setup: 'Finish Setting Up',
 }
 
 type Entry = {
   title: string
   // A function where the words name what the refusal carries, such as both student numbers
   message: string | ((error: ApiError) => string)
-  // No action means the student fixes what's wrong where the error shows, such as a field
+  // The button a screen offers to get past the error, if any, such as Try Again
   action: ErrorAction | null
 }
 
@@ -58,17 +46,17 @@ const entries = {
   not_signed_in: {
     title: 'Your Session Has Expired',
     message: 'Sign in again to carry on.',
-    action: 'sign_in_again',
+    action: null,
   },
   uct_account_required: {
     title: "This Account Can't Use SAGE",
     message: 'SAGE is for UCT students. Sign in with your student account, the one ending in @myuct.ac.za.',
-    action: 'use_another_account',
+    action: null,
   },
   students_only: {
     title: "Staff Tools Aren't Built Yet",
     message: "This part of SAGE is for students. Tools for staff aren't part of this version.",
-    action: 'sign_out',
+    action: null,
   },
   rulebook_not_loaded: {
     title: "SAGE Isn't Ready Yet",
@@ -88,33 +76,33 @@ const entries = {
   not_a_pdf: {
     title: "That File Isn't a PDF",
     message: 'Export your transcript as a PDF and upload it again.',
-    action: 'upload_another',
+    action: null,
   },
   file_too_large: {
     title: 'That File Is Too Large',
     message: 'Your transcript must be 10 MB or less. Upload a smaller PDF.',
-    action: 'upload_another',
+    action: null,
   },
   transcript_unreadable: {
     title: "SAGE Couldn't Read This Transcript",
     message: 'Download it again from PeopleSoft and upload the new copy.',
-    action: 'upload_another',
+    action: null,
   },
   not_a_transcript: {
     title: "This Isn't a UCT Academic Record",
     message: 'Upload the academic record you downloaded from PeopleSoft.',
-    action: 'upload_another',
+    action: null,
   },
   transcript_not_yours: {
     title: 'This Transcript Belongs to Another Student',
     message: ({ problem }) =>
       `This transcript is for ${problem?.transcript_student_number}, but you're signed in as ${problem?.account_student_number}.`,
-    action: 'upload_another',
+    action: null,
   },
   transcript_incomplete: {
     title: 'This Transcript Is Missing Pages',
     message: 'Download your whole academic record from PeopleSoft again and upload it.',
-    action: 'upload_another',
+    action: null,
   },
   no_course_history: {
     title: 'Your Record Has No Courses Yet',
@@ -125,7 +113,7 @@ const entries = {
   onboarding_incomplete: {
     title: 'Finish Setting Up First',
     message: 'Upload your transcript and confirm your course history, then try again.',
-    action: 'finish_setup',
+    action: null,
   },
   plans_not_ready: {
     title: "Your Plans Aren't Ready Yet",
