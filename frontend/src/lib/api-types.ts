@@ -602,8 +602,6 @@ export interface components {
             id: string;
             /** Label */
             label: string;
-            /** Hearted */
-            hearted: boolean;
             /** Keeps */
             keeps: string[];
         };

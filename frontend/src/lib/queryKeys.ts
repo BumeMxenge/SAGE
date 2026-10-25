@@ -62,8 +62,8 @@ export const refresh = {
       allOf('/v1/plans/{plan_id}/previews/{course_code}'),
       allOf('/v1/plans/compare'),
     ),
-  // A heart shows on its elective, and the questionnaire lists hearted courses first
-  favouriteChanged: () => refreshing(allOf('/v1/electives'), allOf('/v1/questionnaire')),
+  // A heart shows on its elective
+  favouriteChanged: () => refreshing(allOf('/v1/electives')),
   // A new chat joins the list for its plan or pair
   chatStarted: () => refreshing(allOf('/v1/chats')),
   // The question and its reply join that chat, a reply can bring the chat its first title, and a plan

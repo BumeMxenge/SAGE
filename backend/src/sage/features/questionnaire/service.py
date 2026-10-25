@@ -2,7 +2,6 @@
 # than typed in, and each option carries the plans it keeps, so the frontend can grey out options
 # that would leave nothing. Answering hides the plans the answers don't keep, and never deletes one.
 from collections import defaultdict
-from collections.abc import Collection
 from datetime import time
 from typing import Any, Literal
 from uuid import UUID
@@ -28,7 +27,6 @@ LUNCH = (time(13, 0), time(13, 45))
 class Option(Row):
     id: str
     label: str
-    hearted: bool = False
     keeps: tuple[UUID, ...]  # the plans this answer keeps
 
 
@@ -47,8 +45,7 @@ def current(
     if rows is None or not plans.questionnaire_needed(rows):
         return None
     rules = rulebook.year(rows.plan_set.period)
-    favourites = students.record(student.id).favourites
-    return questions(rows, rules, student.curriculum_code, favourites)
+    return questions(rows, rules, student.curriculum_code)
 
 
 def answer(
@@ -65,7 +62,7 @@ def answer(
     rules = rulebook.year(rows.plan_set.period)
     options = {
         question.id: {option.id: option.keeps for option in question.options}
-        for question in questions(rows, rules, student.curriculum_code, ())
+        for question in questions(rows, rules, student.curriculum_code)
     }
     # The plans every answer keeps. A question left unanswered keeps them all.
     kept = {plan.id for plan in rows.plans}
@@ -81,7 +78,7 @@ def answer(
 
 
 def questions(
-    rows: PlanSetRows, rules: RuleSet, curriculum: str, favourites: Collection[str]
+    rows: PlanSetRows, rules: RuleSet, curriculum: str
 ) -> tuple[Question, ...]:
     everyone = tuple(plan.id for plan in rows.plans)
     by_plan = plans.courses(rows, rules)
@@ -97,15 +94,8 @@ def questions(
         hint="Only plans that include it stay in.",
         options=(
             *(
-                Option(
-                    id=code,
-                    label=names[code],
-                    hearted=code in favourites,
-                    keeps=tuple(holding[code]),
-                )
-                for code in sorted(
-                    choosable, key=lambda code: (code not in favourites, code)
-                )
+                Option(id=code, label=names[code], keeps=tuple(holding[code]))
+                for code in sorted(choosable)
             ),
             Option(id="no_preference", label="No strong preference", keeps=everyone),
         ),

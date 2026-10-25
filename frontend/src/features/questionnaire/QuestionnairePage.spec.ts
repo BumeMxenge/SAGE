@@ -56,7 +56,7 @@ function planOf(number: number, kept: number[]): Plan {
   return { id, period: 2026, position, name, combination, hidden, credits: { total: 144, by_term: {}, to_choose: 0 }, courses: [], reasons: [], slots: [] }
 }
 
-const option = (id: string, label: string, keeps: string[]): Option => ({ id, label, hearted: false, keeps })
+const option = (id: string, label: string, keeps: string[]): Option => ({ id, label, keeps })
 
 // The prototype's course question, with made-up codes for its courses
 const courses = [

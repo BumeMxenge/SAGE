@@ -34,7 +34,7 @@ afterEach(() => {
 
 it.each([
   ['answering the questionnaire', () => refresh.questionnaireAnswered(), ['plans', 'plan', 'preview', 'comparison']],
-  ['a favourite', () => refresh.favouriteChanged(), ['questionnaire', 'electives']],
+  ['a favourite', () => refresh.favouriteChanged(), ['electives']],
   ['starting a chat', () => refresh.chatStarted(), ['chats', 'pairChats']],
   ['a sent message', () => refresh.messageSent(chat), ['plans', 'chats', 'pairChats', 'messages']],
   ['Finish Setup', () => refresh.setupFinished(), ['me', 'plans']],

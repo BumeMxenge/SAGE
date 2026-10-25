@@ -11,7 +11,6 @@ from sage.shared.api.models import RequestBody
 class Option(BaseModel):
     id: str  # a course code, or one of the week options, or no_preference
     label: str
-    hearted: bool  # a course she hearted, listed first
     keeps: list[UUID]  # the plans this answer keeps
 
 
