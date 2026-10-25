@@ -40,8 +40,8 @@ describe('the plan Compare pairs with the open one', () => {
     expect(partnerOf(set, { id: 'p2', position: 2 })?.id).toBe('p3')
   })
 
-  it('is a hidden plan when no other is visible, and none in a set of one', () => {
-    expect(partnerOf([summary(1), summary(2, true)], { id: 'p1', position: 1 })?.id).toBe('p2')
+  it('is none when no other plan is visible, as in a set of one', () => {
+    expect(partnerOf([summary(1), summary(2, true)], { id: 'p1', position: 1 })).toBeUndefined()
     expect(partnerOf([summary(1)], { id: 'p1', position: 1 })).toBeUndefined()
   })
 })

@@ -14,11 +14,8 @@ export function firstPlan(plans: PlanSummary[]): PlanSummary | undefined {
 }
 
 // The plan Compare pairs with the open one: the next visible plan by position, round to the first
-// after the last, or a hidden plan when no other is visible. A set of one has none, so Compare isn't
-// shown.
+// after the last. With no other visible plan, as in a set of one, there's none, so Compare isn't shown.
 export function partnerOf(plans: PlanSummary[], open: { id: string; position: number }): PlanSummary | undefined {
-  const others = byPosition(plans).filter((plan) => plan.id !== open.id)
-  const visible = others.filter((plan) => !plan.hidden)
-  const pool = visible.length > 0 ? visible : others
-  return pool.find((plan) => plan.position > open.position) ?? pool.at(0)
+  const others = byPosition(plans).filter((plan) => plan.id !== open.id && !plan.hidden)
+  return others.find((plan) => plan.position > open.position) ?? others.at(0)
 }

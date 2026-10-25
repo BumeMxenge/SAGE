@@ -1,8 +1,7 @@
 // The questionnaire's rules, worked out from the plans each answer keeps, which the API sends with
-// every option, so no rule about timetables is copied here. The questions narrow in the order they
-// come: an answer can't be chosen when it keeps none of the plans the answers before it keep, and
-// changing an answer clears any later one that then keeps none, so the answers sent always keep a
-// plan.
+// every option, so no rule about timetables is copied here. An answer can't be chosen when it keeps
+// none of the plans her answers to the other questions keep, whichever she chose first, as in the
+// prototype. So every answer she can choose leaves a plan, and choosing one never clears another.
 import type { components } from '@/lib/api-types.ts'
 
 type Question = components['schemas']['Question']
@@ -21,30 +20,21 @@ function chosen(question: Question, answers: Answers): Option | undefined {
   return question.options.find((option) => option.id === answers[question.id])
 }
 
-// The plans that every answer to the first `count` questions keeps, out of all her plans
-export function keptBy(plans: string[], questions: Question[], answers: Answers, count = questions.length): string[] {
-  return questions.slice(0, count).reduce((kept, question) => {
+// The plans that every answer keeps, out of all her plans
+export function keptBy(plans: string[], questions: Question[], answers: Answers): string[] {
+  return questions.reduce((kept, question) => {
     const option = chosen(question, answers)
     return option ? kept.filter((plan) => option.keeps.includes(plan)) : kept
   }, plans)
 }
 
-// Why an option can't be chosen, or undefined when it can: it keeps none of the plans the answers
-// before its question keep. SAGE asks two questions, so the clash is with the one answer before it.
-export function clash(plans: string[], questions: Question[], answers: Answers, index: number, option: Option): string | undefined {
-  const kept = keptBy(plans, questions, answers, index)
+// Why an option can't be chosen, or undefined when it can: it keeps none of the plans her answers to
+// the other questions keep. Its own question's answer is left out, as choosing the option replaces it.
+// SAGE asks two questions, so the clash is with the one other answer.
+export function clash(plans: string[], questions: Question[], answers: Answers, question: Question, option: Option): string | undefined {
+  const others: Answers = { ...answers, [question.id]: undefined }
+  const kept = keptBy(plans, questions, others)
   if (option.keeps.some((plan) => kept.includes(plan))) return undefined
-  const before = questions.slice(0, index).flatMap((question) => chosen(question, answers) ?? [])
-  return `No plan has both ${before.map(({ label }) => `‘${label}’`).join(' and ')} and ‘${option.label}’.`
-}
-
-// Her answers once she chooses an option for the question at `index`, or clears it with null. Each
-// later answer that then keeps none of the plans the answers before it keep is cleared.
-export function choose(plans: string[], questions: Question[], answers: Answers, index: number, option: string | null): Answers {
-  const next: Answers = { ...answers, [questions[index].id]: option ?? undefined }
-  for (let later = index + 1; later < questions.length; later++) {
-    const answer = chosen(questions[later], next)
-    if (answer && clash(plans, questions, next, later, answer)) next[questions[later].id] = undefined
-  }
-  return next
+  const blocking = questions.flatMap((each) => chosen(each, others) ?? [])
+  return `No plan has both ${blocking.map(({ label }) => `‘${label}’`).join(' and ')} and ‘${option.label}’.`
 }

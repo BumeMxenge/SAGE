@@ -82,6 +82,10 @@ class StudentRepository(Protocol):
         self, student_id: UUID, plan_set_id: UUID, keep: Collection[UUID]
     ) -> None: ...
 
+    # Shows one of her plans, such as one her answers hid that the assistant offers. Another
+    # student's plan is left as it is.
+    def show_plan(self, student_id: UUID, plan_id: UUID) -> None: ...
+
     # Stores the questionnaire's answers on the set, which marks it answered
     def save_answers(
         self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]

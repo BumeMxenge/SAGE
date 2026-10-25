@@ -1,6 +1,7 @@
-// The plan view as Mbali: /plan opens her first plan, the switcher puts the plans her answers hid
-// last, choosing a plan or a term changes the address, Compare pairs the next plan her answers kept
-// and returns on Done Comparing, Escape or Back, every view passes axe and the keyboard walks compare.
+// The plan view as Mbali: /plan opens her first plan, the switcher and Compare's list leave out the
+// plans her answers hid, one of which opens by its address with its name alone, choosing a plan or a
+// term changes the address, Compare pairs the next plan her answers kept and returns on Done
+// Comparing, Escape or Back, every view passes axe and the keyboard walks compare.
 // routes.spec.ts runs both on the plan itself and on a plan that doesn't exist. Then one engine-shaped
 // plan, a set of 50 plans and a set with none on made-up answers from the API, and parity beside the
 // planner prototype and the error sheet in both themes.
@@ -30,15 +31,39 @@ async function openPlan(page: Page): Promise<void> {
   await switcher(page).waitFor()
 }
 
-test('/plan opens her first plan, and the switcher lists each over its codes, those her answers hid last', async ({ page }) => {
+// The six plans her answers kept after her first, by position
+const keptAfterFirst = [
+  /^Signals, Power & Robotics/,
+  /^Power, Robotics & Embedded/,
+  /^Power, Robotics & Imaging/,
+  /^Signals, Control & Robotics/,
+  /^Control, Robotics & Embedded/,
+  /^Control, Robotics & Imaging/,
+]
+
+test('/plan opens her first plan, and the switcher lists each plan her answers kept over its codes', async ({ page }) => {
   await openPlan(page)
   await switcher(page).click()
   const options = page.getByRole('option')
-  const hidden = page.getByRole('group', { name: 'Hidden by Your Answers' }).getByRole('option')
   // Her first plan's electives are the prototype's first plan's, under its name in code order
   await expect(options.first()).toHaveText(/^Power, Control & Robotics\s*EEE4117F · EEE4118F · EEE4119F\s*\d+ credits$/)
-  await expect(hidden).toHaveText([/^Signals, Power & Control/, /^Power, Control & Embedded/, /^Power, Control & Imaging/])
-  expect((await options.allTextContents()).slice(-3)).toEqual(await hidden.allTextContents())
+  await expect(options).toHaveText([/^Power, Control & Robotics/, ...keptAfterFirst])
+})
+
+test("Compare's list leaves out the plans her answers hid, and one opened by its address shows its name alone", async ({ page }) => {
+  const read = page.waitForResponse((response) => new URL(response.url()).pathname === '/v1/plans')
+  await openPlan(page)
+  const set = (await (await read).json()) as PlanSet
+  await compareButton(page).click()
+  await page.getByRole('button', { name: /Compare with Another Plan/ }).click()
+  await expect(page.getByRole('option')).toHaveText(keptAfterFirst)
+  await page.keyboard.press('Escape')
+
+  const hidden = set.plans.find((plan) => plan.name === 'Signals, Power & Control')
+  if (!hidden?.hidden) throw new Error("Mbali's seed hides Signals, Power & Control")
+  await page.goto(`/plan/${hidden.id}`)
+  await expect(page.getByText(hidden.name, { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Signals, Power & Control/ })).toHaveCount(0)
 })
 
 test('choosing a plan opens it at its own address, and Back returns', async ({ page }) => {
@@ -241,16 +266,16 @@ test('an engine plan alone in its set: its name, its options and what has no set
   await page.screenshot({ path: join(images, `engine-sem2-${testInfo.project.name}.png`), fullPage: true })
 })
 
-// A set of 50 plans, the most the engine makes, on a made-up answer from the API, of which her answers
-// kept five. The last has no electives, so the engine names it Core Courses Only, with no codes.
+// A set of 50 plans, the most the engine makes, on a made-up answer from the API, all of which her
+// answers kept, as no preference does. The last has no electives, so the engine names it Core Courses
+// Only, with no codes.
 type PlanSummary = components['schemas']['PlanSummary']
 
 const fifty: PlanSummary[] = Array.from({ length: 50 }, (_, index) => {
   const position = index + 1
   const id = `00000000-0000-4000-8000-${String(position).padStart(9, '0')}999`
-  const hidden = position > 5
-  if (position === 50) return { id, position, name: 'Core Courses Only', combination: null, hidden, credits: 72 }
-  return { id, position, name: `Plan ${position} of 50`, combination: `TST4${String(position).padStart(3, '0')}F`, hidden, credits: 72 }
+  if (position === 50) return { id, position, name: 'Core Courses Only', combination: null, hidden: false, credits: 72 }
+  return { id, position, name: `Plan ${position} of 50`, combination: `TST4${String(position).padStart(3, '0')}F`, hidden: false, credits: 72 }
 })
 const fiftyPlans: Plan[] = fifty.map((summary) => ({
   ...summary,
