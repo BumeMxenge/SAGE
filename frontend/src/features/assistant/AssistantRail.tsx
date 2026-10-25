@@ -60,12 +60,12 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
   const [picked, setPicked] = useState<Partial<Record<string, string | null>>>({})
   // The question last sent from each plan and pair, with its chat once that's made
   const [turns, setTurns] = useState<Partial<Record<string, Turn>>>({})
-  // The plan or pair on screen, from the reads the plan view makes. Folded, the assistant needs only
-  // their failure, which the plan view's reads bring, so the first load's frame asks for nothing more
-  // than her set before the guard decides.
-  const single = useQuery({ ...queries.plan(planId), enabled: open && compareWith === null })
-  const pair = useQuery({ ...queries.comparison(planId, compareWith ?? planId), enabled: open && compareWith !== null })
-  const setRead = useQuery(queries.plans())
+  // Her set and the plan or pair on screen, as the plan view reads them beside it. The assistant only
+  // watches those reads, so the first load's frame asks for nothing before the guard decides, and
+  // nothing is asked again, unsigned, when Sign Out empties the cache.
+  const single = useQuery({ ...queries.plan(planId), enabled: false })
+  const pair = useQuery({ ...queries.comparison(planId, compareWith ?? planId), enabled: false })
+  const setRead = useQuery({ ...queries.plans(), enabled: false })
   const set = setRead.data
   const chats = useQuery({ ...queries.chats(planId, compareWith ?? undefined), enabled: open })
   const waiting = useIsMutating({ mutationKey: turnKey(scope) }) > 0

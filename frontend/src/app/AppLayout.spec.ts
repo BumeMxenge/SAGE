@@ -3,7 +3,9 @@
 // already runs axe and the keyboard walk on every page with the sidebar open, so here they run on the
 // rail and the open menu. While the first load's guard waits on GET /v1/me, held, the frame shows,
 // the account as a skeleton and the address's skeleton beside it, and no page opens until the guard
-// lets it, with axe and a photograph beside what it turns into. Sign Out leaves showing no skeleton.
+// lets it, with axe and a photograph beside what it turns into, and the frame sends no read of its own
+// before the guard decides, so a signed-out visitor asks the API nothing. Sign Out leaves showing no
+// skeleton.
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../e2e/axe.ts'
 import { walkKeyboard } from '../../e2e/keyboard.ts'
@@ -30,6 +32,16 @@ const account = (page: Page) => sidebar(page).getByRole('button', { name: /DLMMB
 
 // The account waits for the name lookup, so the sidebar is whole once it shows
 // The page beside it arrives too, and fades in, before the checks read the window
+// Every request the page makes to the API from now on, by its path
+function apiReads(page: Page): string[] {
+  const paths: string[] = []
+  page.on('request', (request) => {
+    const { pathname } = new URL(request.url())
+    if (pathname.startsWith('/v1/')) paths.push(pathname)
+  })
+  return paths
+}
+
 async function opened(page: Page): Promise<void> {
   await account(page).waitFor()
   await settledArrival(page)
@@ -105,6 +117,7 @@ test("while the first load's guard asks who is visiting, the frame shows with th
   await page.waitForURL(/\/plan\/[\w-]+$/)
   const address = page.url()
   const me = await hold(page, read('/v1/me'))
+  const asked = apiReads(page)
   await page.reload()
   await expect(sidebar(page).getByRole('link', { name: 'Course History', exact: true })).toBeVisible()
   await expect(loading(page, 'Loading your account…')).toBeAttached()
@@ -115,10 +128,25 @@ test("while the first load's guard asks who is visiting, the frame shows with th
   // No page has opened: the plan's own controls wait for the guard
   await expect(page.getByRole('button', { name: /^Power, Control & Robotics/ })).toHaveCount(0)
   expect(page.url()).toBe(address)
+  // The frame only watches reads, so nothing but the guard's own goes out before it decides. In
+  // development StrictMode closes and opens the frame once, which cancels that read and asks again.
+  expect(new Set(asked)).toEqual(new Set(['/v1/me']))
   await expectNoAxeViolations(page)
   await photographArrival(page, testInfo, 'first-load', () => me.release())
   await expect(account(page)).toBeVisible()
   await expect(page.getByRole('button', { name: /^Power, Control & Robotics/ })).toBeVisible()
+})
+
+test("a signed-out visitor at a plan's address goes to /sign-in having asked the API nothing", async ({ browser }) => {
+  // The file's options, Mbali's session among them, reach a context made here too, so it's emptied
+  const visitor = await browser.newContext({ storageState: { cookies: [], origins: [] } })
+  const page = await visitor.newPage()
+  const asked = apiReads(page)
+  await page.goto('/plan/00000000-0000-4000-8000-000000000001')
+  await page.waitForURL('**/sign-in')
+  await page.getByRole('heading', { level: 1 }).waitFor()
+  expect(asked).toEqual([])
+  await visitor.close()
 })
 
 test('Sign Out leaves nothing of the student in the browser', async ({ page }) => {
