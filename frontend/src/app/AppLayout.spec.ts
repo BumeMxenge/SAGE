@@ -115,6 +115,8 @@ test("while the first load's guard asks who is visiting, the frame shows with th
 }, testInfo) => {
   await page.goto('/plan')
   await page.waitForURL(/\/plan\/[\w-]+$/)
+  // Her plan has arrived, so no read of this first page is still on its way when the count starts
+  await page.getByRole('button', { name: /^Power, Control & Robotics/ }).waitFor()
   const address = page.url()
   const me = await hold(page, read('/v1/me'))
   const asked = apiReads(page)
