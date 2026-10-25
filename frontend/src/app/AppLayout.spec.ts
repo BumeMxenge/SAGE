@@ -27,15 +27,12 @@ import {
 } from '../../e2e/loading.ts'
 import { type ParityCase, parity, type Theme } from '../../e2e/parity.ts'
 import { settled } from '../../e2e/settled.ts'
-import { mbali, signInLink, visitAs } from '../../e2e/visitors.ts'
+import { mbali, signInLink, visitAs, withSlot } from '../../e2e/visitors.ts'
 
 test.use({ storageState: mbali })
 
 test.beforeEach(async ({ page }) => {
-  await page.route('**/v1/plans', async (route) => {
-    const response = await route.fetch()
-    await route.fulfill({ response, json: { ...(await response.json()), has_slot: true } })
-  })
+  await withSlot(page)
 })
 
 const sidebar = (page: Page) => page.getByRole('banner')

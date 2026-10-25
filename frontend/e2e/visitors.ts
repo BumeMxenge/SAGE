@@ -49,6 +49,15 @@ export async function visitAs(page: Page, who: keyof typeof answers): Promise<vo
   await page.route('**/v1/me', (route) => route.fulfill(answers[who]))
 }
 
+// Makes the page's GET /v1/plans answer with Mbali's own set, as if her plans had a complementary slot,
+// so a check that needs Explore Electives finds its link and can open the page. Her plans have none.
+export async function withSlot(page: Page): Promise<void> {
+  await page.route('**/v1/plans', async (route) => {
+    const response = await route.fetch()
+    await route.fulfill({ response, json: { ...(await response.json()), has_slot: true } })
+  })
+}
+
 // Ilvane's real account, signed in afresh, for a spec that goes through onboarding. Each use resets
 // her with make sign-in-new, so a spec asks for it only in a file whose tests run one at a time
 // (test.describe.configure({ mode: 'serial' })), and only where that reset is wanted.

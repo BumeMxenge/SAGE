@@ -6,7 +6,7 @@ import { expect, type Page, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../e2e/axe.ts'
 import { walkKeyboard } from '../../e2e/keyboard.ts'
 import { settledArrival } from '../../e2e/loading.ts'
-import { mbali, visitAs } from '../../e2e/visitors.ts'
+import { mbali, visitAs, withSlot } from '../../e2e/visitors.ts'
 
 // The page opens for its visitor, the guard lets them stay, it has one h1, and it passes both checks
 // once its reads have arrived and no skeleton is left. The h1 isn't named here, as each page's own
@@ -44,12 +44,9 @@ test.describe('as Mbali', () => {
   }
 
   test('/electives', async ({ page }) => {
-    // Explore Electives opens only for a student whose plans have a complementary slot. Mbali's have
-    // none, so her set is answered as if they had one, and the page shows her own electives.
-    await page.route('**/v1/plans', async (route) => {
-      const response = await route.fetch()
-      await route.fulfill({ response, json: { ...(await response.json()), has_slot: true } })
-    })
+    // Explore Electives opens only for a student whose plans have a complementary slot, which Mbali's
+    // lack, so her set is answered as if they had one, and the page shows her own electives
+    await withSlot(page)
     await check(page, '/electives')
   })
 
