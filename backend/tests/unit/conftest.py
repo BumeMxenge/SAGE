@@ -29,6 +29,12 @@ from scripts import write_seed
 from tests.unit.accounts import MBALI, NTWZIY, QRTILV, ZVSORW
 
 
+@pytest.fixture
+def client() -> TestClient:
+    # The app as main.py builds it
+    return TestClient(create_app())
+
+
 class Advisor:
     # Records what it's asked, and replies with a referral, a plan to open and a citation, so a test
     # can see each one reach her
