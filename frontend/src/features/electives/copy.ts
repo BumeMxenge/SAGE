@@ -25,7 +25,7 @@ export const searchPlaceholder = 'Search electives by code, topic or lecturer'
 export const heartFailed = "Your favourite didn't save."
 
 // The filtered page's line, over the cards that fit one of her plans
-export const fitting = (count: number, plan: string) =>
+export const showing = (count: number, plan: string) =>
   `Showing the ${count} ${count === 1 ? 'course' : 'courses'} that fit ${plan}.`
 
 export const showEveryCourse = 'Show Every Course'

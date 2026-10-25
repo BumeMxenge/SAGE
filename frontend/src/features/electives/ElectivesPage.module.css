@@ -7,3 +7,11 @@
   max-width: var(--width-wide);
   margin: 0 auto;
 }
+
+/* Which plan the page is filtered to, or why it isn't, over the tabs */
+.notice {
+  margin: 0;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}
