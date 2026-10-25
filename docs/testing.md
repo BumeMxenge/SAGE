@@ -143,7 +143,7 @@ CI never runs it. It needs that stack, and screenshots differ between operating 
 
 Line coverage counts the lines that ran during the tests, not whether anything checked what they did, so it overstates. Mutation testing checks the checking. mutmut makes 8,321 copies of the code in `features/`, `shared/`, `ingestion/`, `engine/` and `advisor/`, each with one small change, such as `<` to `<=` or `5` to `6`. It runs the unit tests against each copy and counts the copies that make a test fail. A copy that makes the tests time out counts as caught. The 33 planted faults are plausible bugs chosen by hand, while mutmut makes every small change it can, most of them easy to catch, so its score runs higher.
 
-The score leaves out the integration tests, code outside functions (such as the transcript reader's patterns), the adapters to outside services (the storage adapters, where student isolation is enforced, their in-memory fakes, Claude's drafter and OpenAI's client), and the entry points, `main.py`, `cli.py` and `config.py`. The mutants that survive are listed below.
+The score leaves out the integration tests, code outside functions (such as the transcript reader's patterns), the adapters to outside services (the storage adapters, where student isolation is enforced, their in-memory fakes and OpenAI's client), and the entry points, `main.py`, `cli.py` and `config.py`. The mutants that survive are listed below.
 
 ## Numbers
 

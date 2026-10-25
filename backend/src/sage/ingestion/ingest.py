@@ -3,8 +3,8 @@
 # first, has the model write each complementary course's tab and summary from its passage, and
 # checks the sources against each other. A requirement printed in the words the latest approved year
 # before it printed keeps that year's approved rule. Every row keeps where it was printed and why a
-# person must look at it. review_year writes the rows a person must decide,
-# approve writes the approved year once none is pending, and load writes that to a database.
+# person must look at it. review_year writes the rows a person must decide, approve writes the
+# approved year once none is pending, and load writes that to a database.
 import json
 from collections import defaultdict
 from collections.abc import Callable

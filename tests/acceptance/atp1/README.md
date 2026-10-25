@@ -42,7 +42,7 @@ make atp1
 
 It reads the held-out drafts from `results/` and calls no model, then writes every CSV and `results/report.md`. It takes about two minutes, most of them reading the two handbooks. `make test` runs the harness's own tests, which read no source and call no model.
 
-The held-out drafts were made once, on the first run, with Claude Haiku 5.5 through `backend/src/sage/ingestion/anthropic.py`, which main last held at 28717e7. SAGE now drafts with GPT-6 Luna, and the harness keeps no way to draft: its held-out drafts are its first result, and drafting them again would be a retest, on a branch of its own.
+The held-out drafts were made once, on the first run, with Claude Haiku 5.5 through `backend/src/sage/ingestion/anthropic.py`, which main last held at 6ba0e6d. SAGE now drafts with GPT-6 Luna, and the harness keeps no way to draft: its held-out drafts are its first result, and drafting them again would be a retest, on a branch of its own.
 
 ## Results
 
