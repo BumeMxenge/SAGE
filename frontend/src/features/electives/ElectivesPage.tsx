@@ -7,14 +7,18 @@
 // A plan that isn't one of hers, or isn't one of her current plans, shows every course and says
 // why, and a current plan nothing fits shows its slot's own words.
 //
-// Nothing shows while a read the page needs is on its way, and a read that fails after its retries
-// shows its error where the tabs would be, with Try Again, as the title and the search stay.
+// While a read the page needs is on its way, loading case 04 shows: the title and the search render
+// straight away, and the tabs, a tab's heading and its cards are skeletons. A read that fails after
+// its retries shows its error in their place, with Try Again, as the title and the search stay. Held,
+// as the route table draws it while the guard decides on the first load, it reads nothing and shows
+// only its skeleton.
 import { useQuery } from '@tanstack/react-query'
 import { type ReactNode, useState } from 'react'
 import { Link } from 'react-aria-components'
 import { useNavigate } from 'react-router'
 import { Button } from '@/components/actions/Button/Button.tsx'
 import { PageHeader } from '@/components/content/PageHeader/PageHeader.tsx'
+import { Arrival } from '@/components/feedback/Arrival/Arrival.tsx'
 import { EmptyState } from '@/components/feedback/EmptyState/EmptyState.tsx'
 import { ErrorState } from '@/components/feedback/ErrorState/ErrorState.tsx'
 import { SearchField } from '@/components/inputs/SearchField/SearchField.tsx'
@@ -25,8 +29,10 @@ import { actionLabels, explain } from '@/lib/errors.ts'
 import { queries } from '@/lib/queryKeys.ts'
 import { fits, keeping, matches, openingTab, putFirst } from './cards.ts'
 import { CategoryTabs } from './components/CategoryTabs/CategoryTabs.tsx'
+import { CategoryTabsSkeleton } from './components/CategoryTabs/CategoryTabsSkeleton.tsx'
 import { ElectiveCard } from './components/ElectiveCard/ElectiveCard.tsx'
 import {
+  loadingElectives,
   noMatch,
   noMatchMessage,
   notCurrent,
@@ -41,28 +47,28 @@ import styles from './ElectivesPage.module.css'
 type Elective = components['schemas']['Elective']
 type Tab = components['schemas']['Tab']
 
-export function ElectivesPage() {
+export function ElectivesPage({ held = false }: { held?: boolean }) {
   const address = useElectivesAddress()
   const { planId } = address
   const navigate = useNavigate()
-  const electives = useQuery(queries.electives())
+  const electives = useQuery({ ...queries.electives(), enabled: !held })
+  // Held, what the frame may already have read doesn't count
+  const courses = held ? undefined : electives.data
   // Her set names the plan the page is filtered to, and says whether it's one of her current plans
-  const set = useQuery({ ...queries.plans(), enabled: planId !== null })
+  const set = useQuery({ ...queries.plans(), enabled: !held && planId !== null })
   const current = set.data?.plans.find((summary) => summary.id === planId)
-  const fitting = planId !== null && electives.data ? keeping(electives.data.tabs, (card) => fits(card, planId)) : []
+  const fitting = planId !== null && courses ? keeping(courses.tabs, (card) => fits(card, planId)) : []
   // A plan outside her current set, or a current one nothing fits, is read for what to say about
   // it. With no plan in the address the read never goes out, so its id is never used.
-  const plan = useQuery({
-    ...queries.plan(planId ?? ''),
-    enabled: planId !== null && set.data !== undefined && (current === undefined || fitting.length === 0),
-  })
+  const asked = !held && planId !== null && set.data !== undefined && (current === undefined || fitting.length === 0)
+  const plan = useQuery({ ...queries.plan(planId ?? ''), enabled: asked })
   const hearting = useHearting()
   const [search, setSearch] = useState('')
   // Her favourites as the page opened for this plan, which come first, and never move as she hearts.
   // Kept as the courses first arrive, which React draws again at once, before anything shows.
   const [opened, setOpened] = useState<{ planId: string | null; hearts: Set<string> } | null>(null)
-  if (electives.data && opened?.planId !== planId) {
-    const hearted = electives.data.tabs.flatMap((tab) => tab.courses.filter((card) => card.hearted))
+  if (courses && opened?.planId !== planId) {
+    const hearted = courses.tabs.flatMap((tab) => tab.courses.filter((card) => card.hearted))
     setOpened({ planId, hearts: new Set(hearted.map((card) => card.codes[0])) })
   }
   const favourite = (card: Elective) => opened?.hearts.has(card.codes[0]) ?? false
@@ -94,8 +100,11 @@ export function ElectivesPage() {
   }
 
   const none = () => false
-  let body: ReactNode = null
-  if (failed) {
+  // What replaces the skeleton, undefined while a read it needs is on its way
+  let body: ReactNode | undefined
+  if (held) {
+    body = undefined
+  } else if (failed) {
     const { title, message, reference } = explain(failed)
     body = (
       <ErrorState variant="region" tone="danger" icon="error" title={title} message={message} reference={reference}>
@@ -109,10 +118,10 @@ export function ElectivesPage() {
         </Button>
       </ErrorState>
     )
-  } else if (!electives.data) {
-    body = null
+  } else if (!courses) {
+    body = undefined
   } else if (planId === null) {
-    body = tabsOf(shownOf(electives.data.tabs, none), none)
+    body = tabsOf(shownOf(courses.tabs, none), none)
   } else if (current && fitting.length > 0) {
     const count = fitting.reduce((total, tab) => total + tab.courses.length, 0)
     const view = shownOf(fitting, favourite)
@@ -137,23 +146,28 @@ export function ElectivesPage() {
     body = (
       <>
         <ErrorState variant="inline" tone="warning" icon="warning" title={title} message={message} />
-        {tabsOf(shownOf(electives.data.tabs, none), none)}
+        {tabsOf(shownOf(courses.tabs, none), none)}
       </>
     )
   } else if (!current && plan.data) {
     body = (
       <>
         <p className={styles.notice}>{notCurrent}</p>
-        {tabsOf(shownOf(electives.data.tabs, none), none)}
+        {tabsOf(shownOf(courses.tabs, none), none)}
       </>
     )
   }
+
+  // Whether a read the page waits for is still on its way. Held, they all are.
+  const waiting = held || electives.isPending || (planId !== null && (set.isPending || (asked && plan.isPending)))
 
   return (
     <div className={styles.page}>
       <PageHeader title={pageNames.electives} />
       <SearchField label="Search Electives" placeholder={searchPlaceholder} value={search} onChange={setSearch} isDisabled={failed !== null} />
-      {body}
+      <Arrival data={body} waiting={waiting} skeleton={<CategoryTabsSkeleton />} status={loadingElectives}>
+        {(arrived) => arrived}
+      </Arrival>
     </div>
   )
 }

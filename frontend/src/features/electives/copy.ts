@@ -22,6 +22,9 @@ export const tabWords: Record<ElectiveTab, { label: string; sub: string }> = {
 
 export const searchPlaceholder = 'Search electives by code, topic or lecturer'
 
+// What a screen reader hears while the courses are on their way
+export const loadingElectives = 'Loading the electives…'
+
 export const heartFailed = "Your favourite didn't save."
 
 // The filtered page's line, over the cards that fit one of her plans

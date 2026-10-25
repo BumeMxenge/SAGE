@@ -1,7 +1,8 @@
 // One course on Explore Electives, built from the shared Card: its name, its codes, when it runs and
 // its credits, its summary and conveners, and at its foot the API's note, if it has one, after the
 // warning sign. Its one heart hearts the course. The heart shows when she can heart the course, and
-// on a course she hearted that she no longer can, so she can still take the heart away.
+// on a course she hearted that she no longer can, so she can still take the heart away. A course she
+// can't heart is greyed, and its note says why.
 import { IconButton } from '@/components/actions/IconButton/IconButton.tsx'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import { Card } from '@/components/content/Card/Card.tsx'
@@ -18,6 +19,7 @@ export function ElectiveCard({ card, onHeartChange }: ElectiveCardProps) {
   return (
     <Card
       title={card.name}
+      unavailable={!card.can_heart}
       meta={
         <p className={styles.meta}>
           <span className={styles.codes}>{codesOf(card)}</span> · {termsOf(card)} · {card.credits} credits

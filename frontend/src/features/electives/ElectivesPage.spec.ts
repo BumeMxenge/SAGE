@@ -9,10 +9,17 @@
 // its note and no heart. Then the page filtered to one plan: only the courses that fit it, her
 // favourites first on the tab with one, which opens first, and a reload keeps the filter; a plan
 // that isn't hers, and one from an earlier set, show every course and say why; and a current plan
-// nothing fits shows its slot's own words. Each passes axe, and the keyboard walks the page.
+// nothing fits shows its slot's own words. While the courses are on their way, loading case 04's
+// skeleton holds the page under its title and search, and goes when they land, or once the read has
+// failed after its retries, which shows its error with Try Again. Each passes axe, and the keyboard
+// walks the page. Then parity beside the planner prototype's Explore Electives and the loading sheet's
+// case 04, in both themes.
 import { expect, type Page, type Route, test } from '@playwright/test'
 import { expectNoAxeViolations } from '../../../e2e/axe.ts'
 import { walkKeyboard } from '../../../e2e/keyboard.ts'
+import { hold, loading, photographArrival, read, seenLoading, skeletons, watchLoading } from '../../../e2e/loading.ts'
+import { parity } from '../../../e2e/parity.ts'
+import { settled } from '../../../e2e/settled.ts'
 import { mbali } from '../../../e2e/visitors.ts'
 import type { components } from '../../lib/api-types.ts'
 
@@ -228,6 +235,179 @@ test("a card with no note has no line at its foot, and one she can't heart shows
   await expect(cardNamed(page, 'French 1A').locator('p').last()).toHaveText('Convener: Dr Made Up')
   await expect(cardNamed(page, 'Greek IA').getByText("Doesn't fit your plans' timetables.")).toBeVisible()
   await expect(heart(page, 'Greek IA')).toHaveCount(0)
+  // Greyed, beside French 1A, which she can heart
+  await expect(cardNamed(page, 'Greek IA')).toHaveAttribute('data-unavailable', 'true')
+  await expect(cardNamed(page, 'French 1A')).not.toHaveAttribute('data-unavailable')
+})
+
+const title = (page: Page) => page.getByRole('heading', { level: 1, name: 'Explore Electives' })
+const search = (page: Page) => page.getByRole('searchbox', { name: 'Search Electives' })
+
+test("while the courses are on their way, the title and search show over case 04's skeleton, which the courses replace", async ({
+  page,
+}, testInfo) => {
+  await watchLoading(page)
+  await madeUpApi(page)
+  const courses = await hold(page, read('/v1/electives'))
+  await page.goto('/electives?tab=languages')
+  await expect(title(page)).toBeVisible()
+  await expect(search(page)).toBeVisible()
+  await expect(loading(page, 'Loading the electives…')).toBeAttached()
+  await expect(skeletons(page.getByRole('main')).first()).toBeVisible()
+  await expectNoAxeViolations(page)
+  await photographArrival(page, testInfo, 'electives', () => courses.release())
+  await expect(cardNames(page)).toHaveCount(3)
+  // What took the skeleton's place faded in
+  expect((await seenLoading(page)).fades).toBeGreaterThan(0)
+})
+
+test('a read that fails after its retries leaves no skeleton, and shows its error with Try Again', async ({ page }) => {
+  await madeUpApi(page)
+  const courses = await hold(page, read('/v1/electives'))
+  await page.goto('/electives')
+  await expect(skeletons(page.getByRole('main')).first()).toBeVisible()
+  // A server error is tried three more times, a second, two and four seconds apart, before it shows
+  await courses.refuse(refusalOf('internal_error', 500))
+  await expect(page.getByRole('alert')).toContainText('Something Went Wrong', { timeout: 15_000 })
+  await expect(skeletons(page.getByRole('main'))).toHaveCount(0)
+  await expect(loading(page)).toHaveCount(0)
+  // The title stays, and the search waits
+  await expect(title(page)).toBeVisible()
+  await expect(search(page)).toBeDisabled()
+  await expectNoAxeViolations(page)
+  const again = page.waitForRequest((request) => new URL(request.url()).pathname === '/v1/electives')
+  await page.getByRole('button', { name: 'Try Again' }).click()
+  await again
+})
+
+// Parity. The planner prototype's Explore Electives, opened from its sidebar, starts on Economics &
+// Finance, whose five courses React shows too, on made-up answers in the prototype's own words. The
+// prototype's page is three divs up from its title.
+const prototypeCourse = (codes: string[], name: string, summary: string, conveners: string[]): Elective =>
+  card(
+    name,
+    codes.map((code, at) => offering(code, { convener: conveners[at] ?? conveners[0] })),
+    { summary },
+  )
+const prototypeElectives: Electives = {
+  tabs: [
+    {
+      key: 'econ',
+      courses: [
+        prototypeCourse(
+          ['ECO1006F'],
+          'Economics for Non-Specialists',
+          'A broad first taste of economics for students outside the discipline, covering both microeconomics (the behaviour of individual consumers, firms and markets) and macroeconomics, the economy as a whole.',
+          ['L Njozela'],
+        ),
+        prototypeCourse(
+          ['ECO1007S'],
+          'Economics for Engineers',
+          'An economics service course built for engineering students, covering the core economic ideas most useful for technical and infrastructure work. Gives you the language to weigh costs, markets and trade-offs in engineering decisions.',
+          ['School of Economics'],
+        ),
+        prototypeCourse(
+          ['ECO1010F', 'ECO1010S'],
+          'Microeconomics',
+          'An introduction to how individuals, firms and markets make choices under scarcity. Works through supply and demand, elasticity, utility, costs, and market structures from perfect competition to monopoly.',
+          ['R Chetty', 'N Narker'],
+        ),
+        prototypeCourse(
+          ['ECO1011F', 'ECO1011S'],
+          'Macroeconomics',
+          'Looks at the economy as a whole: growth, unemployment, inflation, exchange rates and the balance of payments, anchored in South African economic history. Prerequisite: 50% in ECO1010, which may be taken concurrently.',
+          ['Y Sibda', 'Dr R Lepelle'],
+        ),
+        prototypeCourse(
+          ['FTX2000S'],
+          'Personal Financial Management',
+          'Practical tools for managing your own money over a lifetime. Covers financial planning, the time value of money, credit, investing, income tax, medical schemes and insurance.',
+          ['Dr E Swanepoel'],
+        ),
+      ],
+    },
+    { key: 'business', courses: [marketing] },
+  ],
+}
+
+async function prototypeElectivesPage(page: Page, theme: 'light' | 'dark'): Promise<void> {
+  if (theme === 'dark') await page.goto(`${page.url()}?theme=dark`)
+  await page.getByRole('button', { name: 'Explore electives' }).first().click()
+  await settled(page)
+}
+
+test.describe('parity with the planner', () => {
+  test.beforeEach(async ({ page }) => {
+    await madeUpApi(page)
+    await page.route('**/v1/electives', (route) => route.fulfill({ json: prototypeElectives, headers: allowed }))
+  })
+
+  const arrived = async (page: Page) => {
+    await cardNames(page).first().waitFor()
+    await settled(page)
+  }
+
+  parity('electives', [
+    {
+      name: 'electives',
+      prototype: 'registration-planner',
+      reach: async (page, theme) => {
+        await prototypeElectivesPage(page, theme)
+        return page.getByRole('heading', { level: 1, name: 'Explore Electives' }).locator('xpath=ancestor::div[3]')
+      },
+      react: { path: '/electives', reach: arrived, element: (page) => page.getByRole('main') },
+    },
+    {
+      name: 'tab',
+      prototype: 'registration-planner',
+      reach: async (page, theme) => {
+        await prototypeElectivesPage(page, theme)
+        return page.getByRole('button', { name: 'Business & Management' })
+      },
+      react: { path: '/electives', reach: arrived, element: (page) => page.getByRole('tab', { name: 'Business & Management' }) },
+      hover: true,
+    },
+    {
+      name: 'favourite',
+      prototype: 'registration-planner',
+      reach: async (page, theme) => {
+        await prototypeElectivesPage(page, theme)
+        return page.getByRole('button', { name: 'Favourite' }).first()
+      },
+      react: { path: '/electives', reach: arrived, element: (page) => heart(page, 'Economics for Non-Specialists') },
+      hover: true,
+    },
+  ])
+})
+
+test.describe('parity with the loading sheet', () => {
+  // The courses never arrive, so the skeleton stays
+  test.beforeEach(async ({ page }) => {
+    await madeUpApi(page)
+    await hold(page, read('/v1/electives'))
+  })
+
+  parity('electives', [
+    {
+      name: 'skeleton',
+      prototype: 'loading-states',
+      reach: async (page, theme) => {
+        await settled(page)
+        // The sheet draws case 04 in light, then in dark. Its page is two divs up from its search's words.
+        return page
+          .getByText('Search electives by code, topic or lecturer', { exact: true })
+          .nth(theme === 'dark' ? 1 : 0)
+          .locator('xpath=ancestor::div[2]')
+      },
+      react: {
+        path: '/electives',
+        reach: async (page) => {
+          await skeletons(page.getByRole('main')).first().waitFor()
+        },
+        element: (page) => page.getByRole('main'),
+      },
+    },
+  ])
 })
 
 test('the page passes axe and the keyboard walk, on a tab with a note and a heart', async ({ page }) => {

@@ -149,7 +149,7 @@ export const routes: RouteObject[] = [
             opens: 'student',
             name: pageNames.electives,
             load: async () => ({ Component: (await import('@/features/electives/ElectivesPage.tsx')).ElectivesPage }),
-            waiting: 'frame',
+            waiting: 'held',
           }),
           page({
             path: '/history',

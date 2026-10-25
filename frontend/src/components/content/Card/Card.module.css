@@ -39,3 +39,13 @@
   line-height: var(--line-height-heading);
   color: var(--color-text);
 }
+
+/* Greyed: the muted surface, and the title in the secondary text colour, which still reaches 4.5:1 on
+   it */
+.card[data-unavailable] {
+  background: var(--color-surface-muted);
+}
+
+.card[data-unavailable] .title {
+  color: var(--color-text-secondary);
+}
