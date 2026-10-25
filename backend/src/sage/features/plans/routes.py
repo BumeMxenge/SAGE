@@ -175,8 +175,8 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
                     if member.course_code == course.code and member.group_key in keys
                 ],
                 meetings=[
-                    Meeting.model_validate(slot, from_attributes=True)
-                    for slot in meetings(by_code[course.code], rules, curriculum)
+                    Meeting.model_validate(meeting, from_attributes=True)
+                    for meeting in meetings(by_code[course.code], rules, curriculum)
                 ],
             )
             for course in courses
