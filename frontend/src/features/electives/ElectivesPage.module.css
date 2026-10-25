@@ -1,0 +1,9 @@
+/* The title, the search, then the tabs, in the prototype's 860 px column */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: var(--width-wide);
+  margin: 0 auto;
+}
