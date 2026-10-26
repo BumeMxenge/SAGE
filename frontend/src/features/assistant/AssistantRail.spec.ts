@@ -181,8 +181,10 @@ const chatBox = (page: Page) => page.getByRole('textbox', { name: 'Ask SAGE' })
 const button = (page: Page, name: string) => page.getByRole('button', { name, exact: true })
 
 // /plan as it opens her first plan, once the plan has arrived and faded in: her set, as the page read
-// it, and the plan's id
+// it, and the plan's id. It starts from a blank page, as the page before, such as a parity case's
+// Course History, may still be reading her set, and that answer's body is gone once /plan replaces it.
 async function herPlan(page: Page): Promise<{ set: PlanSet; planId: string }> {
+  await page.goto('about:blank')
   const read = page.waitForResponse((response) => new URL(response.url()).pathname === '/v1/plans')
   await page.goto('/plan')
   const set = (await (await read).json()) as PlanSet
