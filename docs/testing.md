@@ -19,7 +19,7 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 | --- | --- | --- | --- |
 | Unit | Each rule, on in-memory stores holding the approved 2026 rulebook, with no network | `backend/tests/unit`, whose folders mirror the source's, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every pull request and every push to main |
 | Integration | The Supabase adapters, the migrations, row level security, which refuses every browser write to rule and student rows alike, and real sign-in tokens, against a rebuilt local database holding both approved years | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every pull request and every push to main |
-| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened | `tests/acceptance/atp1`: its label sheets, its harness and its first result | `make atp1`, on the laptop, from the held-out drafts its first run cached, so it calls no model. The harness's own tests run in `make test` |
+| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened. ATP-5 and ATP-6 are the black-box half of performance and privacy, run against the real deployment in a test window | `tests/acceptance/atp1`, `atp5` and `atp6`: their harnesses and committed results | `make atp1`, on the laptop, from the held-out drafts its first run cached, so it calls no model. ATP-5 and ATP-6 run from a laptop against the deployment, never in CI; `make atp5-report` and `make atp6-report` rebuild their reports from the CSVs |
 
 ## Ingestion tests
 
@@ -72,6 +72,12 @@ ATP-1 asks how well ingestion reads print, and whether anything wrong gets into 
 - Those drafts were made once, with Claude Haiku 5.5, and the harness keeps no way to draft again: a new draft would be a retest.
 - The harness's own tests, in `tests/acceptance/atp1/test_scoring.py`, check its scoring with values worked out by hand. `make test` collects them, so CI runs them. None reads a source or calls a model.
 - `tests/acceptance/atp1/results/` keeps the first result. A fault it finds is fixed on its own branch, and the retest goes beside the first result, never over it.
+
+ATP-5 asks whether the deployment meets NF-4 at 35 concurrent sessions, and again at 35 after a spike to 70, and where the time goes. ATP-6 asks whether every attempt on another student's data or an administrator action is blocked, and whether any name, student number or transcript is found (NF-5). Both run against the real deployment in a test window, so they can't run in CI, and Locust and their other tools live in `tests/acceptance/atp5/pyproject.toml` with their own uv environment, so the backend's dependencies never change. [The ATP-5 README](../tests/acceptance/atp5/README.md) and [the ATP-6 README](../tests/acceptance/atp6/README.md) say what each measures and how to run it.
+
+- ATP-5 drives up to 70 simulated students through Locust and times every request, with two cold-start probes and a round-trip probe either side. ATP-6's access sweep calls every route as every kind of visitor, tries another student's rows straight through the database, and scans the public schema, the logs and the saved model requests for any identifier. Both are the black-box counterpart to the row-level-security tests and the unit guard sweep.
+- `make atp5-report` and `make atp6-report` rebuild `report.md` from the CSVs each run wrote, so every number traces to a row and a rerun needs no hosted project. The results committed at `atp5-result` and `atp6-result` are one window's measurement, not reproduced byte for byte, as a live run measures that run.
+- The test accounts are made and deleted with the admin API, their emails made-up with numbers that can't be a real student's, and nothing is ever sent to them. The reply questions reuse the vetted set in [advisor-validation.md](advisor-validation.md), capped at 600 for the window.
 
 ## The dependency check
 
