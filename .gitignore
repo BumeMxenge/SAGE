@@ -20,6 +20,9 @@ backend/mutants/
 backend/data
 backend/experiments
 backend/mutation-score.txt
+# ATP-3's request bodies, which stay on this laptop for ATP-6 to scan. results/requests.csv records
+# each one's size and SHA-256.
+tests/acceptance/atp3/results/requests/
 # Playwright's output: its results, the saved sign-in (it holds a session token) and the parity
 # images
 frontend/test-results/
