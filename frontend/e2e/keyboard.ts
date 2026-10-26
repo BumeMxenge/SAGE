@@ -20,21 +20,31 @@ export async function walkKeyboard(page: Page): Promise<string[]> {
       ([element, start]) => {
         // Focus has left the page, or come round to the first stop
         if (!(element instanceof Element) || element === document.body || element === start) return null
+        // A visually hidden element can't show a ring: one 1 px across or less, or one inside a box that
+        // small which hides its overflow, as React Aria hides a checkbox's input and a drop zone's
+        // button. Each takes the browser's ring, which that box clips from view.
+        const hidden = (candidate: Element) => {
+          for (let box: Element | null = candidate; box; box = box.parentElement) {
+            const { width, height } = box.getBoundingClientRect()
+            const clips = box === candidate || getComputedStyle(box).overflow !== 'visible'
+            if (clips && (width <= 1 || height <= 1)) return true
+          }
+          return false
+        }
         const showsRing = (candidate: Element) => {
           const { outlineStyle, outlineWidth } = getComputedStyle(candidate)
-          return outlineStyle === 'solid' && parseFloat(outlineWidth) >= 2
+          return outlineStyle === 'solid' && parseFloat(outlineWidth) >= 2 && !hidden(candidate)
         }
         const around: Element[] = []
         for (let parent = element.parentElement; parent; parent = parent.parentElement) around.push(parent)
         // A checkbox's input is hidden inside its label, and the box beside it shows the ring
         const label = element.closest('label')
         const near = [element, ...around, ...element.querySelectorAll('*'), ...(label ? label.querySelectorAll('*') : [])]
-        // A visually hidden element, such as that input, can't show a ring
-        const rings = [...document.querySelectorAll('*')].filter((candidate) => {
-          const { width, height } = candidate.getBoundingClientRect()
-          return width > 1 && height > 1 && showsRing(candidate)
-        })
-        return { ringed: near.some(showsRing), rings: rings.length }
+        // Each ring on screen, named by its tag and classes, so a failure says where the extra one is
+        const rings = [...document.querySelectorAll('*')]
+          .filter(showsRing)
+          .map((ringed) => [ringed.tagName.toLowerCase(), ...ringed.classList].join('.'))
+        return { ringed: near.some(showsRing), rings }
       },
       [focused, first] as const,
     )
@@ -43,7 +53,7 @@ export async function walkKeyboard(page: Page): Promise<string[]> {
     // Such as: button "Continue with UCT Email"
     const [stop] = (await page.locator(':focus').ariaSnapshot()).replace(/^- /, '').split('\n')
     expect(found.ringed, `the focus ring on ${stop}`).toBe(true)
-    expect(found.rings, `rings on screen at ${stop}`).toBe(1)
+    expect(found.rings, `rings on screen at ${stop}`).toHaveLength(1)
     stops.push(stop)
     // A page has far fewer stops than this, so more means focus is trapped
     expect(stops.length, 'stops before focus leaves the page').toBeLessThan(200)
