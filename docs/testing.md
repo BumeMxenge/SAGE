@@ -19,7 +19,7 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 | --- | --- | --- | --- |
 | Unit | Each rule, on in-memory stores holding the approved 2026 rulebook, with no network | `backend/tests/unit`, whose folders mirror the source's, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every pull request and every push to main |
 | Integration | The Supabase adapters, the migrations, row level security, which refuses every browser write to rule and student rows alike, and real sign-in tokens, against a rebuilt local database holding both approved years | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every pull request and every push to main |
-| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened | `tests/acceptance/atp1`: its label sheets, its harness and its first result | `make atp1`, on the laptop, from the held-out drafts its first run cached, so it calls no model. The harness's own tests run in `make test` |
+| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened. ATP-2 measures the engine's decisions and plans against held-out records labelled from print, a brute-force checker written from the engine's semantics alone, and a sweep of made-up failures | `tests/acceptance/atp1` and `tests/acceptance/atp2`: each one's labels, harness and first result | `make atp1`, on the laptop, from the held-out drafts its first run cached, so it calls no model. `make atp2`, on a quiet laptop, once the checker's own tests pass. Both harnesses' own tests run in `make test` |
 
 ## Ingestion tests
 
@@ -72,6 +72,12 @@ ATP-1 asks how well ingestion reads print, and whether anything wrong gets into 
 - Those drafts were made once, with Claude Haiku 5.5, and the harness keeps no way to draft again: a new draft would be a retest.
 - The harness's own tests, in `tests/acceptance/atp1/test_scoring.py`, check its scoring with values worked out by hand. `make test` collects them, so CI runs them. None reads a source or calls a model.
 - `tests/acceptance/atp1/results/` keeps the first result. A fault it finds is fixed on its own branch, and the retest goes beside the first result, never over it.
+
+ATP-2 asks whether the engine gives the right decision and reason for every course, and every valid plan exactly once. My held-out records and their labels, in `tests/acceptance/atp2/labels/`, were written from print and committed before any run, with their SHA-256 in `labels/HASHES.md`. A checker in `tests/acceptance/atp2/checker/`, written from the engine's semantics alone and importing nothing from the engine, works out every valid plan by trying every subset of a student's open choices. A seeded sweep of 531 made-up records fails or defers each previous-year core course in turn, which gives a large n and what each failure costs a student. [The harness's README](../tests/acceptance/atp2/README.md) says what it compares and how to read the report.
+
+- `make atp2` runs the checker's tests first, then every record, then the report. It needs no database and calls no model.
+- The checker's tests, in `tests/acceptance/atp2/test_checker.py`, are worked by hand on made-up years, with boundaries on both sides. `make test` collects them, so CI runs them.
+- `tests/acceptance/atp2/results/` keeps the first result, and `causes.csv` there classes each disagreement by cause. A checker fault fixed after the first run is a retest, beside the first result, never over it.
 
 ## The dependency check
 

@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1 atp2
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -133,6 +133,15 @@ atp1:
 	@cd backend && $(ATP1_PATH):../experiments/ingestion:. \
 		uv run python ../tests/acceptance/atp1/run.py && \
 		$(ATP1_PATH) uv run python ../tests/acceptance/atp1/report.py
+
+# ATP-2: the engine against labels written from print and against the checker, then the report, in
+# tests/acceptance/atp2/results/. The checker's own tests run first, as its gate, so no record runs
+# on a checker that fails them. Everything is in memory, so it needs no database, and it calls no
+# model. Run it on a quiet laptop, as it times the engine.
+atp2:
+	@cd backend && $(ATP2_PATH) uv run pytest -q ../tests/acceptance/atp2/test_checker.py && \
+		$(ATP2_PATH) uv run python ../tests/acceptance/atp2/run.py && \
+		$(ATP2_PATH) uv run python ../tests/acceptance/atp2/report.py
 
 # The seed file of a student other than Mbali, as FILE=data/synthetic/ziyela.json, for the targets
 # below. It is made absolute, as they run from backend/.
