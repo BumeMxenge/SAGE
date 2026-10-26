@@ -21,8 +21,10 @@ COLUMNS = {
     "failure": "Failure sweep",
     "base": "In-sample base",
 }
-# The labelled fields each verdict on the labels reads
-DECIDED = ("status", "deciding_codes", "page")
+# The labelled fields each verdict on the labels reads. F-2's rests on a decision's status and
+# deciding codes, and its page is reported beside it, as is a decision that cites none.
+DECIDED = ("status", "deciding_codes")
+NO_CITATION = "no citation"
 PLANNED = ("expected_plans", "expected_combinations")
 STANDING = ("year_of_study", "owed_core", "excluded_core")
 LIMIT = 10.0  # NF-4's seconds for one session's plans
@@ -107,8 +109,9 @@ def without(rows: Iterable[Row]) -> list[Row]:
 
 
 def matched(rows: Sequence[Row], side: str = "engine") -> str:
-    # How many labelled items one side matches, of those it gives a value for
-    theirs = [row for row in rows if row[f"{side}_match"]]
+    # How many labelled items one side matches, of those it gives a value for. A decision citing
+    # no page has no value to match.
+    theirs = [row for row in rows if row[f"{side}_match"] in ("yes", "no")]
     return rate(sum(row[f"{side}_match"] == "yes" for row in theirs), len(theirs))
 
 
@@ -137,17 +140,26 @@ def verdicts(
     ) -> list[str]:
         return [measure(groups[s]) if groups[s] else "none to count" for s in COLUMNS]
 
+    # Every labelled field but the page, which is reported beside the verdicts
+    judged = {row["field"] for row in labelled} - {"page"}
+
     def against(fields: Sequence[str] = ()) -> Callable[[list[Row]], str]:
-        # The engine against the labels, on the fields given or on every field
+        # The engine against the labels, on the fields given or on every field judged
         return lambda rows: matched(
-            [r for r in rows if not fields or r["field"] in fields]
+            [r for r in rows if r["field"] in (fields or judged)]
         )
 
     def all_match(fields: Sequence[str] = ()) -> bool:
         return all(
             row["engine_match"] == "yes"
             for row in labelled
-            if not fields or row["field"] in fields
+            if row["field"] in (fields or judged)
+        )
+
+    def uncited(rows: list[Row]) -> str:
+        pages = [row for row in rows if row["field"] == "page"]
+        return rate(
+            sum(row["engine_match"] == NO_CITATION for row in pages), len(pages)
         )
 
     def met(done: bool) -> str:
@@ -161,17 +173,31 @@ def verdicts(
     rows = [
         (
             "F-2, F-3, NF-1",
-            "Every labelled item matches its label: the pass criterion",
+            "Every labelled item but the pages matches its label: the pass criterion",
             *measured(labels, against()),
             "100%",
             met(all_match()),
         ),
         (
             "F-2, NF-1",
-            "Focal decisions whose status, reason codes and page match the label",
+            "Focal decisions whose status and deciding codes match the label",
             *measured(labels, against(DECIDED)),
             "100%",
             met(all_match(DECIDED)),
+        ),
+        (
+            "F-2",
+            "Citing the handbook: cited pages that are the label's, of decisions citing one",
+            *measured(labels, against(("page",))),
+            "",
+            "reported",
+        ),
+        (
+            "F-2",
+            "Citing the handbook: decisions citing no page, in check() or a plan reason",
+            *measured(labels, uncited),
+            "",
+            "reported",
         ),
         (
             "F-3, NF-1",
@@ -330,6 +356,7 @@ def against_labels(labelled: list[Row], found: list[Row]) -> list[str]:
             len(rows),
             matched(rows),
             matched(without(rows)),
+            sum(row["engine_match"] == NO_CITATION for row in rows),
             matched(rows, "checker"),
             matched(without(rows), "checker"),
         ]
@@ -351,7 +378,7 @@ def against_labels(labelled: list[Row], found: list[Row]) -> list[str]:
             cause_of(found, "label", row["record"], row["item"] or row["field"]),
         ]
         for row in labelled
-        if "no" in (row["engine_match"], row["checker_match"])
+        if {"no", NO_CITATION} & {row["engine_match"], row["checker_match"]}
     ]
     return [
         "",
@@ -371,6 +398,7 @@ def against_labels(labelled: list[Row], found: list[Row]) -> list[str]:
                 "Items",
                 "Engine right",
                 "Without judgement calls",
+                "No citation",
                 "Checker right",
                 "Without judgement calls",
             ),

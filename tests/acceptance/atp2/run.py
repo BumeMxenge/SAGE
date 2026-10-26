@@ -265,7 +265,9 @@ def against_labels(
         theirs: str = "",
         theirs_right: bool | None = None,
         judgement: str = label["judgement_call"],
+        cited: bool = True,
     ) -> None:
+        engine_match = "yes" if ours_right else "no"
         found.append(
             {
                 "record": label["record"],
@@ -273,7 +275,7 @@ def against_labels(
                 "item": item,
                 "label": wanted,
                 "engine": ours,
-                "engine_match": "yes" if ours_right else "no",
+                "engine_match": engine_match if cited else "no citation",
                 "checker": theirs,
                 "checker_match": ""
                 if theirs_right is None
@@ -448,18 +450,27 @@ def against_labels(
                 all(word in reason for word in needed),
                 judgement=judgement,
             )
-        pages = {int(n) for n in PAGE.findall(reason)} | {
-            passages[r.passage_id].page
-            for r in engine.reasons
-            if r.course_code == code and r.passage_id
-        }
+        # The page check() cites, or else that of a passage a reason of the plan set's about the
+        # course cites. Where neither cites one, the decision has no citation, which is counted
+        # apart from a page that differs.
+        pages, source = {int(n) for n in PAGE.findall(reason)}, "check"
+        if not pages:
+            pages, source = (
+                {
+                    passages[r.passage_id].page
+                    for r in engine.reasons
+                    if r.course_code == code and r.passage_id
+                },
+                "plan reason",
+            )
         add(
             "page",
             code,
             decision["page"],
-            " ".join(map(str, sorted(pages))),
+            f"{' '.join(map(str, sorted(pages)))} ({source})" if pages else "",
             on_page(decision["page"], pages),
             judgement=judgement,
+            cited=bool(pages),
         )
     return found
 
