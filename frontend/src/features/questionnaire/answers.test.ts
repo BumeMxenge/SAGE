@@ -9,7 +9,7 @@ type Option = components['schemas']['Option']
 
 const plans = ['plan-1', 'plan-2', 'plan-3', 'plan-4', 'plan-5', 'plan-6']
 const keeping = (...numbers: number[]) => numbers.map((number) => `plan-${number}`)
-const option = (id: string, label: string, keeps: string[]): Option => ({ id, label, hearted: false, keeps })
+const option = (id: string, label: string, keeps: string[]): Option => ({ id, label, keeps })
 
 const noPreference = option('no_preference', 'No preference', plans)
 const courseA = option('TST4001F', 'Made-up Course A', keeping(1, 2, 3))

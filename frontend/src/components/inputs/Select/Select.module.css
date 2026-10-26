@@ -50,17 +50,13 @@
   background: var(--color-hover);
 }
 
-/* A value too long for the button ends in an ellipsis. Its text is all still there for screen readers. */
+/* A value too long for the button ends in an ellipsis. Its text is all still there for screen
+   readers. */
 .value {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.trigger[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
 }
 
 /* An unset value is quieter, and turns teal with the outline on hover */

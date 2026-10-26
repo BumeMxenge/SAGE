@@ -13,8 +13,9 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-/* Each step sets its own column inside: the upload's in the middle, the review's across the page. The
-   padding above and below is the prototype's at a laptop's height, so every step fits a 650 px window. */
+/* Each step sets its own column inside: the upload's in the middle, the review's across the page.
+   The padding above and below is the prototype's at a laptop's height, so every step fits a 650 px
+   window. */
 .main {
   display: flex;
   flex: 1;

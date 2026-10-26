@@ -4,8 +4,9 @@
 //
 // With ?plan=, from a plan's slot card, the page keeps only the courses whose offerings fit that
 // plan, as the API lists them, with her favourites first as the page opened, and says which plan.
-// Each card there previews its fitting offerings in that plan's week. A plan that isn't one of hers, or isn't one of her current plans, shows every course and says
-// why, and a current plan nothing fits shows its slot's own words.
+// Each card there previews its fitting offerings in that plan's week. A plan that isn't one of
+// hers, or isn't one of her current plans, shows every course and says why, and a current plan
+// nothing fits shows its slot's own words.
 //
 // While a read the page needs is on its way, loading case 04 shows: the title and the search render
 // straight away, and the tabs, a tab's heading and its cards are skeletons. A read that fails after

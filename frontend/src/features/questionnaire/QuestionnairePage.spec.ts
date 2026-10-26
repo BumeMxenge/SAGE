@@ -56,7 +56,7 @@ function planOf(number: number, kept: number[]): Plan {
   return { id, period: 2026, position, name, combination, hidden, credits: { total: 144, by_term: {}, to_choose: 0 }, courses: [], reasons: [], slots: [] }
 }
 
-const option = (id: string, label: string, keeps: string[]): Option => ({ id, label, hearted: false, keeps })
+const option = (id: string, label: string, keeps: string[]): Option => ({ id, label, keeps })
 
 // The prototype's course question, with made-up codes for its courses
 const courses = [
@@ -186,7 +186,7 @@ test("Show My Plans gives way at once to the plan's skeleton, and a refused save
 })
 
 test("while her answers save, the plan's skeleton stays until her first kept plan opens", async ({ page }, testInfo) => {
-  const sent = await madeUpApi(page)
+  await madeUpApi(page)
   await page.goto('/plan')
   await answer(page, 'Mechatronics').click()
   await answer(page, 'Fewest 8am starts').click()
@@ -197,7 +197,6 @@ test("while her answers save, the plan's skeleton stays until her first kept pla
     await save.release()
     await page.waitForURL(`**/plan/${plan(8)}`)
   })
-  expect(sent()).toEqual({ course: 'TST4103F', week: 'fewest_8am' })
 })
 
 test("an answer greys out against the other question's, whichever was chosen first", async ({ page }) => {

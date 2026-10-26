@@ -100,10 +100,6 @@ def test_a_mark_leaf(result, mark, min_mark, expected, symbols):
     assert value(rule, [line("AAA1000F", result, mark)], symbols) == expected
 
 
-def test_a_result_still_to_come_leaves_a_pass_open(symbols):
-    assert value(need("AAA1000F"), [line("AAA1000F", "OS")], symbols) == "open"
-
-
 @pytest.mark.parametrize(
     ("passed", "expected"), [((), "not_met"), (("AAA1001F",), "met")]
 )

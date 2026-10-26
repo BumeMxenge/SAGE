@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import get_args
 from uuid import UUID
 
-from show_plans import ACCOUNT, on_track
+from show_plans import ACCOUNT, SYMBOLS, on_track
 
 from sage.advisor.replies import Answered, GroundedAdvisor
 from sage.config import get_settings
@@ -32,15 +32,12 @@ from sage.shared.advisor import Reply
 from sage.shared.language_model import Tokens
 from sage.shared.memory.rules import InMemoryRuleRepository
 from sage.shared.memory.students import InMemoryStudentRepository
-from sage.shared.openai import OpenAIModel
+from sage.shared.openai import MODEL, OpenAIModel
 from sage.shared.rulebook import Rulebook
 from sage.shared.rules import ResultSymbol, TermCode
 from sage.shared.seed import SEED_FILE, load_seed, seed
 from sage.shared.students import Chat, Plan, StudentState
 
-SYMBOLS = (
-    Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "result_symbols.json"
-)
 YEAR = 2026  # the year SAGE plans, whose approved rules every run loads
 
 
@@ -179,7 +176,7 @@ def main() -> None:
     chosen = [by_position[int(plan.removeprefix("V"))].id for plan in arguments.plan]
     chat = chats.start(students, ACCOUNT, chosen[0], chosen[1] if chosen[1:] else None)
 
-    model = OpenAIModel(settings.openai_api_key, settings.language_model)
+    model = OpenAIModel(settings.openai_api_key, MODEL)
     advisor = Recorded(
         GroundedAdvisor(model, students, rulebook, EntryRuleEligibility())
     )

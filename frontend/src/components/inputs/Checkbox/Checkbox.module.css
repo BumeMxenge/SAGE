@@ -41,6 +41,11 @@
   visibility: visible;
 }
 
+/* The ring goes round the box, not the whole label */
+.button[data-focus-visible] {
+  outline: none;
+}
+
 .button[data-focus-visible] .box {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);

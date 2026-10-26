@@ -9,7 +9,7 @@ import styles from './DataTable.module.css'
 
 // A column that fits is as wide as its widest cell, and the other columns share the rest of the row
 export type DataTableColumn = { key: string; header: string; align?: 'start' | 'end'; fit?: boolean }
-export type DataTableRow = { id: string; cells: Record<string, ReactNode> }
+type DataTableRow = { id: string; cells: Record<string, ReactNode> }
 
 type DataTableProps = {
   // Its title, or a skeleton in its place while a page's read is on its way

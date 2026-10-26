@@ -1,7 +1,8 @@
 // Three things SAGE does, side by side on a strip that slides one highlight into view at a time, on
-// React Aria's Tabs. A dot, the arrow keys, or a swipe, a drag or a sideways trackpad scroll anywhere on
-// the highlights moves it, never a timer, so nothing needs pausing. Each dot is a tab named after its highlight, with a hit
-// area of at least 24 px. Each picture is one image to a screen reader, named by what it shows.
+// React Aria's Tabs. A dot, the arrow keys, or a swipe, a drag or a sideways trackpad scroll
+// anywhere on the highlights moves it, never a timer, so nothing needs pausing. Each dot is a tab
+// named after its highlight, with a hit area of at least 24 px. Each picture is one image to a
+// screen reader, named by what it shows.
 import { type ReactNode, useCallback, useState } from 'react'
 import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components'
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
@@ -144,7 +145,8 @@ export function Highlights() {
             <div key={id} className={styles.slide}>
               <TabPanel id={id} shouldForceMount className={styles.panel}>
                 <h2 className={styles.title}>{title}</h2>
-                {/* An img element can't hold an HTML drawing, so the role makes this one image instead */}
+                {/* An img element can't hold an HTML drawing, so the role makes this one image
+                    instead */}
                 {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role */}
                 <div role="img" aria-label={shows}>
                   <div aria-hidden="true" className={styles.drawing}>

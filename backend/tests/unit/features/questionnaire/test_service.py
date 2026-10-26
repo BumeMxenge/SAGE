@@ -86,7 +86,7 @@ def week_options(*plans: list[dict[str, Any]]) -> dict[str, set[int]]:
     plan_rows = PlanSetRows(
         plan_set=plan_set, plans=tuple(rows), plan_courses=tuple(plan_courses)
     )
-    _, week = questions(plan_rows, rules, HERS, ())
+    _, week = questions(plan_rows, rules, HERS)
     positions = {plan.id: plan.position for plan in rows}
     return {
         option.id: {positions[plan_id] for plan_id in option.keeps}

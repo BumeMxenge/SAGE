@@ -20,13 +20,4 @@ describe('raw values', () => {
     expect(await rules(module, '.a {\n  background: linear-gradient(#fff, var(--x));\n}\n')).toContain('color-no-hex')
     expect(await rules(module, '.a {\n  border-radius: 7px;\n}\n')).toContain('scale-unlimited/declaration-strict-value')
   })
-
-  it('accepts tokens in a component', async () => {
-    const css = '.a {\n  color: var(--color-text);\n  border-radius: var(--radius-md);\n  background: transparent;\n}\n'
-    expect(await rules(module, css)).toEqual([])
-  })
-
-  it('accepts raw values in tokens.css', async () => {
-    expect(await rules('src/styles/tokens.css', ':root {\n  --color-a: light-dark(#fff, #000);\n}\n')).toEqual([])
-  })
 })

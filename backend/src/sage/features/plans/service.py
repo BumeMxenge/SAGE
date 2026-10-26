@@ -1,13 +1,13 @@
 # Her plans as the planner shows them: the current set, one plan in full, and two side by side.
 # Course names, credits, groups and meetings come from the rulebook of the plan's year.
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from typing import Any
 from uuid import UUID
 
 from sage.shared.errors import CourseDoesntFit, PlanNotFound, PlansNotReady, SamePlan
 from sage.shared.repositories import StudentRepository
-from sage.shared.rules import Course, RuleSet, TermCode
+from sage.shared.rules import Course, RuleSet, TermCode, first_offering
 from sage.shared.slots import PlanSlot, plan_slots
 from sage.shared.students import PlanCourse, PlanSetRows
 
@@ -128,6 +128,18 @@ def credits_by_term(courses: Iterable[Course]) -> dict[TermCode, int]:
 def to_choose(slots: Iterable[PlanSlot], plan_id: UUID) -> int:
     # The credits a plan leaves her to choose, which its credit line shows beside its courses'
     return sum(slot.credits for slot in slots if slot.plan_id == plan_id)
+
+
+def course_counts(slot: PlanSlot, credits: Mapping[str, int]) -> tuple[int, int]:
+    # The courses that fit, joining a course's offerings as Explore Electives' cards do, and how many
+    # of them have a fitting offering that needs a check with her advisor
+    course = {code: first_offering(code, credits) for code in slot.fits}
+    checked = {
+        course[code]
+        for code in slot.fits
+        if code in slot.untimed or code in slot.fewer_credits
+    }
+    return len(set(course.values())), len(checked)
 
 
 def group_keys(rules: RuleSet, curriculum: str) -> set[str]:

@@ -1,7 +1,7 @@
 # The bodies several features share: the base every request body builds on, and a course as the
-# catalogue, plans and electives show it. Each feature's own bodies sit in its models.py. All of them
-# stay separate from the row types in shared/, so the database can change without the frontend
-# noticing, and the other way round.
+# catalogue and plans show it. Each feature's own bodies sit in its models.py. All of them stay
+# separate from the row types in shared/, so the database can change without the frontend noticing,
+# and the other way round.
 from pydantic import BaseModel, ConfigDict
 
 from sage.shared.rules import TermCode

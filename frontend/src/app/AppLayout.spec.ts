@@ -47,8 +47,6 @@ async function box(element: Locator) {
 // Mbali never has a name from Microsoft, so her account shows her student number
 const account = (page: Page) => sidebar(page).getByRole('button', { name: /DLMMBA999/ })
 
-// The account waits for the name lookup, so the sidebar is whole once it shows
-// The page beside it arrives too, and fades in, before the checks read the window
 // Every request the page makes to the API from now on, by its path
 function apiReads(page: Page): string[] {
   const paths: string[] = []
@@ -59,6 +57,8 @@ function apiReads(page: Page): string[] {
   return paths
 }
 
+// The account waits for the name lookup, so the sidebar is whole once it shows
+// The page beside it arrives too, and fades in, before the checks read the window
 async function opened(page: Page): Promise<void> {
   await account(page).waitFor()
   await settledArrival(page)
@@ -149,13 +149,18 @@ test('the sidebar is open from 1100 px wide and folded below, as a page opens an
   await expect(open).toBeVisible()
 })
 
-test('choosing an appearance in the account menu changes the theme', async ({ page }, testInfo) => {
+test('choosing an appearance in the account menu changes the theme, and the privacy page follows it', async ({
+  page,
+}, testInfo) => {
   // The run's own theme would pass with a menu that did nothing, so this chooses the other one
   const other = testInfo.project.name === 'dark' ? 'Light' : 'Dark'
   await page.goto('/plan')
   await openMenu(page)
   await page.getByRole('menuitemradio', { name: other }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', other.toLowerCase())
+  // A static page outside the app, so it reads the stored choice itself. Its colours are its own.
+  await page.goto('/privacy.html')
+  await expect(page.locator('body')).toHaveCSS('background-color', other === 'Dark' ? 'rgb(20, 20, 20)' : 'rgb(255, 255, 255)')
 })
 
 test("while the first load's guard asks who is visiting, the frame shows with the address's skeleton, and the page opens only once it has decided", async ({

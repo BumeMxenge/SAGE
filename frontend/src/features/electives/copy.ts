@@ -29,7 +29,7 @@ export const heartFailed = "Your favourite didn't save."
 
 // The filtered page's line, over the cards that fit one of her plans
 export const showing = (count: number, plan: string) =>
-  `Showing the ${count} ${count === 1 ? 'course' : 'courses'} that fit ${plan}.`
+  `Showing the ${count} ${count === 1 ? 'course that fits' : 'courses that fit'} ${plan}.`
 
 export const showEveryCourse = 'Show Every Course'
 

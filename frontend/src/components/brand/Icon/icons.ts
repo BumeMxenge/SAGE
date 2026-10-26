@@ -1,7 +1,7 @@
-// Every icon the prototypes draw, as its closest Material Symbols Rounded icon (from Google, through
+// Every icon SAGE's screens draw, as its closest Material Symbols Rounded icon (from Google, through
 // the @material-symbols/svg-400 package). Only the icons imported here reach the bundle. Each entry
-// says where the prototypes use it (planner, onboarding, error sheet, loading sheet), so an icon with
-// no use there doesn't belong here.
+// says where the prototypes use it (planner, onboarding, error sheet, loading sheet), and an icon
+// joins only when a screen needs it.
 import DockToRight from '@material-symbols/svg-400/rounded/dock_to_right.svg?react'
 import CalendarToday from '@material-symbols/svg-400/rounded/calendar_today.svg?react'
 import Explore from '@material-symbols/svg-400/rounded/explore.svg?react'
@@ -9,7 +9,6 @@ import Schedule from '@material-symbols/svg-400/rounded/schedule.svg?react'
 import ChatBubble from '@material-symbols/svg-400/rounded/chat_bubble.svg?react'
 import BorderColor from '@material-symbols/svg-400/rounded/border_color.svg?react'
 import History from '@material-symbols/svg-400/rounded/history.svg?react'
-import ChevronLeft from '@material-symbols/svg-400/rounded/chevron_left.svg?react'
 import ChevronRight from '@material-symbols/svg-400/rounded/chevron_right.svg?react'
 import KeyboardArrowDown from '@material-symbols/svg-400/rounded/keyboard_arrow_down.svg?react'
 import ArrowUpward from '@material-symbols/svg-400/rounded/arrow_upward.svg?react'
@@ -23,11 +22,7 @@ import Search from '@material-symbols/svg-400/rounded/search.svg?react'
 import ErrorCircle from '@material-symbols/svg-400/rounded/error.svg?react'
 import Refresh from '@material-symbols/svg-400/rounded/refresh.svg?react'
 import Person from '@material-symbols/svg-400/rounded/person.svg?react'
-import ScanDelete from '@material-symbols/svg-400/rounded/scan_delete.svg?react'
 import CloudUpload from '@material-symbols/svg-400/rounded/cloud_upload.svg?react'
-import CloudOff from '@material-symbols/svg-400/rounded/cloud_off.svg?react'
-import WifiOff from '@material-symbols/svg-400/rounded/wifi_off.svg?react'
-import Lock from '@material-symbols/svg-400/rounded/lock.svg?react'
 import Info from '@material-symbols/svg-400/rounded/info.svg?react'
 import ArrowDownward from '@material-symbols/svg-400/rounded/arrow_downward.svg?react'
 import FavoriteFilled from '@material-symbols/svg-400/rounded/favorite-fill.svg?react'
@@ -52,8 +47,6 @@ export const icons = {
   border_color: BorderColor,
   // Planner: Chat History in the assistant's header
   history: History,
-  // Planner: Back beside the questionnaire's title
-  chevron_left: ChevronLeft,
   // Planner: Collapse Assistant
   chevron_right: ChevronRight,
   // Planner: the plan switcher. Error sheet: the switcher in "Offline".
@@ -87,16 +80,8 @@ export const icons = {
   // Error sheet: the tile of "Account can't use SAGE". Planner: the avatar when Microsoft gave no name
   // (approved difference 14).
   person: Person,
-  // Error sheet: the tile of "Transcript belongs to someone else"
-  scan_delete: ScanDelete,
   // Onboarding: the upload drop zone
   cloud_upload: CloudUpload,
-  // Onboarding: the drop zone when the transcript can't be read
-  cloud_off: CloudOff,
-  // Error sheet: the "Offline" banner
-  wifi_off: WifiOff,
-  // Error sheet: the "Session expired" dialog
-  lock: Lock,
   // Onboarding: each note the transcript's reading sends with it, on the review step (new design,
   // approved difference 12)
   info: Info,

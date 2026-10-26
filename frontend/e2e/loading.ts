@@ -16,7 +16,7 @@ type Problem = components['schemas']['Problem']
 // The API is on another port, so each answer allows this page's origin, as the backend's CORS does
 const allowed = { 'Access-Control-Allow-Origin': '*' }
 
-export type Hold = {
+type Hold = {
   // Lets every held request go on, and those after it
   release: () => Promise<void>
   // Answers every held request, and every later one, with this refusal, so the read stays failed

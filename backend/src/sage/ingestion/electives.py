@@ -15,6 +15,7 @@ from typing import get_args
 
 from pydantic import JsonValue
 
+from sage.ingestion.drafting import read_cache, save_cache
 from sage.shared.base import Row
 from sage.shared.language_model import LanguageModel, Said, Schema, strict_object
 from sage.shared.rules import ElectiveTab, offerings
@@ -70,12 +71,12 @@ def write(
 ) -> Written:
     # passages are what the model reads for each course, by code, languages the codes of the
     # language options, and credits each course's
-    drafts = _read(cache)
+    drafts = read_cache(cache)
     # An earlier year's copy is left out, as the offering it copies may no longer match
     before = {
         entry["sha256"]: entry
         for path in earlier
-        for entry in _read(path).values()
+        for entry in read_cache(path).values()
         if "same_as" not in entry
     }
     same = paired(passages, credits)
@@ -91,7 +92,7 @@ def write(
             copy = {**drafts[first], "sha256": digest, "same_as": first}
             if model is not None and drafts.get(code) != copy:
                 drafts[code] = copy
-                _save(cache, drafts)
+                save_cache(cache, drafts)
             continue
         entry = drafts.get(code)
         if model is not None and (entry is None or entry["sha256"] != digest):
@@ -107,7 +108,7 @@ def write(
                 entry["sha256"] = digest
             drafts[code] = entry
             # Saved after each draft, so a run that stops keeps what it paid for
-            _save(cache, drafts)
+            save_cache(cache, drafts)
         if entry is not None and entry["sha256"] == digest:
             electives[code] = Elective(tab=entry["tab"], summary=entry["summary"])
     return Written(
@@ -180,16 +181,3 @@ def _draft(
         "tab": None if language else value["tab"],
         "summary": value["summary"],
     }
-
-
-def _read(cache: Path) -> dict[str, dict]:
-    # A year's drafts by course code
-    return json.loads(cache.read_text(encoding="utf-8")) if cache.exists() else {}
-
-
-def _save(cache: Path, drafts: dict[str, dict]) -> None:
-    cache.parent.mkdir(parents=True, exist_ok=True)
-    cache.write_text(
-        json.dumps(drafts, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )

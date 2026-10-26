@@ -41,8 +41,6 @@ def test_find_plan_finds_her_hidden_plans_and_else_gives_the_sets_reasons(eviden
         ("V03", "Power, Control & Embedded", True),
         ("V04", "Power, Control & Imaging", True),
     ]
-    # No plan takes three electives outside EEE4117F, EEE4118F and EEE4119F, so it gives the set's
-    # five reasons from her seed, and not V07's own
     # A plan asked for by every one of its courses, in any case, is found, and an empty ask isn't one
     v01 = ["CML4607F", "EEE4022S", "EEE4113F", "EEE4117F", "EEE4118F", "EEE4119F"]
     v01 += ["EEE4124C", "EEE4125C"]
@@ -60,6 +58,8 @@ def test_find_plan_finds_her_hidden_plans_and_else_gives_the_sets_reasons(eviden
     assert found.find_plan(have=[], avoid=[]) == {
         "error": "Name at least one course to have or to avoid."
     }
+    # No plan takes three electives outside EEE4117F, EEE4118F and EEE4119F, so it gives the set's
+    # five reasons from her seed, and not V07's own
     none = found.find_plan(have=["EEE4114F", "EEE4120F", "HUB4049F"], avoid=[])
     assert none["plans"] == []
     assert sorted(none["reasons"]) == sorted(

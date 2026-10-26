@@ -1,5 +1,5 @@
-# Each student's data in one dictionary, keyed by her account id. Reads come back in the order the
-# Supabase adapter returns them, so the two can be checked against each other.
+# Each student's data in one dictionary, keyed by her account id. Reads give back her rows in the
+# order they were written, where the Supabase adapter sorts each table by its ORDER.
 from collections.abc import Callable, Collection, Iterable, Sequence
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -103,10 +103,7 @@ class InMemoryStudentRepository:
         self._change(
             student_id,
             # Complete whether the set is new or a retry found it already stored
-            plan_sets=tuple(
-                row.model_copy(update={"complete": True}) if row.id == set_id else row
-                for row in plan_sets
-            ),
+            plan_sets=_updated(plan_sets, lambda row: row.id == set_id, complete=True),
             plans=_added(state.plans, rows.plans, lambda row: row.id),
             plan_courses=_added(
                 state.plan_courses,
@@ -138,12 +135,7 @@ class InMemoryStudentRepository:
             return
         self._change(
             student_id,
-            plans=tuple(
-                plan.model_copy(update={"hidden": False})
-                if plan.id == plan_id
-                else plan
-                for plan in state.plans
-            ),
+            plans=_updated(state.plans, lambda plan: plan.id == plan_id, hidden=False),
         )
 
     def save_answers(
@@ -152,11 +144,8 @@ class InMemoryStudentRepository:
         state = self._students[student_id]
         self._change(
             student_id,
-            plan_sets=tuple(
-                row.model_copy(update={"answers": answers})
-                if row.id == plan_set_id
-                else row
-                for row in state.plan_sets
+            plan_sets=_updated(
+                state.plan_sets, lambda row: row.id == plan_set_id, answers=answers
             ),
         )
 
@@ -226,11 +215,10 @@ class InMemoryStudentRepository:
             return
         self._change(
             student_id,
-            chats=tuple(
-                chat.model_copy(update={"title": title})
-                if chat.id == chat_id and chat.title is None
-                else chat
-                for chat in state.chats
+            chats=_updated(
+                state.chats,
+                lambda chat: chat.id == chat_id and chat.title is None,
+                title=title,
             ),
         )
 
@@ -303,3 +291,12 @@ def _added[T: Row](
     # existing rows would leave them
     have = {key(row) for row in stored}
     return stored + tuple(row for row in new if key(row) not in have)
+
+
+def _updated[T: Row](
+    rows: tuple[T, ...], matches: Callable[[T], bool], **changes: Any
+) -> tuple[T, ...]:
+    # The rows with each one that matches changed, as an update would leave them
+    return tuple(
+        row.model_copy(update=changes) if matches(row) else row for row in rows
+    )

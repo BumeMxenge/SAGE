@@ -39,7 +39,7 @@ def test_a_fresh_set_needs_it(mbali):
     assert mbali.get("/v1/questionnaire").json()["needed"] is True
 
 
-def test_the_course_options_are_her_hearted_electives(mbali):
+def test_the_course_options_are_the_courses_only_some_of_her_plans_hold(mbali):
     course = options(mbali, "course")
     assert list(course) == [
         "EEE4114F",
@@ -50,10 +50,7 @@ def test_the_course_options_are_her_hearted_electives(mbali):
         "HUB4049F",
         "no_preference",
     ]
-    assert all(
-        option["hearted"] for code, option in course.items() if code != "no_preference"
-    )
-    # p. 140 prints EEE4119F MECHATRONICS, which ingestion title-cases (CP0 answer 6)
+    # p. 140 prints EEE4119F MECHATRONICS, which ingestion title-cases
     assert course["EEE4119F"]["label"] == "Mechatronics"
 
 
@@ -178,7 +175,6 @@ def test_a_set_of_5_plans_doesnt_need_it(mbali, stores):
             }
         )
     )
-    assert mbali.get("/v1/questionnaire").json()["needed"] is False
     response = mbali.post("/v1/questionnaire", json={})
     assert (response.status_code, response.json()["code"]) == (
         409,

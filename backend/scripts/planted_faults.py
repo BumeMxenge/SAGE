@@ -323,9 +323,9 @@ def main() -> None:
                 ignore=shutil.ignore_patterns("__pycache__"),
             )
         shutil.copy2(BACKEND / "pyproject.toml", copy)
-        # SEED_FILE and DATA, where the tests find the approved 2026, are four folders up from their
-        # modules, and E2's prompt four up from the drafter's test, so data/ and experiments/ go
-        # beside the copy, as in the repo. data/ is copied, not linked, so a fault that loses a
+        # SEED_FILE and DATA, where the tests find the approved 2026, are found from the repo root,
+        # as are E2 for the drafter's test and E4 for the advisor's tests, so data/ and experiments/
+        # go beside the copy, as in the repo. data/ is copied, not linked, so a fault that loses a
         # function's folder can't write to the real one.
         shutil.copytree(BACKEND.parent / "data", Path(work) / "data")
         (Path(work) / "experiments").symlink_to(BACKEND.parent / "experiments")

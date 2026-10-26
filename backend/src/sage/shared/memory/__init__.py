@@ -1,1 +1,1 @@
-# In-memory fakes of the stores and the token check, for tests. They check nothing the database does
+# Fakes of the stores, the token check and the language model. They check nothing the database does

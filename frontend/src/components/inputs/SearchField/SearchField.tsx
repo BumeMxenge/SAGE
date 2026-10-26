@@ -5,7 +5,7 @@ import { Button, Input, Label, SearchField as AriaSearchField, type SearchFieldP
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import styles from './SearchField.module.css'
 
-type SearchFieldProps = Pick<AriaSearchFieldProps, 'value' | 'defaultValue' | 'onChange' | 'onSubmit' | 'isDisabled'> & {
+type SearchFieldProps = Pick<AriaSearchFieldProps, 'value' | 'onChange' | 'isDisabled'> & {
   label: string
   placeholder: string
 }

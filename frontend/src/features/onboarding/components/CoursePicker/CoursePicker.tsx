@@ -42,13 +42,7 @@ export function CoursePicker({ year, courses, onClose, onPick }: CoursePickerPro
   )
   const byCode = new Map(matches.map((course) => [course.code, course]))
   return (
-    <Dialog
-      title="Add a Course"
-      isOpen
-      onOpenChange={(isOpen) => {
-        if (!isOpen) onClose()
-      }}
-    >
+    <Dialog title="Add a Course" onClose={onClose}>
       <div className={styles.picker}>
         <p className={styles.lead}>Pick a course to add to {year}.</p>
         <SearchField label="Search courses" placeholder="Search by course name or code" value={search} onChange={setSearch} />

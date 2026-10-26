@@ -1,18 +1,19 @@
-// The assistant, docked beside the plan at a plan's own address: the named aside approved difference
-// 6 asks for. Folded, it's a strip holding Open Assistant, an icon button, with Assistant written up
-// the strip under it, as in the prototype. Open, its header names the plan or pair the address puts
-// on screen, and their chat fills the rest: the newest, the one she picked from Chat History, or a new
-// one. A new chat is made only as its first question goes, so New Chat leaves none behind. The
-// questions being answered are kept here, one for each plan and pair, not in the chat, so folding the
-// assistant or moving between chats keeps them. Each plan and pair answers one at a time, as two
-// questions in one chat at once would each be answered without seeing the other, but a question on
-// its way in one doesn't hold another. There's no assistant while her set still needs its questions answered, as the API keeps
-// chats closed then and the prototype shows the assistant only beside an open plan, nor beside a plan
-// that doesn't exist. Until her set says so, the folded strip shows, as loading case 01 draws it
-// beside the plan. Open, its header renders straight away, with the plan's or pair's name as a
-// skeleton until it's read, and the conversation shows bubble-shaped skeletons until its chats and
-// the open chat's messages arrive. Pressing a toggle moves focus to the one that replaces it, as the
-// sidebar's do, and what is folded away isn't there to take focus.
+// The assistant, docked beside the plan at a plan's own address: the named aside approved
+// difference 6 asks for. Folded, it's a strip holding Open Assistant, an icon button, with
+// Assistant written up the strip under it, as in the prototype. Open, its header names the plan or
+// pair the address puts on screen, and their chat fills the rest: the newest, the one she picked
+// from Chat History, or a new one. A new chat is made only as its first question goes, so New Chat
+// leaves none behind. The questions being answered are kept here, one for each plan and pair, not
+// in the chat, so folding the assistant or moving between chats keeps them. Each plan and pair
+// answers one at a time, as two questions in one chat at once would each be answered without seeing
+// the other, but a question on its way in one doesn't hold another. There's no assistant while her
+// set still needs its questions answered, as the API keeps chats closed then and the prototype
+// shows the assistant only beside an open plan, nor beside a plan that doesn't exist. Until her set
+// says so, the folded strip shows, as loading case 01 draws it beside the plan. Open, its header
+// renders straight away, with the plan's or pair's name as a skeleton until it's read, and the
+// conversation shows bubble-shaped skeletons until its chats and the open chat's messages arrive.
+// Pressing a toggle moves focus to the one that replaces it, as the sidebar's do, and what is
+// folded away isn't there to take focus.
 import { useIsMutating, useMutation, useMutationState, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { IconButton } from '@/components/actions/IconButton/IconButton.tsx'
@@ -213,7 +214,8 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
               onPress={toggle}
             />
           </header>
-          {/* Until the plan's name is known, for the intro and the chat box, the conversation's skeleton */}
+          {/* Until the plan's name is known, for the intro and the chat box, the conversation's
+              skeleton */}
           {planName === undefined && nameWaiting && <ConversationSkeleton />}
           {set && planName !== undefined && (chatId !== undefined || chats.isPending) && (
             <Conversation
@@ -238,7 +240,8 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
             autoFocus={moveFocus}
             onPress={toggle}
           />
-          {/* The aside and its button already say Assistant, so a screen reader doesn't hear it again */}
+          {/* The aside and its button already say Assistant, so a screen reader doesn't hear it
+              again */}
           <span aria-hidden="true" className={styles.label}>
             Assistant
           </span>

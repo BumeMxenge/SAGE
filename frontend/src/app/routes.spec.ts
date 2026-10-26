@@ -9,9 +9,9 @@ import { settledArrival } from '../../e2e/loading.ts'
 import { mbali, visitAs, withSlot } from '../../e2e/visitors.ts'
 
 // The page opens for its visitor, the guard lets them stay, it has one h1, and it passes both checks
-// once its reads have arrived and no skeleton is left. The h1 isn't named here, as each page's own
-// branch writes it; a second h1 fails strict mode. A page stays at its own address, unless it says
-// where it lands, as /plan opens her first plan at its own.
+// once its reads have arrived and no skeleton is left. The h1 isn't named here, as each page names
+// its own; a second h1 fails strict mode. A page stays at its own address, unless it says where it
+// lands, as /plan opens her first plan at its own.
 async function check(page: Page, path: string, leaveOut: string[] = [], lands: RegExp | string = path): Promise<void> {
   await page.goto(path)
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()

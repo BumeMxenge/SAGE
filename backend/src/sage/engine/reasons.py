@@ -102,7 +102,7 @@ class Reasons:
         )
 
     def excluded(
-        self, code: str, rest: EntryRule, core: bool, minimum: int | None = None
+        self, code: str, rest: EntryRule, core: bool, minimum: int | None
     ) -> Reason:
         # A course she can't take yet. A core course leaves her advisor to settle it, and one of
         # her own year can take her year under the minimum its table prints, which her advisor can
@@ -200,7 +200,7 @@ class Reasons:
         fits: Sequence[Fit],
         untimed: Sequence[str],
         fewer: Sequence[str],
-        place: Place | None = None,
+        place: Place | None,
     ) -> Reason:
         # A complementary line, or a 576-credit place, the plan leaves to her, with the approved
         # complementary courses that fit its timetable, the sections of each that fit, and any
@@ -274,7 +274,7 @@ class Reasons:
         floor: int | None,
         table: str | None,
     ) -> Reason:
-        # The smallest set of requirements no plan can meet together. Courses alone conflict through
+        # A minimal set of requirements no plan can meet together. Courses alone conflict through
         # the timetable (FB3.4); otherwise the table of the year rule they break says what it asks.
         parts = [listed(courses)] if courses else []
         parts += [asked(rule) for rule in rules]

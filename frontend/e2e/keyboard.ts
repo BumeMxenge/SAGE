@@ -1,5 +1,6 @@
 // The keyboard walk: Tab from the top of the page until focus leaves it, checking that every stop shows
-// SAGE's focus ring, a solid outline at least 2 px wide. Two components draw it beside the focused
+// SAGE's focus ring, a solid outline at least 2 px wide, and that no other ring is on screen, as on a
+// box around the stop that React Aria marks too. Two components draw it beside the focused
 // element rather than on it: the chat box rings its wrapper, and the checkbox its box, beside its
 // hidden input in the same label. So the ring may sit on the element, around it, inside it or in its
 // label. It returns each stop's role and name, as the accessibility tree gives them, in order, for a
@@ -15,27 +16,44 @@ export async function walkKeyboard(page: Page): Promise<string[]> {
   for (;;) {
     await page.keyboard.press('Tab')
     const focused = await page.evaluateHandle(() => document.activeElement)
-    const ringed = await page.evaluate(
+    const found = await page.evaluate(
       ([element, start]) => {
         // Focus has left the page, or come round to the first stop
         if (!(element instanceof Element) || element === document.body || element === start) return null
+        // A visually hidden element can't show a ring: one 1 px across or less, or one inside a box that
+        // small which hides its overflow, as React Aria hides a checkbox's input and a drop zone's
+        // button. Each takes the browser's ring, which that box clips from view.
+        const hidden = (candidate: Element) => {
+          for (let box: Element | null = candidate; box; box = box.parentElement) {
+            const { width, height } = box.getBoundingClientRect()
+            const clips = box === candidate || getComputedStyle(box).overflow !== 'visible'
+            if (clips && (width <= 1 || height <= 1)) return true
+          }
+          return false
+        }
         const showsRing = (candidate: Element) => {
           const { outlineStyle, outlineWidth } = getComputedStyle(candidate)
-          return outlineStyle === 'solid' && parseFloat(outlineWidth) >= 2
+          return outlineStyle === 'solid' && parseFloat(outlineWidth) >= 2 && !hidden(candidate)
         }
         const around: Element[] = []
         for (let parent = element.parentElement; parent; parent = parent.parentElement) around.push(parent)
         // A checkbox's input is hidden inside its label, and the box beside it shows the ring
         const label = element.closest('label')
-        return [element, ...around, ...element.querySelectorAll('*'), ...(label ? label.querySelectorAll('*') : [])].some(showsRing)
+        const near = [element, ...around, ...element.querySelectorAll('*'), ...(label ? label.querySelectorAll('*') : [])]
+        // Each ring on screen, named by its tag and classes, so a failure says where the extra one is
+        const rings = [...document.querySelectorAll('*')]
+          .filter(showsRing)
+          .map((ringed) => [ringed.tagName.toLowerCase(), ...ringed.classList].join('.'))
+        return { ringed: near.some(showsRing), rings }
       },
       [focused, first] as const,
     )
-    if (ringed === null) return stops
+    if (found === null) return stops
     first ??= focused
     // Such as: button "Continue with UCT Email"
     const [stop] = (await page.locator(':focus').ariaSnapshot()).replace(/^- /, '').split('\n')
-    expect(ringed, `the focus ring on ${stop}`).toBe(true)
+    expect(found.ringed, `the focus ring on ${stop}`).toBe(true)
+    expect(found.rings, `rings on screen at ${stop}`).toHaveLength(1)
     stops.push(stop)
     // A page has far fewer stops than this, so more means focus is trapped
     expect(stops.length, 'stops before focus leaves the page').toBeLessThan(200)

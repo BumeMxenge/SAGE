@@ -73,11 +73,6 @@
   background: var(--color-hover);
 }
 
-.open[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
-}
-
 .open-icon,
 .open[data-hovered] .mark,
 .open[data-focus-visible] .mark {
@@ -134,11 +129,6 @@
 
 .link[data-current] {
   background: var(--color-surface-muted);
-}
-
-.link[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
 }
 
 /* On the rail each link is a round icon, quieter at rest, as the prototype draws it. The open page

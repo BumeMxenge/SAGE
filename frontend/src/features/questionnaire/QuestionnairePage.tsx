@@ -12,8 +12,8 @@ import { type ReactNode, useState } from 'react'
 import { Button } from '@/components/actions/Button/Button.tsx'
 import { PageHeader } from '@/components/content/PageHeader/PageHeader.tsx'
 import { Arrival } from '@/components/feedback/Arrival/Arrival.tsx'
-import { ChoiceChips } from '@/components/inputs/ChoiceChips/ChoiceChips.tsx'
-import { ChoiceChipsSkeleton } from '@/components/inputs/ChoiceChips/ChoiceChipsSkeleton.tsx'
+import { ChoiceChips } from '@/features/questionnaire/components/ChoiceChips/ChoiceChips.tsx'
+import { ChoiceChipsSkeleton } from '@/features/questionnaire/components/ChoiceChips/ChoiceChipsSkeleton.tsx'
 import { client, dataOf } from '@/lib/api.ts'
 import type { components } from '@/lib/api-types.ts'
 import { queries, refresh } from '@/lib/queryKeys.ts'
@@ -92,7 +92,8 @@ export function QuestionnairePage({ set, saving }: QuestionnairePageProps) {
               </div>
               <div className={styles.actions}>
                 <Button onPress={() => save.mutate(answers)}>Show My Plans</Button>
-                {/* An output is a polite status, so a screen reader hears the new count as she answers */}
+                {/* An output is a polite status, so a screen reader hears the new count as she
+                    answers */}
                 <output className={styles.narrowing}>
                   {narrowing(keptBy(plans, questions, answers).length, plans.length, answered)}
                 </output>

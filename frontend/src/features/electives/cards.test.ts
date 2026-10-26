@@ -72,11 +72,12 @@ describe('what the page shows', () => {
   it('hides a tab with nothing kept, and opens the address tab only if it is shown', () => {
     const kept = keeping(tabs, (each) => matches(each, 'moral'))
     expect(kept.map((tab) => tab.key)).toEqual(['ethics'])
+    const none = () => false
     // The address names languages, which the search hides, so the first tab with a match opens
-    expect(openingTab(kept, 'languages')).toBe('ethics')
-    expect(openingTab(tabs, 'ethics')).toBe('ethics')
-    expect(openingTab(tabs, null)).toBe('languages')
-    expect(openingTab([], 'ethics')).toBeNull()
+    expect(openingTab(kept, 'languages', none)).toBe('ethics')
+    expect(openingTab(tabs, 'ethics', none)).toBe('ethics')
+    expect(openingTab(tabs, null, none)).toBe('languages')
+    expect(openingTab([], 'ethics', none)).toBeNull()
   })
 
   it('opens the first tab with a card that comes first, such as a favourite, when the address names none', () => {

@@ -10,7 +10,7 @@ from postgrest import APIError
 pytestmark = pytest.mark.integration
 
 FOREIGN_KEY, CHECK = "23503", "23514"
-# A real 2026 course and term, for rows that need one
+# A real 2026 course and term, for rows that need one, so a test using it asks for the loaded years
 SLOT = {"handbook_year": 2026, "course_code": "EEE4113F", "term": "sem1"}
 
 
@@ -68,6 +68,8 @@ def test_an_unknown_result_symbol_is_refused(secret, mbali, refused):
     )
 
 
+# The link names one of 2026's slots, so 2026 must be loaded for the refusal to be the curriculum's
+@pytest.mark.usefixtures("approved_years")
 def test_a_slot_curriculum_must_be_in_its_slots_year(secret, approved_2026):
     curriculum = {
         "handbook_year": 2099,
@@ -129,12 +131,14 @@ def test_two_messages_sent_together_get_increasing_times(secret, mbali):
     assert first < second
 
 
-def test_a_slot_with_a_start_but_no_end_is_refused(secret, mbali, refused):
+@pytest.mark.usefixtures("approved_years")
+def test_a_slot_with_a_start_but_no_end_is_refused(secret, refused):
     slot = SLOT | {"start_time": "08:00"}
     refused(secret.table("timetable_slots").insert(slot), CHECK)
 
 
-def test_a_slot_with_times_but_no_day_is_kept(secret, mbali):
+@pytest.mark.usefixtures("approved_years")
+def test_a_slot_with_times_but_no_day_is_kept(secret):
     slot = SLOT | {"start_time": "08:00", "end_time": "08:45"}
     stored = secret.table("timetable_slots").insert(slot).execute().data[0]
     secret.table("timetable_slots").delete().eq("id", stored["id"]).execute()

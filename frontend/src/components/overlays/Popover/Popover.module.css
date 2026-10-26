@@ -1,6 +1,6 @@
-/* Also holds the list-item look that Select and Menu share, so their options match. React Aria limits
-   the panel to the space beside its trigger; as a column, its list shrinks to that and scrolls inside,
-   so a long list never spills over the trigger, where a press could pick an option. */
+/* React Aria limits the panel to the space beside its trigger; as a column, its list shrinks to that
+   and scrolls inside, so a long list never spills over the trigger, where a press could pick an
+   option. */
 .popover {
   display: flex;
   flex-direction: column;
@@ -22,84 +22,4 @@
 .popover[data-entering],
 .popover[data-exiting] {
   opacity: 0;
-}
-
-.list {
-  min-height: 0;
-  max-height: 60vh;
-  overflow-y: auto;
-  outline: none;
-}
-
-.item {
-  --icon-size: var(--size-icon-sm);
-
-  display: flex;
-  gap: var(--space-3);
-  align-items: center;
-  justify-content: space-between;
-  min-height: var(--size-control-md);
-  padding: var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-md);
-  color: var(--color-text);
-  cursor: pointer;
-  outline: none;
-}
-
-.item[data-hovered] {
-  background: var(--color-hover);
-}
-
-.item[data-selected] {
-  background: var(--color-surface-muted);
-}
-
-.item[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: calc(var(--focus-ring-width) * -1);
-}
-
-.option {
-  align-items: flex-start;
-  padding: var(--space-3);
-}
-
-.destructive {
-  color: var(--color-text-danger);
-}
-
-/* An option's label holds all of its text, but lays none of it out */
-.content {
-  display: contents;
-}
-
-.text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
-}
-
-.label {
-  font-weight: var(--font-weight-semibold);
-}
-
-.description {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-}
-
-.detail {
-  flex: none;
-  font-size: var(--font-size-xs);
-  font-variant-numeric: tabular-nums;
-  color: var(--color-text-secondary);
-}
-
-.header {
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
 }

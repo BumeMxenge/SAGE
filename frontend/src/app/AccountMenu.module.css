@@ -29,11 +29,6 @@
   background: var(--color-hover);
 }
 
-.button[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
-}
-
 /* On the rail only the avatar shows, round and centred under the links' icons, with no line above
    it, as the prototype's rail draws it */
 .account[data-collapsed] {

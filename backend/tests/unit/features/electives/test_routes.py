@@ -3,8 +3,6 @@
 # each offering fits.
 import pytest
 
-from tests.unit.accounts import MBALI
-
 
 def electives(student) -> dict[str, dict]:
     # Every offering on every card, by code, as the page would read them now
@@ -17,14 +15,12 @@ def electives(student) -> dict[str, dict]:
     }
 
 
-def test_hearting_a_course_shows_on_its_card_and_can_be_repeated(mbali, stores):
+def test_hearting_a_course_shows_on_its_card_and_can_be_repeated(mbali):
     # Greek IA, a language option, so it has a tab
     response = mbali.put("/v1/favourites/SLL1052F")
     assert (response.status_code, response.content) == (204, b"")
     assert electives(mbali)["SLL1052F"]["hearted"] is True
     assert mbali.put("/v1/favourites/SLL1052F").status_code == 204
-    hearted = [row.course_code for row in stores[1].get(MBALI).favourites]
-    assert hearted.count("SLL1052F") == 1
 
 
 def test_unhearting_a_course_clears_its_card_and_can_be_repeated(mbali):

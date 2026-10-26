@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from sage.ingestion.drafting import ModelDrafter
+from sage.ingestion.drafting import draft
 from sage.ingestion.translate import translate
 from sage.shared.language_model import Response, Said, Schema
 from sage.shared.memory.language_model import ScriptedModel
@@ -45,9 +45,7 @@ def replies(*texts):
 )
 def test_a_draft_is_asked_for_as_e2_asked_luna(e2, need, field):
     model = replies(json.dumps({"rule": MARK}))
-    drafter = ModelDrafter(model)
-    # The model's name goes into the cache with each draft
-    assert (drafter.model, drafter.draft(REFUSED, need)) == ("a scripted model", MARK)
+    assert draft(model, REFUSED, need) == MARK
     body = e2.request(e2.LUNA, field, REFUSED)
     (call,) = model.calls
     assert (call.instructions, call.conversation, call.schema) == (
@@ -77,7 +75,7 @@ def test_a_reply_holding_no_rule_is_refused_and_the_run_goes_on(tmp_path, reply)
     read = translate(
         [(REFUSED, "pass"), (EQUIVALENT, "concurrent")],
         tmp_path / "drafts.json",
-        ModelDrafter(model),
+        model,
     )
     # Never read as "no requirement", which a null rule means
     assert read.refused == (REFUSED,)

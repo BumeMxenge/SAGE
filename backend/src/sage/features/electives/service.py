@@ -1,9 +1,10 @@
 # Explore Electives: the current year's courses that have a tab, one card per course, with whether
-# each offering works for her and whether she hearted it, and hearting itself. An offering works when
-# the engine doesn't refuse it and a complementary slot in her current plan set, shown or hidden,
-# lists it among the courses that fit, or, where no plan has such a slot, when the engine doesn't
-# refuse it. She can heart only what works, and each card carries at most one note saying why not,
-# or what to check.
+# each offering works for her and whether she hearted it, and hearting itself. An offering works
+# when the engine doesn't refuse it and a complementary slot in her current plan set, shown or
+# hidden, lists it among the courses that fit, or, where no plan has such a slot, when the engine
+# doesn't refuse it. A card offers the heart only on what works, though hearting itself checks only
+# that the course is in the current handbook. Each card carries at most one note saying why not, or
+# what to check.
 from collections import defaultdict
 from collections.abc import Collection, Mapping, Sequence
 from typing import get_args
@@ -14,7 +15,7 @@ from sage.shared.errors import CourseNotFound
 from sage.shared.planning import Eligibility, EligibilityChecker
 from sage.shared.repositories import StudentRepository
 from sage.shared.rulebook import Rulebook
-from sage.shared.rules import Course, ElectiveTab, RuleSet, TermCode, offerings
+from sage.shared.rules import Course, ElectiveTab, RuleSet, TermCode, first_offering
 from sage.shared.slots import PlanSlot, plan_slots
 from sage.shared.students import Student
 
@@ -106,7 +107,7 @@ def cards(
     worth = {code: course.credits for code, course in courses.items()}
     by_course: dict[str, list[Course]] = defaultdict(list)
     for code in sorted(courses):
-        by_course[min(offerings(code, worth[code], worth))].append(courses[code])
+        by_course[first_offering(code, worth)].append(courses[code])
     tabs: dict[str, list[Card]] = defaultdict(list)
     for first, offered in by_course.items():
         found = [

@@ -4,7 +4,7 @@ import { CheckboxButton, CheckboxField, type CheckboxFieldProps } from 'react-ar
 import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import styles from './Checkbox.module.css'
 
-type CheckboxProps = Pick<CheckboxFieldProps, 'isSelected' | 'defaultSelected' | 'onChange' | 'name'> & {
+type CheckboxProps = Pick<CheckboxFieldProps, 'isSelected' | 'onChange'> & {
   children: ReactNode
 }
 

@@ -75,7 +75,7 @@ class Transcript(Row):
 def pdf_pages(data: bytes) -> list[list[str]]:
     try:
         with pdfplumber.open(io.BytesIO(data)) as pdf:
-            pages = [(page.extract_text() or "").splitlines() for page in pdf.pages]
+            pages = [page.extract_text().splitlines() for page in pdf.pages]
     except Exception as error:
         # Damaged, locked with a password, or malformed in one of the many ways that crash the PDF
         # library on untrusted input, so any failure here is unreadable. Only the error's type is

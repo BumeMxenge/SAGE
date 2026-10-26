@@ -1,31 +1,21 @@
-// Sign-in state for any component: who is signed in and their name, plus sign-in and sign-out
+// Sign-in state for any component: the name of whoever is signed in, and the sign-in and sign-out
 // actions
-import type { Session } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { queryClient } from '@/lib/queryClient.ts'
 import { supabase } from '@/lib/supabase.ts'
 import { forgetName, lookUpName, type Name } from './name.ts'
-import { signInFinished } from './session.ts'
 
 export function useAuth() {
-  const [session, setSession] = useState<Session | null>(null)
   const [name, setName] = useState<Name>() // none for Mbali's link, which brings no Microsoft token
   // Until both the sign-in and the name are known, so a greeting never changes once it shows
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // A refused sign-in shows its reason. Every sign-in comes back to /, which always redirects, so the
-    // redirect clears the refusal Microsoft or Supabase put in the address bar, or a link's token.
-    void signInFinished.then(({ error }) => {
-      if (error) setError(error.message)
-    })
     let accountId: string | undefined
     // Runs once with the current session, then on every sign-in, sign-out and token refresh
     const { data } = supabase.auth.onAuthStateChange((event, newSession) => {
       if (event === 'SIGNED_OUT' && accountId) forgetName(accountId)
       accountId = newSession?.user.id
-      setSession(newSession)
       if (!newSession) {
         setName(undefined)
         setLoading(false)
@@ -44,10 +34,7 @@ export function useAuth() {
     return () => data.subscription.unsubscribe()
   }, [])
 
-  // chooseAccount makes Microsoft show its account picker rather than reuse the account it
-  // remembers, for the wrong-account page's Use a Different Account
-  async function signIn({ chooseAccount = false } = {}) {
-    setError(null)
+  async function signIn() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'azure', // Microsoft, through the Azure provider set up in Supabase
       options: {
@@ -55,10 +42,9 @@ export function useAuth() {
         // Not profile, which would put every student's name in Supabase.
         scopes: 'email User.Read',
         redirectTo: `${window.location.origin}/`, // come back to this site, local or hosted
-        queryParams: chooseAccount ? { prompt: 'select_account' } : undefined,
       },
     })
-    if (error) setError(error.message) // on success the browser has already left for Microsoft
+    if (error) throw error // on success the browser has already left for Microsoft
   }
 
   // Signs out of Supabase, leaves the student's pages as the caller says, then empties the cache, so
@@ -67,8 +53,7 @@ export function useAuth() {
   // unsigned, on the way out. It empties whatever Supabase answers, and however leaving goes: the
   // student has asked to leave, and supabase-js drops the session even when its logout request fails.
   async function signOut(leave: () => void | Promise<void>) {
-    const { error } = await supabase.auth.signOut()
-    if (error) setError(error.message)
+    await supabase.auth.signOut()
     try {
       await leave()
     } finally {
@@ -76,5 +61,5 @@ export function useAuth() {
     }
   }
 
-  return { session, name, loading, error, signIn, signOut }
+  return { name, loading, signIn, signOut }
 }

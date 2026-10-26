@@ -31,7 +31,7 @@ from sage.shared.errors import (
     SamePlan,
 )
 from sage.shared.rules import RuleSet, meetings
-from sage.shared.slots import PlanSlot, course_counts, plan_slots
+from sage.shared.slots import PlanSlot, plan_slots
 from sage.shared.students import PlanReason, PlanSetRows
 
 router = APIRouter(prefix="/plans", tags=["plans"])
@@ -187,7 +187,7 @@ def plan(rows: PlanSetRows, rules: RuleSet, curriculum: str) -> Plan:
 
 
 def slot(found: PlanSlot, credits: Mapping[str, int]) -> Slot:
-    fit_count, check_count = course_counts(found, credits)
+    fit_count, check_count = plans.course_counts(found, credits)
     return Slot(
         kind="place" if found.owed else "line",
         credits=found.credits,
@@ -199,7 +199,10 @@ def slot(found: PlanSlot, credits: Mapping[str, int]) -> Slot:
 
 
 def reason(row: PlanReason, rules: RuleSet) -> Reason:
-    passage = next((p for p in rules.passages if p.id == row.passage_id), None)
+    passage = None
+    if row.passage_id:
+        # Its year's rules hold every passage its reasons cite, so a missing one is a fault
+        (passage,) = (p for p in rules.passages if p.id == row.passage_id)
     return Reason(
         kind=row.kind,
         message=row.message,

@@ -24,7 +24,6 @@ from sage.ingestion import (
     timetable,
     translate,
 )
-from sage.ingestion.drafting import ModelDrafter
 from sage.ingestion.names import title_case
 from sage.ingestion.review import Problem, Review, Snapshot, compare
 from sage.shared.base import Row, canonical
@@ -40,7 +39,7 @@ from sage.shared.rules import (
     RuleSet,
 )
 
-# Four folders up from this file: the repo root, as for the seed file
+# data/ in the repo root, as for the seed file
 DATA = Path(__file__).resolve().parents[4] / "data"
 # Each approved year's snapshot, as data/rules/<year>/ holds it
 SNAPSHOT = "rulebook.json"
@@ -123,7 +122,7 @@ def ingest(
     translated = translate.translate(
         strings,
         data / "rules" / str(year) / "drafts.json",
-        ModelDrafter(model) if model else None,
+        model,
         [cache for cache in caches if int(cache.parent.name) < year],
     )
     found = {(t.printed, t.need): t for t in translated.translations}

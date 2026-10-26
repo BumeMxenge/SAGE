@@ -12,11 +12,6 @@
   cursor: pointer;
 }
 
-.button[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
-}
-
 /* Borderless variants keep a clear border, so every button is the same height as an outlined one */
 .primary,
 .sign-in,

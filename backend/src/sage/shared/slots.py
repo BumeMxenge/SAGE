@@ -3,11 +3,10 @@
 # details hold the approved courses that fit the plan's timetable, those with a meeting that has no
 # printed time or fewer credits than the line, the sections of each that fit, and any section of the
 # plan's own courses one forces. Only a slot's reason has details. Plans and electives both read them.
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable
 from uuid import UUID
 
 from sage.shared.base import Row
-from sage.shared.rules import offerings
 from sage.shared.students import PlanReason
 
 
@@ -31,15 +30,3 @@ def plan_slots(reasons: Iterable[PlanReason]) -> list[PlanSlot]:
         for reason in reasons
         if reason.details
     ]
-
-
-def course_counts(slot: PlanSlot, credits: Mapping[str, int]) -> tuple[int, int]:
-    # The courses that fit, joining a course's offerings as Explore Electives' cards do, and how many
-    # of them have a fitting offering that needs a check with her advisor
-    course = {code: min(offerings(code, credits[code], credits)) for code in slot.fits}
-    checked = {
-        course[code]
-        for code in slot.fits
-        if code in slot.untimed or code in slot.fewer_credits
-    }
-    return len(set(course.values())), len(checked)

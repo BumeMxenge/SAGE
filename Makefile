@@ -101,13 +101,13 @@ check-ui:
 	@cd frontend && npx playwright install chromium && npx playwright test
 
 # How many small faults (mutants) planted in the code the unit tests catch, written to
-# backend/mutation-score.txt. It's too slow for CI, which never runs it. Each run starts
-# afresh, as mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a
-# copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy
-# of data/ goes where SEED_FILE and DATA look for it, and a link puts experiments/ where the
-# drafter's test reads E2's prompt. A copy, not a link, so a mutant that loses its folder can't
-# write to the real one. mutmut runs several test sessions at once, so SAGE_TEST_TEMP gives each its
-# own temporary folder.
+# backend/mutation-score.txt. It's too slow for CI, which never runs it. Each run starts afresh, as
+# mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a copy of the
+# code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy of data/
+# goes where SEED_FILE and DATA look for it, and a link puts experiments/ where the drafter's test
+# finds E2 and the advisor's tests find E4. A copy, not a link, so a mutant that loses its folder
+# can't write to the real one. mutmut runs several test sessions at once, so SAGE_TEST_TEMP gives
+# each its own temporary folder.
 mutation:
 	@cd backend && rm -rf mutants data && cp -R ../data data && ln -sfn ../experiments experiments && \
 		export SAGE_TEST_TEMP=$$(mktemp -d) && \

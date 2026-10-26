@@ -39,9 +39,9 @@ export function SlotFavourites({ planId }: { planId: string }) {
   const navigate = useNavigate()
 
   if (electives.isError) {
-    const { title, message } = explain(electives.error)
+    const { title, message, reference } = explain(electives.error)
     return (
-      <ErrorState variant="inline" tone="warning" icon="warning" title={title} message={message}>
+      <ErrorState variant="inline" tone="warning" icon="warning" title={title} message={message} reference={reference}>
         <Button variant="secondary" onPress={() => void electives.refetch()}>
           {actionLabels.retry}
         </Button>

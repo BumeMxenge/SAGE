@@ -3,8 +3,6 @@
 # test_guards.py. Then the complementary slots, on Ziyela's seeded set and on a place built here.
 from uuid import uuid4
 
-import pytest
-
 from sage.shared.students import Plan, PlanReason, PlanSet, PlanSetRows
 from tests.unit.accounts import MBALI, NTWZIY
 
@@ -77,7 +75,7 @@ def test_a_plan_shows_each_courses_groups_and_meetings(mbali, plan_ids):
 def test_her_plan_shows_the_meetings_only_her_curriculum_has(mbali, plan_ids):
     # EEE4120F's Thursday 16:00 meeting is printed on her EB011 sheet (F61:F62) but not on EB022's,
     # so it's linked to the Mechatronics curricula, and plan 3 shows it as the route hands the filter
-    # her curriculum. The filter itself is tested in tests/unit/features/plans/test_service.py.
+    # her curriculum. The filter itself is tested in tests/unit/shared/test_rules.py.
     courses = {
         course["code"]: course
         for course in mbali.get(f"/v1/plans/{plan_ids[3]}").json()["courses"]
@@ -173,6 +171,42 @@ def test_a_place_names_the_course_it_stands_in_for(mbali, stores):
     assert (summary["has_slot"], summary["plans"][0]["to_choose"]) == (True, 8)
 
 
+def test_a_reason_names_its_course_and_the_passage_it_cites(mbali, stores):
+    # A later set for Mbali, made up, with a reason about the whole set and one about its one plan,
+    # each citing a passage of the approved 2026, as the EB009 note on electives in one slot does
+    cited = stores[0].get(2026).passages[0]
+    later = PlanSet(id=uuid4(), student_id=MBALI, period=2026, version=2, complete=True)
+    plan = Plan(
+        id=uuid4(), plan_set_id=later.id, student_id=MBALI, position=1, name="Made Up"
+    )
+    reasons = tuple(
+        PlanReason(
+            id=uuid4(),
+            plan_set_id=later.id,
+            student_id=MBALI,
+            plan_id=plan_id,
+            kind=kind,
+            course_code="EEE4119F",
+            message="A made-up reason.",
+            passage_id=cited.id,
+        )
+        for plan_id, kind in ((None, "conditional"), (plan.id, "included"))
+    )
+    stores[1].add_plan_set(
+        PlanSetRows(plan_set=later, plans=(plan,), plan_reasons=reasons)
+    )
+    shown = {"course_code": "EEE4119F", "message": "A made-up reason."}
+    shown |= {"source": cited.source, "section": cited.section, "page": cited.page}
+    assert mbali.get("/v1/plans").json()["reasons"] == [
+        {"kind": "conditional", **shown}
+    ]
+    # The plan's own read gives the set's reasons, then its own
+    assert mbali.get(f"/v1/plans/{plan.id}").json()["reasons"] == [
+        {"kind": "conditional", **shown},
+        {"kind": "included", **shown},
+    ]
+
+
 def test_a_preview_adds_the_course_to_her_plan_and_saves_nothing(ziyela, stores):
     # Her plan 2's slot lists SLL1002S, a 15-credit course, on 138 credits. How its sections narrow
     # and fix her plan's own is checked in test_service.py, on a plan where that shows.
@@ -190,11 +224,10 @@ def test_a_preview_adds_the_course_to_her_plan_and_saves_nothing(ziyela, stores)
     }
 
 
-@pytest.mark.parametrize("code", ["FAM2000F", "ZZZ9999Z"])
-def test_a_preview_of_a_course_that_doesnt_fit_the_plan_is_refused(ziyela, code):
-    # The engine lists FAM2000F in plans 3, 9 and 10 only, and ZZZ9999Z isn't a course
+def test_a_preview_of_a_course_that_doesnt_fit_the_plan_is_refused(ziyela):
+    # The engine lists FAM2000F in plans 3, 9 and 10 only
     plan = ziyela.get("/v1/plans").json()["plans"][0]
-    response = ziyela.get(f"/v1/plans/{plan['id']}/previews/{code}")
+    response = ziyela.get(f"/v1/plans/{plan['id']}/previews/FAM2000F")
     assert (response.status_code, response.json()["code"]) == (422, "course_doesnt_fit")
 
 

@@ -133,7 +133,7 @@ test('Compare pairs the next plan her answers kept, and Done Comparing, Escape a
 })
 
 test('every view passes axe, and the keyboard walks compare', async ({ page }) => {
-  // Eight axe runs and a keyboard walk, which took up to 28 s under a full run's load
+  // Seven axe runs and a keyboard walk, which took up to 28 s under a full run's load
   test.setTimeout(90_000)
   const choose = (name: string) => page.getByRole('radio', { name }).click()
   await openPlan(page)
@@ -747,10 +747,10 @@ test.describe('a set with no plans', () => {
 })
 
 // Parity. The prototype opens at the empty plan and reads its theme from its address. Create
-// Registration Plan, then Mechatronics, the course Mbali's saved answers chose, then Generate Plans opens
-// Power & Robotics, her Power, Control & Robotics, among the same seven plans her answers kept. Its
-// plan area is three divs up from its Compare button, its plan list holds its rows, and its compare view
-// is three divs up from its title.
+// Registration Plan, then Mechatronics, the course Mbali's saved answers chose, then Generate Plans
+// opens Power & Robotics, her Power, Control & Robotics, among the same seven plans her answers
+// kept. Its plan area is three divs up from its Compare button, its plan list holds its rows, and
+// its compare view is three divs up from its title.
 async function prototypePlan(page: Page, theme: Theme): Promise<void> {
   if (theme === 'dark') await page.goto(`${page.url()}?theme=dark`)
   await page.getByRole('button', { name: 'Create registration plan' }).click()

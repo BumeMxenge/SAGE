@@ -10,7 +10,7 @@ const key = (accountId: string) => `sage-name-${accountId}`
 // development, Graph is asked once
 const lookups = new Map<string, Promise<Name | undefined>>()
 
-export function storedName(accountId: string): Name | undefined {
+function storedName(accountId: string): Name | undefined {
   try {
     const stored = localStorage.getItem(key(accountId))
     return stored ? (JSON.parse(stored) as Name) : undefined

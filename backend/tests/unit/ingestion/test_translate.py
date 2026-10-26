@@ -5,6 +5,7 @@
 import json
 
 from sage.ingestion.translate import Translation, translate
+from sage.shared.language_model import Response
 from sage.shared.rules import AnyOf, CourseNeed, Refer
 
 # CSC2002S's requirement (2026, page 170), which the grammar refuses for its mark, and the tree a
@@ -14,14 +15,15 @@ MARK = {"course": "CSC2001F", "need": "mark", "min_mark": 45}
 
 
 class Fake:
+    # SAGE's language model, answering every draft with this rule, keeping what each was asked
     model = "a made-up model"
 
-    def __init__(self, draft):
-        self.draft_given, self.calls = draft, []
+    def __init__(self, rule):
+        self.rule, self.calls = rule, []
 
-    def draft(self, printed, need):
-        self.calls.append((printed, need))
-        return self.draft_given
+    def respond(self, instructions, conversation, schema=None, tools=(), effort=None):
+        self.calls.append(conversation[0].text)
+        return Response(text=json.dumps({"rule": self.rule}))
 
 
 def earlier_draft(tmp_path):
@@ -68,7 +70,7 @@ def test_a_refused_string_is_drafted_once_and_cached(tmp_path):
             drafted=False,
         ),
     )
-    assert (fake.calls, first.calls) == ([(REFUSED, "pass")], 1)
+    assert (fake.calls, first.calls) == ([f"Course entry requirements: {REFUSED}"], 1)
     assert json.loads(cache.read_text(encoding="utf-8")) == {
         "pass": {REFUSED: {"model": "a made-up model", "tree": MARK}}
     }

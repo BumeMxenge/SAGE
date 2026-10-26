@@ -1,5 +1,5 @@
-/* The header spans its page, so actions or a figure sit at its far end, while the title and subtitle
-   keep the reading width. In a narrow window they wrap under the title rather than run past the page. */
+/* The header spans its page, so a figure sits at its far end, while the title and subtitle keep the
+   reading width. In a narrow window it wraps under the title rather than run past the page. */
 .page-header {
   display: flex;
   flex-wrap: wrap;
@@ -28,13 +28,6 @@
   font-size: var(--font-size-lg);
   line-height: var(--line-height-body);
   color: var(--color-text-secondary);
-}
-
-.actions {
-  display: flex;
-  flex: none;
-  gap: var(--space-3);
-  align-items: center;
 }
 
 /* A headline figure ends the title's row, its words on the title's baseline, and stays at the far end

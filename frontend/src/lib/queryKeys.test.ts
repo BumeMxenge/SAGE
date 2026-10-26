@@ -1,5 +1,5 @@
-// Which cached reads each change refreshes, against lists written out by hand from the foundations
-// brief's refresh rules
+// Which cached reads each change refreshes, against lists written out by hand from what each change
+// alters on the server
 import type { QueryKey } from '@tanstack/react-query'
 import { afterEach, expect, it } from 'vitest'
 import { queryClient } from './queryClient.ts'
@@ -34,7 +34,7 @@ afterEach(() => {
 
 it.each([
   ['answering the questionnaire', () => refresh.questionnaireAnswered(), ['plans', 'plan', 'preview', 'comparison']],
-  ['a favourite', () => refresh.favouriteChanged(), ['questionnaire', 'electives']],
+  ['a favourite', () => refresh.favouriteChanged(), ['electives']],
   ['starting a chat', () => refresh.chatStarted(), ['chats', 'pairChats']],
   ['a sent message', () => refresh.messageSent(chat), ['plans', 'chats', 'pairChats', 'messages']],
   ['Finish Setup', () => refresh.setupFinished(), ['me', 'plans']],

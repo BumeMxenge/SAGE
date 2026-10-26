@@ -9,7 +9,7 @@ import { ToggleButtonGroup } from 'react-aria-components'
 import { ChoiceChip } from './ChoiceChip.tsx'
 import styles from './ChoiceChips.module.css'
 
-export type Choice = {
+type Choice = {
   value: string
   label: string
   unavailable?: string // why it can't be chosen, as a sentence

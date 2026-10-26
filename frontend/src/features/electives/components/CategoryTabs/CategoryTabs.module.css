@@ -25,7 +25,6 @@
   white-space: nowrap;
   color: var(--color-text-secondary);
   cursor: pointer;
-  outline: none;
 }
 
 .tab[data-selected] {
@@ -33,15 +32,8 @@
   color: var(--color-text);
 }
 
-.tab[data-focus-visible],
-.panel[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
-}
-
 .panel {
   padding-top: var(--space-8);
-  outline: none;
 }
 
 .heading {

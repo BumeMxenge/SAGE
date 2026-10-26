@@ -12,7 +12,7 @@ import { useEffect, useRef } from 'react'
 import { Button } from '@/components/actions/Button/Button.tsx'
 import { Arrival } from '@/components/feedback/Arrival/Arrival.tsx'
 import { ErrorState } from '@/components/feedback/ErrorState/ErrorState.tsx'
-import { LeafPulse } from '@/components/feedback/LeafPulse/LeafPulse.tsx'
+import { LeafPulse } from '@/features/assistant/components/LeafPulse/LeafPulse.tsx'
 import { ChatBox } from '@/features/assistant/components/ChatBox/ChatBox.tsx'
 import { Reply } from '@/features/assistant/components/Reply/Reply.tsx'
 import type { ApiError } from '@/lib/api.ts'
@@ -26,7 +26,7 @@ import styles from './Conversation.module.css'
 type PlanSummary = components['schemas']['PlanSummary']
 
 // A question this chat sent, while it waits for its reply or once it failed
-export type Sent = { content: string; error: ApiError | null }
+type Sent = { content: string; error: ApiError | null }
 
 type ConversationProps = {
   // null for a new chat, which has nothing to read until its first question, and undefined until her
@@ -92,7 +92,8 @@ export function Conversation({ chatId, address, plans, planName, waiting, sent, 
             {shown.length === 0 && sent === null && (
               <div className={styles.start}>
                 <p className={styles.intro}>{intro}</p>
-                {/* Left out while another of this view's chats waits for its reply, as nothing more can go here */}
+                {/* Left out while another of this view's chats waits for its reply, as nothing more can
+                    go here */}
                 {!waiting && (
                   <Button variant="suggestion" onPress={() => ask(suggestion)}>
                     {suggestion}
