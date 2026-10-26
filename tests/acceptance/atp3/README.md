@@ -23,9 +23,10 @@ A control arm, the same model with no tools, passages, plans or checks, shows wh
 1. **`make atp3-resolve`** fixes every expectation before any model call, and calls none itself.
    - Each student is prepared as `backend/scripts/ask_advisor.py --seed` prepares one: her record in the in-memory stores beside the approved 2026, her plans from the engine, and her questionnaire answered "no preference" when she has more than five, so every plan stays shown.
    - Each prompt's `resolve` spec is answered from the engine and the plan data, never from the advisor's own tools: an eligibility verdict, the plans that hold and avoid given courses, whether two courses clash, or a fact about the open plan's week.
-   - Your predicted verdict is kept beside the engine's, and the engine's decides. A verdict that contradicts the prompt's group stops it.
+   - Your predicted verdict is kept beside the engine's, and the engine's decides. A verdict that contradicts the prompt's group stops it, unless the prompt is `per_engine`: a declared exception, as P22's was at input review, which follows the engine and is logged.
    - `per_engine` becomes answer, refer or firm_no by the verdict.
-   - An answer that rests on the handbook alone becomes a referral when the student's slice doesn't hold its quote's passage.
+   - A quote counts only from its own context: a passage on its printed page, or one that starts a page earlier and runs onto it, and, where the prompt is about a course, that course's entry. A sentence many entries print, such as the course handout's, never stands in for the right one.
+   - An answer that rests on the handbook alone, with no verdict or plan fact behind it, becomes a referral when the student's slice doesn't hold its quote's passage: the declared referral override. A course SAGE's rulebook doesn't hold has no verdict and no passage, so the override covers it too.
    - Anything it can't resolve stops it, every problem listed, before it writes `results/resolved.csv`.
 2. **`make atp3`** asks, then judges, and costs money. It stops once the run passes USD 5 across OpenAI and Anthropic.
    - `ask.py` asks every prompt three times in fresh chats through the advisor as merged (the SAGE arm), and the prompts marked for the control arm three times each through the same model with only `control_prompt.md` and the student's curriculum, year of study and course record.

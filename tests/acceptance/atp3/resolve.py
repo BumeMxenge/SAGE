@@ -364,6 +364,15 @@ def open_plans(note: str, state: StudentState) -> list[str]:
     return named or ["V01"]
 
 
+def open_slot(state: StudentState, key: str) -> bool:
+    # Whether a plan leaves a complementary course to choose: only a slot's reason has details
+    plan = short_ids(state)[key]
+    return any(
+        reason.details and reason.plan_id in (None, plan.id)
+        for reason in state.plan_reasons
+    )
+
+
 def week_form(
     state: StudentState, key: str, rules: RuleSet, spec: dict[str, Any]
 ) -> dict[str, Any]:
@@ -395,37 +404,71 @@ def holding(quote: str, passages: Iterable[Passage]) -> list[Passage]:
 
 
 def placed(
-    row: Row, passages: Iterable[Passage], sliced: set[Any]
+    row: Row, passages: Sequence[Passage], sliced: set[Any], about: Sequence[str]
 ) -> tuple[bool | None, str]:
     # Whether her slice holds the passage of the prompt's quote, None when it has no quote, and where
-    # the quote was found. A quote no passage holds can't be checked, so it stops the run.
+    # it was found. The quote counts only from its own context: a passage on its printed page, or
+    # one that starts a page earlier and runs onto it, and, where the prompt is about a course, that
+    # course's entry. So a sentence many entries print, such as the course handout's, never stands
+    # in for the right one. A course SAGE holds no entry for is absent, which the declared referral
+    # override covers. Any other quote no passage in context holds stops the run.
     if not row["quote"].strip():
         return None, ""
-    found = holding(row["quote"], passages)
-    if not found:
-        raise Unresolved(f"{row['id']}: no {YEAR} passage holds its quote")
-    in_slice = any(passage.id in sliced for passage in found)
-    pages = sorted({passage.page for passage in found})
-    where = ("in" if in_slice else "out") + f", page {', '.join(map(str, pages))}"
-    if row["page"].strip() and int(row["page"]) not in pages:
-        where += f", not page {row['page']}"
-    return in_slice, where
+    page = int(row["page"])
+    near = [p for p in holding(row["quote"], passages) if p.page in (page, page - 1)]
+    theirs = [p for p in near if p.course_code in about]
+    context = theirs or near
+    if not context:
+        held = {p.course_code for p in passages}
+        missing = [code for code in about if code not in held]
+        if missing:
+            return (
+                False,
+                f"absent: SAGE's {YEAR} rulebook holds no entry for {', '.join(missing)}",
+            )
+        raise Unresolved(
+            f"{row['id']}: no {YEAR} passage in its context holds its quote"
+        )
+    in_slice = any(passage.id in sliced for passage in context)
+    sections = "; ".join(sorted({passage.section for passage in context}))
+    return in_slice, f"{'in' if in_slice else 'out'}, page {row['page']}, {sections}"
+
+
+def about(row: Row, spec: dict[str, Any], rules: RuleSet) -> list[str]:
+    # The courses a prompt is about: its spec's, or else those its question names by code or name
+    if "code" in spec:
+        return [spec["code"]]
+    if "codes" in spec:
+        return list(spec["codes"])
+    asked = row["prompt"].lower()
+    return [
+        course.code
+        for course in rules.courses
+        if course.code.lower() in asked or course.name.lower() in asked
+    ]
 
 
 def expected(
     row: Row, kind: str, engine: Eligibility | None, in_slice: bool | None
 ) -> tuple[str, str]:
     # Her prompt's expected behaviour once resolved, and why it moved, if it did. The engine decides
-    # a verdict, and stops the run only where it contradicts the prompt's group. per_engine follows
-    # it. An answer that rests on the handbook alone, with nothing the engine or her plans serve,
+    # a verdict, and stops the run only where it contradicts the prompt's group, unless the prompt
+    # is per_engine, which follows it. An answer that rests on the handbook alone, with nothing the engine or her plans serve,
     # becomes a referral when her slice doesn't hold its quote.
     behaviour, moved = row["expected_behaviour"], []
     if behaviour not in BEHAVIOURS:
         raise Unresolved(f"{row['id']}: unknown expected_behaviour {behaviour!r}")
     needed = GROUP_VERDICT.get(row["group"])
     if engine is not None and needed and engine.status != needed:
-        raise Unresolved(
-            f"{row['id']}: the engine says {engine.status}, against its group, {row['group']}"
+        # A per_engine row is a declared exception, as P22's was at input review: it follows the
+        # engine whatever its group says, and the exception is logged
+        if behaviour != "per_engine":
+            raise Unresolved(
+                f"{row['id']}: the engine says {engine.status}, against its group, "
+                f"{row['group']}"
+            )
+        moved.append(
+            f"declared group exception: {row['group']}, but the engine says {engine.status}"
         )
     if behaviour == "per_engine":
         if engine is None:
@@ -434,7 +477,9 @@ def expected(
             )
         behaviour = PER_ENGINE[engine.status]
         moved.append(f"per_engine: the engine says {engine.status}")
-    if behaviour == "answer" and not kind and in_slice is False:
+    # The engine or her plans serve an answer, except a verdict on a course SAGE doesn't hold
+    served = kind and not (kind == "check_eligibility" and engine is None)
+    if behaviour in ANSWERABLE and not served and in_slice is False:
         behaviour = "refer"
         moved.append("slice: her slice doesn't hold the quote's passage")
     return behaviour, "; ".join(moved)
@@ -454,13 +499,16 @@ def resolve(
     if kind == "check_eligibility":
         engine = verdict(state, rulebook, spec["code"])
         if engine is None:
-            raise Unresolved(
-                f"{row['id']}: no course {spec['code']} in the {YEAR} handbook"
+            data = {"code": spec["code"], "status": "absent"}
+            words = (
+                f"The engine has no verdict on {spec['code']}: SAGE's {YEAR} handbook doesn't "
+                "hold that course."
             )
-        data = {"code": spec["code"], **engine.model_dump(mode="json")}
-        words = f"The engine's verdict on {spec['code']} for her: {engine.status}."
-        if engine.reason:
-            words += f" Its reason: {engine.reason}"
+        else:
+            data = {"code": spec["code"], **engine.model_dump(mode="json")}
+            words = f"The engine's verdict on {spec['code']} for her: {engine.status}."
+            if engine.reason:
+                words += f" Its reason: {engine.reason}"
     elif kind == "find_plan":
         data = find_plan(state, set(spec["have"]), set(spec["avoid"]))
         wanted = " and ".join(
@@ -507,9 +555,15 @@ def resolve(
         data = {key: week_form(state, key, rules, spec) for key in plans}
         words = " ".join(
             f"{key} {names[key].name}, {spec['tab']}: {json.dumps(found, ensure_ascii=False)}."
+            + (
+                " This plan still has a complementary slot to fill, so this is its week as "
+                "scheduled now."
+                if open_slot(state, key)
+                else ""
+            )
             for key, found in data.items()
         )
-    in_slice, where = placed(row, rules.passages, sliced)
+    in_slice, where = placed(row, rules.passages, sliced, about(row, spec, rules))
     behaviour, moved = expected(row, kind, engine, in_slice)
     return {
         "prompt": row["id"],
@@ -521,7 +575,7 @@ def resolve(
         "moved": moved,
         "kind": kind,
         "predicted": spec.get("predicted", ""),
-        "engine": engine.status if engine else "",
+        "engine": engine.status if engine else data.get("status", ""),
         "slice": where,
         "data": json.dumps(data, ensure_ascii=False, sort_keys=True) if data else "",
         "words": " ".join(

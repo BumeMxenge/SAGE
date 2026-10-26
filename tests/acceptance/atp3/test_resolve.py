@@ -248,12 +248,29 @@ def test_a_verdict_against_the_prompts_group_stops_the_run():
     ) == ("refer", "per_engine: the engine says check")
 
 
-def passage(content, page=12):
+def test_a_per_engine_prompt_against_its_group_is_a_logged_exception():
+    # P22's case at input review: a check_refer prompt the engine finds eligible follows the engine
+    assert expected(
+        row(group="check_refer", expected_behaviour="per_engine"),
+        "check_eligibility",
+        Eligibility(status="eligible"),
+        None,
+    ) == (
+        "answer",
+        (
+            "declared group exception: check_refer, but the engine says eligible; "
+            "per_engine: the engine says eligible"
+        ),
+    )
+
+
+def passage(content, page=12, course=None):
     return Passage(
         id=uuid4(),
         handbook_year=2026,
+        course_code=course,
         source="Handbook",
-        section="FB5",
+        section=course or "FB5",
         page=page,
         position=1,
         content=content,
@@ -266,19 +283,71 @@ def test_a_quote_outside_her_slice_turns_a_handbook_answer_into_a_referral():
         "A student’s year of study is\nset by the year in which most credits fall."
     )
     prompt = row(quote="A student's year of study ... most credits fall.", page="12")
-    in_slice, where = placed(prompt, [held], sliced=set())
-    assert (in_slice, where) == (False, "out, page 12")
+    in_slice, where = placed(prompt, [held], sliced=set(), about=[])
+    assert (in_slice, where) == (False, "out, page 12, FB5")
     assert expected(prompt, "", None, in_slice) == (
         "refer",
         "slice: her slice doesn't hold the quote's passage",
     )
     # The same quote inside her slice stays an answer
-    assert placed(prompt, [held], sliced={held.id})[0] is True
+    assert placed(prompt, [held], sliced={held.id}, about=[])[0] is True
 
 
 def test_a_quote_no_passage_holds_stops_the_run():
     with pytest.raises(Unresolved):
-        placed(row(quote="Words print never had."), [passage("Other words.")], set())
+        placed(
+            row(quote="Words print never had.", page="12"),
+            [passage("Other words.")],
+            set(),
+            [],
+        )
+
+
+def test_a_quote_found_only_on_another_page_stops_the_run():
+    # The same words in another entry don't show the cited course or rule says them
+    elsewhere = passage("Students must attend every practical.", page=40)
+    with pytest.raises(Unresolved):
+        placed(
+            row(quote="must attend every practical", page="12"), [elsewhere], set(), []
+        )
+
+
+def test_a_sentence_many_entries_print_counts_only_from_the_course_asked_about():
+    # P13's case: the course handout sentence is printed in Control's entry, which starts on p. 135
+    # and runs onto p. 136, and again in Embedded II's on p. 136. Her slice holds only Embedded II's,
+    # so the quote's own passage is outside it.
+    sentence = "Please refer to the official course handout document."
+    control = passage(sentence, page=135, course="EEE3094S")
+    embedded = passage(sentence, page=136, course="EEE3096S")
+    prompt = row(quote=sentence, page="136")
+    assert placed(prompt, [control, embedded], {embedded.id}, ["EEE3094S"]) == (
+        False,
+        "out, page 136, EEE3094S",
+    )
+
+
+def test_a_course_sage_holds_no_entry_for_takes_the_referral_override():
+    # P20's case: the course is printed, but SAGE's rulebook holds neither it nor its entry, so the
+    # engine has no verdict and her evidence can't give the printed rule
+    prompt = row(
+        group="not_eligible",
+        expected_behaviour="firm_no",
+        quote="Course entry requirements: EEE2050F",
+        page="136",
+    )
+    in_slice, where = placed(prompt, [passage("Other words.")], set(), ["EEE3095S"])
+    assert where == "absent: SAGE's 2026 rulebook holds no entry for EEE3095S"
+    assert expected(prompt, "check_eligibility", None, in_slice) == (
+        "refer",
+        "slice: her slice doesn't hold the quote's passage",
+    )
+    # A firm no the engine serves stands, whatever her slice holds
+    assert expected(
+        prompt, "check_eligibility", Eligibility(status="not_eligible"), False
+    ) == (
+        "firm_no",
+        "",
+    )
 
 
 @pytest.mark.parametrize(
