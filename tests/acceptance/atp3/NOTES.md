@@ -110,3 +110,7 @@ After the input commit, Session B must resolve every rule and check each handboo
 Pay particular attention to P01's ASPECT passage, P03/P04's full FB9.2 conditions and note (a), P07's corrected p. 14, P22's declared group exception, P25's X-course entry, and the three week-resolver forms. Actual resolved plans, day loads and counts remain unverified until that pre-run step.
 
 `REVIEW.md` contains the full P01-P40 check list and source versions. `ATP3_COMMIT_COMMANDS.md` contains copy/commit commands, key-file instructions and the Session B note. The key must be entered privately on B's machine; none is supplied or requested in this bundle.
+
+## Decided before the run
+
+P16 to P19 depart from the literal slice rule in the pre-run handover. Their quotes, the EEE3094S and EEE3092F entries on p. 135 for R1 and the EEE4120F entry on p. 140 for R4, aren't in the student's slice, so the rule read literally would make all four refer. They stay firm_no, because SAGE gets the verdict and its reason from its eligibility check, so the answer is grounded without the passage. The referral override covers only an answer that rests on the handbook alone, with no engine verdict or plan fact behind it. Decided on 27 October 2026 at Stop 2, before any reply existed.

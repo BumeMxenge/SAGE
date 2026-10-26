@@ -354,6 +354,7 @@ Defects caught before acceptance testing, for Section 5.2.
 | 26 Oct | ATP-3 asks each prompt as the first question of a fresh chat | Each try must be independent of the others | None | Limitation: follow-up questions stay untested, as in E4 (the 23 Oct row) |
 | 26 Oct | ATP-3 runs four turns at a time, so its turn times include that load | Asking its turns one at a time would take about four times as long | None | Limitation: the times are reported, not judged against NF-4, which its own ATP tests |
 | 26 Oct | ATP-3's human sample takes at least two replies from each arm and judge's outcome, so the rare outcomes are marked too | A sample of 40 in proportion could miss an outcome the judge seldom gives | None | Limitation: its kappa says how far the judge and I agree across the outcomes, not over all replies weighted as they fall |
+| 26 Oct | SAGE refers questions about courses outside its curricula rather than answering them. ATP-3's P20 asks about EEE3095S, Embedded Systems II for Science Students, which the 2026 handbook prints on p. 136 | No EBE curriculum lists EEE3095S, so SAGE's 2026 rulebook holds no entry for it, and the engine has no verdict on it | My decision at Stop 2, before the run: P20 expects a referral, where its row predicted a firm no, and `resolved.csv` logs the change | None while SAGE serves the EEE curricula only, as with the courses that serve other programmes (the 14 Oct row) |
 
 **ATP-5 test window checklist**, for the 12 Oct row. Before the load test:
 
