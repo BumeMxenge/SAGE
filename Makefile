@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1 atp3-resolve atp3 atp3-report
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -132,6 +132,23 @@ atp1:
 	@cd backend && $(ATP1_PATH):../experiments/ingestion:. \
 		uv run python ../tests/acceptance/atp1/run.py && \
 		$(ATP1_PATH) uv run python ../tests/acceptance/atp1/report.py
+
+# ATP-3: the advisor against held-back prompts and students, beside a control arm, in three steps, all
+# in tests/acceptance/atp3/results/. atp3-resolve fixes every expectation from the engine and the plan
+# data, and calls no model. atp3 asks both arms, then judges every reply, which costs about USD 3.25
+# and stops past USD 5; it asks nothing again once turns.csv is complete, and the judge reads its
+# cache. atp3-report draws the human sample, or reads my marks back, then writes the report, and
+# calls no model.
+atp3-resolve:
+	@cd backend && $(ATP3_PATH) uv run python ../tests/acceptance/atp3/resolve.py
+
+atp3:
+	@cd backend && $(ATP3_PATH) uv run python ../tests/acceptance/atp3/ask.py && \
+		$(ATP3_PATH) uv run python ../tests/acceptance/atp3/judge.py
+
+atp3-report:
+	@cd backend && $(ATP3_PATH) uv run python ../tests/acceptance/atp3/sample.py && \
+		$(ATP3_PATH) uv run python ../tests/acceptance/atp3/report.py
 
 # The seed file of a student other than Mbali, as FILE=data/synthetic/ziyela.json, for the targets
 # below. It is made absolute, as they run from backend/.

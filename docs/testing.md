@@ -19,7 +19,7 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 | --- | --- | --- | --- |
 | Unit | Each rule, on in-memory stores holding the approved 2026 rulebook, with no network | `backend/tests/unit`, whose folders mirror the source's, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every pull request and every push to main |
 | Integration | The Supabase adapters, the migrations, row level security, which refuses every browser write to rule and student rows alike, and real sign-in tokens, against a rebuilt local database holding both approved years | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every pull request and every push to main |
-| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened | `tests/acceptance/atp1`: its label sheets, its harness and its first result | `make atp1`, on the laptop, from the held-out drafts its first run cached, so it calls no model. The harness's own tests run in `make test` |
+| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened. ATP-3 measures the advisor against prompts and students it has never seen, beside a control arm with no guardrails | `tests/acceptance/atp1` and `atp3`: their inputs, harnesses and first results | On the laptop. `make atp1` runs from the held-out drafts its first run cached, so it calls no model. `make atp3-resolve`, `make atp3` and `make atp3-report` run ATP-3's three steps, and only `make atp3` calls a model. The harnesses' own tests run in `make test` |
 
 ## Ingestion tests
 
@@ -72,6 +72,13 @@ ATP-1 asks how well ingestion reads print, and whether anything wrong gets into 
 - Those drafts were made once, with Claude Haiku 5.5, and the harness keeps no way to draft again: a new draft would be a retest.
 - The harness's own tests, in `tests/acceptance/atp1/test_scoring.py`, check its scoring with values worked out by hand. `make test` collects them, so CI runs them. None reads a source or calls a model.
 - `tests/acceptance/atp1/results/` keeps the first result. A fault it finds is fixed on its own branch, and the retest goes beside the first result, never over it.
+
+ATP-3 asks whether the advisor meets NF-2 on prompts and students it has never seen, written and committed before any run, beside a control arm: the same model with no tools, passages, plans or checks. [The harness's README](../tests/acceptance/atp3/README.md) says how it runs and how to read the report.
+
+- `make atp3-resolve` fixes every expectation from the engine and the plan data before any model call, and stops on any it can't.
+- `make atp3` asks both arms and judges every reply. GPT-6 Luna answers, Claude Sonnet 5.5 judges, and code overrides the judge wherever a field can be checked exactly: the engine's verdict on a validity claim, a plan offered outside the plans that fit, and the referral flag. It costs about USD 3.25, and stops past USD 5.
+- The judge can't run at temperature 0, so its cached replies fix its marks. 40 replies I mark by hand, without its marks, give its agreement with me as Cohen's kappa.
+- The harness's own tests, in `test_resolve.py`, `test_judge.py` and `test_measures.py`, check its rules with values worked out by hand. `make test` collects them, so CI runs them. None reads an input or calls a model.
 
 ## The dependency check
 
