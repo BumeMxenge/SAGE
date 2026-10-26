@@ -171,31 +171,40 @@ def test_a_place_names_the_course_it_stands_in_for(mbali, stores):
     assert (summary["has_slot"], summary["plans"][0]["to_choose"]) == (True, 8)
 
 
-def test_a_reason_names_the_passage_it_cites(mbali, stores):
-    # A later set for Mbali, made up, whose one plan's reason cites a passage of the approved 2026
+def test_a_reason_names_its_course_and_the_passage_it_cites(mbali, stores):
+    # A later set for Mbali, made up, with a reason about the whole set and one about its one plan,
+    # each citing a passage of the approved 2026, as the EB009 note on electives in one slot does
     cited = stores[0].get(2026).passages[0]
     later = PlanSet(id=uuid4(), student_id=MBALI, period=2026, version=2, complete=True)
     plan = Plan(
         id=uuid4(), plan_set_id=later.id, student_id=MBALI, position=1, name="Made Up"
     )
-    because = PlanReason(
-        id=uuid4(),
-        plan_set_id=later.id,
-        student_id=MBALI,
-        plan_id=plan.id,
-        kind="included",
-        message="A made-up reason.",
-        passage_id=cited.id,
+    reasons = tuple(
+        PlanReason(
+            id=uuid4(),
+            plan_set_id=later.id,
+            student_id=MBALI,
+            plan_id=plan_id,
+            kind=kind,
+            course_code="EEE4119F",
+            message="A made-up reason.",
+            passage_id=cited.id,
+        )
+        for plan_id, kind in ((None, "conditional"), (plan.id, "included"))
     )
     stores[1].add_plan_set(
-        PlanSetRows(plan_set=later, plans=(plan,), plan_reasons=(because,))
+        PlanSetRows(plan_set=later, plans=(plan,), plan_reasons=reasons)
     )
-    (shown,) = mbali.get(f"/v1/plans/{plan.id}").json()["reasons"]
-    assert (shown["source"], shown["section"], shown["page"]) == (
-        cited.source,
-        cited.section,
-        cited.page,
-    )
+    shown = {"course_code": "EEE4119F", "message": "A made-up reason."}
+    shown |= {"source": cited.source, "section": cited.section, "page": cited.page}
+    assert mbali.get("/v1/plans").json()["reasons"] == [
+        {"kind": "conditional", **shown}
+    ]
+    # The plan's own read gives the set's reasons, then its own
+    assert mbali.get(f"/v1/plans/{plan.id}").json()["reasons"] == [
+        {"kind": "conditional", **shown},
+        {"kind": "included", **shown},
+    ]
 
 
 def test_a_preview_adds_the_course_to_her_plan_and_saves_nothing(ziyela, stores):
