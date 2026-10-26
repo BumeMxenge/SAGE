@@ -194,10 +194,11 @@ def azure_lines() -> list[str]:
         "| --- | --- | --- |",
     ]
     for metric in sorted({row["metric"] for row in rows}):
+        # Azure leaves a minute with no data as null or blank, so skip those points
         values = [
             float(row["value"])
             for row in rows
-            if row["metric"] == metric and row["value"]
+            if row["metric"] == metric and row["value"] not in ("", "null", "None")
         ]
         if values:
             lines.append(
