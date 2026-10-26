@@ -31,12 +31,15 @@ dev-all:
 # The folders ATP-1's harness imports from, none of them a package: its own, and E2's, whose score.py
 # compares rule trees and gives the zero-failure bound. Paths are from backend/.
 ATP1_PATH = PYTHONPATH=../tests/acceptance/atp1:../experiments/ingestion/requirement-parsing
+# ATP-3's harness adds its own folder, and scripts/ for ask_advisor.py's Recorded and show_plans.py's
+# made-up account. It takes ATP-1's interval code, so it needs ATP-1's folders too.
+ATP3_PATH = $(ATP1_PATH):../tests/acceptance/atp3:scripts
 
-# The unit tests and ATP-1's scoring tests, then each file's lines they never run. --cov sits here
-# rather than in pytest's own settings, so mutmut's runs and a plain uv run pytest stay fast.
+# The unit tests and the ATP harnesses' own tests, then each file's lines they never run. --cov sits
+# here rather than in pytest's own settings, so mutmut's runs and a plain uv run pytest stay fast.
 test:
-	@cd backend && $(ATP1_PATH) uv run pytest -m "not integration" \
-		tests ../tests/acceptance/atp1/test_scoring.py --cov
+	@cd backend && $(ATP3_PATH) uv run pytest -m "not integration" \
+		tests ../tests/acceptance/atp1/test_scoring.py ../tests/acceptance/atp3 --cov
 
 # ruff's lint and format checks on the backend and the acceptance tests' scripts, then the
 # dependency rule's contracts in backend/pyproject.toml
