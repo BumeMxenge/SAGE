@@ -4,18 +4,21 @@ report.py wrote this from the CSVs beside it, which run.py wrote, and causes.csv
 
 ## Verdicts
 
-ATP-2's pass criterion (Table 3.4): "Every decision matches its label, and plan sets hold every valid plan once and nothing else." It verifies F-2, F-3 and NF-1, and NF-4's single-session 10 s. The sweep's records have no labels, so there the checker is the oracle. F-3's ranking is left out, as the checker doesn't rank.
+ATP-2's pass criterion (Table 3.4): "Every decision matches its label, and plan sets hold every valid plan once and nothing else." It verifies F-2, F-3 and NF-1, and NF-4's single-session 10 s. The sweep's records have no labels, so there the checker is the oracle. F-3's ranking is left out, as the checker doesn't rank. Two label slips were confirmed after the run, so each line they touch is given twice: as labelled, and with the slips confirmed, counted as the engine's matches.
 
 | Requirement | Measure | Held out | Held out, without judgement calls | Failure sweep | In-sample base | Target | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | F-2, F-3, NF-1 | Every labelled item but the pages matches its label: the pass criterion | 100 of 116, 86.2% (78.8% to 91.3%) | 67 of 82, 81.7% (72.0% to 88.6%) | none to count | none to count | 100% | not met |
+| F-2, F-3, NF-1 | Every labelled item but the pages matches its label: the pass criterion, with the label slips confirmed after the run | 101 of 116, 87.1% (79.8% to 92.0%) | 67 of 82, 81.7% (72.0% to 88.6%) | none to count | none to count | 100% | not met |
 | F-2, NF-1 | Focal decisions whose status and deciding codes match the label | 46 of 61, 75.4% (63.3% to 84.5%) | 45 of 60, 75.0% (62.8% to 84.2%) | none to count | none to count | 100% | not met |
 | F-2 | Citing the handbook: cited pages that are the label's, of decisions citing one | 10 of 15, 66.7% (41.7% to 84.8%) | 10 of 15, 66.7% (41.7% to 84.8%) | none to count | none to count |  | reported |
+| F-2 | Citing the handbook: cited pages that are the label's, of decisions citing one, with the label slips confirmed after the run | 11 of 15, 73.3% (48.0% to 89.1%) | 11 of 15, 73.3% (48.0% to 89.1%) | none to count | none to count |  | reported |
 | F-2 | Citing the handbook: decisions citing no page, in check() or a plan reason | 17 of 32, 53.1% (36.4% to 69.1%) | 16 of 31, 51.6% (34.8% to 68.0%) | none to count | none to count |  | reported |
 | F-3, NF-1 | Plan counts and combinations that match the labels | 12 of 12, 100.0% (75.8% to 100.0%) | 4 of 4, 100.0% (51.0% to 100.0%) | none to count | none to count | 100% | met |
 | F-3 | Plans whose slots match the labels | 6 of 6, 100.0% (61.0% to 100.0%) | 2 of 2, 100.0% (34.2% to 100.0%) | none to count | none to count | 100% | met |
 | NF-1 | Years of study, and owed and excluded core, that match the labels | 18 of 18, 100.0% (82.4% to 100.0%) | 6 of 6, 100.0% (61.0% to 100.0%) | none to count | none to count | 100% | met |
 | NF-1 | Set-level reasons print requires that the engine gives, by kind and codes | 18 of 19, 94.7% (75.4% to 99.1%) | 10 of 10, 100.0% (72.2% to 100.0%) | none to count | none to count | 100% | not met |
+| NF-1 | Set-level reasons print requires that the engine gives, by kind and codes, with the label slips confirmed after the run | 19 of 19, 100.0% (83.2% to 100.0%) | 10 of 10, 100.0% (72.2% to 100.0%) | none to count | none to count | 100% | met |
 | F-2, NF-1 | Statuses the engine and the checker agree on | 489 of 489, 100.0% (99.2% to 100.0%) | 235 of 235, 100.0% (98.4% to 100.0%) | 22025 of 22025, 100.0% (100.0% to 100.0%) | 837 of 837, 100.0% (99.5% to 100.0%) | 100% | met |
 | F-3, NF-1 | Records whose plan set is exactly the checker's | 6 of 6, 100.0% (61.0% to 100.0%) | 2 of 2, 100.0% (34.2% to 100.0%) | 510 of 510, 100.0% (99.3% to 100.0%) | 21 of 21, 100.0% (84.5% to 100.0%) | 100% | met |
 | F-3, NF-1 | Valid plans the engine leaves out, of the checker's | 0 of 19 (95% upper bound 14.6%) | 0 of 2 (95% upper bound 77.6%) | 0 of 1249 (95% upper bound 0.2%) | 0 of 97 (95% upper bound 3.0%) | 0 | met |
@@ -28,7 +31,7 @@ ATP-2's pass criterion (Table 3.4): "Every decision matches its label, and plan 
 
 ## Held out: against the labels
 
-Six records labelled from print and committed before the first run, with 32 focal decisions. Four records and one decision row are judgement calls, so each table is given with them and without. A record's fields carry its own flag, and a decision's fields the decision's. Deciding codes and text pages are matched as text, as the labels' README says. The checker gives no reasons or pages, so it has none to match there.
+Six records labelled from print and committed before the first run, with 32 focal decisions. Four records and one decision row are judgement calls, so each table is given with them and without. A record's fields carry its own flag, and a decision's fields the decision's. Deciding codes and text pages are matched as text, as the labels' README says. The checker gives no reasons or pages, so it has none to match there. A field the two label slips confirmed after the run touch is given again with the slips confirmed, counted as the engine's matches.
 
 | Field | Items | Engine right | Without judgement calls | No citation | Checker right | Without judgement calls |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -39,9 +42,11 @@ Six records labelled from print and committed before the first run, with 32 foca
 | expected_combinations | 6 | 6 of 6, 100.0% (61.0% to 100.0%) | 2 of 2, 100.0% (34.2% to 100.0%) | 0 | 6 of 6, 100.0% (61.0% to 100.0%) | 2 of 2, 100.0% (34.2% to 100.0%) |
 | expected_slots | 6 | 6 of 6, 100.0% (61.0% to 100.0%) | 2 of 2, 100.0% (34.2% to 100.0%) | 0 | 6 of 6, 100.0% (61.0% to 100.0%) | 2 of 2, 100.0% (34.2% to 100.0%) |
 | set_reason | 19 | 18 of 19, 94.7% (75.4% to 99.1%) | 10 of 10, 100.0% (72.2% to 100.0%) | 0 | none to count | none to count |
+| set_reason, with the label slips confirmed after the run | 19 | 19 of 19, 100.0% (83.2% to 100.0%) | 10 of 10, 100.0% (72.2% to 100.0%) | 0 | none to count | none to count |
 | status | 32 | 31 of 32, 96.9% (84.3% to 99.4%) | 30 of 31, 96.8% (83.8% to 99.4%) | 0 | 31 of 32, 96.9% (84.3% to 99.4%) | 30 of 31, 96.8% (83.8% to 99.4%) |
 | deciding_codes | 29 | 15 of 29, 51.7% (34.4% to 68.6%) | 15 of 29, 51.7% (34.4% to 68.6%) | 0 | none to count | none to count |
 | page | 32 | 10 of 15, 66.7% (41.7% to 84.8%) | 10 of 15, 66.7% (41.7% to 84.8%) | 17 | none to count | none to count |
+| page, with the label slips confirmed after the run | 32 | 11 of 15, 73.3% (48.0% to 89.1%) | 11 of 15, 73.3% (48.0% to 89.1%) | 17 | none to count | none to count |
 
 Every labelled item the engine or the checker doesn't match:
 
@@ -72,11 +77,11 @@ Every labelled item the engine or the checker doesn't match:
 | embedded1-failed | status | EEE2046S | eligible | not held | not held | no | known gap: EEE2046S isn't in the approved 2026 rules, as no EEE curriculum lists it and the 2026 manifest leaves it out (docs/shortfalls.md, 14 Oct), so neither check() nor the checker can judge it. Print gives eligible (p. 132). |
 | embedded1-failed | deciding_codes | EEE2046S | EEE1006F |  |  | no | known gap: The same gap: with no decision there is no reason to name EEE1006F. |
 | embedded1-failed | page | EEE2046S | 132 |  |  | no | known gap: The same gap: with no decision there is no page. |
-| aspect-final-supp | set_reason | excluded:more electives are allowed (at least 48 credits, at least two of EEE4117F EEE4118F EEE4119F) | excluded: EEE4117F EEE4118F EEE4119F |  |  | yes | label slip: The engine's set holds the excluded reason SEMANTICS.md asks for: "Plans with more electives than the rules ask for aren't listed. The handbook allows more, so ask your advisor if you want to add one." The label's subject names EEE4117F, EEE4118F and EEE4119F in brackets, describing the rule, which SEMANTICS.md doesn't ask the reason to name. To confirm. |
+| aspect-final-supp | set_reason | excluded:more electives are allowed (at least 48 credits, at least two of EEE4117F EEE4118F EEE4119F) | excluded: EEE4117F EEE4118F EEE4119F |  |  | yes | label slip, confirmed after the run: The engine's set holds the excluded reason SEMANTICS.md asks for: "Plans with more electives than the rules ask for aren't listed. The handbook allows more, so ask your advisor if you want to add one." The label's subject names EEE4117F, EEE4118F and EEE4119F in brackets, describing the rule, which SEMANTICS.md doesn't ask the reason to name. Confirmed: SEMANTICS.md asks the reason only to say more are allowed, so the codes in brackets were a gloss. |
 | aspect-final-supp | deciding_codes | EEE4114F | EEE3092F |  |  | no | semantics gap: Every one is an eligible decision. SEMANTICS.md gives check and not_eligible their reason and eligible none, so check() returns an eligible decision with no reason, which names nothing that met the rule. The labels expect it to name the course that did. |
 | aspect-final-supp | page | EEE4114F | 139 |  |  | no | semantics gap: No citation: check() returns a status and a reason, never a passage (ENGINE_INTERFACE.md), and its reason cites no page, and the plan set holds no reason about the course. SEMANTICS.md ties passages to plan reasons alone, so F-2's "citing the handbook" rests on them. |
 | aspect-final-supp | page | HUB4049F | 162 |  |  | yes | semantics gap: No citation: check() returns a status and a reason, never a passage (ENGINE_INTERFACE.md), and its reason cites no page, and the plan set holds no reason about the course. SEMANTICS.md ties passages to plan reasons alone, so F-2's "citing the handbook" rests on them. |
-| aspect-final-supp | page | EEE3094S | 135 | 15 (plan reason) |  | no | label slip: The label's deciding rule is the supplementary still to come under FB7.1, on p. 15, which the engine's FB7 reason cites. Its page column gives 135, EEE3094S's own entry. To confirm. |
+| aspect-final-supp | page | EEE3094S | 135 | 15 (plan reason) |  | no | label slip, confirmed after the run: The label's deciding rule is the supplementary still to come under FB7.1, on p. 15, which the engine's FB7 reason cites. Its page column gives 135, EEE3094S's own entry. Confirmed: the deciding rule names FB7.1 on p. 15, so 15 is right. |
 | owes-asl-dp-refused | page | CSC2001F | 170 | 169 (plan reason) |  | no | semantics gap: The engine's reason cites CSC2001F's own entry, as SEMANTICS.md asks, and the stored passage carries the page the entry starts on, 169. The requirement prints at the top of p. 170 (labels/REVIEW.md). SEMANTICS.md doesn't say which page a reason cites when its entry crosses a page break. |
 | owes-asl-dp-refused | deciding_codes | CSC1016S | CSC1015F |  |  | no | semantics gap: Every one is an eligible decision. SEMANTICS.md gives check and not_eligible their reason and eligible none, so check() returns an eligible decision with no reason, which names nothing that met the rule. The labels expect it to name the course that did. |
 | owes-asl-dp-refused | page | CSC1016S | 168 |  |  | no | semantics gap: No citation: check() returns a status and a reason, never a passage (ENGINE_INTERFACE.md), and its reason cites no page, and the plan set holds no reason about the course. SEMANTICS.md ties passages to plan reasons alone, so F-2's "citing the handbook" rests on them. |
@@ -148,7 +153,7 @@ Each record's plans were generated five times in one process, one record at a ti
 
 ## What failing a course costs
 
-FB5 held back 163 of 171, 95.3% (91.0% to 97.6%) of the records that fail one course and pass nothing of her own year: each is in the previous year again, and her plans are the repeat alone. The arrears variants are the thesis's figure: the same failure, with two of her own year's courses passed, so she's in her year owing it. The ten that cost the most plans, from failure_cost.csv:
+FB5 held back 163 of 171, 95.3% (91.0% to 97.6%) of the records that fail one course and pass nothing of her own year: each is in the previous year again, and her plans are the repeat alone. The arrears variants are the thesis's figure: the same failure, with two of her own year's courses passed, so she's in her year owing it. The ten that cost the most plans, with every record tied with the tenth (19 in all), from failure_cost.csv:
 
 | Curriculum | Year | Course failed | Plans left | On track | Core excluded | FB3.4 drops | Checker agrees |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -162,6 +167,31 @@ FB5 held back 163 of 171, 95.3% (91.0% to 97.6%) of the records that fail one co
 | EB811EEE05 | 5 | MEC2047F | 0 | 10 | 0 |  | yes |
 | EB811EEE05 | 5 | EEE3091F | 0 | 10 | 0 |  | yes |
 | EB809EEE01 | 5 | EEE3100S | 9 | 19 | 0 |  | yes |
+| EB809EEE01 | 5 | EEE3088F | 9 | 19 | 0 |  | yes |
+| EB022EEE02 | 4 | EEE3090F | 0 | 10 | 0 |  | yes |
+| EB011EEE05 | 4 | MEC2047F | 0 | 10 | 0 |  | yes |
+| EB011EEE05 | 4 | EEE3094S | 0 | 10 | 0 |  | yes |
+| EB011EEE05 | 4 | EEE3091F | 0 | 10 | 0 |  | yes |
+| EB011EEE05 | 4 | EEE3090F | 0 | 10 | 0 | EEE4113F | yes |
+| EB009EEE01 | 4 | EEE3100S | 9 | 19 | 0 |  | yes |
+| EB009EEE01 | 4 | EEE3094S | 9 | 19 | 0 |  | yes |
+| EB009EEE01 | 4 | EEE3088F | 9 | 19 | 0 |  | yes |
+
+Every failure record that leaves her no plan at all: 11, of which 11 carry a set-level conflict reason saying why:
+
+| Variant | Curriculum | Year | Course failed | Plans left | On track | Core excluded | FB3.4 drops | Checker agrees |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| arrears | EB011EEE05 | 3 | PHY2010S | 0 | 1 | 0 |  | yes |
+| arrears | EB011EEE05 | 4 | EEE3090F | 0 | 10 | 0 | EEE4113F | yes |
+| arrears | EB011EEE05 | 4 | EEE3091F | 0 | 10 | 0 |  | yes |
+| arrears | EB011EEE05 | 4 | EEE3094S | 0 | 10 | 0 |  | yes |
+| arrears | EB011EEE05 | 4 | MEC2047F | 0 | 10 | 0 |  | yes |
+| arrears | EB022EEE02 | 3 | MAM2084S | 0 | 3 | 0 |  | yes |
+| arrears | EB022EEE02 | 3 | PHY2010S | 0 | 3 | 1 EEE3089F |  | yes |
+| arrears | EB022EEE02 | 4 | EEE3090F | 0 | 10 | 0 |  | yes |
+| arrears | EB811EEE05 | 5 | EEE3091F | 0 | 10 | 0 |  | yes |
+| arrears | EB811EEE05 | 5 | MEC2047F | 0 | 10 | 0 |  | yes |
+| arrears | EB822EEE02 | 4 | PHY2010S | 0 | 3 | 1 EEE3089F |  | yes |
 
 ## Disagreements
 

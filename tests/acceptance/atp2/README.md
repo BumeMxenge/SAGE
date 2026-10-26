@@ -101,11 +101,13 @@ It needs no database, as everything is in memory, and calls no model. It writes 
 | `timings.csv` | Each record's five generate times, its check time and the checker's time, in seconds |
 | `failure_cost.csv` | One row per failure record: plans left beside the base record's, the core excluded, FB3.4's drops, conditional courses and reasons by kind, whether FB5 held her back, and whether the checker agreed |
 | `scaling.csv` | One row per record: the subsets the checker tried, the engine's p50 and p95, and the checker's time |
-| `causes.csv` | Each disagreement's cause and evidence, written by hand after the first run |
+| `causes.csv` | Each disagreement's cause and evidence, written by hand after the first run, and whether a label slip was confirmed after it |
 | `inputs.csv` | The SHA-256 of every file the run read |
 
 ## Reading the report
 
 Verdicts come first, one line per target, with the held-out records (with and without their judgement calls), the failure sweep and the in-sample base records side by side. Verdicts are on all rows. A rate carries its 95% Wilson interval, a count with none wrong gives the one-sided 95% upper bound, 1 − 0.05^(1/n), and a time gives its p50 and p95. The interval and the bound come from ATP-1's `scoring.py`.
+
+A label slip confirmed after the run never changes the labels or their hashes. Each line it touches is given twice instead: as labelled, and with the slip confirmed, counted as the engine's match. The failure costs list the ten records that cost the most plans, with every record tied with the tenth, and then every failure record that leaves no plan at all.
 
 The first result is committed on its own and kept. A rerun reproduces every file but the times. A checker fault fixed after the first run gets a retest in a folder of its own beside the first result, never over it.

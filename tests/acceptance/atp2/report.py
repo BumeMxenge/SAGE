@@ -125,20 +125,22 @@ def verdicts(
     decisions: list[Row],
     metamorphic: list[Row],
     timings: list[Row],
+    found: list[Row],
 ) -> list[str]:
     records, statuses = by_set(sweep), by_set(decisions)
     times, relations = by_set(timings), by_set(metamorphic)
-    labels = {
-        "labelled": labelled,
-        "clear": without(labelled),
-        "failure": [],
-        "base": [],
-    }
+    confirmed = with_slips(labelled, found)
+
+    def on_labels(rows: list[Row]) -> dict[str, list[Row]]:
+        return {"labelled": rows, "clear": without(rows), "failure": [], "base": []}
 
     def measured(
         groups: dict[str, list[Row]], measure: Callable[[list[Row]], str]
     ) -> list[str]:
         return [measure(groups[s]) if groups[s] else "none to count" for s in COLUMNS]
+
+    def met(done: bool) -> str:
+        return "met" if done else "not met"
 
     # Every labelled field but the page, which is reported beside the verdicts
     judged = {row["field"] for row in labelled} - {"page"}
@@ -149,12 +151,37 @@ def verdicts(
             [r for r in rows if r["field"] in (fields or judged)]
         )
 
-    def all_match(fields: Sequence[str] = ()) -> bool:
-        return all(
-            row["engine_match"] == "yes"
-            for row in labelled
-            if row["field"] in (fields or judged)
+    def all_match(fields: Sequence[str] = ()) -> Callable[[list[Row]], str]:
+        return lambda rows: met(
+            all(
+                row["engine_match"] == "yes"
+                for row in rows
+                if row["field"] in (fields or judged)
+            )
         )
+
+    def labelled_line(
+        requirement: str,
+        measure: str,
+        rule: Callable[[list[Row]], str],
+        target: str,
+        verdict: Callable[[list[Row]], str],
+    ) -> list[tuple[str, ...]]:
+        # A line on the labels, and below it the same line with the label slips confirmed after
+        # the run, where they change it
+        line = (requirement, measure, *measured(on_labels(labelled), rule))
+        twin = (
+            requirement,
+            f"{measure}, with the label slips confirmed after the run",
+            *measured(on_labels(confirmed), rule),
+        )
+        lines = [(*line, target, verdict(labelled))]
+        if twin[2:] != line[2:]:
+            lines.append((*twin, target, verdict(confirmed)))
+        return lines
+
+    def reported(rows: list[Row]) -> str:
+        return "reported"
 
     def uncited(rows: list[Row]) -> str:
         pages = [row for row in rows if row["field"] == "page"]
@@ -162,70 +189,67 @@ def verdicts(
             sum(row["engine_match"] == NO_CITATION for row in pages), len(pages)
         )
 
-    def met(done: bool) -> str:
-        return "met" if done else "not met"
-
     def broken(rows: list[Row]) -> tuple[int, int]:
         applies = [row for row in rows if row["applies"] == "yes"]
         return sum(row["held"] == "no" for row in applies), len(applies)
 
     every_run = runs(timings)
     rows = [
-        (
+        *labelled_line(
             "F-2, F-3, NF-1",
             "Every labelled item but the pages matches its label: the pass criterion",
-            *measured(labels, against()),
+            against(),
             "100%",
-            met(all_match()),
+            all_match(),
         ),
-        (
+        *labelled_line(
             "F-2, NF-1",
             "Focal decisions whose status and deciding codes match the label",
-            *measured(labels, against(DECIDED)),
+            against(DECIDED),
             "100%",
-            met(all_match(DECIDED)),
+            all_match(DECIDED),
         ),
-        (
+        *labelled_line(
             "F-2",
             "Citing the handbook: cited pages that are the label's, of decisions citing one",
-            *measured(labels, against(("page",))),
+            against(("page",)),
             "",
-            "reported",
+            reported,
         ),
-        (
+        *labelled_line(
             "F-2",
             "Citing the handbook: decisions citing no page, in check() or a plan reason",
-            *measured(labels, uncited),
+            uncited,
             "",
-            "reported",
+            reported,
         ),
-        (
+        *labelled_line(
             "F-3, NF-1",
             "Plan counts and combinations that match the labels",
-            *measured(labels, against(PLANNED)),
+            against(PLANNED),
             "100%",
-            met(all_match(PLANNED)),
+            all_match(PLANNED),
         ),
-        (
+        *labelled_line(
             "F-3",
             "Plans whose slots match the labels",
-            *measured(labels, against(("expected_slots",))),
+            against(("expected_slots",)),
             "100%",
-            met(all_match(("expected_slots",))),
+            all_match(("expected_slots",)),
         ),
-        (
+        *labelled_line(
             "NF-1",
             "Years of study, and owed and excluded core, that match the labels",
-            *measured(labels, against(STANDING)),
+            against(STANDING),
             "100%",
-            met(all_match(STANDING)),
+            all_match(STANDING),
         ),
-        (
+        *labelled_line(
             "NF-1",
             "Set-level reasons print requires that the engine gives, by kind and codes",
-            *measured(labels, against(("set_reason",))),
+            against(("set_reason",)),
             "100%",
-            met(all_match(("set_reason",))),
+            all_match(("set_reason",)),
         ),
         (
             "F-2, NF-1",
@@ -327,7 +351,9 @@ def verdicts(
             "ATP-2's pass criterion (Table 3.4): \"Every decision matches its label, and plan sets "
             "hold every valid plan once and nothing else.\" It verifies F-2, F-3 and NF-1, and NF-4's "
             "single-session 10 s. The sweep's records have no labels, so there the checker is the "
-            "oracle. F-3's ranking is left out, as the checker doesn't rank."
+            "oracle. F-3's ranking is left out, as the checker doesn't rank. Two label slips were "
+            "confirmed after the run, so each line they touch is given twice: as labelled, and with "
+            "the slips confirmed, counted as the engine's matches."
         ),
         *table(
             ("Requirement", "Measure", *COLUMNS.values(), "Target", "Verdict"), rows
@@ -335,23 +361,49 @@ def verdicts(
     ]
 
 
-def cause_of(found: list[Row], kind: str, record: str, course: str) -> str:
-    # A disagreement's cause from causes.csv, whose rows name a kind and, where a cause covers only
-    # some, a record and a course
-    for row in found:
-        if (
-            row["kind"] == kind
+def cause_row(found: list[Row], kind: str, record: str, course: str) -> Row | None:
+    # A disagreement's row in causes.csv, whose rows name a kind and, where a cause covers only
+    # some, a record and a course. The first that fits is the cause.
+    return next(
+        (
+            row
+            for row in found
+            if row["kind"] == kind
             and row["record"] in ("", record)
             and row["course"] in ("", course)
-        ):
-            return f"{row['cause']}: {row['evidence']}"
-    return "not yet classified"
+        ),
+        None,
+    )
+
+
+def cause_of(found: list[Row], kind: str, record: str, course: str) -> str:
+    row = cause_row(found, kind, record, course)
+    if row is None:
+        return "not yet classified"
+    confirmed = f", confirmed {row['confirmed']}" if row["confirmed"] else ""
+    return f"{row['cause']}{confirmed}: {row['evidence']}"
+
+
+def with_slips(labelled: list[Row], found: list[Row]) -> list[Row]:
+    # The labelled items again, with each miss a label slip confirmed after the run explains counted
+    # as the engine's match, as the label was wrong there and the engine right
+    def confirmed(row: Row) -> bool:
+        cause = cause_row(found, f"label {row['field']}", row["record"], row["item"])
+        return bool(cause and cause["cause"] == "label slip" and cause["confirmed"])
+
+    return [
+        row | {"engine_match": "yes"}
+        if row["engine_match"] == "no" and confirmed(row)
+        else row
+        for row in labelled
+    ]
 
 
 def against_labels(labelled: list[Row], found: list[Row]) -> list[str]:
     # The held-out records against their labels, field by field, with and without the judgement
     # calls, and the checker against the same labels where it gives a value
     fields = dict.fromkeys(row["field"] for row in labelled)
+    confirmed = with_slips(labelled, found)
 
     def counts(rows: list[Row]) -> list[object]:
         return [
@@ -363,6 +415,16 @@ def against_labels(labelled: list[Row], found: list[Row]) -> list[str]:
             matched(without(rows), "checker"),
         ]
 
+    # Each field, and again with the label slips confirmed after the run where they change it
+    lines = []
+    for field in fields:
+        line = counts([r for r in labelled if r["field"] == field])
+        twin = counts([r for r in confirmed if r["field"] == field])
+        lines.append([field, *line])
+        if twin != line:
+            lines.append(
+                [f"{field}, with the label slips confirmed after the run", *twin]
+            )
     differ = [
         [
             *(
@@ -392,7 +454,8 @@ def against_labels(labelled: list[Row], found: list[Row]) -> list[str]:
             "given with them and without. A record's fields carry its own flag, and a decision's "
             "fields the decision's. Deciding codes and text pages are matched as text, as the "
             "labels' README says. The checker gives no reasons or pages, so it has none to match "
-            "there."
+            "there. A field the two label slips confirmed after the run touch is given again with "
+            "the slips confirmed, counted as the engine's matches."
         ),
         *table(
             (
@@ -404,10 +467,7 @@ def against_labels(labelled: list[Row], found: list[Row]) -> list[str]:
                 "Checker right",
                 "Without judgement calls",
             ),
-            (
-                [field, *counts([r for r in labelled if r["field"] == field])]
-                for field in fields
-            ),
+            lines,
         ),
         "",
         "Every labelled item the engine or the checker doesn't match:",
@@ -603,7 +663,39 @@ def costs(rows: list[Row]) -> list[str]:
             row["record"],
         )
 
-    worst = sorted(arrears, key=lost, reverse=True)[:10]
+    # The ten that cost the most plans, and any tied with the tenth
+    ranked = sorted(arrears, key=lost, reverse=True)
+    cut = lost(ranked[9])[0] if len(ranked) > 9 else 0
+    worst = [row for row in ranked if lost(row)[0] >= cut]
+    # Every failure record that leaves her no plan at all, by curriculum, year and course
+    none_left = sorted(
+        (row for row in rows if row["plans_left"] == "0"),
+        key=lambda row: (row["curriculum"], row["year"], row["variant"], row["course"]),
+    )
+    explained = sum(int(row["reasons_conflict"]) > 0 for row in none_left)
+    header = (
+        "Curriculum",
+        "Year",
+        "Course failed",
+        "Plans left",
+        "On track",
+        "Core excluded",
+        "FB3.4 drops",
+        "Checker agrees",
+    )
+
+    def shown(row: Row) -> list[str]:
+        return [
+            row["curriculum"],
+            row["year"],
+            row["course"],
+            row["plans_left"],
+            row["base_plans"],
+            f"{row['core_excluded']} {row['core_excluded_codes']}".strip(),
+            row["fb34_dropped"],
+            row["checker_agrees"],
+        ]
+
     return [
         "",
         "## What failing a course costs",
@@ -613,32 +705,17 @@ def costs(rows: list[Row]) -> list[str]:
             "nothing of her own year: each is in the previous year again, and her plans are the "
             "repeat alone. The arrears variants are the thesis's figure: the same failure, with two "
             "of her own year's courses passed, so she's in her year owing it. The ten that cost the "
-            "most plans, from failure_cost.csv:"
+            f"most plans, with every record tied with the tenth ({len(worst)} in all), from "
+            "failure_cost.csv:"
+        ),
+        *listed(header, map(shown, worst)),
+        "",
+        (
+            f"Every failure record that leaves her no plan at all: {len(none_left)}, of which "
+            f"{explained} carry a set-level conflict reason saying why:"
         ),
         *listed(
-            (
-                "Curriculum",
-                "Year",
-                "Course failed",
-                "Plans left",
-                "On track",
-                "Core excluded",
-                "FB3.4 drops",
-                "Checker agrees",
-            ),
-            (
-                [
-                    row["curriculum"],
-                    row["year"],
-                    row["course"],
-                    row["plans_left"],
-                    row["base_plans"],
-                    f"{row['core_excluded']} {row['core_excluded_codes']}".strip(),
-                    row["fb34_dropped"],
-                    row["checker_agrees"],
-                ]
-                for row in worst
-            ),
+            ("Variant", *header), ([row["variant"], *shown(row)] for row in none_left)
         ),
     ]
 
@@ -749,7 +826,7 @@ def main() -> None:
             "held-out records lead. The failure sweep follows, and the base records come last, as "
             "the engine was built on on-track students."
         ),
-        *verdicts(labelled, sweep, decisions, metamorphic, timings),
+        *verdicts(labelled, sweep, decisions, metamorphic, timings, causes()),
         *against_labels(labelled, causes()),
         *kinds(sweep, decisions),
         *relations(metamorphic),
