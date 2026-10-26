@@ -329,7 +329,9 @@ def verdicts(
             "single-session 10 s. The sweep's records have no labels, so there the checker is the "
             "oracle. F-3's ranking is left out, as the checker doesn't rank."
         ),
-        *table(("Requirement", "Measure", *SETS.values(), "Target", "Verdict"), rows),
+        *table(
+            ("Requirement", "Measure", *COLUMNS.values(), "Target", "Verdict"), rows
+        ),
     ]
 
 
@@ -375,7 +377,7 @@ def against_labels(labelled: list[Row], found: list[Row]) -> list[str]:
                     "judgement_call",
                 )
             ),
-            cause_of(found, "label", row["record"], row["item"] or row["field"]),
+            cause_of(found, f"label {row['field']}", row["record"], row["item"]),
         ]
         for row in labelled
         if {"no", NO_CITATION} & {row["engine_match"], row["checker_match"]}
