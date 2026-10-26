@@ -124,7 +124,7 @@ CI never runs it. It needs that stack, and screenshots differ between operating 
 - **Made-up visitors.** Staff, an account from outside UCT and a student who hasn't finished setup are Mbali's session with a made-up answer from `GET /v1/me`, built from `api-types.ts`. So no check resets a real account, as every worktree runs these checks against one local database.
 - **Helpers**, in `frontend/e2e/`:
   - `axe.ts` runs axe-core with the audit's tags: wcag2a, wcag2aa, wcag21a, wcag21aa and wcag22aa. The bar is zero violations. It first waits for anything fading in to arrive, as axe counts half-faded text as too faint.
-  - `keyboard.ts` tabs through a page and checks that every stop shows the focus ring and that no other ring is on screen. That second check failed when the focus rule in `base.css` lost its `:has`, which then also ringed the box React Aria marks around a stop. It returns the stops in order.
+  - `keyboard.ts` tabs through a page and checks that every stop shows the focus ring and that no other ring is on screen, counting only a ring that can show: React Aria hides a checkbox's input and a drop zone's button in a clipped box, where the browser's ring can't be seen. The second check failed when the focus rule in `base.css` lost its `:has`, which then also ringed the box React Aria marks around a stop, and the first when the checkbox's box lost its ring. It returns the stops in order.
   - `parity.ts` drives a prototype to a state through its own controls and writes it beside React.
   - `visitors.ts` holds the made-up visitors, the `freshStudent` fixture and `withSlot`, which answers Mbali's own plan set as if it had a complementary slot, as hers has none, for a check that needs Explore Electives' link or page.
   - `settled.ts` waits until a page's animations have finished, in a prototype or in React.
@@ -146,8 +146,8 @@ CI never runs it. It needs that stack, and screenshots differ between operating 
 | Command | What it reports | Time |
 | --- | --- | --- |
 | `make test` | The unit tests, then each file's lines that no unit test runs | 2 minutes |
-| `make mutation` | The share of mutants the unit tests catch, written to `backend/mutation-score.txt` | 20 minutes |
-| `make planted-faults` | Which of the 33 planted faults the unit tests catch, and the test that caught each: the 24 from my test review, two in the review and approval the thesis rests on, four in the plan encoding, which mutmut can't change, and three in the advisor's guardrails | 18 minutes |
+| `make mutation` | The share of mutants the unit tests catch, written to `backend/mutation-score.txt` | 40 minutes |
+| `make planted-faults` | Which of the 33 planted faults the unit tests catch, and the test that caught each: the 24 from my test review, two in the review and approval the thesis rests on, four in the plan encoding, which mutmut can't change, and three in the advisor's guardrails | 15 minutes |
 
 Line coverage counts the lines that ran during the tests, not whether anything checked what they did, so it overstates. Mutation testing checks the checking. mutmut makes 9,016 copies of the code in `features/`, `shared/`, `ingestion/`, `engine/` and `advisor/`, each with one small change, such as `<` to `<=` or `5` to `6`. It runs the unit tests against each copy and counts the copies that make a test fail. A copy that makes the tests time out counts as caught. The 33 planted faults are plausible bugs chosen by hand, while mutmut makes every small change it can, most of them easy to catch, so its score runs higher.
 
@@ -155,13 +155,13 @@ The score leaves out the integration tests, code outside functions (such as the 
 
 ## Numbers
 
-| | 12 Oct (e60bca0) | 18 Oct (fb4a050) | Branch D (de6b976) | Clean-up (bc8db10) | Engine (a45ff36) | Advisor (0efba41) | Electives (965e41d) | Electives page (a11bf2d) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Test functions | 167 | 237 | 241 | 236 | 305 | 341 | 371 | 386 |
-| Cases: unit and integration | 177 and 76 | 337 and 78 | 343 and 78 | 340 and 76 | 493 and 76 | 548 and 77 | 610 and 79 | 626 and 79 |
-| Line coverage, unit tests | 92.8% (1,746 of 1,882 lines) | Not measured | 91.4% (3,417 of 3,738 lines) | 91.5% (3,450 of 3,772 lines) | 92.9% (4,245 of 4,570 lines) | 93.5% (4,774 of 5,104 lines) | 93.6% (5,000 of 5,343 lines) | 94.2% (5,111 of 5,426 lines) |
-| Mutation score | 90.8% (1,542 of 1,699 mutants) | 93.0% (4,917 of 5,286 mutants) | 93.4% (4,901 of 5,247 mutants) | 93.4% (4,898 of 5,244 mutants) | 93.3% (6,857 of 7,346 mutants) | 93.8% (7,807 of 8,321 mutants) | 93.9% (8,358 of 8,902 mutants) | 94.0% (8,472 of 9,016 mutants) |
-| Planted faults caught | 24 of 24 | 24 of 24 | 26 of 26 | 26 of 26 | 30 of 30 | 33 of 33 | 33 of 33 | 33 of 33 |
+| | 12 Oct (e60bca0) | 18 Oct (fb4a050) | Branch D (de6b976) | Clean-up (bc8db10) | Engine (a45ff36) | Advisor (0efba41) | Electives (965e41d) | Electives page (a11bf2d) | Integration (8a5dc26) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Test functions | 167 | 237 | 241 | 236 | 305 | 341 | 371 | 386 | 385 |
+| Cases: unit and integration | 177 and 76 | 337 and 78 | 343 and 78 | 340 and 76 | 493 and 76 | 548 and 77 | 610 and 79 | 626 and 79 | 624 and 88 |
+| Line coverage, unit tests | 92.8% (1,746 of 1,882 lines) | Not measured | 91.4% (3,417 of 3,738 lines) | 91.5% (3,450 of 3,772 lines) | 92.9% (4,245 of 4,570 lines) | 93.5% (4,774 of 5,104 lines) | 93.6% (5,000 of 5,343 lines) | 94.2% (5,111 of 5,426 lines) | 94.2% (5,100 of 5,415 lines) |
+| Mutation score | 90.8% (1,542 of 1,699 mutants) | 93.0% (4,917 of 5,286 mutants) | 93.4% (4,901 of 5,247 mutants) | 93.4% (4,898 of 5,244 mutants) | 93.3% (6,857 of 7,346 mutants) | 93.8% (7,807 of 8,321 mutants) | 93.9% (8,358 of 8,902 mutants) | 94.0% (8,472 of 9,016 mutants) | 94.2% (8,453 of 8,974 mutants) |
+| Planted faults caught | 24 of 24 | 24 of 24 | 26 of 26 | 26 of 26 | 30 of 30 | 33 of 33 | 33 of 33 | 33 of 33 | 33 of 33 |
 
 Between 12 and 18 Oct, C1 and C2 added the ingestion code and its tests, which trebled the mutants. On 18 Oct three test runs crashed in pytest's clean-up and counted as caught, so that score was at worst 4,914; each test session now has a temporary folder of its own. Branch D moved the tests onto the approved 2026, removed the seed's rulebook code and two tests that caught nothing alone, and added six. The clean-up of 19 Oct organised the backend by feature, which renames the mutants but not what they change, and removed five tests that caught nothing alone and the handbook reader's unused `Entry.codes`, whose three mutants were all caught. The 346 survivors are the same, function by function. Line coverage counts the Supabase adapters and the `sage` command too, which the unit tests run only in part. Planted faults 17 and 18 were in the eligibility stand-in. Faults 25 and 26 are in the review and approval.
 
@@ -173,18 +173,29 @@ The electives branch added the electives job, its review rows, one Explore Elect
 
 The Explore Electives page branch added each plan's complementary slots (`shared/slots.py`), with their counts in courses, the preview of a course in a plan, each offering's plans and Ziyela's seed, which took the mutants to 9,016. Its one run, on 25 Oct at a11bf2d, caught 94.0% (8,472 of 9,016), with 15 timeouts, and left 544 alive, one of them in the branch's own code. The preview's rules are checked on rows built by hand for their edges and on the engine's own plan for an on-track ASPECT Mechatronics student, and the counts on slots built by hand. Planted faults stay at 33, as none sits in the new code.
 
+The integration branch removed code nothing used, such as the drafter interface, the questionnaire's order by hearts and the second copies of how the draft caches are read and written, which took the mutants to 8,974. Its run, on 26 Oct at 8a5dc26, caught 94.2% (8,453 of 8,974), with 16 timeouts, and left 521 alive. A test added after the run catches two more, which breaking each by hand confirmed: a set's reasons read against no rules, and a reason's course code dropped. Planted faults stay at 33 of 33.
+
 ## What the first load fetches
 
-Measured on 25 Oct from production builds (`npm run build`) of main before the loading states (b7594f6) and of `feature/show-skeletons-while-pages-load` (5c0fbda), the same way for both: every script file the browser fetches to open the address, which is the entry file, the route's page files and every file they import, gzipped at level 9, as a server sends them. On main, `/plan`'s frame and page come once the entry file has run. With the loading states the entry file carries the frame, so the first load can draw it while the guard decides.
+Measured on 26 Oct from production builds of main (b51b3be) and of the integration branch (8a5dc26), the same way for both: every script file the browser fetches to open the address, which is the entry file, the route's page files and every file they import, gzipped at level 9, as a server sends them. On main, the libraries every page loads joined the entry file, which reached 659 kB, over Vite's 500 kB warning. On the branch, React with its router and the API and sign-in clients load in two files of their own, 313 kB and 262 kB, so no file passes the warning, and the components and code no screen used are gone.
 
-| Address | main (b7594f6) | With the loading states (5c0fbda) | Difference |
+| Address | main (b51b3be) | Integration branch (8a5dc26) | Difference |
 | --- | --- | --- | --- |
-| `/sign-in` | 824 kB, 240 kB gzipped, in 12 files | 913 kB, 269 kB gzipped, in 10 files | 89 kB more, 29 kB gzipped |
-| A student's `/plan` | 945 kB, 283 kB gzipped, in 17 files | 949 kB, 281 kB gzipped, in 11 files | 4 kB more, 2 kB gzipped less |
+| `/sign-in` | 916 kB, 269 kB gzipped, in 10 files | 866 kB, 257 kB gzipped, in 11 files | 50 kB less, 12 kB gzipped less |
+| A student's `/plan` | 956 kB, 283 kB gzipped, in 12 files | 903 kB, 270 kB gzipped, in 13 files | 53 kB less, 13 kB gzipped less |
 
 ## Mutants that survive
 
-544 of the 9,016 mutants survive the run at a11bf2d. One is in the Explore Electives page branch's own code: an empty list of slots becomes `None` for a student with no current plan set, which would break her electives, but an onboarded student always has one, as Finish Setup makes her plans, and the page opens only once she's onboarded. The other 543 sit in code this branch didn't write, one fewer than at 965e41d, and are described below as they stood there.
+521 of the 8,974 mutants survive the run at 8a5dc26. 18 are new with the integration branch. 17 are on lines it wrote, and none changes what SAGE does:
+
+- 12 change only how a draft cache is written: its indent, key order and escapes, which hold the same JSON either way, or another name for UTF-8, this laptop's default.
+- 2 give another name for UTF-8 where a cache is read.
+- 2 give a reply that holds no rule another text that isn't a rule tree, which is refused just the same.
+- 1 keeps an empty string, not `None`, for a reason that cites no passage, which reads the same.
+
+The 18th is a set's reasons read against no rules, which survived once a reason's passage was looked up only when it cites one, as no test held a set-level reason that cites a passage. The test added after the run catches it, and the plan view's last old survivor, a reason's course code dropped. The other 502 are of the kinds described below, as they stood at a11bf2d. The branch's removals took some with them, such as the three of the hearted-course order.
+
+544 of the 9,016 mutants survive the run at a11bf2d. One is in the Explore Electives page branch's own code: an empty list of slots becomes `None` for a student with no current plan set, which would break her electives, but an onboarded student always has one, as Finish Setup makes her plans, and the page opens only once she's onboarded. The other 543 sit in code that branch didn't write, one fewer than at 965e41d, and are described below as they stood there.
 
 544 of the 8,902 mutants survived the run at 965e41d: the 648 of the run at 91a2054, less the drafting schema's 73 and the 31 the clean-up's tests catch. 36 are in the electives branch's own code, and none changes what a student or a reviewer is shown:
 
@@ -217,9 +228,7 @@ The other 488 are the engine branch's 489 with two changes. The order of a cours
 | Seed loader | A seed file that leaves out a table or a key | 22 |
 | Seed loader | Message citations, as the seed has none | 2 |
 | Seed loader | Rows given the same id, which only the database's keys refuse | 2 |
-| Questionnaire | Hearted courses listed first among the course options, as all six of hers are hearted | 3 |
 | Meetings | The order of a course's meetings that start at the same time on the same day | 2 |
-| Plan view | A reason's course code, and the handbook passage it cites, as no seeded reason cites one yet | 6 |
 | Problems | The dotted path of a nested invalid field | 1 |
 | Accounts | An address with two @ signs | 1 |
 | Rulebook cache | A second year in the cache, and a test clock that doesn't start at zero | 2 |
