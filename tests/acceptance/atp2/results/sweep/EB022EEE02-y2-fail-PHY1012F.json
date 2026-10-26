@@ -1,0 +1,101 @@
+{
+  "students": [
+    {
+      "curriculum_code": "EB022EEE02",
+      "intake_year": 2025,
+      "onboarding_complete": true
+    }
+  ],
+  "course_history": [
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "CSC1015F",
+      "course_name": "Computer Science 1015",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 61
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "CSC1016S",
+      "course_name": "Computer Science 1016",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 68
+    },
+    {
+      "academic_year": 2025,
+      "term": "other",
+      "course_code": "EEE1000X",
+      "course_name": "Practical Training",
+      "credits": 0,
+      "nqf_level": 5,
+      "result": "PA",
+      "mark": null
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE1008F",
+      "course_name": "Introduction to Electrical Engineering A",
+      "credits": 12,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 68
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE1009S",
+      "course_name": "Introduction to Electrical Engineering B",
+      "credits": 12,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 69
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "MAM1020F",
+      "course_name": "Mathematics 1A for Engineers",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "MAM1021S",
+      "course_name": "Mathematics 1B for Engineers",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 85
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "PHY1012F",
+      "course_name": "Physics A for Engineers",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "F",
+      "mark": 40
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "PHY1013S",
+      "course_name": "Physics B for Engineers",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2+",
+      "mark": 70
+    }
+  ]
+}
