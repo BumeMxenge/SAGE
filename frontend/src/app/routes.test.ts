@@ -149,7 +149,9 @@ async function open(address: string, visit: Visit) {
   return state
 }
 
-it.each(Object.keys(opens))('%s, opened by every kind of visitor', async (path) => {
+// The first case opens a lazy page, and on a cold cache, as in CI, it waits while Vite compiles the
+// pages' modules, which has taken just over Vitest's 5 s default
+it.each(Object.keys(opens))('%s, opened by every kind of visitor', { timeout: 20_000 }, async (path) => {
   for (const visit of visits) {
     const { location, historyAction } = await open(address(path), visit)
 
