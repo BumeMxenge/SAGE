@@ -22,10 +22,15 @@ from common import (
     REPO_ROOT,
     Config,
     Tokens,
+    load_env,
     load_manifest,
     save_manifest,
     write_csv,
 )
+
+# Load .env now, so the host and the tokens come from it without the window exporting anything. A
+# local run that already set the variables keeps them, as load_env never overwrites.
+load_env()
 
 # The record each student onboards with. Ziyela's plans leave a complementary slot, so "check" has
 # a slot to read; the dry run confirms the choice and Stop 2 records it.
