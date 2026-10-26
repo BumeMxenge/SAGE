@@ -644,7 +644,7 @@ def metamorphic(
 
 def written(name: str, rows: Sequence[Mapping[str, Any]]) -> None:
     with (RESULTS / f"{name}.csv").open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(file, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 

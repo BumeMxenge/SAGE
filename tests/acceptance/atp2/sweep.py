@@ -257,7 +257,7 @@ def write(records: Sequence[Made], folder: Path) -> None:
             json.dumps(seed, indent=2) + "\n", encoding="utf-8"
         )
     with (folder / "manifest.csv").open("w", encoding="utf-8", newline="") as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, lineterminator="\n")
         writer.writerow(MANIFEST)
         writer.writerows(
             (r.record, r.curriculum, r.intake, r.year, r.kind, r.course, r.base)

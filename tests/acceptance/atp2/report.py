@@ -711,7 +711,7 @@ def disagreements(
 
 def written(name: str, rows: list[Row]) -> None:
     with (RESULTS / f"{name}.csv").open("w", encoding="utf-8", newline="") as file:
-        writer = DictWriter(file, fieldnames=list(rows[0]))
+        writer = DictWriter(file, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
