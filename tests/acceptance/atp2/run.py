@@ -6,6 +6,7 @@ import csv
 import hashlib
 import json
 import random
+import re
 import sys
 import time
 from collections import Counter, defaultdict
@@ -24,7 +25,7 @@ from sage.engine.generator import ClingoPlanGenerator
 from sage.ingestion.ingest import DATA, approved_snapshot
 from sage.shared.planning import Eligibility
 from sage.shared.printed_meetings import timetabled
-from sage.shared.rules import COMPLEMENTARY, Course, ResultSymbol, RuleSet
+from sage.shared.rules import COMPLEMENTARY, COURSE_CODE, Course, ResultSymbol, RuleSet
 from sage.shared.seed import load_seed
 from sage.shared.students import (
     CourseHistoryLine,
@@ -35,6 +36,7 @@ from sage.shared.students import (
 
 HERE = Path(__file__).resolve().parent
 RESULTS = HERE / "results"
+LABELS = HERE / "labels"
 RULEBOOK = DATA / "rules" / "2026" / "rulebook.json"
 SYMBOLS = HERE.parents[2] / "backend" / "tests" / "fixtures" / "result_symbols.json"
 ACCOUNT = UUID(int=sweep.SEED)  # the made-up account every record loads onto
@@ -42,6 +44,10 @@ REPEATS = 5  # runs of generate on each record, the first of which is compared
 CAP = 50  # the most plans the engine keeps
 GENERATOR = ClingoPlanGenerator()
 ELIGIBILITY = EntryRuleEligibility()
+CODE = re.compile(COURSE_CODE)
+PAGE = re.compile(
+    r"\bpp?\. ?(\d+)"
+)  # a printed page a reason's words cite, as in "p. 134"
 # The base records are in-sample, as the engine was built on on-track students
 SETS = {
     "base": "base",
@@ -53,9 +59,11 @@ SETS = {
 
 @dataclass(frozen=True)
 class Engine:
-    # What the engine gave for one record, in the checker's terms: each plan's courses in the
-    # engine's order, each plan's slots, every reason and each course's eligibility
+    # What the engine gave for one record, in the checker's terms: each plan's courses and its
+    # electives' codes, in the engine's order, each plan's slots, every reason and each course's
+    # eligibility
     plans: list[frozenset[str]]
+    combinations: list[str]
     ids: dict[frozenset[str], list[UUID]]
     slots: dict[UUID, list[tuple[int, str | None, frozenset[str]]]]
     reasons: tuple[PlanReason, ...]
@@ -80,7 +88,12 @@ def read(rows: PlanSetRows, statuses: dict[str, Eligibility]) -> Engine:
                     frozenset(reason.details["fits"]),
                 )
             )
-    return Engine(plans, ids, slots, rows.plan_reasons, statuses)
+    # A plan's electives as the labels write them, joined with +, or none
+    combinations = [
+        "+".join(plan.combination.split(" · ")) if plan.combination else "none"
+        for plan in rows.plans
+    ]
+    return Engine(plans, combinations, ids, slots, rows.plan_reasons, statuses)
 
 
 def codes(sets: Iterable[frozenset[str]]) -> str:
@@ -214,6 +227,249 @@ def compared(
         for code in sorted(engine.statuses)
     ]
     return row, decisions
+
+
+def against_labels(
+    label: Mapping[str, str],
+    decisions: Sequence[Mapping[str, str]],
+    checked: Checked,
+    engine: Engine,
+    rules: RuleSet,
+) -> list[dict[str, str]]:
+    # One held-out record against its labels, field by field, by labels/README.md's columns, with
+    # the checker's value beside the engine's where the checker gives one
+    tables = Curriculum(rules, label["curriculum_code"])
+    core = {code for year in tables.years for code in tables.core(year)}
+    # Each course's latest year among her curriculum's groups, for her year as the engine's plans
+    # and reasons show it
+    latest: dict[str, int] = {}
+    for year, rules_of_year in tables.years.items():
+        for rule in rules_of_year:
+            for code in tables.named(rule) - tables.members[COMPLEMENTARY]:
+                latest[code] = max(latest.get(code, 0), year)
+    excluded = {
+        r.course_code
+        for r in engine.reasons
+        if r.kind in ("excluded", "conflict") and r.course_code in core
+    }
+    planned = set().union(*engine.plans)
+    seen = [latest[code] for code in planned | excluded if code in latest]
+    found = []
+
+    def add(
+        field: str,
+        item: str,
+        wanted: str,
+        ours: str,
+        ours_right: bool,
+        theirs: str = "",
+        theirs_right: bool | None = None,
+        judgement: str = label["judgement_call"],
+    ) -> None:
+        found.append(
+            {
+                "record": label["record"],
+                "field": field,
+                "item": item,
+                "label": wanted,
+                "engine": ours,
+                "engine_match": "yes" if ours_right else "no",
+                "checker": theirs,
+                "checker_match": ""
+                if theirs_right is None
+                else ("yes" if theirs_right else "no"),
+                "judgement_call": judgement,
+            }
+        )
+
+    def words(codes: Iterable[str]) -> str:
+        return " ".join(sorted(codes))
+
+    year = int(label["year_of_study"])
+    ours = max(seen) if seen else None
+    add(
+        "year_of_study",
+        "",
+        str(year),
+        "" if ours is None else str(ours),
+        ours == year,
+        str(checked.year),
+        checked.year == year,
+    )
+    owed, ours_owed = set(label["owed_core"].split()), (planned & core) | excluded
+    add(
+        "owed_core",
+        "",
+        words(owed),
+        words(ours_owed),
+        ours_owed == owed,
+        words(checked.outstanding),
+        checked.outstanding == owed,
+    )
+    out, theirs_out = (
+        set(label["excluded_core"].split()),
+        checked.excluded | checked.dropped,
+    )
+    add(
+        "excluded_core",
+        "",
+        words(out),
+        words(excluded),
+        excluded == out,
+        words(theirs_out),
+        theirs_out == out,
+    )
+    if label["expected_plans"]:
+        n = int(label["expected_plans"])
+        add(
+            "expected_plans",
+            "",
+            str(n),
+            str(len(engine.plans)),
+            len(engine.plans) == n,
+            str(len(checked.plans)),
+            len(checked.plans) == n,
+        )
+        combinations = set(label["expected_combinations"].split(";"))
+        ours_combinations = set(engine.combinations)
+        theirs = {"+".join(sorted(plan - core)) or "none" for plan in checked.plans}
+        add(
+            "expected_combinations",
+            "",
+            ";".join(sorted(combinations)),
+            ";".join(sorted(ours_combinations)),
+            ours_combinations == combinations,
+            ";".join(sorted(theirs)),
+            theirs == combinations,
+        )
+
+    # Every plan must hold exactly the label's slots, each as kind:credits or place:code:credits
+    wanted_slots = sorted(s for s in label["expected_slots"].split(";") if s)
+
+    def slotted(slots: Iterable[tuple[int, str | None]]) -> list[str]:
+        return sorted(
+            f"place:{owed}:{credits}" if owed else f"{COMPLEMENTARY}:{credits}"
+            for credits, owed in slots
+        )
+
+    def slots_right(lists: list[list[str]]) -> bool:
+        return all(s == wanted_slots for s in lists) and (
+            bool(lists) or not wanted_slots
+        )
+
+    def shown(lists: list[list[str]]) -> str:
+        return " | ".join(sorted({";".join(s) for s in lists}))
+
+    ours_slots = [
+        slotted((c, owed) for c, owed, _ in engine.slots.get(plan_id, []))
+        for plan_ids in engine.ids.values()
+        for plan_id in plan_ids
+    ]
+    theirs_slots = [
+        slotted((s.credits, s.owed) for s in checked.slots[plan])
+        for plan in checked.plans
+    ]
+    add(
+        "expected_slots",
+        "",
+        ";".join(wanted_slots),
+        shown(ours_slots),
+        slots_right(ours_slots),
+        shown(theirs_slots),
+        slots_right(theirs_slots),
+    )
+
+    # Each set-level reason print requires, matched one to one by a reason of the engine's own set
+    # of the same kind that names every code the label's subject names. A subject that names none
+    # needs a reason about no one course. The most specific labels match first.
+    reasons = [r for r in engine.reasons if r.plan_id is None]
+    expected = [
+        part.split(":", 1) for part in label["expected_set_reasons"].split("; ") if part
+    ]
+
+    def named(reason: PlanReason) -> set[str]:
+        return set(CODE.findall(reason.message)) | {reason.course_code} - {None}
+
+    used: set[int] = set()
+    matched: dict[int, PlanReason] = {}
+    for i in sorted(
+        range(len(expected)), key=lambda i: -len(CODE.findall(expected[i][1]))
+    ):
+        kind, subject = expected[i]
+        wanted = set(CODE.findall(subject))
+        candidates = [
+            j
+            for j, r in enumerate(reasons)
+            if j not in used
+            and r.kind == kind
+            and (wanted <= named(r) if wanted else r.course_code is None)
+        ]
+        if candidates:
+            best = min(candidates, key=lambda j: len(named(reasons[j])))
+            used.add(best)
+            matched[i] = reasons[best]
+    for i, (kind, subject) in enumerate(expected):
+        given = matched.get(i)
+        add(
+            "set_reason",
+            f"{kind}:{subject}",
+            f"{kind}: {words(CODE.findall(subject))}",
+            f"{given.kind}: {given.message}" if given else "",
+            given is not None,
+        )
+
+    # Each focal decision: its status, the codes its reason must name, matched as text so a printed
+    # stem such as ECO1010 counts, and its page, which the reason's words or the passage of a reason
+    # about the course cite. A page that names another handbook is matched as text.
+    passages = {passage.id: passage for passage in rules.passages}
+    for decision in decisions:
+        code, judgement = decision["course_code"], decision["judgement_call"]
+        status = engine.statuses.get(code)
+        ours = status.status if status else "not held"
+        theirs = checked.statuses.get(code, "not held")
+        add(
+            "status",
+            code,
+            decision["expected_status"],
+            ours,
+            ours == decision["expected_status"],
+            theirs,
+            theirs == decision["expected_status"],
+            judgement,
+        )
+        reason = (status.reason or "") if status else ""
+        if decision["deciding_codes"]:
+            needed = decision["deciding_codes"].split()
+            add(
+                "deciding_codes",
+                code,
+                " ".join(needed),
+                reason,
+                all(word in reason for word in needed),
+                judgement=judgement,
+            )
+        pages = {int(n) for n in PAGE.findall(reason)} | {
+            passages[r.passage_id].page
+            for r in engine.reasons
+            if r.course_code == code and r.passage_id
+        }
+        add(
+            "page",
+            code,
+            decision["page"],
+            " ".join(map(str, sorted(pages))),
+            on_page(decision["page"], pages),
+            judgement=judgement,
+        )
+    return found
+
+
+def on_page(label: str, pages: set[int]) -> bool:
+    # A labelled page is an integer, or text naming another handbook's page, as in "Commerce
+    # Undergraduate Handbook 2026 p. 156", where any page the engine cites must appear
+    if label.isdigit():
+        return int(label) in pages
+    return any(re.search(rf"\b{page}\b", label) for page in pages)
 
 
 def timed[T](call: Callable[[], T]) -> tuple[T, float]:
@@ -386,27 +642,92 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def table(path: Path) -> list[dict[str, str]]:
+    with path.open(encoding="utf-8", newline="") as file:
+        return list(csv.DictReader(file))
+
+
+def recorded(
+    rows: dict[str, list[dict[str, Any]]],
+    about: dict[str, Any],
+    student: Student,
+    history: Sequence[CourseHistoryLine],
+    rules: RuleSet,
+    symbols: Mapping[str, ResultSymbol],
+    focal: Iterable[str] = (),
+) -> tuple[Checked, Engine, list[Course]]:
+    # One record through the checker and the engine, its row against the checker, its statuses
+    # and its times
+    checked, engine, courses, times = ran(student, history, rules, symbols, focal)
+    tables = Curriculum(rules, student.curriculum_code)
+    core = {code for year in tables.years for code in tables.core(year)}
+    row, decisions = compared(checked, engine, core)
+    keys = {k: about[k] for k in ("record", "set", "judgement_call")}
+    rows["sweep"].append(about | row)
+    rows["decisions"] += [
+        keys
+        | {
+            "course": code,
+            "engine": ours,
+            "checker": theirs,
+            "match": "yes" if ours == theirs else "no",
+            "reason": reason,
+        }
+        for code, ours, theirs, reason in decisions
+    ]
+    rows["timings"].append(keys | times | {"candidates": checked.candidates})
+    return checked, engine, courses
+
+
 def main() -> None:
     rules = timetabled(approved_snapshot(2026).rules)
     symbols = {
         row["symbol"]: ResultSymbol(**row)
         for row in json.loads(SYMBOLS.read_text(encoding="utf-8"))
     }
+    rows: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    read_from = [RULEBOOK, SYMBOLS, LABELS / "records.csv", LABELS / "decisions.csv"]
+
+    # The held-out records first, against their labels as well as the checker
+    focal: dict[str, list[dict[str, str]]] = defaultdict(list)
+    for decision in table(LABELS / "decisions.csv"):
+        focal[decision["record"]].append(decision)
+    for label in table(LABELS / "records.csv"):
+        path = LABELS / "records" / f"{label['record']}.json"
+        read_from.append(path)
+        state = load_seed(path, ACCOUNT)
+        about = {
+            "record": label["record"],
+            "set": "labelled",
+            "judgement_call": label["judgement_call"],
+            "kind": "labelled",
+            "curriculum": label["curriculum_code"],
+            "intake": label["intake_year"],
+            "year": label["year_of_study"],
+            "course": "",
+            "base": "",
+        }
+        decisions = focal[label["record"]]
+        checked, engine, _ = recorded(
+            rows,
+            about,
+            state.student,
+            state.course_history,
+            rules,
+            symbols,
+            [d["course_code"] for d in decisions],
+        )
+        rows["labelled"] += against_labels(label, decisions, checked, engine, rules)
+
     made = sweep.made(rules)
     sweep.write(made, RESULTS / "sweep")
-    rows: dict[str, list[dict[str, Any]]] = defaultdict(list)
     started = time.perf_counter()
     for n, one in enumerate(made, start=1):
         state = load_seed(RESULTS / "sweep" / f"{one.record}.json", ACCOUNT)
-        student, history = state.student, state.course_history
-        checked, engine, courses, times = ran(student, history, rules, symbols)
-        tables = Curriculum(rules, one.curriculum)
-        core = {code for year in tables.years for code in tables.core(year)}
-        row, decisions = compared(checked, engine, core)
-        the_set = SETS[one.kind]
         about = {
             "record": one.record,
-            "set": the_set,
+            "set": SETS[one.kind],
+            "judgement_call": "no",
             "kind": one.kind,
             "curriculum": one.curriculum,
             "intake": one.intake,
@@ -414,42 +735,26 @@ def main() -> None:
             "course": one.course,
             "base": one.base,
         }
-        rows["sweep"].append(about | row)
-        rows["decisions"] += [
-            {
-                "record": one.record,
-                "set": the_set,
-                "course": code,
-                "engine": ours,
-                "checker": theirs,
-                "match": "yes" if ours == theirs else "no",
-                "reason": reason,
-            }
-            for code, ours, theirs, reason in decisions
-        ]
-        rows["timings"].append(
-            {
-                "record": one.record,
-                "set": the_set,
-                **times,
-                "candidates": checked.candidates,
-            }
+        student, history = state.student, state.course_history
+        checked, engine, courses = recorded(
+            rows, about, student, history, rules, symbols
         )
         rows["metamorphic"] += metamorphic(
             one, student, history, rules, symbols, checked, engine, courses
         )
-        if n % 25 == 0:
+        if n % 50 == 0:
             print(
-                f"{n} of {len(made)} records, {time.perf_counter() - started:.0f} s",
+                f"{n} of {len(made)} sweep records, {time.perf_counter() - started:.0f} s",
                 file=sys.stderr,
             )
     for name, found in rows.items():
         written(name, found)
+    root = HERE.parents[2]
     written(
         "inputs",
         [
-            {"file": str(path.relative_to(HERE.parents[2])), "sha256": sha256(path)}
-            for path in (RULEBOOK, SYMBOLS)
+            {"file": str(path.relative_to(root)), "sha256": sha256(path)}
+            for path in read_from
         ],
     )
 

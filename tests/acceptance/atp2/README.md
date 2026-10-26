@@ -7,7 +7,7 @@ ATP-2 asks whether the engine gives the right decision and reason for every cour
 
 | Oracle | Records | What it checks |
 | --- | --- | --- |
-| Labels written from print, in [labels/](labels/), committed before any run | The held-out records | Each decision, plan set, slot and reason against print |
+| Labels written from print, in [labels/](labels/README.md), committed before any run | Six held-out records, with 32 focal decisions | Each decision, plan set, slot and set-level reason against print |
 | The checker, written from [SEMANTICS.md](SEMANTICS.md) alone | Every record | Every plan set, status and slot, by brute force |
 | The sweep of made-up failures | 531 records | A large n, and what failing each course costs a student |
 
@@ -27,7 +27,7 @@ It leaves out forced sections, recorded alternatives, ranking, the 50-plan cap, 
 
 ### Readings SEMANTICS.md doesn't settle
 
-Each is a place a disagreement can come from. All but the last were approved at Stop 1, and the last came up while building the checker:
+Each is a place a disagreement can come from. The last came up while building the checker, and the rest were settled at Stop 1. All are approved:
 
 - A plan course stands in for a pass in every code its pass would cover.
 - A course's own meetings never clash with each other.
@@ -65,6 +65,17 @@ On every record, `run.py` runs the checker once, then the engine's `generate()` 
 - **Plans resting on judgement** (NF-1): each plan course whose rule is open inside the plan, or with a meeting with no printed time, needs a conditional reason naming it, on the plan or the set.
 - **Three metamorphic relations** on every sweep record, each a change whose effect is known without knowing the answer. Her history in another order gives the same plan sets and statuses. One alternative of one plan course's choice group taken away never adds a plan, wherever the checker's FB3.4 drops stay the same. A pass in a course of her year's groups she hasn't passed, complementary courses aside, never turns another course from eligible to not_eligible, leaving out that course and those its pass covers.
 
+On the held-out records it also compares the engine with the labels, field by field, with the checker beside it where it gives a value:
+
+- **Year of study**: the highest year whose groups hold a plan course or a core course the engine's reasons exclude or drop, as the engine states no year.
+- **Owed and excluded core**: the plans' core courses with those the reasons exclude or drop, against every outstanding core course from her year and earlier, and those left out by entry rule or FB3.4.
+- **Plans and combinations**: how many plans, and each plan's electives as the engine's `combination` gives them, joined with + as the labels write them, or none.
+- **Slots**: every plan must hold exactly the label's slots, each as `complementary:18` or `place:ASL1200S:8`.
+- **Set-level reasons**: each reason the labels say print requires is matched one to one by a reason of the engine's own set of the same kind that names every code the label names. A label that names no code needs a reason about no one course.
+- **Focal decisions**: `check()`'s status; whether its reason names every deciding code, matched as text so a printed stem such as ECO1010 counts; and whether a page cited by the reason's words, or by the passage of a reason about the course, is the label's page, matched as text where the label names another handbook. EEE2046S isn't in the approved rules, so neither side holds it. That stays in the results as the documented known gap.
+
+Four records and one decision row are judgement calls (`judgement_call = yes`). A record's fields carry its flag and a decision's fields the decision's, and every labelled table is given with them and without, as ATP-1's are.
+
 Every disagreement is classed by hand in `results/causes.csv`, with its evidence: an engine fault, a checker fault, a label slip, a semantics gap (a line SEMANTICS.md doesn't settle) or a known gap, such as EEE2046S, which the approved rules don't hold. A fault becomes an Open row in `docs/shortfalls.md`.
 
 ## Running it
@@ -83,7 +94,8 @@ It needs no database, as everything is in memory, and calls no model. It writes 
 | --- | --- |
 | `report.md` | The verdicts, then each measure's tables, the disagreements by cause and the inputs |
 | `sweep/` | Every made-up record as a seed file, and `manifest.csv`, saying what each is |
-| `sweep.csv` | One row per sweep record: the engine's plan sets against the checker's, slots, plans resting on judgement, the core each side excludes and drops, and the reasons by kind |
+| `labelled.csv` | One row per held-out record and labelled field: the label, the engine's value and the checker's, whether each matches, and whether it's a judgement call |
+| `sweep.csv` | One row per record, the held-out ones first: the engine's plan sets against the checker's, slots, plans resting on judgement, the core each side excludes and drops, and the reasons by kind |
 | `decisions.csv` | One row per record and course: the engine's status, the checker's and the engine's reason |
 | `metamorphic.csv` | One row per instance of each relation: whether it applies, whether it held, and what changed |
 | `timings.csv` | Each record's five generate times, its check time and the checker's time, in seconds |
@@ -94,6 +106,6 @@ It needs no database, as everything is in memory, and calls no model. It writes 
 
 ## Reading the report
 
-Verdicts come first, one line per target, with the held-out records, the failure sweep and the in-sample base records side by side. A rate carries its 95% Wilson interval, a count with none wrong gives the one-sided 95% upper bound, 1 − 0.05^(1/n), and a time gives its p50 and p95. The interval and the bound come from ATP-1's `scoring.py`.
+Verdicts come first, one line per target, with the held-out records (with and without their judgement calls), the failure sweep and the in-sample base records side by side. Verdicts are on all rows. A rate carries its 95% Wilson interval, a count with none wrong gives the one-sided 95% upper bound, 1 − 0.05^(1/n), and a time gives its p50 and p95. The interval and the bound come from ATP-1's `scoring.py`.
 
 The first result is committed on its own and kept. A rerun reproduces every file but the times. A checker fault fixed after the first run gets a retest in a folder of its own beside the first result, never over it.

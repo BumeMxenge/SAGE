@@ -13,6 +13,18 @@ from scoring import bound, wilson
 RESULTS = Path(__file__).resolve().parent / "results"
 # The held-out labelled records lead, then the failure sweep, then the in-sample base records
 SETS = {"labelled": "Held out", "failure": "Failure sweep", "base": "In-sample base"}
+# The verdicts' columns: the held-out records with and without the labels' judgement calls, then
+# the failure sweep and the in-sample base records
+COLUMNS = {
+    "labelled": "Held out",
+    "clear": "Held out, without judgement calls",
+    "failure": "Failure sweep",
+    "base": "In-sample base",
+}
+# The labelled fields each verdict on the labels reads
+DECIDED = ("status", "deciding_codes", "page")
+PLANNED = ("expected_plans", "expected_combinations")
+STANDING = ("year_of_study", "owed_core", "excluded_core")
 LIMIT = 10.0  # NF-4's seconds for one session's plans
 RELATIONS = ("reordered history", "section removed", "pass added")
 
@@ -81,10 +93,23 @@ def total(rows: Iterable[Row], key: str) -> int:
 
 
 def by_set(rows: Iterable[Row]) -> dict[str, list[Row]]:
-    found: dict[str, list[Row]] = {name: [] for name in SETS}
+    # Rows by the verdicts' columns, the held-out ones again without the judgement calls
+    found: dict[str, list[Row]] = {name: [] for name in COLUMNS}
     for row in rows:
         found[row["set"]].append(row)
+        if row["set"] == "labelled" and row["judgement_call"] == "no":
+            found["clear"].append(row)
     return found
+
+
+def without(rows: Iterable[Row]) -> list[Row]:
+    return [row for row in rows if row["judgement_call"] == "no"]
+
+
+def matched(rows: Sequence[Row], side: str = "engine") -> str:
+    # How many labelled items one side matches, of those it gives a value for
+    theirs = [row for row in rows if row[f"{side}_match"]]
+    return rate(sum(row[f"{side}_match"] == "yes" for row in theirs), len(theirs))
 
 
 def runs(timings: Iterable[Row]) -> list[float]:
@@ -92,15 +117,38 @@ def runs(timings: Iterable[Row]) -> list[float]:
 
 
 def verdicts(
-    sweep: list[Row], decisions: list[Row], metamorphic: list[Row], timings: list[Row]
+    labelled: list[Row],
+    sweep: list[Row],
+    decisions: list[Row],
+    metamorphic: list[Row],
+    timings: list[Row],
 ) -> list[str]:
     records, statuses = by_set(sweep), by_set(decisions)
     times, relations = by_set(timings), by_set(metamorphic)
+    labels = {
+        "labelled": labelled,
+        "clear": without(labelled),
+        "failure": [],
+        "base": [],
+    }
 
     def measured(
         groups: dict[str, list[Row]], measure: Callable[[list[Row]], str]
     ) -> list[str]:
-        return [measure(groups[s]) if groups[s] else "none to count" for s in SETS]
+        return [measure(groups[s]) if groups[s] else "none to count" for s in COLUMNS]
+
+    def against(fields: Sequence[str] = ()) -> Callable[[list[Row]], str]:
+        # The engine against the labels, on the fields given or on every field
+        return lambda rows: matched(
+            [r for r in rows if not fields or r["field"] in fields]
+        )
+
+    def all_match(fields: Sequence[str] = ()) -> bool:
+        return all(
+            row["engine_match"] == "yes"
+            for row in labelled
+            if not fields or row["field"] in fields
+        )
 
     def met(done: bool) -> str:
         return "met" if done else "not met"
@@ -111,6 +159,48 @@ def verdicts(
 
     every_run = runs(timings)
     rows = [
+        (
+            "F-2, F-3, NF-1",
+            "Every labelled item matches its label: the pass criterion",
+            *measured(labels, against()),
+            "100%",
+            met(all_match()),
+        ),
+        (
+            "F-2, NF-1",
+            "Focal decisions whose status, reason codes and page match the label",
+            *measured(labels, against(DECIDED)),
+            "100%",
+            met(all_match(DECIDED)),
+        ),
+        (
+            "F-3, NF-1",
+            "Plan counts and combinations that match the labels",
+            *measured(labels, against(PLANNED)),
+            "100%",
+            met(all_match(PLANNED)),
+        ),
+        (
+            "F-3",
+            "Plans whose slots match the labels",
+            *measured(labels, against(("expected_slots",))),
+            "100%",
+            met(all_match(("expected_slots",))),
+        ),
+        (
+            "NF-1",
+            "Years of study, and owed and excluded core, that match the labels",
+            *measured(labels, against(STANDING)),
+            "100%",
+            met(all_match(STANDING)),
+        ),
+        (
+            "NF-1",
+            "Set-level reasons print requires that the engine gives, by kind and codes",
+            *measured(labels, against(("set_reason",))),
+            "100%",
+            met(all_match(("set_reason",))),
+        ),
         (
             "F-2, NF-1",
             "Statuses the engine and the checker agree on",
@@ -214,6 +304,96 @@ def verdicts(
             "oracle. F-3's ranking is left out, as the checker doesn't rank."
         ),
         *table(("Requirement", "Measure", *SETS.values(), "Target", "Verdict"), rows),
+    ]
+
+
+def cause_of(found: list[Row], kind: str, record: str, course: str) -> str:
+    # A disagreement's cause from causes.csv, whose rows name a kind and, where a cause covers only
+    # some, a record and a course
+    for row in found:
+        if (
+            row["kind"] == kind
+            and row["record"] in ("", record)
+            and row["course"] in ("", course)
+        ):
+            return f"{row['cause']}: {row['evidence']}"
+    return "not yet classified"
+
+
+def against_labels(labelled: list[Row], found: list[Row]) -> list[str]:
+    # The held-out records against their labels, field by field, with and without the judgement
+    # calls, and the checker against the same labels where it gives a value
+    fields = dict.fromkeys(row["field"] for row in labelled)
+
+    def counts(rows: list[Row]) -> list[object]:
+        return [
+            len(rows),
+            matched(rows),
+            matched(without(rows)),
+            matched(rows, "checker"),
+            matched(without(rows), "checker"),
+        ]
+
+    differ = [
+        [
+            *(
+                row[k]
+                for k in (
+                    "record",
+                    "field",
+                    "item",
+                    "label",
+                    "engine",
+                    "checker",
+                    "judgement_call",
+                )
+            ),
+            cause_of(found, "label", row["record"], row["item"] or row["field"]),
+        ]
+        for row in labelled
+        if "no" in (row["engine_match"], row["checker_match"])
+    ]
+    return [
+        "",
+        "## Held out: against the labels",
+        "",
+        (
+            "Six records labelled from print and committed before the first run, with 32 focal "
+            "decisions. Four records and one decision row are judgement calls, so each table is "
+            "given with them and without. A record's fields carry its own flag, and a decision's "
+            "fields the decision's. Deciding codes and text pages are matched as text, as the "
+            "labels' README says. The checker gives no reasons or pages, so it has none to match "
+            "there."
+        ),
+        *table(
+            (
+                "Field",
+                "Items",
+                "Engine right",
+                "Without judgement calls",
+                "Checker right",
+                "Without judgement calls",
+            ),
+            (
+                [field, *counts([r for r in labelled if r["field"] == field])]
+                for field in fields
+            ),
+        ),
+        "",
+        "Every labelled item the engine or the checker doesn't match:",
+        *listed(
+            (
+                "Record",
+                "Field",
+                "Item",
+                "Label",
+                "Engine",
+                "Checker",
+                "Judgement call",
+                "Cause",
+            ),
+            differ,
+        ),
     ]
 
 
@@ -436,17 +616,9 @@ def costs(rows: list[Row]) -> list[str]:
 def disagreements(
     sweep: list[Row], decisions: list[Row], metamorphic: list[Row], found: list[Row]
 ) -> list[str]:
-    # Every disagreement, with its cause once one is written in causes.csv. A cause row names a kind
-    # and, where it covers only some, a record and a course.
+    # Every disagreement against the checker, with its cause once causes.csv gives one
     def cause(kind: str, record: str, course: str) -> str:
-        for row in found:
-            if (
-                row["kind"] == kind
-                and row["record"] in ("", record)
-                and row["course"] in ("", course)
-            ):
-                return f"{row['cause']}: {row['evidence']}"
-        return "not yet classified"
+        return cause_of(found, kind, record, course)
 
     plans = [
         [
@@ -515,7 +687,7 @@ def written(name: str, rows: list[Row]) -> None:
 
 
 def main() -> None:
-    sweep, decisions = load("sweep"), load("decisions")
+    labelled, sweep, decisions = load("labelled"), load("sweep"), load("decisions")
     metamorphic, timings = load("metamorphic"), load("timings")
     agrees = {row["record"]: row["plans_match"] == "yes" for row in sweep}
     for row in decisions:
@@ -547,7 +719,8 @@ def main() -> None:
             "held-out records lead. The failure sweep follows, and the base records come last, as "
             "the engine was built on on-track students."
         ),
-        *verdicts(sweep, decisions, metamorphic, timings),
+        *verdicts(labelled, sweep, decisions, metamorphic, timings),
+        *against_labels(labelled, causes()),
         *kinds(sweep, decisions),
         *relations(metamorphic),
         *timed(timings),

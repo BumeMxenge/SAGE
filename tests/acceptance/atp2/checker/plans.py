@@ -53,6 +53,8 @@ class Slot:
 class Checked:
     year: int  # her year of study, past the final year once every year is complete
     statuses: dict[str, str]  # every course the year holds, judged outside a plan
+    # Her outstanding core from her year and earlier, before any is left out
+    outstanding: frozenset[str] = frozenset()
     owed: frozenset[str] = frozenset()  # her plans' core from earlier years
     excluded: frozenset[str] = frozenset()  # core left out by its entry rule
     dropped: frozenset[str] = frozenset()  # current-year core left out by FB3.4
@@ -300,6 +302,7 @@ def check(
     return Checked(
         year=year,
         statuses=statuses,
+        outstanding=frozenset(outstanding),
         owed=frozenset(owed & kept),
         excluded=frozenset(excluded),
         dropped=frozenset(dropped),
