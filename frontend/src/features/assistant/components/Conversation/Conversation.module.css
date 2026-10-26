@@ -1,0 +1,88 @@
+/* The chat fills the rail under its header: the conversation, which scrolls on its own once it is
+   taller than its room, then the line saying SAGE is working or why it couldn't reply, then the chat
+   box at the foot */
+.conversation {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* An empty chat: what SAGE can help with, then the questions to start from */
+.start {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  padding: var(--space-5) var(--space-4) var(--space-2);
+  overflow-y: auto;
+}
+
+.intro {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}
+
+/* The messages, or their skeleton in the same place */
+.log,
+.waiting {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-height: 0;
+  padding: var(--space-5) var(--space-4) var(--space-2);
+}
+
+.log {
+  overflow-y: auto;
+}
+
+/* Drawn inside its edges, which the rail clips */
+.log:focus-visible {
+  outline-offset: calc(var(--focus-ring-width) * -1);
+}
+
+/* Her question: a bubble at the end of the line, as the prototype draws it */
+.question {
+  align-self: flex-end;
+  max-width: 86%;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+}
+
+/* Her question's skeleton: a bubble as tall as a one-line question, at the end of the line */
+.bubble {
+  align-self: flex-end;
+  width: 60%;
+  height: calc(var(--font-size-md) * var(--line-height-body) + 2 * var(--space-3));
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+}
+
+/* The reply's skeleton: lines of the reply's text, one under another */
+.lines {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+}
+
+.status {
+  flex: none;
+  padding: var(--space-2) var(--space-4);
+}
+
+.box {
+  flex: none;
+  margin-top: auto;
+  padding: var(--space-3) var(--space-3) var(--space-4);
+}

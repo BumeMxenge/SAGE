@@ -14,38 +14,29 @@ type DropZoneProps = {
   note?: string
   acceptedFileTypes: string[]
   onSelect: (files: File[]) => void
-  errorMessage?: string
 }
 
-export function DropZone({ title, hint, buttonLabel, note, acceptedFileTypes, onSelect, errorMessage }: DropZoneProps) {
+export function DropZone({ title, hint, buttonLabel, note, acceptedFileTypes, onSelect }: DropZoneProps) {
   return (
-    <div className={styles.wrapper}>
-      <AriaDropZone
-        className={`${styles.zone} ${errorMessage ? styles.error : ''}`}
-        getDropOperation={(types) => (acceptedFileTypes.some((type) => types.has(type)) ? 'copy' : 'cancel')}
-        onDrop={async (event) => {
-          const files = await Promise.all(event.items.filter(isFileDropItem).map((item) => item.getFile()))
-          onSelect(files)
-        }}
-      >
-        <Icon name={errorMessage ? 'cloud_off' : 'cloud_upload'} />
-        <Text slot="label" className={styles.title}>
-          {title}
-        </Text>
-        {hint && <span className={styles.hint}>{hint}</span>}
-        <FileTrigger acceptedFileTypes={acceptedFileTypes} onSelect={(files) => files && onSelect([...files])}>
-          <Button variant="secondary">
-            {buttonLabel}
-          </Button>
-        </FileTrigger>
-        {note && <span className={styles.note}>{note}</span>}
-      </AriaDropZone>
-      {errorMessage && (
-        <p role="alert" className={styles.message}>
-          <Icon name="error" />
-          {errorMessage}
-        </p>
-      )}
-    </div>
+    <AriaDropZone
+      className={styles.zone}
+      getDropOperation={(types) => (acceptedFileTypes.some((type) => types.has(type)) ? 'copy' : 'cancel')}
+      onDrop={async (event) => {
+        const files = await Promise.all(event.items.filter(isFileDropItem).map((item) => item.getFile()))
+        onSelect(files)
+      }}
+    >
+      <Icon name="cloud_upload" />
+      <Text slot="label" className={styles.title}>
+        {title}
+      </Text>
+      {hint && <span className={styles.hint}>{hint}</span>}
+      <FileTrigger acceptedFileTypes={acceptedFileTypes} onSelect={(files) => files && onSelect([...files])}>
+        <Button variant="secondary">
+          {buttonLabel}
+        </Button>
+      </FileTrigger>
+      {note && <span className={styles.note}>{note}</span>}
+    </AriaDropZone>
   )
 }

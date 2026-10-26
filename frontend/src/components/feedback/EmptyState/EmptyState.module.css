@@ -9,6 +9,14 @@
   text-align: center;
 }
 
+/* Grey, as the prototype draws the calendar over an empty term */
+.icon {
+  --icon-size: var(--size-icon-xl);
+
+  display: flex;
+  color: var(--color-text-secondary);
+}
+
 .title {
   margin: 0;
   font-size: var(--font-size-2xl);

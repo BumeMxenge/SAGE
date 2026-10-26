@@ -1,0 +1,66 @@
+/* A plan with no other in its set: its name alone, wrapping within the switcher's width */
+.name {
+  max-width: var(--width-popover);
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+}
+
+.credits {
+  margin: 0;
+  margin-inline-end: auto;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+/* A preview's line, saying nothing is saved, with End Preview beside it, over the week it draws, as
+   wide as the week */
+.previewing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: var(--width-full);
+  margin: 0 auto var(--space-4);
+}
+
+.preview-line {
+  margin: 0;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text);
+}
+
+/* Compare's title, with Done Comparing at the far end */
+.title {
+  margin: 0;
+  margin-inline-end: auto;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-text);
+}
+
+/* The two plans side by side, each at least a compare panel's width, so with less room they stack. A
+   window narrower than one panel gives it the whole width rather than scroll sideways. */
+.panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--width-compare-panel), 100%), 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.panel-credits {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}

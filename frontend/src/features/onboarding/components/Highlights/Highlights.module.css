@@ -55,13 +55,6 @@
   min-width: 0;
   max-width: var(--width-dialog);
   border-radius: var(--radius-lg);
-  outline: none;
-}
-
-/* With nothing to press inside it, a panel is a tab stop of its own, so it shows the focus ring */
-.panel[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
 }
 
 .title {
@@ -313,7 +306,6 @@
   height: var(--size-target-min);
   border-radius: var(--radius-full);
   cursor: pointer;
-  outline: none;
 }
 
 .dot::before {
@@ -328,9 +320,4 @@
 .dot[data-selected]::before {
   width: var(--space-8);
   background: var(--color-primary);
-}
-
-.dot[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
 }

@@ -3,7 +3,7 @@
 // names it and onAction reports the option pressed.
 import type { ReactNode } from 'react'
 import { type Key, ListBox } from 'react-aria-components'
-import listStyles from '@/components/overlays/Popover/Popover.module.css'
+import listStyles from '@/styles/list.module.css'
 import styles from './OptionList.module.css'
 
 type OptionListProps = { 'aria-label'?: string; onAction?: (key: Key) => void; children: ReactNode }

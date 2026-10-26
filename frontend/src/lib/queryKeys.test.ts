@@ -1,5 +1,5 @@
-// Which cached reads each change refreshes, against lists written out by hand from the foundations
-// brief's refresh rules
+// Which cached reads each change refreshes, against lists written out by hand from what each change
+// alters on the server
 import type { QueryKey } from '@tanstack/react-query'
 import { afterEach, expect, it } from 'vitest'
 import { queryClient } from './queryClient.ts'
@@ -16,6 +16,7 @@ const reads: Record<string, QueryKey> = {
   me: queries.me().queryKey,
   plans: queries.plans().queryKey,
   plan: queries.plan(plan).queryKey,
+  preview: queries.preview(plan, 'SLL1002S').queryKey,
   comparison: queries.comparison(plan, otherPlan).queryKey,
   questionnaire: queries.questionnaire().queryKey,
   electives: queries.electives().queryKey,
@@ -32,10 +33,10 @@ afterEach(() => {
 })
 
 it.each([
-  ['answering the questionnaire', () => refresh.questionnaireAnswered(), ['plans', 'plan', 'comparison']],
-  ['a favourite', () => refresh.favouriteChanged(), ['questionnaire', 'electives']],
+  ['answering the questionnaire', () => refresh.questionnaireAnswered(), ['plans', 'plan', 'preview', 'comparison']],
+  ['a favourite', () => refresh.favouriteChanged(), ['electives']],
   ['starting a chat', () => refresh.chatStarted(), ['chats', 'pairChats']],
-  ['a sent message', () => refresh.messageSent(chat), ['messages']],
+  ['a sent message', () => refresh.messageSent(chat), ['plans', 'chats', 'pairChats', 'messages']],
   ['Finish Setup', () => refresh.setupFinished(), ['me', 'plans']],
 ])('%s refreshes exactly its reads', async (_, change, expected) => {
   for (const queryKey of Object.values(reads)) queryClient.setQueryData(queryKey, {})

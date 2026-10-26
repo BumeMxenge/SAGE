@@ -1,0 +1,647 @@
+{
+  "AGE1002S": {
+    "model": "gpt-6-luna",
+    "sha256": "cd25eae610ede555440ad74e2014e028a133a7ded96059281ffc35e4c19f58e0",
+    "summary": "Trace human prehistory through archaeological evidence, from the Early Pleistocene to the historical period, and explore contexts that shaped modern humans. Learn archaeological ideas, links with science and society, and basic research terminology and skills.",
+    "tab": "history"
+  },
+  "AGE1005L": {
+    "model": "gpt-6-luna",
+    "sha256": "f36cfc566d16685fc66e65616c0ba96db8211dd0131f3deb40c3f65419f651df",
+    "summary": "Compare scientific accounts of human diversity with social categories like race and gender, and examine how racism and gender bias have limited scientific enquiry. Explore how diverse, especially African, voices shape scientific knowledge.",
+    "tab": "science"
+  },
+  "ASL1300F": {
+    "model": "gpt-6-luna",
+    "sha256": "dab17b40c38e9525566786ac4434245f3466d40e125e469689cee58078878675",
+    "summary": "Explore speech sounds, including the International Phonetic Alphabet, word formation, sentence structure and meaning, and how sounds are organised in language. You’ll also study psychological and neurobiological aspects of how humans acquire language.",
+    "tab": "literature"
+  },
+  "ASL1301S": {
+    "model": "gpt-6-luna",
+    "sha256": "3f34dc0ef322c6875b8c4f3f81835c43778edd1823e89a807df858db9312de17",
+    "summary": "Explore how language works in social contexts, including regional and social variation, language change, multilingualism, interaction, gender, and contact between languages. You’ll consider language in education, policy, social media, and sign language.",
+    "tab": "literature"
+  },
+  "AST1000S": {
+    "model": "gpt-6-luna",
+    "sha256": "aeffe9282da82dc259a5253faee371ba996e4aded59a88ac44c5a37a6da3a98d",
+    "summary": "Explore the Earth–Sun–Moon system, stars, galaxies, dark matter and cosmology, while learning how telescopes and electromagnetic radiation help us study astrophysical objects. You gain a broad picture of our place in the universe and an introduction to astrophysics.",
+    "tab": "science"
+  },
+  "BIO1000F": {
+    "model": "gpt-6-luna",
+    "sha256": "d4fd4357feeaf5c0ae286b08e3cd01b2e1ff5fbffad65d2921ff44a96f573ba3",
+    "summary": "Explore cell structures and biological molecules, then study cell division, genetics, membranes, metabolism, photosynthesis and respiration. The course also examines cellular communication, animal immunity, and how cellular processes relate to organismal physiology.",
+    "tab": "science"
+  },
+  "BIO1004S": {
+    "model": "gpt-6-luna",
+    "sha256": "5adbf80650d2b2b3bcadac79bedddc0cbef63c1eab10391fb666c1e79f1a8380",
+    "summary": "Study living things, from microbes to humans, their structure, evolution and adaptations, and evolution's account of change and species origins. Practical work explores biodiversity and conservation in South African biomes, alongside global change.",
+    "tab": "science"
+  },
+  "BUS1004F": {
+    "model": "gpt-6-luna",
+    "sha256": "fbb4dd6324985f4fdffbf7844a88ad778db7d8662a2c849c8547fa347aa79485",
+    "summary": "This course introduces foundational business strategy and marketing, beginning with core strategy topics and then moving to key marketing principles. You will build business knowledge and skills for professional settings, entrepreneurial ventures and managerial roles.",
+    "tab": "business"
+  },
+  "BUS1007S": {
+    "model": "gpt-6-luna",
+    "sha256": "e8314c706e1a287f3229abbf41601fb0c2a71722cdf09cb5324d537657e81306",
+    "summary": "Explore how psychology is applied to workplace challenges, including the history, research and future of work. Learn why people behave as they do in organisations, and how organisations can shape employee behaviour.",
+    "tab": "business"
+  },
+  "BUS1036F": {
+    "model": "gpt-6-luna",
+    "sha256": "93b371e004d405133e545a13089b912dc7b3be76e0d6a1aac642aa6809192ffd",
+    "summary": "Students learn to assess evidence, distinguish disinformation from misinformation, and consider how social media shapes judgments and decisions. Case studies of current media debates build skills in reaching and communicating justified conclusions about business in social and political settings.",
+    "tab": "business"
+  },
+  "BUS1036S": {
+    "model": "gpt-6-luna",
+    "same_as": "BUS1036F",
+    "sha256": "686a640ce9b21d1d2f3660e16388e3c9dad91083648f59e0ac195b6a82dc907d",
+    "summary": "Students learn to assess evidence, distinguish disinformation from misinformation, and consider how social media shapes judgments and decisions. Case studies of current media debates build skills in reaching and communicating justified conclusions about business in social and political settings.",
+    "tab": "business"
+  },
+  "BUS2010F": {
+    "model": "gpt-6-luna",
+    "sha256": "1fd139f38bcf410052329988101ba7305713ccabc927f05d3d15605cc068f16b",
+    "summary": "The course covers marketing concepts, consumer and industrial markets, buyer behaviour, research, segmentation, target marketing and product, pricing, distribution and promotion policies. You learn to develop marketing strategy and measure, control and audit its effectiveness.",
+    "tab": "business"
+  },
+  "BUS2010S": {
+    "model": "gpt-6-luna",
+    "same_as": "BUS2010F",
+    "sha256": "a154dc1ec8bf73f1651ae3a201014908ff031e9a1fa66d5f1ca78483eb7c6d99",
+    "summary": "The course covers marketing concepts, consumer and industrial markets, buyer behaviour, research, segmentation, target marketing and product, pricing, distribution and promotion policies. You learn to develop marketing strategy and measure, control and audit its effectiveness.",
+    "tab": "business"
+  },
+  "BUS2023S": {
+    "model": "gpt-6-luna",
+    "sha256": "a0cbe0546397f965d1d9aac77750e33918fd6410f5f6d86a1569a001a5812167",
+    "summary": "Learn how abilities and workplace relationships shape behaviour in organisations, including its psychological foundations and difference from human resource management. Apply its theory to South African workplaces and reflect critically on your professional interactions.",
+    "tab": "business"
+  },
+  "BUS2024F": {
+    "model": "gpt-6-luna",
+    "sha256": "6b255e62b7dcdd42708f062747e3a87827caf87aa754f6fb2c63f99a3dec05b1",
+    "summary": "Learn how human resource management supports organisational goals through hiring, developing and retaining employees while ensuring fair treatment. Explore how industrial and organisational psychology informs these practices and gain insight into managing people at work.",
+    "tab": "business"
+  },
+  "BUS2024S": {
+    "model": "gpt-6-luna",
+    "same_as": "BUS2024F",
+    "sha256": "51dc1a94b9fc7398fca8bf63c2d5ac38092b01d0ea8ca30db8b9648dc447c1e5",
+    "summary": "Learn how human resource management supports organisational goals through hiring, developing and retaining employees while ensuring fair treatment. Explore how industrial and organisational psychology informs these practices and gain insight into managing people at work.",
+    "tab": "business"
+  },
+  "ECO1007S": {
+    "model": "gpt-6-luna",
+    "sha256": "0012326af9e0fcf876aa3655080d3dbc1627806c81cfda3655816f11cbc82b1e",
+    "summary": "Learn how consumers and producers make decisions through models of supply, demand, elasticity and trade. The course also introduces money, inflation, exchange rates, unemployment and GDP, focusing on concepts and applications rather than proofs.",
+    "tab": "econ"
+  },
+  "ECO1008F": {
+    "model": "gpt-6-luna",
+    "sha256": "864e7cc61939703dafedab6572399d55909c2914cd229ab06973fe5ff67f9dec",
+    "summary": "Study economic systems and how microeconomics explains trade, markets, consumer choices, production and costs. You will explore competition, monopoly and game theory, building an understanding of how firms and markets make decisions.",
+    "tab": "econ"
+  },
+  "ECO1008S": {
+    "model": "gpt-6-luna",
+    "same_as": "ECO1008F",
+    "sha256": "e0e55f1f1b46c56b06db2e01d6838f519f58cf80961c31da9dd883f86af75ecd",
+    "summary": "Study economic systems and how microeconomics explains trade, markets, consumer choices, production and costs. You will explore competition, monopoly and game theory, building an understanding of how firms and markets make decisions.",
+    "tab": "econ"
+  },
+  "ECO1010F": {
+    "model": "gpt-6-luna",
+    "sha256": "2e6faf63234c91562b2a1d841d37f27383a06969fec9658a71aa23fdd4b68d32",
+    "summary": "Study economic history, economic systems, trade, supply and demand, elasticity, utility, production and costs, market competition, monopoly and game theory. You’ll build a structured understanding of microeconomic concepts and see some practical applications.",
+    "tab": "econ"
+  },
+  "ECO1010S": {
+    "model": "gpt-6-luna",
+    "sha256": "788ceeb719833351e07eced00dc2d1bab3d04a040daa1a854fb37be36ea95f3e",
+    "summary": "Explore markets, trade, consumer choices, production costs and competition, as well as economic systems and capitalism's history. Learn core microeconomic concepts and practical applications, ending with an introduction to game theory.",
+    "tab": "econ"
+  },
+  "ECO1011F": {
+    "model": "gpt-6-luna",
+    "sha256": "845fd54ee7a4378e0367a3e5b73f3fa08756f4b28990a9635cf029e7d9cbe8cd",
+    "summary": "This course introduces macroeconomic theory and policy, covering growth, unemployment, inflation, exchange rates, business cycles, and government tools in the South African context. You develop models to understand the economy and South Africa’s global ties.",
+    "tab": "econ"
+  },
+  "ECO1011S": {
+    "model": "gpt-6-luna",
+    "sha256": "10fd36563499497f39fc65eaa972a2bcc26d5218d47a630922b9a2128b7c5c29",
+    "summary": "Study economic growth, unemployment, inflation, exchange rates and public finances, and examine fiscal and monetary policy. Use basic models to understand South African economic issues and the country's links with the world.",
+    "tab": "econ"
+  },
+  "ECO2007S": {
+    "model": "gpt-6-luna",
+    "sha256": "b4b0cb7748f14bb46c2ef6d4c4fe131fac0629e7afa4713482c82bc57176e2a0",
+    "summary": "This course introduces game theory, a framework for analysing strategic interaction and cooperation or competition in economics, politics, law, and biology. You learn its basic structure, with mathematics taught in the course or already familiar.",
+    "tab": "econ"
+  },
+  "EGS1007S": {
+    "model": "gpt-6-luna",
+    "sha256": "9aebe1bc59f8c5ab9c2a1e9cae5dd594b4ae6a89a550916b113ccd231a7c46cf",
+    "summary": "The course introduces human and physical geography and how landscapes, natural processes and social activity connect. You’ll consider how these systems change over time and shape current and future environmental challenges and human development.",
+    "tab": "science"
+  },
+  "ELL1013F": {
+    "model": "gpt-6-luna",
+    "sha256": "eaf01b0984d8c1c103bd565e743c95df8aa68b75c2ea0db991252d923208ff4d",
+    "summary": "Study novels, poetry and drama through close reading and critical methods, exploring literature’s meanings, diverse African contexts and shift from English literature to literature in English. Practise analysing texts and develop critical reading and writing skills.",
+    "tab": "literature"
+  },
+  "ELL1016S": {
+    "model": "gpt-6-luna",
+    "sha256": "cbed45ceba0245629d120ad9f9b02b1e22d87648c89dd27ca5fa56a75105d541",
+    "summary": "Explore how texts use words, images and sound to make meaning and persuade, considering how form and context shape their messages across genres and historical and political settings. Develop critical reading skills to interpret contemporary culture and politics.",
+    "tab": "literature"
+  },
+  "FAM1000S": {
+    "model": "gpt-6-luna",
+    "sha256": "ab72ad3a3109bf20b0eae8590da075d667fe98b3bcf9978be267197c8321c510",
+    "summary": "Explore contemporary film and television through the vocabulary of filmmaking and narrative, alongside questions of spectatorship, genre and realism, using examples from South Africa and elsewhere. Build a critical understanding of screen forms.",
+    "tab": "media"
+  },
+  "FAM1001F": {
+    "model": "gpt-6-luna",
+    "sha256": "3d7545968dbb6825f5bc8453e9a2adb85f7ef22d9049dce90e83ad15a770ea6a",
+    "summary": "Study mass media’s role in public life, how meaning is made through audiences, media texts, technology and society, and debates about media effects and ethics. Practise critical reading and writing across newspapers, television and online media.",
+    "tab": "media"
+  },
+  "FAM2000F": {
+    "model": "gpt-6-luna",
+    "sha256": "06ff03cd305f2d422b9cbf3f1f0b9c50c861728be6fa70ccf789b752efd229de",
+    "summary": "This course introduces journalism through the theory and practice of producing media across print, broadcast and online formats. You develop writing and editing skills and learn the ideas behind these media practices.",
+    "tab": "media"
+  },
+  "FAM2004S": {
+    "model": "gpt-6-luna",
+    "sha256": "24a6de538686c35213ff540d2cd21b248c5a5068e89ed894e9c534885f8dac3f",
+    "summary": "Trace cinema from silent films to today, examining social, cultural and political contexts and movements including Soviet, German, African, Hollywood New Wave and Dogme 95. Gain broad knowledge and improve analytical and writing skills.",
+    "tab": "media"
+  },
+  "FAM2013F": {
+    "model": "gpt-6-luna",
+    "sha256": "663cab9395b6cc5da39c21c6004813145e6c8efd8e30c10e8a3d97fb1874552e",
+    "summary": "Explore how film and television genres are shaped by industries, audiences and social, political and historical contexts. Study global examples, African and South African adaptations, platform differences, and how genres reinforce or challenge dominant ideas.",
+    "tab": "media"
+  },
+  "FIN1006F": {
+    "model": "gpt-6-luna",
+    "sha256": "5bcf37eb2fd9edaaa50912d0c23964f9e4b26ac9e7d464d1ba762ab218d7ea76",
+    "summary": "Explore African art through twentieth-century movements and schools in seven countries during independence, with debates on coloniality and postcolonial modernity. Discuss Pan-Africanism and Pan-Arabism and develop critical thinking, reading and writing skills.",
+    "tab": "arts"
+  },
+  "FIN1009S": {
+    "model": "gpt-6-luna",
+    "sha256": "be5a3c57782cc9c0f9764eb71338536161958825f908e6612f488a58ef14079f",
+    "summary": "Explore academic art history's late nineteenth-century origins, founding principles, and changes through to today. Consider debates about artistic value, art's relationship with society, exclusions from the canon, and how art is taught and exhibited.",
+    "tab": "arts"
+  },
+  "FTX2000S": {
+    "model": "gpt-6-luna",
+    "sha256": "1e6f05a99641b5bcb630e1eb74d02546a4e0d4c24c3fda62d4ae617e4b5c16f1",
+    "summary": "Learn practical personal financial planning, including credit, investing, tax, insurance, property, and retirement. The course builds understanding of money over time and gives you tools to manage your finances more confidently.",
+    "tab": "econ"
+  },
+  "GEO1009F": {
+    "model": "gpt-6-luna",
+    "sha256": "f1a39d485c63f0e460e20d0f9f227de6e00d99a237ab2d4cebf404d550816dc7",
+    "summary": "Explore how chemical, physical and biological processes shape Earth, and how land, ocean, atmosphere and ice interact across deep time and today. Connect rock records and climate monitoring with human impacts, environmental risks, resilience and adaptation.",
+    "tab": "science"
+  },
+  "HST1013F": {
+    "model": "gpt-6-luna",
+    "sha256": "bedfd5046b44b0fb6e2a1107003f5f7dc07160f844b222f28d06f8bbb01b0180",
+    "summary": "Explore how travel, commerce and colonisation connected world regions from the sixteenth to eighteenth centuries, while disrupting traditional social organisation. Build a critical grounding in the empirical evidence and ideas used to understand this history.",
+    "tab": "history"
+  },
+  "HST1014S": {
+    "model": "gpt-6-luna",
+    "sha256": "5b4783397a94002ea569c84564a00cf584026ecee8bcd7e718f03410775d1e57",
+    "summary": "Explore how empire shaped ideas of modernity, tracing a critical history of the nineteenth to twenty-first centuries across metropolitan and colonial contexts. You’ll examine competing interpretations and develop critical reading and writing skills.",
+    "tab": "history"
+  },
+  "MUZ1339H": {
+    "model": "gpt-6-luna",
+    "sha256": "3561fe8e2870f6200eab9a1fe0e5928d25d0ec7b9a18cdfc0d7b4cc552ef4a08",
+    "summary": "Trace jazz’s African, European and Latin American roots, its rise in North America, and styles from Early Jazz to Cool Jazz. Consider American-South African links and build critical reading and writing skills.",
+    "tab": "arts"
+  },
+  "MUZ1340H": {
+    "model": "gpt-6-luna",
+    "sha256": "7c0bb78a0f24c0f63d4b5513e4bf78f1b062f3c4ef0706a3fe672ce3f3b90dd1",
+    "summary": "Study Western music from around 1600 to today, exploring figures, works, genres, forms, techniques and the social, technical and aesthetic factors shaping it. Develop skills in evaluating scholarly texts and academic writing.",
+    "tab": "arts"
+  },
+  "PHI1010S": {
+    "model": "gpt-6-luna",
+    "sha256": "98a3a4e031f475b48edd7c981523795e94a2dc93405de986cf0617220be16f70",
+    "summary": "Explore moral philosophy through questions about what makes actions right, whether morality depends on individuals or cultures or is objective, and how religion relates to ethics. Consider what it means to be a good person.",
+    "tab": "ethics"
+  },
+  "PHI1024F": {
+    "model": "gpt-6-luna",
+    "sha256": "c0d663ef561faa2a0f353d6ad7373ae8a582ab4d10e25467d710c0640a9c6931",
+    "summary": "Explore questions about knowledge, mind and body, free will, and life’s meaning through philosophers, including African perspectives. Develop critical, creative thinking and strengthen reading and writing while examining your fundamental beliefs and values.",
+    "tab": "logic"
+  },
+  "PHI1025F": {
+    "model": "gpt-6-luna",
+    "sha256": "2dfcc462146bae8dc8168bb9c99d912902669663732ea2c1e64491ad6ce18d61",
+    "summary": "Study how beliefs are justified and how to assess arguments, including different kinds of justification and their pitfalls. Build critical reading and writing skills, become less gullible, and explain why arguments convince or fail.",
+    "tab": "logic"
+  },
+  "PHI2012F": {
+    "model": "gpt-6-luna",
+    "sha256": "8f0007d2327811c90a974009057c0b5b8b0786bd16f67f31e53d7c71163ea6b1",
+    "summary": "Explore how the mind relates to the body and brain through dualism, behaviourism, physicalism and functionalism. Consider what action, free will, determinism and personal identity mean, and compare different philosophical accounts.",
+    "tab": "society"
+  },
+  "PHI2016S": {
+    "model": "gpt-6-luna",
+    "sha256": "28b232079c1ff1da7d6f3818e520469243a89498c0e7f562015a42e7402cfafc",
+    "summary": "Explore philosophical questions about art and literature: what counts as art, how works are interpreted, and how metaphor, morality, truth and sincerity shape artistic value. Compare literature, music and painting while considering what distinguishes them.",
+    "tab": "arts"
+  },
+  "PHI2037F": {
+    "model": "gpt-6-luna",
+    "sha256": "bf08ff45d61478b923017c2a5cf401f9a9d189b0a5c840fdc0c5063045ac5027",
+    "summary": "Apply philosophical reasoning to practical moral dilemmas in health care, business, the professions, the environment and everyday life. Use rational arguments to assess difficult questions about what ought to be done.",
+    "tab": "ethics"
+  },
+  "PHI2040S": {
+    "model": "gpt-6-luna",
+    "sha256": "df7c81841ac46c272471f735e672a616845338fb8b58116b4a6c4adcffc86db5",
+    "summary": "Explore philosophical questions about science: whether it has a special method, whether unobservable entities like electrons exist, and whether political and moral values shape scientific work. Study Popper, Kuhn and Feyerabend to assess scientific claims.",
+    "tab": "logic"
+  },
+  "PHI2042F": {
+    "model": "gpt-6-luna",
+    "sha256": "445b6201d0955d21dfc4ec1449eac5c5c06e43203c848e81c6cbf6f22d1821ea",
+    "summary": "Study political philosophers from ancient times to the twentieth century, alongside debates about government, poverty, cultural tolerance, democracy and war. You’ll examine their arguments and assess responses to enduring and recent political problems.",
+    "tab": "ethics"
+  },
+  "PHI2043F": {
+    "model": "gpt-6-luna",
+    "sha256": "556c142831009a9f909bb703dc6d5f0caa60b5dd97f7c49993aa3b620806e875",
+    "summary": "Explore ethical dilemmas in business, from choices in a first job to questions of regulation faced by leaders in commerce or government. Learn to recognise problems, weigh possible solutions and make well-informed, reasoned decisions.",
+    "tab": "ethics"
+  },
+  "PHI2043S": {
+    "model": "gpt-6-luna",
+    "same_as": "PHI2043F",
+    "sha256": "c6a9c5d04833b3c311a872609953ef7b29187421a2e2098eec58a89b09bc86b6",
+    "summary": "Explore ethical dilemmas in business, from choices in a first job to questions of regulation faced by leaders in commerce or government. Learn to recognise problems, weigh possible solutions and make well-informed, reasoned decisions.",
+    "tab": "ethics"
+  },
+  "PHI2044F": {
+    "model": "gpt-6-luna",
+    "sha256": "2a2a7a28254065007bbf07bcbb909e0814a37c76c0ffbf306271568c2a57f4db",
+    "summary": "Explore philosophical questions about mathematics: how we know mathematical objects, whether it has foundations, what makes a good explanation, and how the discipline develops. Evaluate historical and current contributions to debates and consider mathematics’ significance.",
+    "tab": "logic"
+  },
+  "PHI2045S": {
+    "model": "gpt-6-luna",
+    "sha256": "bd9ddb6dc23d387beb885ae35b57eff056c831e5f9951e86394b99d67927f62a",
+    "summary": "You learn philosophical tools to examine South African debates about indigenous rights, equality, liberation, identity and group responsibilities. The course traces and critiques Hegel, Fanon, Césaire and Biko on oppression, empowerment and colonised peoples.",
+    "tab": "ethics"
+  },
+  "PSY1009F": {
+    "model": "gpt-6-luna",
+    "sha256": "79663d4c4ddad8045e7109996989a1116faa95116106a237d5979e48b18b89ee",
+    "summary": "Explore psychology's foundations and applications, from its history to biological and cognitive processes and mental health, while engaging with major conceptual and empirical debates. Build academic skills in ethical scholarship, writing and psychological communication.",
+    "tab": "society"
+  },
+  "REL1002F": {
+    "model": "gpt-6-luna",
+    "sha256": "250670f9c91c4dfd3c2a5efe3900230c31a61b8e0862f45feb397105273c95d6",
+    "summary": "Study how religion is analysed through symbols, myths, rituals, teachings and practices, focusing on African indigenous traditions, Asian religions, and New Religious Movements. Consider how these movements offer alternative sources of religious identity and meaning.",
+    "tab": "religion"
+  },
+  "REL1006S": {
+    "model": "gpt-6-luna",
+    "sha256": "e8d13d903d17858bf8cb002721f046d61be258fdfd5a2535b6e8e52a1980b783",
+    "summary": "It introduces Ancient Near Eastern religions and explores the historical foundations of Judaism, Christianity and Islam through sacred texts, interpretation and practices. You’ll gain insight into continuity and diversity across traditions, social formations and religious identities.",
+    "tab": "religion"
+  },
+  "REL1017S": {
+    "model": "gpt-6-luna",
+    "sha256": "38a5584c4c4219611872be07dfd4552e1ce288c689f6a6215d64a6d5cc571580",
+    "summary": "Study diverse African indigenous religions, Christianity and Islam through their histories, rituals and ideas, exploring where they interact, differ and share common elements. Develop critical reading, writing and analytical skills with multilingual and digital approaches.",
+    "tab": "religion"
+  },
+  "REL2040F": {
+    "model": "gpt-6-luna",
+    "sha256": "656ee917e711b9d9699734d6591afa7de59c1bc3eb1f7b5223ed5480c43d35e4",
+    "summary": "Study sociological and anthropological theories of religion and how religion and society shape one another, with case studies mainly from Africa. Explore religion’s roles in community life, secularism, crises, public life and violence.",
+    "tab": "religion"
+  },
+  "REL2047F": {
+    "model": "gpt-6-luna",
+    "sha256": "4a48ea3898eaae1d7fd89e0b60e9f5dcc45cbca9e324854826b3011c527c09d3",
+    "summary": "Explore how gender and sexuality feature in religious traditions, especially women’s roles and the meanings of myths and rituals. Case studies connect sexuality, embodiment and spirituality across Abrahamic, African and Asian religions.",
+    "tab": "religion"
+  },
+  "REL2048S": {
+    "model": "gpt-6-luna",
+    "sha256": "64b99de51d9389c1a9f431b27491a89150c0f7e20a3208eb812978f2e0d294f5",
+    "summary": "Explore how religion shapes personal identity, selfhood, and ideas of a good life, through topics such as consciousness, mysticism and embodiment. The course considers mental and spiritual health alongside social identities and religious contexts.",
+    "tab": "religion"
+  },
+  "SLL1002F": {
+    "model": "gpt-6-luna",
+    "sha256": "356216a3a460b083aa08fbb6f8c3bb5dc8ecbcb35c02a4a8cc650b751f2c88ae",
+    "summary": "Explore concepts from ancient Greek and Roman civilisations and how English words develop from Greek, Latin and other languages. Build word-forming skills and confidence in academic English alongside critical reading and writing skills.",
+    "tab": "literature"
+  },
+  "SLL1002S": {
+    "model": "gpt-6-luna",
+    "sha256": "f2c7323770d5f7a3401b5c16896e5407da5de6512ec19199a1d25509793810ee",
+    "summary": "Explore concepts from ancient Greek and Roman civilisations and how English words drawn from Greek, Latin and other languages have formed and evolved. Build word-making skills and confidence in academic English, alongside critical reading and writing.",
+    "tab": "literature"
+  },
+  "SLL1016S": {
+    "model": "gpt-6-luna",
+    "sha256": "b158b79bb93121429c830ee82a2d1a87ab938b12a9c02f1d7635bb441da06280",
+    "summary": "Starting with no Sesotho, you build basic speaking, writing and comprehension skills through integrated modules, learning grammar in context and using it in communication tasks. Readings and classroom activities introduce language varieties and cultural issues.",
+    "tab": null
+  },
+  "SLL1017F": {
+    "model": "gpt-6-luna",
+    "sha256": "8a79c0babc1b67f97d7be04a43a8795361b339f9cedf0952cdc79de3bb6cdb03",
+    "summary": "The course introduces Southern African sociolinguistics, including language, gender, power, prejudice and planning, while building basic Swahili communication skills. Students develop everyday communication and spoken-information skills, and consider cultural issues and misunderstandings.",
+    "tab": null
+  },
+  "SLL1017S": {
+    "model": "gpt-6-luna",
+    "same_as": "SLL1017F",
+    "sha256": "8db6ea2e59c4fb8e009023f583fcaa1357d935a4d1bdece247fd9dbf31c7fe29",
+    "summary": "The course introduces Southern African sociolinguistics, including language, gender, power, prejudice and planning, while building basic Swahili communication skills. Students develop everyday communication and spoken-information skills, and consider cultural issues and misunderstandings.",
+    "tab": null
+  },
+  "SLL1018S": {
+    "model": "gpt-6-luna",
+    "sha256": "1a3c273337740f73310235f880b5651a0a48ed9849e34adad6ae95836d2fe380",
+    "summary": "This beginners’ course develops initial Xhosa grammar comprehension and speaking through contextual grammar, multimedia practice and task-based communication. You learn about different varieties of Xhosa and how to use them appropriately in social situations.",
+    "tab": null
+  },
+  "SLL1022F": {
+    "model": "gpt-6-luna",
+    "sha256": "9204312a6c3b627f9f8c161049b40544ca34ded877d97620a6802be4799672f3",
+    "summary": "Starting from zero, you develop basic Sesotho speaking, writing and comprehension skills, learning grammar in context through practical communication tasks. You explore Sesotho varieties, appropriate social use and cultural issues through readings and class activities.",
+    "tab": null
+  },
+  "SLL1023S": {
+    "model": "gpt-6-luna",
+    "sha256": "cfcfa5cf2fc09a85e54d0b28b93a3291f41d72a57eca54330c537dc20c3addda",
+    "summary": "You further develop your ability to listen to, understand, speak, read and write Sesotho. The course also introduces basic cultural issues related to the Sesotho way of life and misunderstandings in intercultural communication.",
+    "tab": null
+  },
+  "SLL1029F": {
+    "model": "gpt-6-luna",
+    "sha256": "41ace13bef9741c80cb452d6ed44e7b30a5a28b4c2f8f895a61beb45ce85a6d0",
+    "summary": "Explore African-language communication and culture, focusing on South African indigenous languages and cross-cultural exchange grounded in students’ lived experiences. You’ll use multilingual and digital approaches while developing critical reading and writing skills.",
+    "tab": null
+  },
+  "SLL1029S": {
+    "model": "gpt-6-luna",
+    "same_as": "SLL1029F",
+    "sha256": "bafc912f6929a91860cecc7c2b74bd74445f073035ad82e28b0ebd8c16b1c5f8",
+    "summary": "Explore African-language communication and culture, focusing on South African indigenous languages and cross-cultural exchange grounded in students’ lived experiences. You’ll use multilingual and digital approaches while developing critical reading and writing skills.",
+    "tab": null
+  },
+  "SLL1042F": {
+    "model": "gpt-6-luna",
+    "sha256": "b4ce59d1b4160730a8f7a506ef5bf9cea8f01b4cfae3be9ecbf2cdbb9dda2048",
+    "summary": "This course builds basic Afrikaans skills for everyday interactions, introducing grammar in context and systematically expanding vocabulary. Through written and oral activities, students develop comprehension and a beginner’s ability to use the language.",
+    "tab": null
+  },
+  "SLL1042S": {
+    "model": "gpt-6-luna",
+    "same_as": "SLL1042F",
+    "sha256": "e740dd518173ef6439dd3e881aa68ee1b7dae326f69367991db8fedfe667e99b",
+    "summary": "This course builds basic Afrikaans skills for everyday interactions, introducing grammar in context and systematically expanding vocabulary. Through written and oral activities, students develop comprehension and a beginner’s ability to use the language.",
+    "tab": null
+  },
+  "SLL1050F": {
+    "model": "gpt-6-luna",
+    "sha256": "a10ef05e87d8bb7fd8e453ce851ee3b652a05267cd69b3945794ff5dd2b3a3f9",
+    "summary": "Learn the basics of Latin, including how words are formed, how sentences are structured, and how Latin roots appear in common English words. You will read prose passages and practise translating English into Latin.",
+    "tab": null
+  },
+  "SLL1051S": {
+    "model": "gpt-6-luna",
+    "sha256": "06d2f0038cda62b0af1431b8205299846e60e2747c755fc397c04b9b1de25064",
+    "summary": "Builds on introductory Latin with more vocabulary, grammar and syntax, including complex sentences and subordinate clauses. You’ll read selected passages of continuous prose and practise translating complex English sentences into Latin.",
+    "tab": null
+  },
+  "SLL1052F": {
+    "model": "gpt-6-luna",
+    "sha256": "3a5ec7b3b372b604c1b640d864164814d654cb0708bf696533f67c4cbc8531ae",
+    "summary": "You will learn basic Ancient Greek grammar, syntax and vocabulary through graded reading, with a gradual introduction to idioms of Classical Greek prose. The course also introduces Ancient Greek culture and historical context where relevant.",
+    "tab": null
+  },
+  "SLL1053S": {
+    "model": "gpt-6-luna",
+    "sha256": "4e16df4fdd4404d91371c9b38cf13a3e1824c2a1e94b8cd74557f139591ad525",
+    "summary": "Students extend Greek vocabulary, grammar and syntax, including complex sentences and subordinate clauses. They read increasingly complex passages from surviving comedy and forensic oratory, and practise translating between English and Greek.",
+    "tab": null
+  },
+  "SLL1054F": {
+    "model": "gpt-6-luna",
+    "sha256": "3947c50cff1ca206ef3eaf230217431752c5642b6ecf11bc99961929305d1e24",
+    "summary": "Explore the ancient Mediterranean through Homer's Odyssey, considering Odysseus as a hero shaped by early Greek society and oral traditions. Trace his changing fortunes across ancient and modern literature, film and art.",
+    "tab": "history"
+  },
+  "SLL1057F": {
+    "model": "gpt-6-luna",
+    "sha256": "8354be3daadfe8eecddb7670b26d00c666c87732fa4ea1e487aa03ac6b83448d",
+    "summary": "Study Egyptian history from about 4000 BC to AD 300, including architecture, religion, and adaptation to Greek and Roman rule. Examine foreign views of Egypt and build critical reading and writing skills through active learning.",
+    "tab": "history"
+  },
+  "SLL1058F": {
+    "model": "gpt-6-luna",
+    "sha256": "853a9c720f422450c2af3f23761a2e82b54c45cc49fb5fe2f65d50ff1dafc819",
+    "summary": "Students take their first steps in spoken and written Modern Standard Arabic, learning its alphabet, writing and pronunciation rules alongside basic conversation. They then study sentence structures, past-tense conjugation and demonstratives as foundations for using the language.",
+    "tab": null
+  },
+  "SLL1059S": {
+    "model": "gpt-6-luna",
+    "sha256": "613dc35ed20885a788cd112ae6938f310dedf117972c86c0305037d9f4ed23a4",
+    "summary": "Continue developing Modern Standard Arabic through practice in listening, speaking, reading and writing. Learn useful vocabulary and grammar, including noun plurals, demonstratives, present-tense conjugation and derived verb forms for communication.",
+    "tab": null
+  },
+  "SLL1060F": {
+    "model": "gpt-6-luna",
+    "sha256": "9adc94499e4149c44fe5ae72c730b196cf308ec5c8c5e5dbc53c43414af0c8fd",
+    "summary": "An intensive beginner course introduces French grammar, vocabulary, pronunciation and culture, while developing reading, writing, listening and speaking skills for communication. You gain a grounding in its structure for further study and communication in French.",
+    "tab": null
+  },
+  "SLL1061S": {
+    "model": "gpt-6-luna",
+    "sha256": "ad222f3d8effbdd86126efe511d055fcf685d0fb6f632c375e07ba3b636baeb0",
+    "summary": "Builds on basic French with intensive study of grammar, vocabulary, pronunciation and culture. You develop an understanding of French structure alongside reading, writing, listening and speaking skills for communication and further study.",
+    "tab": null
+  },
+  "SLL1062F": {
+    "model": "gpt-6-luna",
+    "sha256": "d983c1d67345f598d59f27a899d717b38531aa616dfca5281c064649e9ef8499",
+    "summary": "This course introduces basic German grammar, text comprehension and selected cultural patterns, aiming for CEFR A1. You develop everyday communicative skills in German and a basic understanding of the language through work with introductory texts.",
+    "tab": null
+  },
+  "SLL1063S": {
+    "model": "gpt-6-luna",
+    "sha256": "2101860041f4d4ef2636eb97e55493f05bda8e0b79f36fae0a159c2648ccd8ba",
+    "summary": "Building on introductory German, the course deepens grammar and uses varied texts to strengthen comprehension and explore cultural patterns. You develop everyday communication skills and practise discussing topics in German, aiming for CEFR A2.",
+    "tab": null
+  },
+  "SLL1064F": {
+    "model": "gpt-6-luna",
+    "sha256": "c720345fc2ec10de469698f7202c4c9abc03199329d07515fb02f3f17a96da33",
+    "summary": "Beginners learn basic Italian through grammar, vocabulary, drills, oral practice and simple reading passages, with weekly language-lab sessions and exercises. Occasional film screenings and discussions introduce aspects of Italian culture.",
+    "tab": null
+  },
+  "SLL1065S": {
+    "model": "gpt-6-luna",
+    "sha256": "2121ede39b12b1928a5b7d084a84c7bd42638b31c6ea29bcfadff323e84c3821",
+    "summary": "Students continue from the first-semester course, studying more advanced Italian grammar to develop a complete understanding of the language’s structure. The course prepares them to cope with second-year Italian literature, language and history.",
+    "tab": null
+  },
+  "SLL1068F": {
+    "model": "gpt-6-luna",
+    "sha256": "dd2c31442970af261cd1ef02b14afd914099b2f73106b66c927d6d0ef4fc9eb5",
+    "summary": "Explore Latin American cultures through literature, visual art and performance, with material from Mexico, the Caribbean, Central and South America. Study Indigenous civilizations, colonization, music and dance, African diasporic cultures and ritual landscapes.",
+    "tab": null
+  },
+  "SLL1068S": {
+    "model": "gpt-6-luna",
+    "same_as": "SLL1068F",
+    "sha256": "5ee0e0e737947bec4205a4908d8ca341247d778d046b7ba477787261731a6083",
+    "summary": "Explore Latin American cultures through literature, visual art and performance, with material from Mexico, the Caribbean, Central and South America. Study Indigenous civilizations, colonization, music and dance, African diasporic cultures and ritual landscapes.",
+    "tab": null
+  },
+  "SLL1069F": {
+    "model": "gpt-6-luna",
+    "sha256": "5c5021c26eb48e1355d14f610ad3d3f45b3a138364bec1c35006cffc6c50e25c",
+    "summary": "This course introduces basic French structures for everyday communication, with an emphasis on speaking and some written French. You develop practical skills towards A1 level, as defined by the Common European Framework of Reference for Languages.",
+    "tab": null
+  },
+  "SLL1073F": {
+    "model": "gpt-6-luna",
+    "sha256": "3c0b0f37e6dcdc3f3f800aeb45023fbae173c2db8985b3a0f9d443545d410dd8",
+    "summary": "This intensive introductory course builds practical spoken and written Spanish through grammar, vocabulary, and practice in reading, writing, and listening. You develop skills to communicate and understand basic ideas across varieties of Spanish.",
+    "tab": null
+  },
+  "SLL1074S": {
+    "model": "gpt-6-luna",
+    "sha256": "553639f21b49f7b2ebabe86177d9c4b34406dd83317ef599c068120b53b6ed61",
+    "summary": "This course builds practical spoken and written Spanish through reading, writing and listening practice, while introducing conversation. Students develop the skills to interact with Spanish speakers in socially and culturally appropriate ways.",
+    "tab": null
+  },
+  "SLL1075F": {
+    "model": "gpt-6-luna",
+    "sha256": "bd8735683cb173bac55571297c15a239af8cbe0135a669a37b2d8a6e767dee78",
+    "summary": "Build proficiency in Portuguese at beginner level through practical work in listening, speaking, reading and writing, with a focus on acquiring basic language skills. Gain an introduction to the cultures of Portuguese-speaking countries.",
+    "tab": null
+  },
+  "SLL1076S": {
+    "model": "gpt-6-luna",
+    "sha256": "9f7fc5439a4647da9a87a24b63df35cf9b8a3211c25b980db6bbe8749bd9d6a1",
+    "summary": "Building on Initial Portuguese A, the course develops beginner-level Portuguese through practical learning and basic listening, speaking, reading and writing skills. Students also gain an introduction to the cultures of Portuguese-speaking countries.",
+    "tab": null
+  },
+  "SLL1082F": {
+    "model": "gpt-6-luna",
+    "sha256": "e68927d2dd0008b3df986f3b1315a1095e2d9fc551c06eb5bc4a77918ce77b67",
+    "summary": "Students learn the Hebrew alphabet and its distinctive vowel system, building basic reading, writing and conversation skills. They practise present and past verb forms and modern-life vocabulary to express themselves in Hebrew.",
+    "tab": null
+  },
+  "SLL1083S": {
+    "model": "gpt-6-luna",
+    "sha256": "acbd120135083ca835961e586b249a41e0e94c06dd56ae56a955e18a7ce6ad86",
+    "summary": "You build Hebrew skills through grammar, vocabulary, conversation, reading and writing, focusing on Modern Hebrew. You learn to distinguish registers and styles from Biblical and Rabbinic Hebrew to modern usage, preparing for Hebrew literature analysis.",
+    "tab": null
+  },
+  "SLL1097S": {
+    "model": "gpt-6-luna",
+    "sha256": "74390974c7f8c1e5fea2e313bf4c881e144c230b7ce4be888a3e2b1d8ac20cfc",
+    "summary": "Study ancient history and classical archaeology in the Mediterranean from the eighth century BC to early Roman imperial rule, tracing Rome's rise and its first emperors. It offers an introduction to studying the ancient past.",
+    "tab": "history"
+  },
+  "SLL1101F": {
+    "model": "gpt-6-luna",
+    "sha256": "03537b91e044c1c1bbe066346c2f13b7d2ad537979bf9ef0a3ebf85bd6f9c4cc",
+    "summary": "The course takes beginners from no Xhosa to basic competency through modules combining speaking, writing and comprehension. Grammar is taught in context, as students practise tasks and learn to use Xhosa varieties appropriately in social settings.",
+    "tab": null
+  },
+  "SLL1102S": {
+    "model": "gpt-6-luna",
+    "sha256": "c4e56bbd9feb9f1b9ef90357136ea6053b3a60c2253b96126d76fb09aa2c72bc",
+    "summary": "Students build on earlier Xhosa study, learning more complex conversational and grammatical structures for wider communication. They begin reading simple Xhosa texts and expand vocabulary through contemporary, local and culturally significant domains and tasks.",
+    "tab": null
+  },
+  "SLL1117S": {
+    "model": "gpt-6-luna",
+    "sha256": "5443766a2e06567a03a056751c3551c37ffc2dbf2689a182d15fdb86578dd97d",
+    "summary": "This course builds on beginner Swahili, covering more grammar, especially word derivations, and developing simple spoken and written communication. Students learn to participate in more advanced Swahili communication and gain cultural guidance on using the language in different contexts.",
+    "tab": null
+  },
+  "SLL1121F": {
+    "model": "gpt-6-luna",
+    "sha256": "17825a2cea52193cc705ea6787eb9cbaae8eab24a4fbbaf4bd3b000d8f596624",
+    "summary": "This beginner course builds essential spoken and written Chinese through lectures, conversation classes and language laboratory sessions. You learn everyday characters, explore cultural aspects of Chinese writing, and practise simple conversations in everyday situations.",
+    "tab": null
+  },
+  "SLL1122S": {
+    "model": "gpt-6-luna",
+    "sha256": "c620d99fb4b94fb74f9920f7e0690f14747f6eb7c5e0531823851303f85d63d8",
+    "summary": "This course develops Chinese listening, speaking, reading and writing through lectures, conversation classes and language laboratory sessions. You practise reading Chinese characters and learn to write short paragraphs and talk about everyday events.",
+    "tab": null
+  },
+  "SLL1131F": {
+    "model": "gpt-6-luna",
+    "sha256": "060060da53dce76a56a34c7bda3c3b59243deeae24186edc23c2557b8d25005b",
+    "summary": "Students explore isiXhosa language, literacy and culture through language in context, literature, society and translation. They develop academic writing skills and examine spelling conventions, standardisation, dialects and language policy in education.",
+    "tab": null
+  },
+  "SLL1132S": {
+    "model": "gpt-6-luna",
+    "sha256": "fc576ad634cbda5c041e4f3e2a33c298ed8c57a2ea5bdc8154006e235411b20c",
+    "summary": "The course further develops isiXhosa language skills, cultural competence and literacy, exploring language development and applying it to language policy and planning. You also examine the role of African languages through language and power.",
+    "tab": null
+  },
+  "SLL1136S": {
+    "model": "gpt-6-luna",
+    "sha256": "bc58b804aa84e489f087d50f4489b5ce6b6745f12b1f6f67eadb05f3d002cbee",
+    "summary": "Explore ancient Rome and its empire through Virgil’s Aeneid, an epic of Rome’s origins, plus ancient texts in translation, art and archaeology. You’ll learn key Roman literary genres and about studying Roman life and society.",
+    "tab": "history"
+  },
+  "SLL2058F": {
+    "model": "gpt-6-luna",
+    "sha256": "6928c66afe5877174a100644ea6d2c034d661e2e24ed8cc4a26174c10906eeac",
+    "summary": "Explore Greek and Roman myths and ideas about the divine, considering theories of myth, what myths mean, and how they have been used ideologically. Study myth in classical art and literature, and its later literary and artistic traditions.",
+    "tab": "history"
+  },
+  "SOC1001F": {
+    "model": "gpt-6-luna",
+    "sha256": "585d6f6d0fbf0e4cf91f55b242473699ac5c63485bf521f307aa796eeff40db8",
+    "summary": "Explore how family, education, work and other institutions shape everyday life, and how people can shape society. Learn how sociologists use the sociological imagination to look beneath appearances and understand society in a globalised world.",
+    "tab": "society"
+  },
+  "SOC1005S": {
+    "model": "gpt-6-luna",
+    "sha256": "96e01ae58f0dbab8df6e0fadd040dbc169c34bacce4d42da5345d962a0548c44",
+    "summary": "Explore key issues in contemporary South African society, including structured inequalities and how social processes, institutions and behaviours shape people's experiences. Consider what changes, what persists, and how people organise and act to meet needs.",
+    "tab": "society"
+  }
+}

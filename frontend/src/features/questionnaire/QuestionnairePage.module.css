@@ -1,0 +1,31 @@
+/* The questionnaire takes the full content width, for the prototype's 1040 px column (approved
+   difference 15), and its header keeps the reading width, as every page's does */
+.page {
+  max-width: var(--width-full);
+}
+
+/* The first question stands 40 px under the header, as the prototype's does: 16 px more than the
+   header's own margin, as padding, which doesn't fold into that margin as a margin would. The
+   prototype's 34 px between questions takes the nearest token. */
+.questions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding-top: var(--space-4);
+}
+
+/* Show My Plans and how far the answers narrow her plans, in a row under the questions */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  margin-top: var(--space-10);
+}
+
+.narrowing {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}

@@ -5,6 +5,15 @@
   min-width: calc(var(--width-menu) - 2 * (var(--space-2) + 1px));
 }
 
+/* The words in place of items, in quieter text, as the prototype's chat history says it has none */
+.empty {
+  margin: 0;
+  padding: var(--space-1) var(--space-2) var(--space-2);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}
+
 /* What sits above the items, such as who is signed in. It isn't an item, so it takes no focus, and a
    line keeps it apart from the items, as the prototype's account menu draws it. */
 .header {

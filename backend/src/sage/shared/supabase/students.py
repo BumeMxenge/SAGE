@@ -200,6 +200,15 @@ class SupabaseStudentRepository:
             .execute()
         )
 
+    def show_plan(self, student_id: UUID, plan_id: UUID) -> None:
+        (
+            self._client.table("plans")
+            .update({"hidden": False})
+            .eq("id", str(plan_id))
+            .eq("student_id", str(student_id))
+            .execute()
+        )
+
     def save_answers(
         self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]
     ) -> None:
@@ -285,6 +294,16 @@ class SupabaseStudentRepository:
             .data
         )
         return Chat.model_validate(rows[0])
+
+    def name_chat(self, student_id: UUID, chat_id: UUID, title: str) -> None:
+        (
+            self._client.table("chats")
+            .update({"title": title})
+            .eq("id", str(chat_id))
+            .eq("student_id", str(student_id))
+            .is_("title", "null")
+            .execute()
+        )
 
     def messages(
         self, student_id: UUID, chat_id: UUID

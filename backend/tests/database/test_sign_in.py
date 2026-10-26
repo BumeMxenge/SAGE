@@ -21,6 +21,9 @@ def local_settings(url, monkeypatch):
     # cleared before and after.
     monkeypatch.setenv("SUPABASE_URL", url)
     monkeypatch.setenv("SUPABASE_SECRET_KEY", os.environ["SAGE_TEST_SECRET_KEY"])
+    # The app won't start without an OpenAI key. This test starts it but asks no question, so no
+    # model is called and a stand-in does.
+    monkeypatch.setenv("OPENAI_API_KEY", "not-a-real-key")
     get_settings.cache_clear()
     yield
     get_settings.cache_clear()

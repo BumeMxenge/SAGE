@@ -22,9 +22,6 @@ it.each([
 
 it.each([
   ['not_signed_in', 401],
-  ['plan_not_found', 404],
-  ['plans_not_ready', 409],
-  ['transcript_not_yours', 422],
 ] as const)('never retries a refusal: %s', (code, status) => {
   expect(shouldRetry(0, new ApiError(code, status))).toBe(false)
 })

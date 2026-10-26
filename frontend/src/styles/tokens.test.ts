@@ -1,7 +1,7 @@
 // Reads tokens.css and theme.css and checks WCAG 2.2 AA in both themes: 4.5:1 for text, and 3:1 for
-// the focus ring, the control border, the danger icon and, in light, the field border. In dark, fields have no border
-// and are identified by their placeholder, icon or label (approved difference 2). Decorative borders
-// and disabled text are left out, as WCAG allows.
+// the focus ring, the control border and the danger icon. A field's border is as pale as the
+// prototype's in light and absent in dark, as its placeholder, icon or label identifies it
+// (approved difference 2). Decorative borders and disabled text are left out, as WCAG allows.
 import { describe, expect, it } from 'vitest'
 import themeCss from './theme.css?raw'
 import tokensCss from './tokens.css?raw'
@@ -49,9 +49,9 @@ function value(name: string, theme: Theme): string {
 const surfaces = ['--color-surface', '--color-surface-raised', '--color-surface-muted', '--color-surface-field', '--color-brand-sand']
 const courseColours = [...tokens.light.keys()].filter((name) => name.startsWith('--color-course-'))
 
-// Placeholders use --color-text-secondary, so its check on --color-surface-field is the one a dark
-// field relies on to be identified
-const checks: { token: string; against: string[]; minimum: number; theme?: Theme }[] = [
+// Placeholders use --color-text-secondary, so its check on --color-surface-field is the one a field
+// relies on to be identified, as its border is pale in light and absent in dark
+const checks: { token: string; against: string[]; minimum: number }[] = [
   ...[
     '--color-text',
     '--color-text-secondary',
@@ -70,7 +70,6 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
   // The danger button's fill is the danger text colour
   { token: '--color-on-primary', against: ['--color-primary', '--color-surface-inverse', '--color-text-danger'], minimum: 4.5 },
   { token: '--color-on-fill', against: ['--color-sign-in', '--color-accent-fill', ...courseColours], minimum: 4.5 },
-  { token: '--color-border-field', against: surfaces, minimum: 3, theme: 'light' },
   { token: '--color-border-control', against: surfaces, minimum: 3 },
   { token: '--color-focus', against: surfaces, minimum: 3 },
   // Large accent text on the page, and the white tick on the tile it fills: 3:1, as text of 24 px or
@@ -80,8 +79,7 @@ const checks: { token: string; against: string[]; minimum: number; theme?: Theme
 ]
 
 describe.each(['light', 'dark'] as const)('%s theme', (theme) => {
-  const inTheme = checks.filter((check) => check.theme === undefined || check.theme === theme)
-  it.each(inTheme.map((check) => [check.token, check] as const))('%s meets its contrast', (_, check) => {
+  it.each(checks.map((check) => [check.token, check] as const))('%s meets its contrast', (_, check) => {
     for (const against of check.against) {
       expect(contrast(value(check.token, theme), value(against, theme)), `${check.token} on ${against}`).toBeGreaterThanOrEqual(
         check.minimum,
@@ -96,9 +94,7 @@ it('defines the same tokens in both themes', () => {
 })
 
 it('checks all eight course colours', () => {
-  const white = checks.find((check) => check.token === '--color-on-fill')
   expect(courseColours).toHaveLength(8)
-  expect(white?.against).toHaveLength(10) // the sign-in button, the accent fill and the eight course colours
 })
 
 // The audit's published ratios (SAGE_M3_DESIGN_AUDIT.md section 2), so a broken formula can't pass

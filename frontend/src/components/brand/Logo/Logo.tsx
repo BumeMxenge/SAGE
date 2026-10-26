@@ -5,20 +5,17 @@
 import { useId } from 'react'
 import CompactDark from '@brand/sage-logo-compact-dark.svg?react'
 import CompactLight from '@brand/sage-logo-compact-light.svg?react'
-import FullDark from '@brand/sage-logo-full-dark.svg?react'
-import FullLight from '@brand/sage-logo-full-light.svg?react'
 import MarkDark from '@brand/sage-logo-mark-dark.svg?react'
 import MarkLight from '@brand/sage-logo-mark-light.svg?react'
 import Microsoft from './microsoft.svg?react'
 import styles from './Logo.module.css'
 
 const themed = {
-  full: { light: FullLight, dark: FullDark },
   compact: { light: CompactLight, dark: CompactDark },
   mark: { light: MarkLight, dark: MarkDark },
 }
 
-type LogoProps = { variant: 'compact'; small?: boolean } | { variant: 'full' | 'mark' | 'microsoft'; small?: never }
+type LogoProps = { variant: 'compact'; small?: boolean } | { variant: 'mark' | 'microsoft'; small?: never }
 
 export function Logo({ variant, small = false }: LogoProps) {
   // Each file names itself with <title id>, so two logos on a page need different ids

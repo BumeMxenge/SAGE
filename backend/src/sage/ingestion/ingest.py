@@ -1,9 +1,10 @@
 # Ingests one handbook year into a candidate rulebook, writing nothing to any database. It checks the
 # year's sources against their manifest, reads each, translates the printed requirements, grammar
-# first, and checks the sources against each other. A requirement printed in the words the latest
-# approved year before it printed keeps that year's approved rule. Every row keeps where it was
-# printed and why a person must look at it. review_year writes the rows a person must decide,
-# approve writes the approved year once none is pending, and load writes that to a database.
+# first, has the model write each complementary course's tab and summary from its passage, and
+# checks the sources against each other. A requirement printed in the words the latest approved year
+# before it printed keeps that year's approved rule. Every row keeps where it was printed and why a
+# person must look at it. review_year writes the rows a person must decide, approve writes the
+# approved year once none is pending, and load writes that to a database.
 import json
 from collections import defaultdict
 from collections.abc import Callable
@@ -16,16 +17,17 @@ from sage.ingestion import (
     checks,
     complementary,
     curricula,
+    electives,
     equivalences,
     handbook,
     sources,
     timetable,
     translate,
 )
-from sage.ingestion.drafting import Drafter
 from sage.ingestion.names import title_case
 from sage.ingestion.review import Problem, Review, Snapshot, compare
 from sage.shared.base import Row, canonical
+from sage.shared.language_model import LanguageModel
 from sage.shared.repositories import RuleRepository
 from sage.shared.rules import (
     TERM_BY_SUFFIX,
@@ -37,10 +39,12 @@ from sage.shared.rules import (
     RuleSet,
 )
 
-# Four folders up from this file: the repo root, as for the seed file
+# data/ in the repo root, as for the seed file
 DATA = Path(__file__).resolve().parents[4] / "data"
 # Each approved year's snapshot, as data/rules/<year>/ holds it
 SNAPSHOT = "rulebook.json"
+# Each year's cached tabs and summaries, as data/rules/<year>/ holds them
+ELECTIVES = "electives.json"
 WORKBOOK = "complementary workbook"
 
 
@@ -56,6 +60,8 @@ class Candidate(Row):
     # Each table's rows by the source they came from
     rows: dict[str, dict[str, int]]
     translations: translate.Translations
+    # The complementary courses' tabs and summaries, as the model wrote them
+    written: electives.Written
     checks: tuple[checks.Check, ...]
     # Each wildcard and the courses it stands for
     expanded: dict[str, tuple[str, ...]]
@@ -72,7 +78,11 @@ class Candidate(Row):
     carried: tuple[str, ...]
 
 
-def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Candidate:
+def ingest(
+    year: int, model: LanguageModel | None = None, data: Path = DATA
+) -> Candidate:
+    # model drafts what has no draft yet, as sage ingest --draft asks it to; without one, nothing is
+    # drafted
     manifest = sources.load(data / "sources" / str(year))
     previous = _latest_approved(year, data)
     book = handbook.Handbook(handbook.pages(manifest.path(manifest.handbook)))
@@ -112,7 +122,7 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Cand
     translated = translate.translate(
         strings,
         data / "rules" / str(year) / "drafts.json",
-        drafter,
+        model,
         [cache for cache in caches if int(cache.parent.name) < year],
     )
     found = {(t.printed, t.need): t for t in translated.translations}
@@ -203,9 +213,59 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Cand
             )
         )
 
+    units = book.prose(
+        [s for s in manifest.handbook.passages if s.section != manifest.department]
+    )
+    units += read.units
+    units += [
+        handbook.Unit(
+            section=f"{code} {entry.name}",
+            page=entry.page,
+            line=book.starts[code][0],
+            content=entry.content,
+            course_code=code,
+        )
+        for code, entry in entries.items()
+    ]
+    printed_passages = handbook.passages(units, year, manifest.handbook.title)
+    typed_passages = (
+        complementary.passages(workbook, year, set(entries)) if workbook else ()
+    )
+
+    # Each complementary course's tab and summary, which the model writes from its passage: the
+    # passage's heading and words, as the review shows them
+    offered = {o.code for o in offerings}
+    passages = {
+        p.course_code: f"{p.section}\n{p.content}"
+        for p in (*printed_passages, *typed_passages)
+        if p.course_code in offered
+    }
+    written = electives.write(
+        passages,
+        {o.code for o in offerings if o.sheet == workbook.languages},
+        {course.code: course.credits for course in courses},
+        data / "rules" / str(year) / ELECTIVES,
+        model,
+        [
+            path
+            for path in sorted((data / "rules").glob(f"*/{ELECTIVES}"))
+            if int(path.parent.name) < year
+        ],
+    )
+    courses = [
+        course.model_copy(update={"summary": written.electives[course.code].summary})
+        if course.code in written.electives
+        else course
+        for course in courses
+    ]
     members = list(read.members)
     if workbook:
-        typed_members, member_readings = complementary.members(workbook, year)
+        typed_members, member_readings = complementary.members(
+            workbook,
+            year,
+            {code: elective.tab for code, elective in written.electives.items()},
+            passages,
+        )
         members += typed_members
         readings += member_readings
     equivalence = equivalences.read(manifest.path(manifest.equivalences), year)
@@ -230,25 +290,6 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Cand
             sheet_read, meetings, sheets, read.taken, loaded
         )
     typed_slots = complementary.slots(workbook, year) if workbook else ()
-
-    units = book.prose(
-        [s for s in manifest.handbook.passages if s.section != manifest.department]
-    )
-    units += read.units
-    units += [
-        handbook.Unit(
-            section=f"{code} {entry.name}",
-            page=entry.page,
-            line=book.starts[code][0],
-            content=entry.content,
-            course_code=code,
-        )
-        for code, entry in entries.items()
-    ]
-    printed_passages = handbook.passages(units, year, manifest.handbook.title)
-    typed_passages = (
-        complementary.passages(workbook, year, set(entries)) if workbook else ()
-    )
 
     places = {r.key: r.place for r in readings if r.entity == "courses"}
     found_checks = [
@@ -316,6 +357,7 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Cand
             },
         ),
         translations=translated,
+        written=written,
         checks=tuple(found_checks),
         expanded=read.expanded,
         left_out=tuple(sorted(read.scope - entries.keys() - listed)),
@@ -330,13 +372,13 @@ def ingest(year: int, drafter: Drafter | None = None, data: Path = DATA) -> Cand
 
 
 def review_year(
-    year: int, drafter: Drafter | None = None, data: Path = DATA
+    year: int, model: LanguageModel | None = None, data: Path = DATA
 ) -> tuple[Candidate, Review]:
     # Ingests the year, compares it with the latest approved year before it, and writes the rows a
     # person must decide to review.json, with each decision there that still holds
     path = review_file(year, data)
     held = _read_review(path)
-    candidate = ingest(year, drafter, data)
+    candidate = ingest(year, model, data)
     review = _compare(candidate, held["rows"])
     _write_review(path, held["sittings"], review)
     return candidate, review

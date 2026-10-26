@@ -1,4 +1,5 @@
-# Ships the frontend after CI passes on main: build the static files, upload them to Azure Storage, confirm they're live
+# Ships the frontend after CI passes on main: build the static files, upload them to Azure Storage,
+# confirm they're live
 name: Deploy frontend
 
 on:
@@ -21,12 +22,14 @@ defaults:
     shell: bash # stops at the first failed command, including one inside a pipe
 
 env:
-  SHA: ${{ github.event.workflow_run.head_sha || github.sha }} # the commit CI tested (or main's tip on a manual run)
+  # The commit CI tested (or main's tip on a manual run)
+  SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
 
 jobs:
   deploy:
     name: Build, upload and check
-    # Same rule as the backend deploy: a CI run that passed on a push to main in this repo, or a manual run on main
+    # Same rule as the backend deploy: a CI run that passed on a push to main in this repo, or a
+    # manual run on main
     if: >-
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
       (github.event.workflow_run.conclusion == 'success' &&
@@ -85,19 +88,21 @@ jobs:
           npm run build
 
       - name: Upload to Azure Storage
-        # --auth-mode login: uploads as the deploy identity, through the role setup.sh gave it. No key needed.
+        # --auth-mode login: uploads as the deploy identity, through the role setup.sh gave it. No
+        # key needed.
         run: |
           upload() {
             az storage blob upload-batch --auth-mode login --account-name "$STORAGE_ACCOUNT" \
               --destination "\$web" --overwrite --no-progress --only-show-errors --output none "$@"
           }
-          # 1. The hashed files first. Each build gives them new names, so browsers may keep them for a year.
-          #    Older ones stay put, so a page someone already has open can still load its files.
+          # 1. The hashed files first. Each build gives them new names, so browsers may keep them
+          #    for a year. Older ones stay put, so a page someone already has open can still load
+          #    its files.
           upload --source dist/assets --destination-path assets \
             --content-cache-control "public, max-age=31536000, immutable"
           rm -r dist/assets
-          # 2. Then the rest, index.html included. Going second, it never points at a file that isn't up yet.
-          #    no-cache makes browsers check for a newer index.html on every visit.
+          # 2. Then the rest, index.html included. Going second, it never points at a file that
+          #    isn't up yet. no-cache makes browsers check for a newer index.html on every visit.
           upload --source dist --content-cache-control "no-cache"
 
       - name: Check the new version is live

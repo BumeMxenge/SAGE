@@ -101,13 +101,13 @@ check-ui:
 	@cd frontend && npx playwright install chromium && npx playwright test
 
 # How many small faults (mutants) planted in the code the unit tests catch, written to
-# backend/mutation-score.txt. It's too slow for CI, which never runs it. Each run starts
-# afresh, as mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a
-# copy of the code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy
-# of data/ goes where SEED_FILE and DATA look for it, and a link puts experiments/ where the
-# drafter's test reads E2's prompt. A copy, not a link, so a mutant that loses its folder can't
-# write to the real one. mutmut runs several test sessions at once, so SAGE_TEST_TEMP gives each its
-# own temporary folder.
+# backend/mutation-score.txt. It's too slow for CI, which never runs it. Each run starts afresh, as
+# mutmut only re-tests code that changed and would miss a deleted test. mutmut imports a copy of the
+# code from backend/mutants/, one folder deeper than usual, so while the run lasts a copy of data/
+# goes where SEED_FILE and DATA look for it, and a link puts experiments/ where the drafter's test
+# finds E2 and the advisor's tests find E4. A copy, not a link, so a mutant that loses its folder
+# can't write to the real one. mutmut runs several test sessions at once, so SAGE_TEST_TEMP gives
+# each its own temporary folder.
 mutation:
 	@cd backend && rm -rf mutants data && cp -R ../data data && ln -sfn ../experiments experiments && \
 		export SAGE_TEST_TEMP=$$(mktemp -d) && \
@@ -116,25 +116,30 @@ mutation:
 		uv run --group mutation mutmut export-cicd-stats > /dev/null && \
 		score=$$(uv run python scripts/mutation_score.py) && echo "$$score" | tee mutation-score.txt
 
-# The 30 planted faults, each in a copy of the backend, and the test that caught it, if any: the 24
-# from my test review, two in the review and approval, and four in the plan encoding.
+# The 33 planted faults, each in a copy of the backend, and the test that caught it, if any: the 24
+# from my test review, two in the review and approval, four in the plan encoding, and three in the
+# advisor's guardrails.
 planted-faults:
 	@cd backend && uv run python scripts/planted_faults.py
 
 # ATP-1: SAGE against labels written from print, then the report, in tests/acceptance/atp1/results/.
-# It runs from the held-out drafts its first run cached, so it calls no model. DRAFT=yes makes them
-# first, once, with the key in backend/.env. The run also imports count_changes.py and the tests'
-# PDF printer, so their folders join Python's path.
+# It runs from the held-out drafts its first run cached, so it calls no model. The run also imports
+# count_changes.py and the tests' PDF printer, so their folders join Python's path.
 atp1:
 	@cd backend && $(ATP1_PATH):../experiments/ingestion:. \
-		uv run python ../tests/acceptance/atp1/run.py $(if $(DRAFT),--draft) && \
+		uv run python ../tests/acceptance/atp1/run.py && \
 		$(ATP1_PATH) uv run python ../tests/acceptance/atp1/report.py
 
-# Loads the made-up student onto one local account: make seed USER_ID=<account id>
+# The seed file of a student other than Mbali, as FILE=data/synthetic/ziyela.json, for the targets
+# below. It is made absolute, as they run from backend/.
+SEED_FILE_OPTION = $(if $(FILE),--file "$(abspath $(FILE))")
+
+# Loads the made-up student onto one local account: make seed USER_ID=<account id>, with FILE= for
+# another seed file than Mbali's
 seed:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
-		uv run sage seed --user "$(USER_ID)"
+		uv run sage seed --user "$(USER_ID)" $(SEED_FILE_OPTION)
 
 # Loads every approved year, each data/rules/<year>/rulebook.json, into local Supabase, as after make
 # check-db wipes it. A year held exactly as its snapshot is passed over, so a newly approved year loads
@@ -150,12 +155,13 @@ load:
 
 # Prints a one-time link that signs Mbali in on the local frontend, with no password and no
 # Microsoft. On a fresh local database it first makes her account and loads her seed. PORT=3001 or
-# 3002 points the link at a worktree's frontend. Only the link goes to stdout, for scripts to read.
+# 3002 points the link at a worktree's frontend, and FILE=data/synthetic/ziyela.json signs in the
+# student of another seed file instead. Only the link goes to stdout, for scripts to read.
 sign-in:
 	@$(LOCAL_SUPABASE) && cd backend && \
 		SUPABASE_URL="$$API_URL" SUPABASE_SECRET_KEY="$$SECRET_KEY" \
-		uv run sage sign-in $(if $(PORT),--port $(PORT)) && \
-		echo "Open that link in your browser to sign in as Mbali. It works once, within an hour." >&2
+		uv run sage sign-in $(if $(PORT),--port $(PORT)) $(SEED_FILE_OPTION) && \
+		echo "Open that link in your browser to sign in as $(if $(FILE),the student in $(FILE),Mbali). It works once, within an hour." >&2
 
 # Prints a one-time link for Ilvane, a second made-up student, who hasn't finished setup. Each run
 # first deletes her account and everything it saved, so onboarding starts fresh, and never touches

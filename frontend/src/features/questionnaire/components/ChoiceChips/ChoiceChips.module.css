@@ -1,0 +1,70 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  color: var(--color-text);
+}
+
+.description {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+/* The chips stand 16 px under the question's words, as the prototype's do */
+.chips {
+  display: flex;
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* No hover change: the parity file leaves chips as they are */
+.chip {
+  --icon-size: var(--size-icon-sm);
+
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: var(--size-control-md);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+}
+
+.chip[data-selected] {
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  border-color: var(--color-text);
+}
+
+/* An answer that can't be chosen fades as in the prototype. It is aria-disabled, so axe treats its
+   faded text as an inactive control's, which WCAG 1.4.3 exempts. */
+.chip[data-unavailable] {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.reason {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}

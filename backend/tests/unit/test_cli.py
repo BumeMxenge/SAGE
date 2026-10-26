@@ -1,7 +1,7 @@
 # Checks `sage seed` asks before writing anywhere but this laptop, `sage sign-in` refuses to run
 # anywhere else and makes nothing before her plans' year is loaded, and `sage review` walks a person
-# through the pending rows. The database is replaced by the in-memory fakes, so these tests never
-# reach a real project.
+# through the pending rows, correcting an elective by picking its tab from the list. The database is
+# replaced by the in-memory fakes, so these tests never reach a real project.
 import json
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
@@ -11,6 +11,7 @@ import pytest
 import sage.cli
 from sage.config import get_settings
 from sage.ingestion.checks import Check, Failure
+from sage.ingestion.electives import Written
 from sage.ingestion.ingest import Candidate, Sitting
 from sage.ingestion.sources import Reading
 from sage.ingestion.translate import Translations
@@ -19,6 +20,7 @@ from sage.shared.memory.students import InMemoryStudentRepository
 from sage.shared.rules import (
     AllOfGroup,
     Course,
+    CourseGroupMember,
     CurriculumRule,
     HandbookVersion,
     Refer,
@@ -26,6 +28,7 @@ from sage.shared.rules import (
     TotalCredits,
     YearRules,
 )
+from scripts import write_seed
 
 ACCOUNT = UUID("00000000-0000-4000-8000-000000000001")
 
@@ -68,7 +71,10 @@ def test_local_supabase_is_seeded_without_asking(opened, database, monkeypatch, 
     monkeypatch.setattr("builtins.input", never_asked)
     sage.cli.run_seed(ACCOUNT, yes=False)
     assert opened == ["http://127.0.0.1:54321"]
-    assert "her data matches the file" in capsys.readouterr().out
+    output = capsys.readouterr().out
+    assert "her data matches the file" in output
+    # With no file asked for, it's Mbali's
+    assert "Seeded mbali.json" in output
 
 
 def test_a_hosted_project_needs_a_yes(opened, database, monkeypatch):
@@ -91,6 +97,31 @@ def test_missing_settings_stop_it_before_anything_else(opened, database):
     with pytest.raises(SystemExit, match="SUPABASE_URL"):
         sage.cli.run_seed(ACCOUNT, yes=True)
     assert opened == []
+
+
+def test_a_chosen_seed_file_is_the_one_seeded(opened, database, capsys):
+    database("http://127.0.0.1:54321")
+    sage.cli.main(["seed", "--user", str(ACCOUNT), "--file", str(write_seed.FILE)])
+    output = capsys.readouterr().out
+    assert "Seeded ziyela.json" in output
+    assert "her data matches the file" in output
+
+
+def test_a_chosen_seed_file_is_the_one_signed_in(opened, database, monkeypatch, capsys):
+    # Her own email makes the account, and the link is printed once her seed is on it
+    database("http://127.0.0.1:54321")
+    emails = []
+
+    def sign_in_token(client, email):
+        emails.append(email)
+        return ACCOUNT, "made-up-token"
+
+    monkeypatch.setattr(sage.cli, "sign_in_token", sign_in_token)
+    sage.cli.main(["sign-in", "--port", "3002", "--file", str(write_seed.FILE)])
+    assert emails == [write_seed.EMAIL]
+    assert (
+        capsys.readouterr().out == "http://localhost:3002/?token_hash=made-up-token\n"
+    )
 
 
 def test_sign_in_refuses_a_hosted_project(opened, database):
@@ -178,6 +209,7 @@ def made_up_year() -> Candidate:
         readings=readings,
         rows={},
         translations=Translations(translations=(), calls=0, reused=0, refused=()),
+        written=Written(electives={}, calls=0, reused=0, refused=()),
         checks=(Check(name="Printed totals add up", failures=(totals,)),),
         expanded={},
         left_out=(),
@@ -228,3 +260,68 @@ def test_a_review_walk_saves_each_decision_as_it_is_made(tmp_path, capsys):
     assert "Row 1 of 4: rule/EB022EEE02/2" in out
     assert "every course in EB022EEE02-y2-core, and 136 credits in total" in out
     assert "This sitting took 8 minutes and decided 3 rows." in out
+
+
+def test_correcting_an_elective_picks_its_tab_by_number(tmp_path, capsys):
+    # A course the model put on history, and a language option, whose tab is fixed
+    drafted = {"HST1013F": "history", "SLL1017F": "languages"}
+    rules = RuleSet(
+        handbook_versions=(HandbookVersion(year=2026),),
+        courses=tuple(
+            Course(
+                handbook_year=2026,
+                code=code,
+                name="Made Up",
+                credits=18,
+                nqf_level=5,
+                term="sem1",
+                summary="A drafted summary. It reads well.",
+            )
+            for code in drafted
+        ),
+        course_group_members=tuple(
+            CourseGroupMember(
+                handbook_year=2026,
+                group_key="complementary",
+                course_code=code,
+                category=tab,
+            )
+            for code, tab in drafted.items()
+        ),
+    )
+    readings = tuple(
+        reading
+        for code in drafted
+        for reading in (
+            Reading(entity="courses", key=code, place="p. 9", printed="None"),
+            Reading(
+                entity="course_group_members",
+                key=f"complementary/{code}",
+                place="Courses row 3",
+                printed=f"{code} Made Up\nCourse outline: A made-up outline.",
+                flag="model_written",
+            ),
+        )
+    )
+    candidate = made_up_year().model_copy(
+        update={"rules": rules, "readings": readings, "checks": ()}
+    )
+    path = tmp_path / "review.json"
+    start = datetime(2026, 10, 23, 9, tzinfo=UTC)
+    sitting = Sitting(candidate, path, lambda: start)
+    # The tabs less languages, in ElectiveTab's order: arts, business, econ and on to society, the
+    # 11th, so 12 is asked again and 3 is econ. The language option asks only for its summary.
+    answers = iter(["c", "12", "3", "History, corrected. Short.", "c", "Corrected."])
+    sage.cli.walk(sitting, lambda prompt: next(answers), lambda file: None)
+    rows = json.loads(path.read_text(encoding="utf-8"))["rows"]
+    assert [(row["id"], row["decision"], row["corrected"]) for row in rows] == [
+        (
+            "elective/HST1013F",
+            "correct",
+            {"tab": "econ", "summary": "History, corrected. Short."},
+        ),
+        ("elective/SLL1017F", "correct", {"tab": "languages", "summary": "Corrected."}),
+    ]
+    out = capsys.readouterr().out
+    assert "  3 econ" in out
+    assert "on the history tab: A drafted summary. It reads well." in out

@@ -22,22 +22,18 @@
     transform var(--duration-slow) var(--easing);
 }
 
-/* React Aria sets these while the dialog appears and disappears */
+/* React Aria sets these while the dialog appears. It closes at once, as its page stops rendering it. */
 .overlay[data-entering],
-.overlay[data-exiting],
-.modal[data-entering],
-.modal[data-exiting] {
+.modal[data-entering] {
   opacity: 0;
 }
 
-.modal[data-entering],
-.modal[data-exiting] {
+.modal[data-entering] {
   transform: translateY(var(--space-4));
 }
 
 .dialog {
   padding: var(--space-6);
-  outline: none;
 }
 
 .header {

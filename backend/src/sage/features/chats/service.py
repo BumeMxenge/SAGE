@@ -1,5 +1,6 @@
 # Chats about a plan, or about a pair of plans, and the questions she asks in them. Nothing here
-# opens while the questionnaire is still waiting to narrow her set.
+# opens while the questionnaire is still waiting to narrow her set. A plan a reply offers joins her
+# plan list for good, as the assistant is the only way back to a plan her answers hid.
 from uuid import UUID, uuid4
 
 from sage.features.plans import service as plans
@@ -100,6 +101,10 @@ def ask(
         open_plan_id=reply.open_plan_id,
     )
     question, answer = students.add_exchange(asked, answered, reply.citations)
+    if reply.open_plan_id is not None:
+        students.show_plan(student_id, reply.open_plan_id)
+    if reply.title is not None:
+        students.name_chat(student_id, chat.id, reply.title)
     return (
         CitedMessage(message=question),
         CitedMessage(message=answer, citations=reply.citations),

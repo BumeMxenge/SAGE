@@ -6,31 +6,19 @@
 import { ApiError, type ErrorCode } from './api.ts'
 
 // What gets the student past an error. The screen that shows it builds its own button from the name.
-export type ErrorAction =
-  | 'retry'
-  | 'sign_in_again'
-  | 'use_another_account'
-  | 'sign_out'
-  | 'upload_another'
-  | 'go_to_plan'
-  | 'finish_setup'
+type ErrorAction = 'retry' | 'go_to_plan'
 
 // Each action's button, so every screen names the same action the same way
 export const actionLabels: Record<ErrorAction, string> = {
   retry: 'Try Again',
-  sign_in_again: 'Sign In Again',
-  use_another_account: 'Use a Different Account',
-  sign_out: 'Sign Out',
-  upload_another: 'Upload a Different File',
   go_to_plan: 'Go to My Plan',
-  finish_setup: 'Finish Setting Up',
 }
 
 type Entry = {
   title: string
   // A function where the words name what the refusal carries, such as both student numbers
   message: string | ((error: ApiError) => string)
-  // No action means the student fixes what's wrong where the error shows, such as a field
+  // The button a screen offers to get past the error, if any, such as Try Again
   action: ErrorAction | null
 }
 
@@ -58,17 +46,17 @@ const entries = {
   not_signed_in: {
     title: 'Your Session Has Expired',
     message: 'Sign in again to carry on.',
-    action: 'sign_in_again',
+    action: null,
   },
   uct_account_required: {
     title: "This Account Can't Use SAGE",
     message: 'SAGE is for UCT students. Sign in with your student account, the one ending in @myuct.ac.za.',
-    action: 'use_another_account',
+    action: null,
   },
   students_only: {
     title: "Staff Tools Aren't Built Yet",
     message: "This part of SAGE is for students. Tools for staff aren't part of this version.",
-    action: 'sign_out',
+    action: null,
   },
   rulebook_not_loaded: {
     title: "SAGE Isn't Ready Yet",
@@ -88,33 +76,33 @@ const entries = {
   not_a_pdf: {
     title: "That File Isn't a PDF",
     message: 'Export your transcript as a PDF and upload it again.',
-    action: 'upload_another',
+    action: null,
   },
   file_too_large: {
     title: 'That File Is Too Large',
     message: 'Your transcript must be 10 MB or less. Upload a smaller PDF.',
-    action: 'upload_another',
+    action: null,
   },
   transcript_unreadable: {
     title: "SAGE Couldn't Read This Transcript",
     message: 'Download it again from PeopleSoft and upload the new copy.',
-    action: 'upload_another',
+    action: null,
   },
   not_a_transcript: {
     title: "This Isn't a UCT Academic Record",
     message: 'Upload the academic record you downloaded from PeopleSoft.',
-    action: 'upload_another',
+    action: null,
   },
   transcript_not_yours: {
     title: 'This Transcript Belongs to Another Student',
     message: ({ problem }) =>
       `This transcript is for ${problem?.transcript_student_number}, but you're signed in as ${problem?.account_student_number}.`,
-    action: 'upload_another',
+    action: null,
   },
   transcript_incomplete: {
     title: 'This Transcript Is Missing Pages',
     message: 'Download your whole academic record from PeopleSoft again and upload it.',
-    action: 'upload_another',
+    action: null,
   },
   no_course_history: {
     title: 'Your Record Has No Courses Yet',
@@ -125,7 +113,7 @@ const entries = {
   onboarding_incomplete: {
     title: 'Finish Setting Up First',
     message: 'Upload your transcript and confirm your course history, then try again.',
-    action: 'finish_setup',
+    action: null,
   },
   plans_not_ready: {
     title: "Your Plans Aren't Ready Yet",
@@ -167,6 +155,11 @@ const entries = {
     message: "It isn't in this year's handbook, so it can't be added.",
     action: null,
   },
+  course_doesnt_fit: {
+    title: "That Course Doesn't Fit This Plan",
+    message: "It isn't one of the courses that fit this plan's timetable.",
+    action: null,
+  },
   different_plan_sets: {
     title: "These Plans Can't Share a Chat",
     message: 'One of these plans has been replaced. Choose two plans from your current list.',
@@ -181,6 +174,11 @@ const entries = {
     title: "This Chat Doesn't Exist",
     message: 'It may belong to another account. Start a new chat instead.',
     action: null,
+  },
+  advisor_unavailable: {
+    title: "The Assistant Couldn't Reply",
+    message: "Your question wasn't saved. Try again in a moment.",
+    action: 'retry',
   },
   network_error: {
     title: "Can't Reach SAGE",
@@ -199,7 +197,7 @@ const entries = {
   },
 } satisfies Record<ErrorCode, Entry>
 
-export type Explanation = {
+type Explanation = {
   title: string
   message: string
   action: ErrorAction | null
@@ -207,9 +205,16 @@ export type Explanation = {
 }
 
 // The words for any error a screen catches. One that isn't an ApiError, such as a page whose code
-// failed to load, gets a server error's words.
+// failed to load, happened in the browser, so it has words of its own and no reference to quote.
 export function explain(error: unknown): Explanation {
-  if (!(error instanceof ApiError)) return { ...entries.internal_error, reference: undefined }
+  if (!(error instanceof ApiError)) {
+    return {
+      title: 'Something Went Wrong',
+      message: 'SAGE ran into a problem on this page. Reload it and try again.',
+      action: 'retry',
+      reference: undefined,
+    }
+  }
   const { title, message, action } = entries[error.code]
   return {
     title,

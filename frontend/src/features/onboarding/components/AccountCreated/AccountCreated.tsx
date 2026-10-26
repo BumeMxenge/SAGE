@@ -3,10 +3,10 @@
 // difference 14). Everything that welcomes them waits until the sign-in and the name are known, which
 // the sign-in starts finding out at once, so nothing changes or arrives late once it shows.
 import { Button } from '@/components/actions/Button/Button.tsx'
+import { Icon } from '@/components/brand/Icon/Icon.tsx'
 import { Logo } from '@/components/brand/Logo/Logo.tsx'
 import { BrandShapes } from '@/features/onboarding/components/BrandShapes/BrandShapes.tsx'
 import { Confetti } from '@/features/onboarding/components/Confetti/Confetti.tsx'
-import { SuccessCheck } from '@/features/onboarding/components/SuccessCheck/SuccessCheck.tsx'
 import { useAuth } from '@/lib/auth/useAuth.ts'
 import styles from './AccountCreated.module.css'
 
@@ -21,7 +21,10 @@ export function AccountCreated({ onNext }: { onNext: () => void }) {
       </div>
       {!loading && (
         <div className={styles.content}>
-          <SuccessCheck />
+          {/* The greeting beside it says the same, so screen readers skip the tick */}
+          <span aria-hidden="true" className={styles.check}>
+            <Icon name="check" />
+          </span>
           <h1 className={styles.greeting}>
             {name ? (
               <>

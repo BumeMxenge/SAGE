@@ -1,4 +1,5 @@
-# Ships the backend after CI passes on main: build the image, push it to ghcr.io, run it on Azure, confirm it's live
+# Ships the backend after CI passes on main: build the image, push it to ghcr.io, run it on Azure,
+# confirm it's live
 name: Deploy backend
 
 on:
@@ -23,18 +24,21 @@ defaults:
 
 env:
   IMAGE: ghcr.io/bumemxenge/sage-backend # ghcr.io only accepts lowercase names
-  SHA: ${{ github.event.workflow_run.head_sha || github.sha }} # the commit CI tested (or main's tip on a manual run)
+  # The commit CI tested (or main's tip on a manual run)
+  SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
   # Size and scaling: edit, push, and the next deploy applies them
   CPU: "0.25" # vCPU per replica
   MEMORY: 0.5Gi # must be 2 x CPU in GiB
-  MIN_REPLICAS: "0" # 0 = free while idle, but the first request after a quiet spell waits for a cold start
+  # 0 = free while idle, but the first request after a quiet spell waits for a cold start
+  MIN_REPLICAS: "0"
   MAX_REPLICAS: "1"
 
 jobs:
   deploy:
     name: Build, push and deploy
-    # Only a CI run that passed on a push to main in this repo (a fork can also have a branch called main),
-    # or a manual run on main. Azure trusts runs on main only, so anything else would fail at sign-in anyway.
+    # Only a CI run that passed on a push to main in this repo (a fork can also have a branch called
+    # main), or a manual run on main. Azure trusts runs on main only, so anything else would fail at
+    # sign-in anyway.
     if: >-
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
       (github.event.workflow_run.conclusion == 'success' &&
@@ -66,16 +70,19 @@ jobs:
           context: backend
           push: true
           tags: ${{ env.IMAGE }}:${{ env.SHA }}
-          build-args: GIT_SHA=${{ env.SHA }} # /health reports this, so the last step can tell new from old
+          # /health reports this, so the last step can tell new from old
+          build-args: GIT_SHA=${{ env.SHA }}
           labels: | # links the package to this repo on GitHub, and records the commit inside the image
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ env.SHA }}
-          provenance: false # one plain image, without the extra attestation entry that shows as "unknown/unknown"
+          # One plain image, without the extra attestation entry that shows as "unknown/unknown"
+          provenance: false
           cache-from: type=gha
           cache-to: type=gha,mode=max # reuses unchanged layers (e.g. dependencies) between runs
 
       - name: Check the image is public
-        # Azure pulls without a password, so the package must be public. New ghcr.io packages start private.
+        # Azure pulls without a password, so the package must be public. New ghcr.io packages start
+        # private.
         run: |
           repo=${IMAGE#ghcr.io/}
           token=$(curl -fsS "https://ghcr.io/token?scope=repository:$repo:pull" |
@@ -116,34 +123,42 @@ jobs:
             echo "::error::Storage account $STORAGE_ACCOUNT not found. Run infra/azure/setup.sh, then re-run this workflow."
             exit 1
           }
-          cors="CORS_ORIGINS=${website%/}" # Azure gives it with a trailing slash; browsers send it without
-          # The secret key stays a Container Apps secret, so it never passes through GitHub. The app
-          # refuses to start without it, so a deploy without the secret stops here, saying how to add it.
-          supabase=("SUPABASE_URL=$SUPABASE_URL" "SUPABASE_SECRET_KEY=secretref:supabase-secret-key")
-          add_secret="Add it once from a laptop: read -rs KEY, then az containerapp secret set --resource-group $RESOURCE_GROUP --name $API_APP --secrets \"supabase-secret-key=\$KEY\", then unset KEY. Then re-run this workflow."
+          # Azure gives it with a trailing slash; browsers send it without
+          cors="CORS_ORIGINS=${website%/}"
+          # The Supabase and OpenAI keys stay Container Apps secrets, so they never pass through
+          # GitHub. The app refuses to start without them, so a deploy without one stops here, saying
+          # how to add it.
+          keys=("SUPABASE_URL=$SUPABASE_URL" "SUPABASE_SECRET_KEY=secretref:supabase-secret-key"
+            "OPENAI_API_KEY=secretref:openai-api-key")
+          add_secret() {
+            echo "Add $1 once from a laptop: read -rs KEY, then az containerapp secret set --resource-group $RESOURCE_GROUP --name $API_APP --secrets \"$1=\$KEY\", then unset KEY. Then re-run this workflow."
+          }
           if az containerapp show --resource-group "$RESOURCE_GROUP" --name "$API_APP" --output none 2>/dev/null; then
             secrets=$(az containerapp secret list --resource-group "$RESOURCE_GROUP" --name "$API_APP" \
               --query "[].name" --output tsv)
-            if ! grep -qx supabase-secret-key <<<"$secrets"; then
-              echo "::error::$API_APP has no supabase-secret-key secret. $add_secret"
-              exit 1
-            fi
+            for secret in supabase-secret-key openai-api-key; do
+              if ! grep -qx "$secret" <<<"$secrets"; then
+                echo "::error::$API_APP has no $secret secret. $(add_secret "$secret")"
+                exit 1
+              fi
+            done
             az containerapp update --resource-group "$RESOURCE_GROUP" --name "$API_APP" \
-              --image "$IMAGE:$SHA" "${size[@]}" --set-env-vars "$cors" "${supabase[@]}" --output none
+              --image "$IMAGE:$SHA" "${size[@]}" --set-env-vars "$cors" "${keys[@]}" --output none
           else
             # First deploy only. setup.sh couldn't create the app, because an app needs an image, and a
-            # Container Apps secret needs the app, so this one creates it and stops for the secret.
+            # Container Apps secret needs the app, so this one creates it and stops for the secrets.
             az containerapp create --resource-group "$RESOURCE_GROUP" --name "$API_APP" \
               --environment "$CONTAINER_ENV" --image "$IMAGE:$SHA" \
               --ingress external --target-port 8000 "${size[@]}" --env-vars "$cors" --output none
-            echo "::error::Created $API_APP, which can't start until it has its Supabase secret. $add_secret"
+            echo "::error::Created $API_APP, which can't start until it has its secrets. $(add_secret supabase-secret-key) $(add_secret openai-api-key)"
             exit 1
           fi
           echo "API allows browser calls from ${website%/}"
 
       - name: Check the new commit is live
-        # Polls /health until it reports this commit. That proves the new image is the one answering:
-        # if it fails to start, Azure quietly keeps the old version serving, and the old commit shows here.
+        # Polls /health until it reports this commit. That proves the new image is the one
+        # answering: if it fails to start, Azure quietly keeps the old version serving, and the old
+        # commit shows here.
         run: |
           url="https://$(az containerapp show --resource-group "$RESOURCE_GROUP" --name "$API_APP" \
             --query properties.configuration.ingress.fqdn --output tsv)"

@@ -1,0 +1,16 @@
+/* No box of its own: the content lays out in its parent as if this weren't there */
+.shown,
+.arriving {
+  display: contents;
+}
+
+/* What has just taken its skeleton's place fades in together */
+.arriving > * {
+  animation: arrive var(--duration-fast) var(--easing);
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+  }
+}

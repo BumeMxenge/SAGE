@@ -1,4 +1,4 @@
-// The page staff see, a stub until the shell branch builds it
+// The page staff see, which holds only its heading (docs/shortfalls.md)
 import { PageHeader } from '@/components/content/PageHeader/PageHeader.tsx'
 import { pageNames } from '@/lib/copy.ts'
 

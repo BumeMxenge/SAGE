@@ -1,5 +1,5 @@
-/* In light the border is the box's edge, at 3:1. In dark there is none: the shaded fill, the
-   placeholder and the Send button identify it. */
+/* A pale edge in light and none in dark, as in the prototype: the placeholder and the Send button
+   identify the box, as WCAG 1.4.11 allows, and in dark its shaded fill too. */
 .chat-box {
   display: flex;
   gap: var(--space-2);
@@ -50,6 +50,10 @@
   color: var(--color-text);
   background: transparent;
   resize: none;
+}
+
+/* The box around it shows the ring instead */
+.textarea[data-focus-visible] {
   outline: none;
 }
 
@@ -80,7 +84,11 @@
   cursor: default;
 }
 
-.send[data-focus-visible] {
-  outline: var(--focus-ring-width) solid var(--color-focus);
-  outline-offset: var(--focus-ring-offset);
+/* While a reply is on its way, the working button: the square in the full circle, at the size that
+   draws the loading sheet's 10 px. It still can't be pressed. */
+.send[data-working] {
+  --icon-size: var(--size-icon-md);
+
+  color: var(--color-on-primary);
+  background: var(--color-primary);
 }

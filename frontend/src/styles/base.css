@@ -1,5 +1,5 @@
-/* Base styles for every entry point: the font, the tokens, the theme and the element defaults.
-   Import this once per entry, before anything else. */
+/* Base styles for the app's one entry, main.tsx, which imports them before any component's styles:
+   the font, the tokens, the theme and the element defaults. */
 @import url('@fontsource-variable/inter');
 @import url('./tokens.css');
 @import url('./theme.css');
@@ -30,7 +30,18 @@ a:hover {
   text-decoration-thickness: var(--link-hover-thickness);
 }
 
-a:focus-visible {
+/* The focus ring, drawn once for every control. React Aria marks an element it focused from the
+   keyboard with data-focus-visible, and marks a Select or a tab list too while focus is inside it,
+   so the ring goes on the innermost marked element. Any other element the keyboard focuses, such
+   as a link or a scrolling box, takes it from :focus-visible. React Aria's own elements never show
+   the browser's outline, which would otherwise come back when focus returns after a click, as to a
+   menu's button when Escape closes it. */
+[data-rac] {
+  outline: none;
+}
+
+[data-focus-visible]:not(:has([data-focus-visible])),
+:focus-visible:not([data-rac]) {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
 }

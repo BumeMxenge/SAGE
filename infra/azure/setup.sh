@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One-off Azure setup for SAGE: resource group, logs, Container Apps environment, GitHub's deploy identity,
-# and the storage account that hosts the frontend.
+# One-off Azure setup for SAGE: resource group, logs, Container Apps environment, GitHub's deploy
+# identity, and the storage account that hosts the frontend.
 # Run from the repo root after `az login`: bash infra/azure/setup.sh. Safe to run again.
 set -euo pipefail # stop at the first error, unset variable or failed pipe
 

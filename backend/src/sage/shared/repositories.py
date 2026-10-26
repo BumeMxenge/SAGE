@@ -82,6 +82,10 @@ class StudentRepository(Protocol):
         self, student_id: UUID, plan_set_id: UUID, keep: Collection[UUID]
     ) -> None: ...
 
+    # Shows one of her plans, such as one her answers hid that the assistant offers. Another
+    # student's plan is left as it is.
+    def show_plan(self, student_id: UUID, plan_id: UUID) -> None: ...
+
     # Stores the questionnaire's answers on the set, which marks it answered
     def save_answers(
         self, student_id: UUID, plan_set_id: UUID, answers: dict[str, Any]
@@ -106,6 +110,9 @@ class StudentRepository(Protocol):
 
     # Stores a new chat, and returns it with the time it was stored
     def add_chat(self, chat: Chat) -> Chat: ...
+
+    # Gives her chat this title while it has none, so a named chat is never renamed
+    def name_chat(self, student_id: UUID, chat_id: UUID, title: str) -> None: ...
 
     # The chat's messages in order, with what each cites, or None if the chat isn't hers
     def messages(

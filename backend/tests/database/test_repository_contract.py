@@ -196,6 +196,21 @@ def test_hiding_plans_leaves_exactly_the_kept_ones_visible(store):
     assert current.plan_set.answers == {"course": "EEE4118F"}
 
 
+def test_showing_a_plan_shows_exactly_that_one_and_only_for_her(store):
+    # Her seeded set hides positions 2 to 4
+    her = store.mbali.student.id
+    second = next(plan.id for plan in store.mbali.plans if plan.position == 2)
+
+    def hidden() -> list[int]:
+        rows = store.students.current_plan_set(her)
+        return [plan.position for plan in rows.plans if plan.hidden]
+
+    store.students.show_plan(store.stranger, second)
+    assert hidden() == [2, 3, 4]
+    store.students.show_plan(her, second)
+    assert hidden() == [3, 4]
+
+
 def chat_titled(store: Store, title: str) -> Chat:
     return next(chat for chat in store.mbali.chats if chat.title == title)
 
@@ -222,6 +237,21 @@ def test_a_new_chat_has_its_time_and_lists_first(store):
     assert new.created_at is not None
     newest_first = store.students.chats(her, single.plan_id, None)
     assert [chat.id for chat in newest_first] == [new.id, single.id]
+
+
+def test_a_chat_is_named_once_and_only_by_her(store):
+    her = store.mbali.student.id
+    single = chat_titled(store, "Fridays on Power, Control & Robotics")
+    new = store.students.add_chat(
+        Chat(id=uuid4(), student_id=her, plan_id=single.plan_id)
+    )
+    store.students.name_chat(store.stranger, new.id, "Not Hers")
+    assert store.students.chat(her, new.id).title is None
+    store.students.name_chat(her, new.id, "Fridays This Semester")
+    store.students.name_chat(her, new.id, "Another Title")
+    store.students.name_chat(her, single.id, "Another Title")
+    assert store.students.chat(her, new.id).title == "Fridays This Semester"
+    assert store.students.chat(her, single.id).title == single.title
 
 
 def test_a_chat_reads_back_its_messages_in_order(store):
@@ -264,33 +294,32 @@ def test_a_question_and_its_reply_are_stored_together_in_order(store):
     assert in_order[-2:] == [asked.id, answered.id]
 
 
-@pytest.mark.integration
-def test_a_cited_reply_reads_back_with_its_passage(
-    stores, new_account, seed_file, approved_2026
+def test_two_quotes_of_one_passage_on_a_reply_are_both_kept_in_order(
+    store, approved_2026
 ):
-    # Supabase only: it joins each citation to its passage, which the fake has no table for. The
-    # passage is one the approved 2026 holds, and her account takes the citation with it.
-    rules, students = stores
-    account = new_account()
-    mbali = load_seed(seed_file, account.id)
-    seed(rules, students, mbali)
+    # The advisor quotes a table one row a citation, so a reply can cite one passage twice. They're
+    # handed over last first, so the order read back comes from their positions.
+    her = store.mbali.student.id
+    chat = chat_titled(store, "Fridays on Power, Control & Robotics")
     passage = approved_2026.passages[0]
-    chat = mbali.chats[0]
     asked = Message(
-        id=uuid4(), chat_id=chat.id, student_id=account.id, role="user", content="Test"
+        id=uuid4(), chat_id=chat.id, student_id=her, role="user", content="Test"
     )
     answered = asked.model_copy(update={"id": uuid4(), "role": "assistant"})
-    citation = Citation(
-        passage_id=passage.id,
-        position=1,
-        quote="Test",
-        source=passage.source,
-        section=passage.section,
-        page=passage.page,
+    first, second = (
+        Citation(
+            passage_id=passage.id,
+            position=position,
+            quote=quote,
+            source=passage.source,
+            section=passage.section,
+            page=passage.page,
+        )
+        for position, quote in ((1, "First row"), (2, "Second row"))
     )
-    students.add_exchange(asked, answered, [citation])
-    reply = students.messages(account.id, chat.id)[-1]
-    assert reply.citations == (citation,)
+    store.students.add_exchange(asked, answered, [second, first])
+    reply = store.students.messages(her, chat.id)[-1]
+    assert reply.citations == (first, second)
 
 
 @pytest.mark.integration

@@ -1,5 +1,5 @@
-// The page that turns away an account SAGE can't serve, a stub until the onboarding branch builds it.
-// Like every onboarding page, it shows light only.
+// The page that turns away an account SAGE can't serve, which holds only its heading
+// (docs/shortfalls.md). Like every onboarding page, it shows light only.
 import { PageHeader } from '@/components/content/PageHeader/PageHeader.tsx'
 import { useLightOnly } from '@/features/onboarding/useLightOnly.ts'
 import { pageNames } from '@/lib/copy.ts'

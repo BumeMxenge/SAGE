@@ -1,6 +1,7 @@
-# Plants each of the 30 faults in a copy of the backend, runs the unit tests, and reports which test
-# caught it: the 24 from my test review, two in the review and approval the thesis rests on, and four
-# in the plan encoding, which mutmut can't reach as it isn't Python. The tests first run on the copy
+# Plants each of the 33 faults in a copy of the backend, runs the unit tests, and reports which test
+# caught it: the 24 from my test review, two in the review and approval the thesis rests on, four in
+# the plan encoding, which mutmut can't reach as it isn't Python, and three in the advisor's
+# guardrails, so they count in this score too. The tests first run on the copy
 # with no fault, and any failure stops the script, as a broken copy would make every fault look
 # caught. The faults go into a temporary copy, so a run cut short never leaves one in the real code.
 # A fault whose text no longer matches is reported as not applied, never as caught.
@@ -132,7 +133,7 @@ FAULTS = [
     Fault(
         16,
         "plans: unchosen alternatives hidden",
-        "src/sage/features/plans/service.py",
+        "src/sage/shared/rules.py",
         "slot.choice_group not in chosen or slot.choice in chosen[slot.choice_group]",
         "slot.choice_group is None or slot.choice in chosen.get(slot.choice_group, ())",
     ),
@@ -235,6 +236,30 @@ FAULTS = [
         "#project take/1.",
         "",
     ),
+    Fault(
+        31,
+        "advisor: a quote found anywhere in her slice counts",
+        "src/sage/advisor/checks.py",
+        "            passage is not None\n"
+        "            and WORD.search(said) is not None\n"
+        "            and said in flat(passage.content)\n",
+        "            WORD.search(said) is not None\n"
+        "            and any(said in flat(p.content) for p in passages.values())\n",
+    ),
+    Fault(
+        32,
+        "advisor: any plan in her set can be offered",
+        "src/sage/advisor/checks.py",
+        "plan = evidence.plans[offered] if offered in offerable else None",
+        'plan = evidence.plans.get(offered or "")',
+    ),
+    Fault(
+        33,
+        "advisor: a reply that kept no quote stays an answer",
+        "src/sage/advisor/checks.py",
+        "    if answer.citations and not kept:\n        return Checked(REFERRED",
+        "    if False:\n        return Checked(REFERRED",
+    ),
 ]
 
 
@@ -291,16 +316,16 @@ def plant(fault: Fault, copy: Path) -> str:
 def main() -> None:
     with tempfile.TemporaryDirectory() as work:
         copy = Path(work) / "backend"
-        for part in ("src", "tests"):
+        for part in ("src", "tests", "scripts"):
             shutil.copytree(
                 BACKEND / part,
                 copy / part,
                 ignore=shutil.ignore_patterns("__pycache__"),
             )
         shutil.copy2(BACKEND / "pyproject.toml", copy)
-        # SEED_FILE and DATA, where the tests find the approved 2026, are four folders up from their
-        # modules, and E2's prompt four up from the drafter's test, so data/ and experiments/ go
-        # beside the copy, as in the repo. data/ is copied, not linked, so a fault that loses a
+        # SEED_FILE and DATA, where the tests find the approved 2026, are found from the repo root,
+        # as are E2 for the drafter's test and E4 for the advisor's tests, so data/ and experiments/
+        # go beside the copy, as in the repo. data/ is copied, not linked, so a fault that loses a
         # function's folder can't write to the real one.
         shutil.copytree(BACKEND.parent / "data", Path(work) / "data")
         (Path(work) / "experiments").symlink_to(BACKEND.parent / "experiments")

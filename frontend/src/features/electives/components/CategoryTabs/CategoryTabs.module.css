@@ -1,0 +1,73 @@
+.tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+/* One row of tabs that scrolls sideways when the window is too narrow for them, as the prototype's
+   does */
+.list {
+  display: flex;
+  gap: var(--space-6);
+  overflow-x: auto;
+  padding: var(--space-1) var(--space-1) 0;
+}
+
+/* No hover change: the parity file leaves the category tabs as they are. The open tab is in the
+   text's colour over an underline, so colour isn't all that marks it. */
+.tab {
+  flex: none;
+  min-height: var(--size-target-min);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid transparent;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.tab[data-selected] {
+  border-bottom-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.panel {
+  padding-top: var(--space-8);
+}
+
+.heading {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-text);
+}
+
+.sub {
+  margin: 0 0 var(--space-5);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}
+
+/* One column of cards, two from 640 px wide and three from 1024 px, the prototype's three across its
+   860 px column */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+@media (width >= 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

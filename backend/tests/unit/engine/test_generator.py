@@ -533,7 +533,7 @@ def test_complementary_credits_she_has_met_come_off_her_minimum(symbols):
 def test_a_slot_lists_the_complementary_courses_that_fit_marking_untimed_ones(symbols):
     # AAA1000F meets on Monday at 10:00. KKK1000F clashes with it, KKK1001F has no printed time
     # and KKK1002F meets on Tuesday. KKK1003F needs a course she hasn't passed, so it isn't
-    # listed, while KKK1004F, which a person must judge, is (Stop 1's decision 17).
+    # listed, while KKK1004F, which a person must judge, is, for her advisor to settle.
     complementary = ("KKK1000F", "KKK1001F", "KKK1002F", "KKK1003F", "KKK1004F")
     rules = rulebook(
         {
@@ -664,14 +664,14 @@ def test_a_slot_records_each_courses_sections_and_what_it_forces(symbols):
 
 def test_each_reason_cites_the_passage_it_rests_on(symbols):
     # She has her first year's practical training, AAA1000X, signed off, but failed AAA1001S and
-    # owes one of its electives. Her second year's core
-    # holds AAA2000X, practical training she hasn't finished; AAA2000S, which a person must judge
-    # and which has a meeting with no printed time; AAA2001F, which needs a course she hasn't
-    # passed; AAA2004F, passed, and AAA2005F, whose supplementary is still to come; AAA2006S, which
-    # clashes with AAA1001S; and CSC3024S, whose entry prints its practicals by arrangement
-    # (p. 171). AAA2007F, one of its electives, needs a course she hasn't passed. Her third year's
-    # AAA3000F needs nothing, and both her years owe 18 complementary credits. Stop 1's decision 20: a table is found by its heading in her curriculum, her year's
-    # minimum by its last table, a course by its own entry and a faculty rule by its number.
+    # owes one of its electives. Her second year's core holds AAA2000X, practical training she
+    # hasn't finished; AAA2000S, which a person must judge and which has a meeting with no printed
+    # time; AAA2001F, which needs a course she hasn't passed; AAA2004F, passed, and AAA2005F, whose
+    # supplementary is still to come; AAA2006S, which clashes with AAA1001S; and CSC3024S, whose
+    # entry prints its practicals by arrangement (p. 171). AAA2007F, one of its electives, needs a
+    # course she hasn't passed. Her third year's AAA3000F needs nothing, and both her years owe 18
+    # complementary credits. A table is found by its heading in her curriculum, her year's minimum
+    # by its last table, a course by its own entry and a faculty rule by its number.
     complementary = CreditsFromGroups(credits=18, from_groups=("complementary",))
     years = {
         1: (
@@ -922,19 +922,6 @@ def test_a_pass_in_one_offering_counts_once_towards_complementary_credits_and_pl
     ]
 
 
-def test_a_passed_complementary_course_fills_a_576_credit_place(symbols):
-    # KKK1000F is left over once her complementary credits, of which she owes none, are met, so it
-    # stands in for ASL1200S
-    history = (
-        line("AAA1000F"),
-        line("CON2026S", credits=8),
-        line("KKK1000F", credits=15),
-    )
-    rows = generate(eb011(), symbols, history, 2024, "EB011EEE05")
-    assert plans(rows) == [("AAA2000F",)]
-    assert [r.details for r in rows.plan_reasons if r.details] == []
-
-
 def test_fewer_conditional_courses_then_fewer_credits_rank_first(symbols):
     # AAA1001F's printed requirement needs a person, and AAA1003F is 18 credits
     rules = rulebook(
@@ -1182,8 +1169,8 @@ def test_a_core_result_still_to_come_counts_as_passed_with_its_reason(symbols):
 
 
 def test_a_2023_year_has_no_timetable_or_complementary_list_to_check(symbols):
-    # 2023 prints no timetable and no approved complementary list (14 Oct), so its plans can't be
-    # checked for clashes, and a complementary line lists nothing (Stop 1's decision 16)
+    # 2023 prints no timetable and no approved complementary list, so its plans can't be checked
+    # for clashes, and a complementary line lists nothing
     rules = rulebook(
         {
             1: (

@@ -1,4 +1,4 @@
-# Checks stored course names follow CP0's title-case rule, on titles printed in the 2023 and 2026
+# Checks stored course names follow my title-case rule, on titles printed in the 2023 and 2026
 # handbooks and the complementary workbook, each cased by hand from the rule
 import pytest
 

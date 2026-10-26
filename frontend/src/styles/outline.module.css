@@ -1,5 +1,6 @@
 /* The outlined look, defined once: a thin border around text, no fill. On hover the text and border
-   turn teal together. Secondary buttons and the Select's button both use it, so they always match. */
+   turn teal together. Secondary and suggestion buttons and the Select's button all use it, so they
+   always match. */
 .outline {
   border: 1px solid var(--color-border);
   color: var(--color-text);

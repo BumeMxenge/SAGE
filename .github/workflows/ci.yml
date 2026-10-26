@@ -10,8 +10,9 @@ on:
 permissions:
   contents: read # the run can read the code and change nothing
 
-# One version of each tool for every job: the same uv as the Dockerfile and laptop. Node's version is
-# in frontend/.nvmrc, which the frontend deploy reads too.
+# One version of each tool for every job: the same uv as the Dockerfile and laptop. Python's version is
+# in backend/.python-version, which uv sync installs. Node's is in frontend/.nvmrc, which the frontend
+# deploy reads too.
 env:
   UV_VERSION: "0.12.23"
 

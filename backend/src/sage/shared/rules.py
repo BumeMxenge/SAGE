@@ -2,6 +2,7 @@
 # rule on these rows except the elective tab, the delta flag and the shape of each rule tree, which
 # only the backend checks.
 from collections import defaultdict
+from collections.abc import Mapping
 from datetime import time
 from functools import partial
 from typing import Annotated, Any, Literal, Self
@@ -17,6 +18,7 @@ from pydantic import (
 )
 
 from sage.shared.base import Row
+from sage.shared.students import PlanCourse
 
 # The term_code domain in the rule-tables migration: every term a course or meeting can run in
 TermCode = Literal[
@@ -242,6 +244,22 @@ class Course(Row):
     summary: str | None = None
 
 
+def offerings(code: str, credits: int, worth: Mapping[str, int]) -> set[str]:
+    # A course's offerings among codes and their credits, itself included: each code whose first
+    # seven characters match at the same credits, so BUS1036F and BUS1036S are one course
+    return {
+        other
+        for other, each in worth.items()
+        if other[:7] == code[:7] and each == credits
+    }
+
+
+def first_offering(code: str, worth: Mapping[str, int]) -> str:
+    # The course a code is one offering of, named by its first offering, as Explore Electives' cards
+    # and a slot's course counts both join a course's offerings
+    return min(offerings(code, worth[code], worth))
+
+
 class CourseGroup(Row):
     handbook_year: int
     group_key: str
@@ -404,8 +422,30 @@ def meetings_on(
     ]
 
 
-# Each table's primary key. The fake keys its rows by it, and a store reads rows in key order,
-# which gives every row one fixed place across pages
+def meetings(
+    course: PlanCourse, rules: RuleSet, curriculum: str
+) -> list[TimetableSlot]:
+    # The meetings she attends: the compulsory ones, and each alternative of a choice group that
+    # fits her plan, or every alternative of a group her plan doesn't record
+    chosen = course.choices or {}
+    attended = [
+        slot
+        for slot in meetings_on(rules, curriculum, course.course_code)
+        if slot.choice_group not in chosen or slot.choice in chosen[slot.choice_group]
+    ]
+    # Unknown days and times last
+    return sorted(
+        attended,
+        key=lambda slot: (
+            slot.day or 8,
+            slot.start_time or time.max,
+            slot.choice or "",
+        ),
+    )
+
+
+# Each table's primary key. The fake keys its rows by it, and the Supabase store reads rows in key
+# order, which gives every row one fixed place across pages
 PRIMARY_KEYS: dict[str, tuple[str, ...]] = {
     "handbook_versions": ("year",),
     "curricula": ("handbook_year", "code"),

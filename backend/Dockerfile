@@ -1,7 +1,8 @@
 # Backend image: installs locked dependencies with uv and serves the FastAPI app with uvicorn
-FROM python:3.12-slim
+# The same Python as .python-version. uv may download no other here, so the build fails if they differ.
+FROM python:3.12.15-slim
 
-COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /bin/
 
 WORKDIR /app
 ENV UV_COMPILE_BYTECODE=1 \

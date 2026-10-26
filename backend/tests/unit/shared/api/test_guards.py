@@ -24,6 +24,7 @@ BEFORE_SETUP = {
 # What another student gets for a request naming Mbali's plans or chats
 NOT_HERS = {
     "GET /v1/plans/{plan_id}": (404, "plan_not_found"),
+    "GET /v1/plans/{plan_id}/previews/{course_code}": (404, "plan_not_found"),
     "GET /v1/plans/compare": (404, "plan_not_found"),
     "GET /v1/chats": (200, []),  # none of hers are listed
     "POST /v1/chats": (404, "plan_not_found"),
@@ -57,6 +58,10 @@ def requests(her) -> dict[str, tuple[str, dict]]:
             {"params": {"first": plan[1], "second": plan[7]}},
         ),
         "GET /v1/plans/{plan_id}": (f"/v1/plans/{plan[1]}", {}),
+        "GET /v1/plans/{plan_id}/previews/{course_code}": (
+            f"/v1/plans/{plan[1]}/previews/SLL1002S",
+            {},
+        ),
         "GET /v1/questionnaire": ("/v1/questionnaire", {}),
         "POST /v1/questionnaire": ("/v1/questionnaire", {"json": {}}),
         "GET /v1/electives": ("/v1/electives", {}),

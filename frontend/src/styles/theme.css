@@ -45,7 +45,9 @@
 
   /* Borders */
   --color-border: #e6e6e8; /* decorative */
-  --color-border-field: #83898d; /* the search field and chat box: the lightest at 3:1 on every surface */
+
+  /* The search field and chat box, as pale as the prototype's: the placeholder marks a field */
+  --color-border-field: #e0e0e3;
   --color-border-control: #7b8286; /* the checkbox, which is only its edge: 3:1 */
 
   /* Focus ring */
@@ -97,7 +99,9 @@
 
   /* Borders */
   --color-border: #161719;
-  --color-border-field: transparent; /* the shaded fill and placeholder mark a field, as in the prototype */
+
+  /* The shaded fill and placeholder mark a field, as in the prototype */
+  --color-border-field: transparent;
   --color-border-control: #6e767a;
 
   /* Focus ring */

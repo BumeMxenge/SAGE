@@ -34,9 +34,11 @@ class Code(StrEnum):
     UNKNOWN_ANSWER = "unknown_answer"
     NO_PLAN_MATCHES = "no_plan_matches"
     COURSE_NOT_FOUND = "course_not_found"
+    COURSE_DOESNT_FIT = "course_doesnt_fit"
     DIFFERENT_PLAN_SETS = "different_plan_sets"
     QUESTIONNAIRE_PENDING = "questionnaire_pending"
     CHAT_NOT_FOUND = "chat_not_found"
+    ADVISOR_UNAVAILABLE = "advisor_unavailable"
 
 
 class Refusal(Exception):
@@ -203,6 +205,11 @@ class CourseNotFound(Refusal):
     message = "That course isn't in the current handbook."
 
 
+class CourseDoesntFit(Refusal):
+    status, code = 422, Code.COURSE_DOESNT_FIT
+    message = "That course isn't one of those that fit this plan's timetable."
+
+
 class DifferentPlanSets(Refusal):
     status, code = 422, Code.DIFFERENT_PLAN_SETS
     message = "Those plans come from different plan sets, so they can't share a chat."
@@ -216,3 +223,10 @@ class QuestionnairePending(Refusal):
 class ChatNotFound(Refusal):
     status, code = 404, Code.CHAT_NOT_FOUND
     message = "There's no chat with that id on your account."
+
+
+class AdvisorUnavailable(Refusal):
+    status, code = 503, Code.ADVISOR_UNAVAILABLE
+    message = (
+        "The advisor can't answer right now, and your question wasn't saved. Try again."
+    )

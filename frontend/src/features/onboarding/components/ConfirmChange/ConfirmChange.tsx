@@ -32,13 +32,7 @@ export function ConfirmChange({
   onConfirm,
 }: ConfirmChangeProps) {
   return (
-    <Dialog
-      title={title}
-      isOpen
-      onOpenChange={(isOpen) => {
-        if (!isOpen) onCancel()
-      }}
-    >
+    <Dialog title={title} onClose={onCancel}>
       <p className={styles.lead}>{lead}</p>
       <dl className={styles.facts}>
         {facts.map(({ term, value, danger }) => (

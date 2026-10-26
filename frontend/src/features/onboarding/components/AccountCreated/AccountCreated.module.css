@@ -23,6 +23,28 @@
   text-align: center;
 }
 
+/* The tick on a round accent tile. Its check is a filled path, so it can't be stroke-drawn: the tile
+   scales up and fades in once instead, and under reduced motion it is simply there. */
+.check {
+  --icon-size: var(--size-icon-lg);
+
+  display: grid;
+  place-items: center;
+  width: var(--space-12);
+  height: var(--space-12);
+  border-radius: var(--radius-full);
+  color: var(--color-on-fill);
+  background: var(--color-accent-large);
+  animation: appear var(--duration-slow) var(--easing) both;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
 .greeting {
   margin: 0;
   font-size: var(--font-size-3xl);

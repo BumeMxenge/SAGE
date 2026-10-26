@@ -39,3 +39,20 @@
   line-height: var(--line-height-heading);
   color: var(--color-text);
 }
+
+/* Greyed: the muted surface, and the title in the secondary text colour, which still reaches 4.5:1 on
+   it */
+.card[data-unavailable] {
+  background: var(--color-surface-muted);
+}
+
+.card[data-unavailable] .title {
+  color: var(--color-text-secondary);
+}
+
+/* Something still to choose: the frame dashed, as the upload drop zone draws a place to fill, in the
+   control border's colour, as the decorative border's dashes barely show on white */
+.card[data-dashed] {
+  border-style: dashed;
+  border-color: var(--color-border-control);
+}

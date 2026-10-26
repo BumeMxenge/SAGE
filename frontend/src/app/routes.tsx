@@ -1,8 +1,9 @@
 // The browser's addresses: one route for each page, saying who may open it and where its page lives.
-// A page loads only when first opened, from a fixed file in the folder of the branch that builds it,
-// so a later branch replaces that file and never edits this table. The table lives in app/, as lib/
-// may not import a feature.
-import type { ComponentType } from 'react'
+// A page's file loads only when the page is first opened. The student's frame loads with the app,
+// so the first load can show it while the guard decides. The table lives in app/, as lib/ may not
+// import a feature.
+import { isCancelledError } from '@tanstack/react-query'
+import { type ComponentType, lazy } from 'react'
 import { replace, type RouteObject } from 'react-router'
 import { ApiError } from '@/lib/api.ts'
 import { signInFinished } from '@/lib/auth/session.ts'
@@ -10,6 +11,8 @@ import { pageNames, pageTitle } from '@/lib/copy.ts'
 import { queryClient } from '@/lib/queryClient.ts'
 import { queries } from '@/lib/queryKeys.ts'
 import { supabase } from '@/lib/supabase.ts'
+import { AppLayout } from './AppLayout.tsx'
+import { HeldPage } from './HeldPage.tsx'
 import { Root } from './Root.tsx'
 import { RouteError } from './RouteError.tsx'
 
@@ -36,6 +39,10 @@ async function visitor(): Promise<Visitor> {
     if (me.account === 'staff') return 'staff'
     return me.onboarding_complete ? 'student' : 'onboarding'
   } catch (error) {
+    // The first load's frame reads who is visiting while the guard waits, and the read it shares with
+    // the guard is cancelled if the frame closes before the answer comes, as React's StrictMode closes
+    // and opens it again in development. Then the guard asks again.
+    if (isCancelledError(error)) return visitor()
     // The API refused the session, or the account isn't a UCT one. Anything else, such as SAGE not
     // answering, shows the route error page.
     if (error instanceof ApiError && error.code === 'not_signed_in') return 'signed_out'
@@ -44,37 +51,66 @@ async function visitor(): Promise<Visitor> {
   }
 }
 
-// The loader of a page that one kind of visitor may open. Everyone else goes home, replacing the
-// address, so Back never returns to a page that sends them away, and a sign-in link's token leaves
-// no entry in the browser's history.
-const guard = (opens: Visitor) => async () => {
+// The loader of a page that one kind of visitor may open, and that may ask more of them. Everyone else
+// goes home, replacing the address, so Back never returns to a page that sends them away, and a
+// sign-in link's token leaves no entry in the browser's history.
+const guard = (opens: Visitor, needs?: () => Promise<boolean>) => async () => {
   const who = await visitor()
-  if (who !== opens) throw replace(home[who])
+  if (who !== opens || (needs && !(await needs()))) throw replace(home[who])
   return null
 }
 
-type Page = { path: string; opens: Visitor; name: string; load: () => Promise<{ Component: ComponentType }> }
+// Explore Electives is for choosing a complementary course, so it opens only for a student whose plans
+// have a slot for one, as her plan set says. Plans that aren't ready have none yet.
+async function hasSlot(): Promise<boolean> {
+  try {
+    return (await queryClient.query(queries.plans())).has_slot
+  } catch (error) {
+    if (error instanceof ApiError && error.code === 'plans_not_ready') return false
+    throw error
+  }
+}
 
-const page = ({ path, opens, name, load }: Page): RouteObject => ({
+// A student's page also says what the first load draws in her frame while the guard decides: the
+// page itself, held, which draws its skeleton and reads nothing, or the frame alone, for a page with
+// no skeleton
+type Page = {
+  path: string
+  opens: Visitor
+  name: string
+  load: () => Promise<{ Component: ComponentType<{ held?: boolean }> }>
+  waiting?: 'held' | 'frame'
+  needs?: () => Promise<boolean>
+}
+
+const frameAlone = () => null
+
+const page = ({ path, opens, name, load, waiting, needs }: Page): RouteObject => ({
   path,
-  loader: guard(opens),
+  loader: guard(opens, needs),
   handle: { title: pageTitle(name) },
   lazy: load,
+  hydrateFallbackElement:
+    waiting === 'held' ? <HeldPage page={lazy(async () => ({ default: (await load()).Component }))} /> : undefined,
+  HydrateFallback: waiting === 'frame' ? frameAlone : undefined,
 })
 
 export const routes: RouteObject[] = [
   {
     Component: Root,
     ErrorBoundary: RouteError,
-    // Nothing shows until the guard has decided, so no page flashes before a redirect
+    // Nothing shows until the guard has decided, so no page flashes before a redirect. A student's
+    // address draws her frame and its page's skeleton instead (below).
     HydrateFallback: () => null,
     children: [
-      // / keeps no one: it sends each visitor home
+      // / keeps no one: it sends each visitor home, so it draws nothing. Saying so tells React Router
+      // the page is empty on purpose, which it otherwise warns of.
       {
         index: true,
         loader: async () => {
           throw replace(home[await visitor()])
         },
+        Component: () => null,
       },
       page({
         path: '/sign-in',
@@ -101,32 +137,38 @@ export const routes: RouteObject[] = [
         load: async () => ({ Component: (await import('./StaffPage.tsx')).StaffPage }),
       }),
       {
-        // The student's pages, in the shell's frame
-        lazy: async () => ({ Component: (await import('./AppLayout.tsx')).AppLayout }),
+        // The student's pages, in the shell's frame. React Router draws a page's fallback inside its
+        // parents only once none of them is still loading, so the frame loads with the app.
+        Component: AppLayout,
         children: [
           page({
             path: '/plan',
             opens: 'student',
             name: pageNames.plan,
             load: async () => ({ Component: (await import('./PlanWorkspace.tsx')).PlanWorkspace }),
+            waiting: 'held',
           }),
           page({
             path: '/plan/:planId',
             opens: 'student',
             name: pageNames.plan,
             load: async () => ({ Component: (await import('./PlanWorkspace.tsx')).PlanWorkspace }),
+            waiting: 'held',
           }),
           page({
             path: '/electives',
             opens: 'student',
             name: pageNames.electives,
             load: async () => ({ Component: (await import('@/features/electives/ElectivesPage.tsx')).ElectivesPage }),
+            waiting: 'held',
+            needs: hasSlot,
           }),
           page({
             path: '/history',
             opens: 'student',
             name: pageNames.history,
             load: async () => ({ Component: (await import('@/features/history/HistoryPage.tsx')).HistoryPage }),
+            waiting: 'held',
           }),
           // An address that isn't a page. It sits in the student's frame, so only a student sees it;
           // anyone else goes home.
@@ -135,6 +177,7 @@ export const routes: RouteObject[] = [
             opens: 'student',
             name: pageNames.notFound,
             load: async () => ({ Component: (await import('./NotFoundPage.tsx')).NotFoundPage }),
+            waiting: 'frame',
           }),
         ],
       },

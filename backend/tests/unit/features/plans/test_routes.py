@@ -1,7 +1,10 @@
 # Checks the planner's plan reads on Mbali's seeded set: what the set shows, each plan in full, and a
 # comparison, which needs both plans to be hers. Her other plans and chats are guarded in
-# test_guards.py.
-from tests.unit.accounts import MBALI
+# test_guards.py. Then the complementary slots, on Ziyela's seeded set and on a place built here.
+from uuid import uuid4
+
+from sage.shared.students import Plan, PlanReason, PlanSet, PlanSetRows
+from tests.unit.accounts import MBALI, NTWZIY
 
 
 def test_her_set_has_10_plans_and_7_still_visible(mbali):
@@ -33,7 +36,11 @@ def test_every_plan_has_138_credits_split_by_term(mbali, plan_ids):
     # EEE4022S's 40
     for plan_id in plan_ids.values():
         credits = mbali.get(f"/v1/plans/{plan_id}").json()["credits"]
-        assert credits == {"total": 138, "by_term": {"sem1": 74, "q3": 24, "sem2": 40}}
+        assert credits == {
+            "total": 138,
+            "by_term": {"sem1": 74, "q3": 24, "sem2": 40},
+            "to_choose": 0,
+        }
 
 
 def test_position_7_adds_one_reason_of_its_own(mbali, plan_ids):
@@ -68,7 +75,7 @@ def test_a_plan_shows_each_courses_groups_and_meetings(mbali, plan_ids):
 def test_her_plan_shows_the_meetings_only_her_curriculum_has(mbali, plan_ids):
     # EEE4120F's Thursday 16:00 meeting is printed on her EB011 sheet (F61:F62) but not on EB022's,
     # so it's linked to the Mechatronics curricula, and plan 3 shows it as the route hands the filter
-    # her curriculum. The filter itself is tested in tests/unit/features/plans/test_service.py.
+    # her curriculum. The filter itself is tested in tests/unit/shared/test_rules.py.
     courses = {
         course["code"]: course
         for course in mbali.get(f"/v1/plans/{plan_ids[3]}").json()["courses"]
@@ -108,6 +115,120 @@ def test_another_students_plan_beside_their_own_is_not_found(signed_in, plan_ids
         "/v1/plans/compare", params={"first": own, "second": plan_ids[1]}
     )
     assert (response.status_code, response.json()["code"]) == (404, "plan_not_found")
+
+
+def test_only_a_set_with_a_slot_says_it_has_one(mbali, ziyela):
+    # Mbali's record shows her complementary courses passed. Ziyela still owes her third year's.
+    assert mbali.get("/v1/plans").json()["has_slot"] is False
+    assert ziyela.get("/v1/plans").json()["has_slot"] is True
+
+
+def test_each_of_ziyelas_plans_leaves_her_an_18_credit_line_to_choose(ziyela):
+    # Her third year's table (p. 58) asks for 18 complementary credits, still owed, so each plan
+    # carries one line. Plan 2's slot lists 51 offerings, four of them courses offered twice
+    # (BUS1036, BUS2010, SLL1017 and SLL1029), so 47 courses. 39 of the offerings have a meeting
+    # with no printed time or fewer than 18 credits, both offerings of those four among them, so
+    # 35 courses need a check.
+    summaries = ziyela.get("/v1/plans").json()["plans"]
+    assert [summary["to_choose"] for summary in summaries] == [18] * 10
+    plan = ziyela.get(f"/v1/plans/{summaries[1]['id']}").json()
+    assert plan["credits"]["to_choose"] == 18
+    (slot,) = plan["slots"]
+    assert (slot["kind"], slot["credits"], slot["replaces"]) == ("line", 18, None)
+    assert (slot["fit_count"], slot["check_count"]) == (47, 35)
+
+
+def test_a_place_names_the_course_it_stands_in_for(mbali, stores):
+    # A later set for Mbali, made up, whose one plan still owes ASL1200S, so its 576-credit place
+    # takes an approved course of at least 8 credits
+    later = PlanSet(id=uuid4(), student_id=MBALI, period=2026, version=2, complete=True)
+    plan = Plan(
+        id=uuid4(), plan_set_id=later.id, student_id=MBALI, position=1, name="Made Up"
+    )
+    place = PlanReason(
+        id=uuid4(),
+        plan_set_id=later.id,
+        student_id=MBALI,
+        plan_id=plan.id,
+        kind="included",
+        message="A made-up place.",
+        details={
+            "credits": 8,
+            "fits": [],
+            "untimed": [],
+            "fewer_credits": [],
+            "sections": {},
+            "forced": {},
+            "owed": "ASL1200S",
+        },
+    )
+    stores[1].add_plan_set(
+        PlanSetRows(plan_set=later, plans=(plan,), plan_reasons=(place,))
+    )
+    (slot,) = mbali.get(f"/v1/plans/{plan.id}").json()["slots"]
+    assert (slot["kind"], slot["credits"], slot["replaces"]) == ("place", 8, "ASL1200S")
+    summary = mbali.get("/v1/plans").json()
+    assert (summary["has_slot"], summary["plans"][0]["to_choose"]) == (True, 8)
+
+
+def test_a_reason_names_its_course_and_the_passage_it_cites(mbali, stores):
+    # A later set for Mbali, made up, with a reason about the whole set and one about its one plan,
+    # each citing a passage of the approved 2026, as the EB009 note on electives in one slot does
+    cited = stores[0].get(2026).passages[0]
+    later = PlanSet(id=uuid4(), student_id=MBALI, period=2026, version=2, complete=True)
+    plan = Plan(
+        id=uuid4(), plan_set_id=later.id, student_id=MBALI, position=1, name="Made Up"
+    )
+    reasons = tuple(
+        PlanReason(
+            id=uuid4(),
+            plan_set_id=later.id,
+            student_id=MBALI,
+            plan_id=plan_id,
+            kind=kind,
+            course_code="EEE4119F",
+            message="A made-up reason.",
+            passage_id=cited.id,
+        )
+        for plan_id, kind in ((None, "conditional"), (plan.id, "included"))
+    )
+    stores[1].add_plan_set(
+        PlanSetRows(plan_set=later, plans=(plan,), plan_reasons=reasons)
+    )
+    shown = {"course_code": "EEE4119F", "message": "A made-up reason."}
+    shown |= {"source": cited.source, "section": cited.section, "page": cited.page}
+    assert mbali.get("/v1/plans").json()["reasons"] == [
+        {"kind": "conditional", **shown}
+    ]
+    # The plan's own read gives the set's reasons, then its own
+    assert mbali.get(f"/v1/plans/{plan.id}").json()["reasons"] == [
+        {"kind": "conditional", **shown},
+        {"kind": "included", **shown},
+    ]
+
+
+def test_a_preview_adds_the_course_to_her_plan_and_saves_nothing(ziyela, stores):
+    # Her plan 2's slot lists SLL1002S, a 15-credit course, on 138 credits. How its sections narrow
+    # and fix her plan's own is checked in test_service.py, on a plan where that shows.
+    plan = ziyela.get("/v1/plans").json()["plans"][1]
+    held = stores[1].get(NTWZIY)
+    preview = ziyela.get(f"/v1/plans/{plan['id']}/previews/SLL1002S").json()
+    assert (preview["course_code"], preview["forced"]) == ("SLL1002S", [])
+    courses = {course["code"]: course for course in preview["plan"]["courses"]}
+    assert courses["SLL1002S"]["credits"] == 15
+    assert (preview["plan"]["credits"]["total"], preview["plan"]["slots"]) == (153, [])
+    assert stores[1].get(NTWZIY) == held
+    assert "SLL1002S" not in {
+        course["code"]
+        for course in ziyela.get(f"/v1/plans/{plan['id']}").json()["courses"]
+    }
+
+
+def test_a_preview_of_a_course_that_doesnt_fit_the_plan_is_refused(ziyela):
+    # The engine lists FAM2000F in plans 3, 9 and 10 only
+    plan = ziyela.get("/v1/plans").json()["plans"][0]
+    response = ziyela.get(f"/v1/plans/{plan['id']}/previews/FAM2000F")
+    assert (response.status_code, response.json()["code"]) == (422, "course_doesnt_fit")
 
 
 def test_no_complete_set_means_plans_arent_ready(mbali, stores):

@@ -21,6 +21,7 @@ from sage.shared.rules import (
     RuleSet,
     StudentIn,
     continues,
+    offerings,
 )
 from sage.shared.students import CourseHistoryLine, Student, final_mark
 
@@ -95,22 +96,18 @@ class Record:
         # The codes a pass in this course counts for: itself, and at most one step of each kind, in
         # either order, so PHY1014S reaches PHY1012F through PHY1014F
         counted = self._counts_as[code]
-        offered = self._offered(code, credits)
+        offered = offerings(code, credits, self._credits)
         return (
             {code}
             | counted
             | offered
-            | {far for near in counted for far in self._offered(near, credits)}
+            | {
+                far
+                for near in counted
+                for far in offerings(near, credits, self._credits)
+            }
             | {far for near in offered for far in self._counts_as[near]}
         )
-
-    def _offered(self, code: str, credits: int) -> set[str]:
-        # The year's offerings of the same course at the same credits
-        return {
-            other
-            for other, worth in self._credits.items()
-            if other[:7] == code[:7] and worth == credits
-        }
 
     def passed(self, code: str) -> CourseHistoryLine | None:
         # Her first line that passes this course, if any
@@ -238,7 +235,7 @@ def evaluate(
 def leaf(
     node: CourseNeed | StudentIn | MinYearOfStudy | Refer,
     record: Record,
-    plan: Plan | None = None,
+    plan: Plan | None,
 ) -> Value:
     if isinstance(node, Refer):
         return "unknown"

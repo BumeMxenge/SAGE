@@ -10,11 +10,11 @@ from sage.ingestion.timetable import Printed
 from sage.shared.rules import AnyOf, Course, CourseNeed, Equivalence
 
 
-def entry(code, credits=16, nqf_level=7, term=None, name="Energy Systems and Grids I"):
+def entry(term=None):
     return Entry(
-        name=name,
-        credits=credits,
-        nqf_level=nqf_level,
+        name="Energy Systems and Grids I",
+        credits=16,
+        nqf_level=7,
         term=term,
         convener=None,
         requirement=None,
@@ -24,12 +24,12 @@ def entry(code, credits=16, nqf_level=7, term=None, name="Energy Systems and Gri
     )
 
 
-def listed(code, credits=16, nqf_level=7):
+def listed(code, nqf_level=7):
     return Listed(
         curriculum="EB022EEE02",
         year=2,
         code=code,
-        credits=credits,
+        credits=16,
         nqf_level=nqf_level,
         page=53,
     )
@@ -97,7 +97,7 @@ def offering(code, credits):
         (
             lambda: checks.entries(
                 [listed("EEE3100S"), listed("ASL1200S")],
-                {"EEE3100S": entry("EEE3100S")},
+                {"EEE3100S": entry()},
             ),
             (
                 "p. 53",
@@ -109,7 +109,7 @@ def offering(code, credits):
             # The boundary: credits agree but the NQF level doesn't
             lambda: checks.credits(
                 [listed("EEE3100S"), listed("EEE3091F", nqf_level=6)],
-                {"EEE3100S": entry("EEE3100S"), "EEE3091F": entry("EEE3091F")},
+                {"EEE3100S": entry(), "EEE3091F": entry()},
             ),
             (
                 "p. 53 and p. 138",
@@ -120,8 +120,8 @@ def offering(code, credits):
         (
             lambda: checks.terms(
                 {
-                    "PHY1012F": entry("PHY1012F", term="sem1"),
-                    "PHY1013S": entry("PHY1013S", term="sem1"),
+                    "PHY1012F": entry(term="sem1"),
+                    "PHY1013S": entry(term="sem1"),
                 },
                 [],
             ),
@@ -188,7 +188,7 @@ def offering(code, credits):
         (
             lambda: checks.overlaps(
                 [offering("EEE3100S", 16), offering("EEE3093S", 18)],
-                {"EEE3100S": entry("EEE3100S"), "EEE3093S": entry("EEE3093S")},
+                {"EEE3100S": entry(), "EEE3093S": entry()},
             ),
             (
                 "Courses row 12 and p. 138",
