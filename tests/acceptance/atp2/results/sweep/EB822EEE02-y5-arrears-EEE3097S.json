@@ -1,0 +1,361 @@
+{
+  "students": [
+    {
+      "curriculum_code": "EB822EEE02",
+      "intake_year": 2022,
+      "onboarding_complete": true
+    }
+  ],
+  "course_history": [
+    {
+      "academic_year": 2022,
+      "term": "sem1",
+      "course_code": "EEE1008F",
+      "course_name": "Introduction to Electrical Engineering A",
+      "credits": 12,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 68
+    },
+    {
+      "academic_year": 2022,
+      "term": "sem2",
+      "course_code": "EEE1009S",
+      "course_name": "Introduction to Electrical Engineering B",
+      "credits": 12,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 82
+    },
+    {
+      "academic_year": 2022,
+      "term": "sem1",
+      "course_code": "MAM1023F",
+      "course_name": "Mathematics 1A for Engineers Extended",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2+",
+      "mark": 73
+    },
+    {
+      "academic_year": 2022,
+      "term": "sem2",
+      "course_code": "MAM1024S",
+      "course_name": "Mathematics 1B for Engineers Extended",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 79
+    },
+    {
+      "academic_year": 2022,
+      "term": "sem1",
+      "course_code": "PHY1014F",
+      "course_name": "Physics A for ASPECT",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 66
+    },
+    {
+      "academic_year": 2022,
+      "term": "sem2",
+      "course_code": "PHY1015S",
+      "course_name": "Physics B for ASPECT",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 62
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "CSC1015F",
+      "course_name": "Computer Science 1015",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 79
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "CSC1016S",
+      "course_name": "Computer Science 1016",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 77
+    },
+    {
+      "academic_year": 2023,
+      "term": "other",
+      "course_code": "EEE1000X",
+      "course_name": "Practical Training",
+      "credits": 0,
+      "nqf_level": 5,
+      "result": "PA",
+      "mark": null
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "EEE2045F",
+      "course_name": "Analogue Electronics",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "1",
+      "mark": 80
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "EEE2047S",
+      "course_name": "Signals and Systems I",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 67
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "MAM2084S",
+      "course_name": "Linear Algebra & Differential Equations for Engineers",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 64
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "MAM2085F",
+      "course_name": "Vector Calculus for ASPECT",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 64
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem1",
+      "course_code": "MEC1003F",
+      "course_name": "Engineering Drawing",
+      "credits": 8,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 75
+    },
+    {
+      "academic_year": 2023,
+      "term": "sem2",
+      "course_code": "CON2026S",
+      "course_name": "Project Management for Engineers",
+      "credits": 8,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 63
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "CSC2001F",
+      "course_name": "Computer Science 2001",
+      "credits": 24,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 67
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "EEE2044S",
+      "course_name": "Introduction to Power Engineering",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 68
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "EEE2046F",
+      "course_name": "Embedded Systems I",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 69
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "EEE2048S",
+      "course_name": "Professional Communication for Electrical Engineering",
+      "credits": 8,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 66
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem1",
+      "course_code": "MEC1009F",
+      "course_name": "Introduction to Engineering Mechanics",
+      "credits": 16,
+      "nqf_level": 5,
+      "result": "2+",
+      "mark": 74
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "PHY2010S",
+      "course_name": "Electromagnetism for Engineers",
+      "credits": 16,
+      "nqf_level": 6,
+      "result": "2-",
+      "mark": 63
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "AGE1002S",
+      "course_name": "The Human Planet: Prehistory to Present",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 84
+    },
+    {
+      "academic_year": 2024,
+      "term": "sem2",
+      "course_code": "ASL1200S",
+      "course_name": "Africa: Culture, ID & Globalisation",
+      "credits": 8,
+      "nqf_level": 5,
+      "result": "3",
+      "mark": 59
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "CML4607F",
+      "course_name": "Law for Engineers",
+      "credits": 10,
+      "nqf_level": 8,
+      "result": "1",
+      "mark": 77
+    },
+    {
+      "academic_year": 2025,
+      "term": "other",
+      "course_code": "EEE3000X",
+      "course_name": "Practical Training",
+      "credits": 0,
+      "nqf_level": 7,
+      "result": "PA",
+      "mark": null
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3088F",
+      "course_name": "Electrical Engineering Design Principles",
+      "credits": 8,
+      "nqf_level": 7,
+      "result": "2-",
+      "mark": 61
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3089F",
+      "course_name": "Electromagnetic Engineering",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "2+",
+      "mark": 72
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3090F",
+      "course_name": "Electronic Devices & Circuits",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "2-",
+      "mark": 63
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE3092F",
+      "course_name": "Signals & Systems II",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "2-",
+      "mark": 66
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3096S",
+      "course_name": "Embedded Systems II",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "2-",
+      "mark": 68
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3097S",
+      "course_name": "Engineering Design: Electrical and Computer Engineering",
+      "credits": 8,
+      "nqf_level": 7,
+      "result": "F",
+      "mark": 40
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3093S",
+      "course_name": "Communication and Network Engineering",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "1",
+      "mark": 84
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE3094S",
+      "course_name": "Control Systems Engineering",
+      "credits": 16,
+      "nqf_level": 7,
+      "result": "2+",
+      "mark": 74
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE4022S",
+      "course_name": "Research Project",
+      "credits": 40,
+      "nqf_level": 8,
+      "result": "2+",
+      "mark": 72
+    },
+    {
+      "academic_year": 2025,
+      "term": "q3",
+      "course_code": "EEE4124C",
+      "course_name": "Impact of Engineering on the Natural and Social Environment",
+      "credits": 8,
+      "nqf_level": 8,
+      "result": "2-",
+      "mark": 60
+    }
+  ]
+}

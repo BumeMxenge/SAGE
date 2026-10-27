@@ -1,0 +1,91 @@
+{
+  "students": [
+    {
+      "curriculum_code": "EB822EEE02",
+      "intake_year": 2025,
+      "onboarding_complete": true
+    }
+  ],
+  "course_history": [
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "EEE1008F",
+      "course_name": "Introduction to Electrical Engineering A",
+      "credits": 12,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 66
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "EEE1009S",
+      "course_name": "Introduction to Electrical Engineering B",
+      "credits": 12,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 80
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "MAM1023F",
+      "course_name": "Mathematics 1A for Engineers Extended",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "F",
+      "mark": 40
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "MAM1024S",
+      "course_name": "Mathematics 1B for Engineers Extended",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 79
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "PHY1014F",
+      "course_name": "Physics A for ASPECT",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 66
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "PHY1015S",
+      "course_name": "Physics B for ASPECT",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2+",
+      "mark": 71
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem1",
+      "course_code": "CSC1015F",
+      "course_name": "Computer Science 1015",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "1",
+      "mark": 81
+    },
+    {
+      "academic_year": 2025,
+      "term": "sem2",
+      "course_code": "CSC1016S",
+      "course_name": "Computer Science 1016",
+      "credits": 18,
+      "nqf_level": 5,
+      "result": "2-",
+      "mark": 68
+    }
+  ]
+}
