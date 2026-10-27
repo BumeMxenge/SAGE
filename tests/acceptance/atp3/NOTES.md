@@ -114,3 +114,7 @@ Pay particular attention to P01's ASPECT passage, P03/P04's full FB9.2 condition
 ## Decided before the run
 
 P16 to P19 depart from the literal slice rule in the pre-run handover. Their quotes, the EEE3094S and EEE3092F entries on p. 135 for R1 and the EEE4120F entry on p. 140 for R4, aren't in the student's slice, so the rule read literally would make all four refer. They stay firm_no, because SAGE gets the verdict and its reason from its eligibility check, so the answer is grounded without the passage. The referral override covers only an answer that rests on the handbook alone, with no engine verdict or plan fact behind it. Decided on 27 October 2026 at Stop 2, before any reply existed.
+
+## The human sample
+
+My marks on the 40 sampled replies aren't blind to the judge's marks. Before marking, I read the Stop 3 summary, which names every SAGE reply the judge found unsupported or wrong, with its cause, including the nine where the reply was right and the judge erred: P02-3, P06-1, P06-2, P08-2, P10-2, P28-1 to P28-3 and P33-2. Recorded on 27 October 2026, before my marks were saved.
