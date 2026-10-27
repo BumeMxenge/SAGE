@@ -1,0 +1,81 @@
+diff --git a/frontend/src/features/assistant/AssistantRail.tsx b/frontend/src/features/assistant/AssistantRail.tsx
+index 00ee0a3..8cdb37f 100644
+--- a/frontend/src/features/assistant/AssistantRail.tsx
++++ b/frontend/src/features/assistant/AssistantRail.tsx
+@@ -15,7 +15,7 @@
+ // Pressing a toggle moves focus to the one that replaces it, as the sidebar's do, and what is
+ // folded away isn't there to take focus.
+ import { useIsMutating, useMutation, useMutationState, useQuery } from '@tanstack/react-query'
+-import { useState } from 'react'
++import { useRef, useState } from 'react'
+ import { IconButton } from '@/components/actions/IconButton/IconButton.tsx'
+ import { Icon } from '@/components/brand/Icon/Icon.tsx'
+ import { Arrival } from '@/components/feedback/Arrival/Arrival.tsx'
+@@ -61,6 +61,8 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
+   const [picked, setPicked] = useState<Partial<Record<string, string | null>>>({})
+   // The question last sent from each plan and pair, with its chat once that's made
+   const [turns, setTurns] = useState<Partial<Record<string, Turn>>>({})
++  // ATP-4's planted fault: the chat on screen when a reply lands, which is given the reply
++  const onScreen = useRef<string | null | undefined>(undefined)
+   // Her set and the plan or pair on screen, as the plan view reads them beside it. The assistant only
+   // watches those reads, so the first load's frame asks for nothing before the guard decides.
+   const single = useQuery({ ...queries.plan(planId), enabled: false })
+@@ -72,9 +74,13 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
+   const asking = useMutation({
+     mutationKey: turnKey(scope),
+     mutationFn: ask,
+-    // The question and its reply join the chat, the reply may bring the chat its first title, and a
+-    // plan it offers joins her plan list. Her question stays on screen until they arrive.
+-    onSuccess: (chatId) => refresh.messageSent(chatId),
++    // ATP-4's planted fault: the exchange joins whichever chat is on screen, and nothing is refreshed
++    onSuccess: (exchange) =>
++      queryClient.setQueryData(queries.messages(onScreen.current ?? '').queryKey, (before) => [
++        ...(before ?? []),
++        exchange.question,
++        exchange.reply,
++      ]),
+     // Kept until she reloads: a finished question nothing watches is otherwise dropped after five
+     // minutes, taking with it a failure she left in another view
+     gcTime: Infinity,
+@@ -88,25 +94,15 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
+   // app's error states come
+   if (set?.questionnaire_needed || setRead.isError) return null
+ 
+-  // Sends a question, first making its chat if it has none, and gives back the chat it went to
+-  async function ask(question: Turn): Promise<string> {
++  // Sends a question, first making its chat if it has none, and gives back its exchange
++  async function ask(question: Turn) {
+     const chatId = question.chatId ?? (await start(question))
+-    const before = queryClient.getQueryData(queries.messages(chatId).queryKey)?.length ?? 0
+-    try {
+-      await dataOf(
+-        client.POST('/v1/chats/{chat_id}/messages', {
+-          params: { path: { chat_id: chatId } },
+-          body: { content: question.content, term: question.term },
+-        }),
+-      )
+-    } catch (failure) {
+-      // A failure that can't say what was stored is checked against the chat itself, so a question
+-      // already answered isn't offered again
+-      if (!(failure instanceof ApiError) || !unsure.includes(failure.code)) throw failure
+-      const after = await queryClient.fetchQuery({ ...queries.messages(chatId), staleTime: 0 })
+-      if (after.length <= before) throw failure
+-    }
+-    return chatId
++    return dataOf(
++      client.POST('/v1/chats/{chat_id}/messages', {
++        params: { path: { chat_id: chatId } },
++        body: { content: question.content, term: question.term },
++      }),
++    )
+   }
+ 
+   async function start(question: Turn): Promise<string> {
+@@ -129,6 +125,7 @@ export function AssistantRail({ open, onOpenChange }: AssistantRailProps) {
+   const chosen = picked[scope]
+   // The chat open in this view, or undefined until her chats say which is the newest
+   const chatId = chosen === undefined ? chats.data && (chats.data.at(0)?.id ?? null) : chosen
++  onScreen.current = chatId
+ 
+   function send(content: string) {
+     // The chat box holds Send until the chat is known

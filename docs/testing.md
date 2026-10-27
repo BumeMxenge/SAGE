@@ -19,7 +19,7 @@ A test is worth keeping if it catches a fault. So the backend's suite is kept sm
 | --- | --- | --- | --- |
 | Unit | Each rule, on in-memory stores holding the approved 2026 rulebook, with no network | `backend/tests/unit`, whose folders mirror the source's, and the in-memory half of `backend/tests/database/test_repository_contract.py` | `make test`. CI runs it on every pull request and every push to main |
 | Integration | The Supabase adapters, the migrations, row level security, which refuses every browser write to rule and student rows alike, and real sign-in tokens, against a rebuilt local database holding both approved years | `backend/tests/database` | `make check-db`, with Docker running. It wipes local data. CI runs it on every pull request and every push to main |
-| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened | `tests/acceptance/atp1`: its label sheets, its harness and its first result | `make atp1`, on the laptop, from the held-out drafts its first run cached, so it calls no model. The harness's own tests run in `make test` |
+| Acceptance | The finished system, against held-back cases (the ATPs). ATP-1 measures ingestion against labels written from print and committed before any run, including two departments no build branch opened. ATP-4 checks that the plan on screen, the chat and the advisor's context stay in step, and that it catches a planted fault | `tests/acceptance/atp1`: its label sheets, its harness and its first result. `tests/acceptance/atp4`: its harness and first result | `make atp1`, on the laptop, from the held-out drafts its first run cached, so it calls no model. `make atp4`, on the laptop, with local Supabase and a fake advisor, so it calls no model either. The harnesses' own tests run in `make test` |
 
 ## Ingestion tests
 
@@ -72,6 +72,12 @@ ATP-1 asks how well ingestion reads print, and whether anything wrong gets into 
 - Those drafts were made once, with Claude Haiku 5.5, and the harness keeps no way to draft again: a new draft would be a retest.
 - The harness's own tests, in `tests/acceptance/atp1/test_scoring.py`, check its scoring with values worked out by hand. `make test` collects them, so CI runs them. None reads a source or calls a model.
 - `tests/acceptance/atp1/results/` keeps the first result. A fault it finds is fixed on its own branch, and the retest goes beside the first result, never over it.
+
+ATP-4 asks whether the plan on screen, the chat and the advisor's context stay in step after switches, reloads and late replies (NF-3), and shows the test can fail by catching a planted fault. [Its README](../tests/acceptance/atp4/README.md) gives the scenarios and the checks.
+
+- `make atp4` starts SAGE's API on 8001 with only the advisor swapped for a fake, and this worktree's frontend on 3001, then plays six scenarios ten times each in a real browser for a made-up student it creates and deletes.
+- It then applies `planted-fault.patch`, which makes the assistant show a late reply in whichever chat is open, plays S1 and S5 again, and reverts it. The patch is never committed to `src`.
+- Its checks' own tests, in `tests/acceptance/atp4/test_check.py`, run in `make test` on made-up runs, so CI runs them with no browser, database or model.
 
 ## The dependency check
 
