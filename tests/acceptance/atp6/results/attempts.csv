@@ -1,0 +1,169 @@
+category,route,visitor,expected,actual,result
+route,GET /v1/me,owner,reachable (not blocked),200,pass
+route,GET /v1/me,other,reachable (not blocked),200,pass
+route,GET /v1/me,staff,200,200,pass
+route,GET /v1/me,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/me,forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/catalogue,owner,reachable (not blocked),200,pass
+route,GET /v1/catalogue,other,reachable (not blocked),200,pass
+route,GET /v1/catalogue,staff,403 students_only,403 students_only,pass
+route,GET /v1/catalogue,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/catalogue,forged,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/onboarding/transcript,owner,reachable (not blocked),200,pass
+route,POST /v1/onboarding/transcript,other,422 transcript_not_yours,422 transcript_not_yours,pass
+route,POST /v1/onboarding/transcript,staff,403 students_only,403 students_only,pass
+route,POST /v1/onboarding/transcript,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/onboarding/transcript,forged,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/onboarding/complete,owner,reachable (not blocked),200,pass
+route,POST /v1/onboarding/complete,other,reachable (not blocked),200,pass
+route,POST /v1/onboarding/complete,staff,403 students_only,403 students_only,pass
+route,POST /v1/onboarding/complete,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/onboarding/complete,forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans,owner,reachable (not blocked),200,pass
+route,GET /v1/plans,other,reachable (not blocked),200,pass
+route,GET /v1/plans,staff,403 students_only,403 students_only,pass
+route,GET /v1/plans,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans,forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/compare,owner,reachable (not blocked),200,pass
+route,GET /v1/plans/compare,other,404 plan_not_found,404 plan_not_found,pass
+route,GET /v1/plans/compare,staff,403 students_only,403 students_only,pass
+route,GET /v1/plans/compare,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/compare,forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/{plan_id},owner,reachable (not blocked),200,pass
+route,GET /v1/plans/{plan_id},other,404 plan_not_found,404 plan_not_found,pass
+route,GET /v1/plans/{plan_id},staff,403 students_only,403 students_only,pass
+route,GET /v1/plans/{plan_id},signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/{plan_id},forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/{plan_id}/previews/{course_code},owner,reachable (not blocked),200,pass
+route,GET /v1/plans/{plan_id}/previews/{course_code},other,404 plan_not_found,404 plan_not_found,pass
+route,GET /v1/plans/{plan_id}/previews/{course_code},staff,403 students_only,403 students_only,pass
+route,GET /v1/plans/{plan_id}/previews/{course_code},signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/{plan_id}/previews/{course_code},forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/questionnaire,owner,reachable (not blocked),200,pass
+route,GET /v1/questionnaire,other,reachable (not blocked),200,pass
+route,GET /v1/questionnaire,staff,403 students_only,403 students_only,pass
+route,GET /v1/questionnaire,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/questionnaire,forged,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/questionnaire,owner,reachable (not blocked),409 questionnaire_answered,pass
+route,POST /v1/questionnaire,other,reachable (not blocked),409 questionnaire_answered,pass
+route,POST /v1/questionnaire,staff,403 students_only,403 students_only,pass
+route,POST /v1/questionnaire,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/questionnaire,forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/electives,owner,reachable (not blocked),200,pass
+route,GET /v1/electives,other,reachable (not blocked),200,pass
+route,GET /v1/electives,staff,403 students_only,403 students_only,pass
+route,GET /v1/electives,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/electives,forged,401 not_signed_in,401 not_signed_in,pass
+route,PUT /v1/favourites/{course_code},owner,reachable (not blocked),204,pass
+route,PUT /v1/favourites/{course_code},other,reachable (not blocked),204,pass
+route,PUT /v1/favourites/{course_code},staff,403 students_only,403 students_only,pass
+route,PUT /v1/favourites/{course_code},signed_out,401 not_signed_in,401 not_signed_in,pass
+route,PUT /v1/favourites/{course_code},forged,401 not_signed_in,401 not_signed_in,pass
+route,DELETE /v1/favourites/{course_code},owner,reachable (not blocked),204,pass
+route,DELETE /v1/favourites/{course_code},other,reachable (not blocked),204,pass
+route,DELETE /v1/favourites/{course_code},staff,403 students_only,403 students_only,pass
+route,DELETE /v1/favourites/{course_code},signed_out,401 not_signed_in,401 not_signed_in,pass
+route,DELETE /v1/favourites/{course_code},forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/history,owner,reachable (not blocked),200,pass
+route,GET /v1/history,other,reachable (not blocked),200,pass
+route,GET /v1/history,staff,403 students_only,403 students_only,pass
+route,GET /v1/history,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/history,forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/chats,owner,reachable (not blocked),200,pass
+route,GET /v1/chats,other,200 [],200 [],pass
+route,GET /v1/chats,staff,403 students_only,403 students_only,pass
+route,GET /v1/chats,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/chats,forged,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/chats,owner,reachable (not blocked),201,pass
+route,POST /v1/chats,other,404 plan_not_found,404 plan_not_found,pass
+route,POST /v1/chats,staff,403 students_only,403 students_only,pass
+route,POST /v1/chats,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/chats,forged,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/chats/{chat_id}/messages,owner,reachable (not blocked),200 [],pass
+route,GET /v1/chats/{chat_id}/messages,other,404 chat_not_found,404 chat_not_found,pass
+route,GET /v1/chats/{chat_id}/messages,staff,403 students_only,403 students_only,pass
+route,GET /v1/chats/{chat_id}/messages,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/chats/{chat_id}/messages,forged,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/chats/{chat_id}/messages,owner,reachable (not blocked),201,pass
+route,POST /v1/chats/{chat_id}/messages,other,404 chat_not_found,404 chat_not_found,pass
+route,POST /v1/chats/{chat_id}/messages,staff,403 students_only,403 students_only,pass
+route,POST /v1/chats/{chat_id}/messages,signed_out,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/chats/{chat_id}/messages,forged,401 not_signed_in,401 not_signed_in,pass
+rest,students.read,other (A's token),200 [],200 [],pass
+rest,students.insert,other (A's token),4xx 42501,403 42501,pass
+rest,students.update,other (A's token),4xx 42501,403 42501,pass
+rest,students.delete,other (A's token),4xx 42501,403 42501,pass
+rest,course_history.read,other (A's token),200 [],200 [],pass
+rest,course_history.insert,other (A's token),4xx 42501,403 42501,pass
+rest,course_history.update,other (A's token),4xx 42501,403 42501,pass
+rest,course_history.delete,other (A's token),4xx 42501,403 42501,pass
+rest,favourites.read,other (A's token),200 [],200 [],pass
+rest,favourites.insert,other (A's token),4xx 42501,403 42501,pass
+rest,favourites.update,other (A's token),4xx 42501,403 42501,pass
+rest,favourites.delete,other (A's token),4xx 42501,403 42501,pass
+rest,plan_sets.read,other (A's token),200 [],200 [],pass
+rest,plan_sets.insert,other (A's token),4xx 42501,403 42501,pass
+rest,plan_sets.update,other (A's token),4xx 42501,403 42501,pass
+rest,plan_sets.delete,other (A's token),4xx 42501,403 42501,pass
+rest,plans.read,other (A's token),200 [],200 [],pass
+rest,plans.insert,other (A's token),4xx 42501,403 42501,pass
+rest,plans.update,other (A's token),4xx 42501,403 42501,pass
+rest,plans.delete,other (A's token),4xx 42501,403 42501,pass
+rest,plan_courses.read,other (A's token),200 [],200 [],pass
+rest,plan_courses.insert,other (A's token),4xx 42501,403 42501,pass
+rest,plan_courses.update,other (A's token),4xx 42501,403 42501,pass
+rest,plan_courses.delete,other (A's token),4xx 42501,403 42501,pass
+rest,plan_reasons.read,other (A's token),200 [],200 [],pass
+rest,plan_reasons.insert,other (A's token),4xx 42501,403 42501,pass
+rest,plan_reasons.update,other (A's token),4xx 42501,403 42501,pass
+rest,plan_reasons.delete,other (A's token),4xx 42501,403 42501,pass
+rest,chats.read,other (A's token),200 [],200 [],pass
+rest,chats.insert,other (A's token),4xx 42501,403 42501,pass
+rest,chats.update,other (A's token),4xx 42501,403 42501,pass
+rest,chats.delete,other (A's token),4xx 42501,403 42501,pass
+rest,messages.read,other (A's token),200 [],200 [],pass
+rest,messages.insert,other (A's token),4xx 42501,403 42501,pass
+rest,messages.update,other (A's token),4xx 42501,403 42501,pass
+rest,messages.delete,other (A's token),4xx 42501,403 42501,pass
+rest,message_citations.read,other (A's token),200 [],200 [],pass
+rest,message_citations.insert,other (A's token),4xx 42501,403 42501,pass
+rest,message_citations.update,other (A's token),4xx 42501,403 42501,pass
+rest,message_citations.delete,other (A's token),4xx 42501,403 42501,pass
+storage,POST /v1/onboarding/transcript (C),C,200,200,pass
+storage,storage objects naming C's number,secret key,none,none (0 buckets),pass
+route,GET /v1/me,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/catalogue,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/onboarding/transcript,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/onboarding/complete,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/compare,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/{plan_id},expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/{plan_id}/previews/{course_code},expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/questionnaire,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/questionnaire,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/electives,expired,401 not_signed_in,401 not_signed_in,pass
+route,PUT /v1/favourites/{course_code},expired,401 not_signed_in,401 not_signed_in,pass
+route,DELETE /v1/favourites/{course_code},expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/history,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/chats,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/chats,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/chats/{chat_id}/messages,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/chats/{chat_id}/messages,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/me,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/catalogue,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/onboarding/transcript,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/onboarding/complete,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/compare,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/{plan_id},expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/plans/{plan_id}/previews/{course_code},expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/questionnaire,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/questionnaire,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/electives,expired,401 not_signed_in,401 not_signed_in,pass
+route,PUT /v1/favourites/{course_code},expired,401 not_signed_in,401 not_signed_in,pass
+route,DELETE /v1/favourites/{course_code},expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/history,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/chats,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/chats,expired,401 not_signed_in,401 not_signed_in,pass
+route,GET /v1/chats/{chat_id}/messages,expired,401 not_signed_in,401 not_signed_in,pass
+route,POST /v1/chats/{chat_id}/messages,expired,401 not_signed_in,401 not_signed_in,pass

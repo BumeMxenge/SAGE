@@ -1,0 +1,4 @@
+source,items_scanned,identifiers_searched,hits
+public schema (every row),7741,221,none
+container logs (/Users/bumemxenge/SAGE-load/tests/acceptance/atp5/results/container_logs.tsv),82316,221,none
+ATP-3 model requests (/Users/bumemxenge/SAGE-atp3/tests/acceptance/atp3/results/requests),401,221,none
