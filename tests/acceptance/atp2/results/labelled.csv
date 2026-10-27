@@ -1,0 +1,149 @@
+record,field,item,label,engine,engine_match,checker,checker_match,judgement_call
+signals1-failed,year_of_study,,3,3,yes,3,yes,no
+signals1-failed,owed_core,,EEE2047S EEE3090F EEE3092F EEE3094S,EEE2047S EEE3090F EEE3092F EEE3094S,yes,EEE2047S EEE3090F EEE3092F EEE3094S,yes,no
+signals1-failed,excluded_core,,EEE3090F EEE3092F EEE3094S,EEE3090F EEE3092F EEE3094S,yes,EEE3090F EEE3092F EEE3094S,yes,no
+signals1-failed,expected_plans,,1,1,yes,1,yes,no
+signals1-failed,expected_combinations,,none,none,yes,none,yes,no
+signals1-failed,expected_slots,,complementary:18,complementary:18,yes,complementary:18,yes,no
+signals1-failed,set_reason,"excluded:EEE3090F needs EEE2047S, saying her year is now under the printed 146 minimum and that her advisor can give permission",excluded: EEE2047S EEE3090F,"excluded: EEE3090F isn't in your plans, as it needs EEE2047S, which your record doesn't show yet. Your year is now under its printed minimum of 146 credits, and your advisor can give permission for that.",yes,,,no
+signals1-failed,set_reason,"excluded:EEE3092F needs EEE2047S, with the same under-minimum wording",excluded: EEE2047S EEE3092F,"excluded: EEE3092F isn't in your plans, as it needs EEE2047S, which your record doesn't show yet. Your year is now under its printed minimum of 146 credits, and your advisor can give permission for that.",yes,,,no
+signals1-failed,set_reason,"excluded:EEE3094S needs EEE2047S, with the same under-minimum wording",excluded: EEE2047S EEE3094S,"excluded: EEE3094S isn't in your plans, as it needs EEE2047S, which your record doesn't show yet. Your year is now under its printed minimum of 146 credits, and your advisor can give permission for that.",yes,,,no
+signals1-failed,set_reason,"included:next year's core she already meets (CML4607F EEE4113F EEE4124C EEE4125C), taken early only with her advisor's agreement",included: CML4607F EEE4113F EEE4124C EEE4125C,"included: Next year's core includes CML4607F, EEE4113F, EEE4124C and EEE4125C, whose entry rules you already meet. Students sometimes take such courses early, with their advisor's agreement.",yes,,,no
+signals1-failed,set_reason,conditional:EEE3000X practical training outstanding,conditional: EEE3000X,"conditional: Your record doesn't show EEE3000X, Practical Training, as complete yet. You need it to graduate, so check with your advisor when it will be signed off.",yes,,,no
+signals1-failed,status,EEE2047S,eligible,eligible,yes,eligible,yes,no
+signals1-failed,deciding_codes,EEE2047S,MAM1021S,,no,,,no
+signals1-failed,page,EEE2047S,132,,no citation,,,no
+signals1-failed,status,EEE3094S,not_eligible,not_eligible,yes,not_eligible,yes,no
+signals1-failed,deciding_codes,EEE3094S,EEE2047S,"It needs EEE2047S, which your record doesn't show yet.",yes,,,no
+signals1-failed,page,EEE3094S,135,135 (plan reason),yes,,,no
+signals1-failed,status,EEE3090F,not_eligible,not_eligible,yes,not_eligible,yes,no
+signals1-failed,deciding_codes,EEE3090F,EEE2047S,"It needs EEE2047S, which your record doesn't show yet.",yes,,,no
+signals1-failed,page,EEE3090F,134,134 (plan reason),yes,,,no
+signals1-failed,status,EEE3092F,not_eligible,not_eligible,yes,not_eligible,yes,no
+signals1-failed,deciding_codes,EEE3092F,EEE2047S,"It needs EEE2047S, which your record doesn't show yet.",yes,,,no
+signals1-failed,page,EEE3092F,135,135 (plan reason),yes,,,no
+signals1-failed,status,ECO2007S,check,check,yes,check,yes,no
+signals1-failed,deciding_codes,ECO2007S,ECO1010 MAM1010,"It needs ""ECO1010 or MAM1010 (or equivalent)."" SAGE can't check this, so confirm it with your advisor.",yes,,,no
+signals1-failed,page,ECO2007S,Commerce Undergraduate Handbook 2026 p. 156 (complementary workbook),,no citation,,,no
+signals1-failed,status,EEE4113F,eligible,eligible,yes,eligible,yes,no
+signals1-failed,deciding_codes,EEE4113F,EEE3098S,,no,,,no
+signals1-failed,page,EEE4113F,138,,no citation,,,no
+power-repeat-clash,year_of_study,,3,3,yes,3,yes,no
+power-repeat-clash,owed_core,,EEE2044S EEE3091F EEE3096S MEC2045S,EEE2044S EEE3091F EEE3096S MEC2045S,yes,EEE2044S EEE3091F EEE3096S MEC2045S,yes,no
+power-repeat-clash,excluded_core,,EEE3091F EEE3096S MEC2045S,EEE3091F EEE3096S MEC2045S,yes,EEE3091F EEE3096S MEC2045S,yes,no
+power-repeat-clash,expected_plans,,1,1,yes,1,yes,no
+power-repeat-clash,expected_combinations,,none,none,yes,none,yes,no
+power-repeat-clash,expected_slots,,complementary:18,complementary:18,yes,complementary:18,yes,no
+power-repeat-clash,set_reason,"excluded:EEE3091F needs EEE2044S, saying her year is now under the printed 146 minimum and that her advisor can give permission",excluded: EEE2044S EEE3091F,"excluded: EEE3091F isn't in your plans, as it needs EEE2044S, which your record doesn't show yet. Your year is now under its printed minimum of 146 credits, and your advisor can give permission for that.",yes,,,no
+power-repeat-clash,set_reason,conflict:FB3.4 leaves EEE3096S out (clashes with the repeated EEE2044S),conflict: EEE2044S EEE3096S,"conflict: EEE3096S clashes with EEE2044S, which you still owe from an earlier year. A course you still owe from an earlier year comes first, so EEE3096S isn't in your plans. See your advisor about it.",yes,,,no
+power-repeat-clash,set_reason,conflict:FB3.4 leaves MEC2045S out (clashes with the repeated EEE2044S),conflict: EEE2044S MEC2045S,"conflict: MEC2045S clashes with EEE2044S, which you still owe from an earlier year. A course you still owe from an earlier year comes first, so MEC2045S isn't in your plans. See your advisor about it.",yes,,,no
+power-repeat-clash,set_reason,"included:next year's core she already meets (CML4607F EEE4113F EEE4124C EEE4125C), taken early only with her advisor's agreement",included: CML4607F EEE4113F EEE4124C EEE4125C,"included: Next year's core includes CML4607F, EEE4113F, EEE4124C and EEE4125C, whose entry rules you already meet. Students sometimes take such courses early, with their advisor's agreement.",yes,,,no
+power-repeat-clash,set_reason,conditional:EEE3000X practical training outstanding,conditional: EEE3000X,"conditional: Your record doesn't show EEE3000X, Practical Training, as complete yet. You need it to graduate, so check with your advisor when it will be signed off.",yes,,,no
+power-repeat-clash,status,EEE2044S,eligible,eligible,yes,eligible,yes,no
+power-repeat-clash,deciding_codes,EEE2044S,EEE1007S,,no,,,no
+power-repeat-clash,page,EEE2044S,130,,no citation,,,no
+power-repeat-clash,status,EEE3091F,not_eligible,not_eligible,yes,not_eligible,yes,no
+power-repeat-clash,deciding_codes,EEE3091F,EEE2044S,"It needs EEE2044S, which your record doesn't show yet.",yes,,,no
+power-repeat-clash,page,EEE3091F,134,134 (plan reason),yes,,,no
+power-repeat-clash,status,EEE3096S,eligible,eligible,yes,eligible,yes,no
+power-repeat-clash,deciding_codes,EEE3096S,EEE2046F,,no,,,no
+power-repeat-clash,page,EEE3096S,136,13 (plan reason),no,,,no
+power-repeat-clash,status,MEC2045S,eligible,eligible,yes,eligible,yes,no
+power-repeat-clash,deciding_codes,MEC2045S,MEC2047F,,no,,,no
+power-repeat-clash,page,MEC2045S,148,13 (plan reason),no,,,no
+power-repeat-clash,status,BIO1004S,check,check,yes,check,yes,no
+power-repeat-clash,page,BIO1004S,Science Handbook 2026 p. 77 (complementary workbook),,no citation,,,no
+aspect-maths-physics,year_of_study,,3,3,yes,3,yes,yes
+aspect-maths-physics,owed_core,,EEE2044S EEE2046F EEE2048S EEE3090F EEE3094S MEC1009F PHY2010S,EEE2044S EEE2046F EEE2048S EEE3090F EEE3094S MEC1009F PHY2010S,yes,EEE2044S EEE2046F EEE2048S EEE3090F EEE3094S MEC1009F PHY2010S,yes,yes
+aspect-maths-physics,excluded_core,,,,yes,,yes,yes
+aspect-maths-physics,expected_plans,,1,1,yes,1,yes,yes
+aspect-maths-physics,expected_combinations,,none,none,yes,none,yes,yes
+aspect-maths-physics,expected_slots,,place:ASL1200S:8,place:ASL1200S:8,yes,place:ASL1200S:8,yes,yes
+aspect-maths-physics,set_reason,"included:next year's core she already meets (CML4607F EEE3088F EEE3092F), taken early only with her advisor's agreement",included: CML4607F EEE3088F EEE3092F,"included: Next year's core includes CML4607F, EEE3088F and EEE3092F, whose entry rules you already meet. Students sometimes take such courses early, with their advisor's agreement.",yes,,,yes
+aspect-maths-physics,status,EEE2044S,eligible,eligible,yes,eligible,yes,no
+aspect-maths-physics,deciding_codes,EEE2044S,EEE1007S,,no,,,no
+aspect-maths-physics,page,EEE2044S,130,,no citation,,,no
+aspect-maths-physics,status,EEE2046F,eligible,eligible,yes,eligible,yes,no
+aspect-maths-physics,deciding_codes,EEE2046F,EEE1006F,,no,,,no
+aspect-maths-physics,page,EEE2046F,131,,no citation,,,no
+aspect-maths-physics,status,PHY2010S,eligible,eligible,yes,eligible,yes,no
+aspect-maths-physics,deciding_codes,PHY2010S,MAM2083F,,no,,,no
+aspect-maths-physics,page,PHY2010S,191,,no citation,,,no
+aspect-maths-physics,status,MAM2085F,not_eligible,not_eligible,yes,not_eligible,yes,no
+aspect-maths-physics,deciding_codes,MAM2085F,MAM2085S,"You've already passed MAM2085S, which counts as MAM2085F.",yes,,,no
+aspect-maths-physics,page,MAM2085F,183,,no citation,,,no
+aspect-maths-physics,status,EEE3092F,eligible,eligible,yes,eligible,yes,no
+aspect-maths-physics,deciding_codes,EEE3092F,MAM2083F,,no,,,no
+aspect-maths-physics,page,EEE3092F,135,,no citation,,,no
+embedded1-failed,year_of_study,,3,3,yes,3,yes,yes
+embedded1-failed,owed_core,,CSC2001F EEE2046F EEE3092F EEE3096S,CSC2001F EEE2046F EEE3092F EEE3096S,yes,CSC2001F EEE2046F EEE3092F EEE3096S,yes,yes
+embedded1-failed,excluded_core,,EEE3092F,EEE3092F,yes,EEE3092F,yes,yes
+embedded1-failed,expected_plans,,3,3,yes,3,yes,yes
+embedded1-failed,expected_combinations,,CSC2002S+EEE3093S;CSC2002S+EEE3094S;EEE3093S+EEE3094S,CSC2002S+EEE3093S;CSC2002S+EEE3094S;EEE3093S+EEE3094S,yes,CSC2002S+EEE3093S;CSC2002S+EEE3094S;EEE3093S+EEE3094S,yes,yes
+embedded1-failed,expected_slots,,complementary:18,complementary:18,yes,complementary:18,yes,yes
+embedded1-failed,set_reason,conflict:FB3.4 leaves EEE3092F out (clashes with the repeated EEE2046F),conflict: EEE2046F EEE3092F,"conflict: EEE3092F clashes with EEE2046F, which you still owe from an earlier year. A course you still owe from an earlier year comes first, so EEE3092F isn't in your plans. See your advisor about it.",yes,,,yes
+embedded1-failed,set_reason,"excluded:more electives are allowed (the two-of-three rule is at least two), quoting note (i) p. 53: all three can be taken, but the complementary studies elective should then be taken in the winter or summer term",excluded: ,"excluded: Plans with more electives than the rules ask for aren't listed. The handbook allows more, so ask your advisor if you want to add one. It notes: ""All three elective 3rd year core courses can be taken; however, but then the complementary studies elective should then be taken in the winter or summer term.""",yes,,,yes
+embedded1-failed,set_reason,"included:next year's core she already meets (CML4607F EEE4113F EEE4124C EEE4125C), taken early only with her advisor's agreement",included: CML4607F EEE4113F EEE4124C EEE4125C,"included: Next year's core includes CML4607F, EEE4113F, EEE4124C and EEE4125C, whose entry rules you already meet. Students sometimes take such courses early, with their advisor's agreement.",yes,,,yes
+embedded1-failed,set_reason,conditional:EEE3000X practical training outstanding,conditional: EEE3000X,"conditional: Your record doesn't show EEE3000X, Practical Training, as complete yet. You need it to graduate, so check with your advisor when it will be signed off.",yes,,,yes
+embedded1-failed,status,EEE3096S,not_eligible,not_eligible,yes,not_eligible,yes,no
+embedded1-failed,deciding_codes,EEE3096S,EEE2046F,"It needs EEE2046F or EEE2046S, which your record doesn't show yet.",yes,,,no
+embedded1-failed,page,EEE3096S,136,136 (plan reason),yes,,,no
+embedded1-failed,status,EEE3093S,not_eligible,not_eligible,yes,not_eligible,yes,no
+embedded1-failed,deciding_codes,EEE3093S,EEE2046F,"It needs EEE2046F or EEE2046S, which your record doesn't show yet.",yes,,,no
+embedded1-failed,page,EEE3093S,135,135 (plan reason),yes,,,no
+embedded1-failed,status,CSC2002S,not_eligible,not_eligible,yes,not_eligible,yes,no
+embedded1-failed,deciding_codes,CSC2002S,CSC2001F,"It needs at least 45% in CSC2001F, which your record doesn't show yet.",yes,,,no
+embedded1-failed,page,CSC2002S,170,170 (plan reason),yes,,,no
+embedded1-failed,status,EEE3092F,eligible,eligible,yes,eligible,yes,no
+embedded1-failed,page,EEE3092F,135,13 (plan reason),no,,,no
+embedded1-failed,status,EEE2046S,eligible,not held,no,not held,no,no
+embedded1-failed,deciding_codes,EEE2046S,EEE1006F,,no,,,no
+embedded1-failed,page,EEE2046S,132,,no citation,,,no
+aspect-final-supp,year_of_study,,5,5,yes,5,yes,yes
+aspect-final-supp,owed_core,,CML4607F EEE4022S EEE4113F EEE4124C EEE4125C,CML4607F EEE4022S EEE4113F EEE4124C EEE4125C,yes,CML4607F EEE4022S EEE4113F EEE4124C EEE4125C,yes,yes
+aspect-final-supp,excluded_core,,,,yes,,yes,yes
+aspect-final-supp,expected_plans,,12,12,yes,12,yes,yes
+aspect-final-supp,expected_combinations,,EEE4114F+EEE4117F+EEE4118F+EEE4119F;EEE4114F+EEE4117F+EEE4118F+EEE4120F;EEE4114F+EEE4117F+EEE4118F+HUB4049F;EEE4114F+EEE4117F+EEE4119F+EEE4120F;EEE4114F+EEE4117F+EEE4119F+HUB4049F;EEE4114F+EEE4118F+EEE4119F+EEE4120F;EEE4114F+EEE4118F+EEE4119F+HUB4049F;EEE4117F+EEE4118F+EEE4119F+EEE4120F;EEE4117F+EEE4118F+EEE4119F+HUB4049F;EEE4117F+EEE4118F+EEE4120F+HUB4049F;EEE4117F+EEE4119F+EEE4120F+HUB4049F;EEE4118F+EEE4119F+EEE4120F+HUB4049F,EEE4114F+EEE4117F+EEE4118F+EEE4119F;EEE4114F+EEE4117F+EEE4118F+EEE4120F;EEE4114F+EEE4117F+EEE4118F+HUB4049F;EEE4114F+EEE4117F+EEE4119F+EEE4120F;EEE4114F+EEE4117F+EEE4119F+HUB4049F;EEE4114F+EEE4118F+EEE4119F+EEE4120F;EEE4114F+EEE4118F+EEE4119F+HUB4049F;EEE4117F+EEE4118F+EEE4119F+EEE4120F;EEE4117F+EEE4118F+EEE4119F+HUB4049F;EEE4117F+EEE4118F+EEE4120F+HUB4049F;EEE4117F+EEE4119F+EEE4120F+HUB4049F;EEE4118F+EEE4119F+EEE4120F+HUB4049F,yes,EEE4114F+EEE4117F+EEE4118F+EEE4119F;EEE4114F+EEE4117F+EEE4118F+EEE4120F;EEE4114F+EEE4117F+EEE4118F+HUB4049F;EEE4114F+EEE4117F+EEE4119F+EEE4120F;EEE4114F+EEE4117F+EEE4119F+HUB4049F;EEE4114F+EEE4118F+EEE4119F+EEE4120F;EEE4114F+EEE4118F+EEE4119F+HUB4049F;EEE4117F+EEE4118F+EEE4119F+EEE4120F;EEE4117F+EEE4118F+EEE4119F+HUB4049F;EEE4117F+EEE4118F+EEE4120F+HUB4049F;EEE4117F+EEE4119F+EEE4120F+HUB4049F;EEE4118F+EEE4119F+EEE4120F+HUB4049F,yes,yes
+aspect-final-supp,expected_slots,,,,yes,,yes,yes
+aspect-final-supp,set_reason,conditional:FB7 supplementary pending in EEE3094S,conditional: EEE3094S,"conditional: Your supplementary exam for EEE3094S is still to come. These plans assume you pass it, so see your advisor if you don't.",yes,,,yes
+aspect-final-supp,set_reason,"excluded:more electives are allowed (at least 48 credits, at least two of EEE4117F EEE4118F EEE4119F)",excluded: EEE4117F EEE4118F EEE4119F,,no,,,yes
+aspect-final-supp,status,EEE4119F,check,check,yes,check,yes,no
+aspect-final-supp,deciding_codes,EEE4119F,EEE3094S,"It needs EEE3094S. SAGE can't check this, so confirm it with your advisor.",yes,,,no
+aspect-final-supp,page,EEE4119F,140,140 (plan reason),yes,,,no
+aspect-final-supp,status,EEE4118F,check,check,yes,check,yes,no
+aspect-final-supp,deciding_codes,EEE4118F,EEE3094S,"It needs EEE3094S. SAGE can't check this, so confirm it with your advisor.",yes,,,no
+aspect-final-supp,page,EEE4118F,139,139 (plan reason),yes,,,no
+aspect-final-supp,status,EEE4114F,eligible,eligible,yes,eligible,yes,no
+aspect-final-supp,deciding_codes,EEE4114F,EEE3092F,,no,,,no
+aspect-final-supp,page,EEE4114F,139,,no citation,,,no
+aspect-final-supp,status,HUB4049F,eligible,eligible,yes,eligible,yes,yes
+aspect-final-supp,page,HUB4049F,162,,no citation,,,yes
+aspect-final-supp,status,EEE3094S,not_eligible,not_eligible,yes,not_eligible,yes,no
+aspect-final-supp,deciding_codes,EEE3094S,EEE3094S,"Your result for EEE3094S is still to come, and SAGE counts it as passed.",yes,,,no
+aspect-final-supp,page,EEE3094S,135,15 (plan reason),no,,,no
+aspect-final-supp,status,EEE4022S,not_eligible,not_eligible,yes,not_eligible,yes,no
+aspect-final-supp,deciding_codes,EEE4022S,EEE4114F EEE4117F EEE4118F EEE4119F EEE4120F EEE4121F EEE4126F,"It needs one of EEE4114F, EEE4117F, EEE4118F, EEE4119F, EEE4120F, EEE4121F or EEE4126F, which your record doesn't show yet.",yes,,,no
+aspect-final-supp,page,EEE4022S,138,138 (plan reason),yes,,,no
+owes-asl-dp-refused,year_of_study,,3,3,yes,3,yes,yes
+owes-asl-dp-refused,owed_core,,CSC1016S CSC2001F,CSC1016S CSC2001F,yes,CSC1016S CSC2001F,yes,yes
+owes-asl-dp-refused,excluded_core,,CSC2001F,CSC2001F,yes,CSC2001F,yes,yes
+owes-asl-dp-refused,expected_plans,,1,1,yes,1,yes,yes
+owes-asl-dp-refused,expected_combinations,,none,none,yes,none,yes,yes
+owes-asl-dp-refused,expected_slots,,place:ASL1200S:8,place:ASL1200S:8,yes,place:ASL1200S:8,yes,yes
+owes-asl-dp-refused,set_reason,"excluded:CSC2001F needs CSC1016S, saying her year is now under the printed 114 minimum and that her advisor can give permission",excluded: CSC1016S CSC2001F,"excluded: CSC2001F isn't in your plans, as it needs (CSC1015F or CSC1015S, and CSC1016S) or (CSC1010H and CSC1011H), which your record doesn't show yet. Your year is now under its printed minimum of 114 credits, and your advisor can give permission for that.",yes,,,yes
+owes-asl-dp-refused,set_reason,"included:next year's core she already meets (CML4607F EEE3089F EEE3090F EEE3092F EEE3096S EEE3097S), taken early only with her advisor's agreement",included: CML4607F EEE3089F EEE3090F EEE3092F EEE3096S EEE3097S,"included: Next year's core includes CML4607F, EEE3089F, EEE3090F, EEE3092F, EEE3096S and EEE3097S, whose entry rules you already meet. Students sometimes take such courses early, with their advisor's agreement.",yes,,,yes
+owes-asl-dp-refused,status,CSC2001F,not_eligible,not_eligible,yes,not_eligible,yes,no
+owes-asl-dp-refused,deciding_codes,CSC2001F,CSC1016S,"It needs (CSC1015F or CSC1015S, and CSC1016S) or (CSC1010H and CSC1011H), which your record doesn't show yet.",yes,,,no
+owes-asl-dp-refused,page,CSC2001F,170,169 (plan reason),no,,,no
+owes-asl-dp-refused,status,CSC1016S,eligible,eligible,yes,eligible,yes,no
+owes-asl-dp-refused,deciding_codes,CSC1016S,CSC1015F,,no,,,no
+owes-asl-dp-refused,page,CSC1016S,168,,no citation,,,no
+owes-asl-dp-refused,status,EEE3097S,eligible,eligible,yes,eligible,yes,no
+owes-asl-dp-refused,deciding_codes,EEE3097S,EEE3088F,,no,,,no
+owes-asl-dp-refused,page,EEE3097S,137,,no citation,,,no
+owes-asl-dp-refused,status,EEE3089F,eligible,eligible,yes,eligible,yes,no
+owes-asl-dp-refused,deciding_codes,EEE3089F,PHY2010S MAM2083F,,no,,,no
+owes-asl-dp-refused,page,EEE3089F,133,,no citation,,,no
+owes-asl-dp-refused,status,CSC2002S,not_eligible,not_eligible,yes,not_eligible,yes,no
+owes-asl-dp-refused,deciding_codes,CSC2002S,CSC2001F,"It needs at least 45% in CSC2001F, which your record doesn't show yet.",yes,,,no
+owes-asl-dp-refused,page,CSC2002S,170,,no citation,,,no
