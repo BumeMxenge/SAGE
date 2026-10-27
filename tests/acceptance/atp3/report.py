@@ -331,7 +331,7 @@ def checks(run: Run) -> list[str]:
         f"- Quotes the citation check dropped: {dropped}. Flags raised: {flagged}.",
         (
             "- The fixed referral: "
-            + (", ".join(f"{count} {why}" for why, count in fixed.items()) or "none")
+            + (", ".join(f"{count} ({why})" for why, count in fixed.items()) or "none")
             + "."
         ),
         (
@@ -511,9 +511,13 @@ def wrong(run: Run) -> list[str]:
         "## Every unsupported or wrong SAGE reply",
         "",
         (
-            "Each with its question and the evidence. The cause is my judgement, read at Stop 3: the "
-            "wrong passage, missed evidence, a wrong tool argument, the check dropping a good quote, "
-            "or the model ignoring evidence."
+            "Each with its question and the evidence. The cause is my judgement, read at Stop 3. "
+            "SAGE's own causes are the wrong passage, missed evidence, a wrong tool argument, the "
+            "check dropping a good quote, the model ignoring evidence, and the record-only check: "
+            "check_eligibility judges her record as it stands, and the reply relays its verdict, as "
+            "the advisor's rule 3 asks. Where the reply was right, the judge erred: it lacked "
+            "SAGE's evidence, as it never sees the tools' results or her plan's reasons, it misread "
+            "the claim, or it was stricter than the expected fact."
         ),
     ]
     found = [

@@ -59,7 +59,7 @@ Both arms on the 25 prompts the control arm asked, per reply.
 
 - Citations kept: 67, of which the judge found 60 support their claim.
 - Quotes the citation check dropped: 2. Flags raised: 7.
-- The fixed referral: 1 every quote dropped.
+- The fixed referral: 1 (every quote dropped).
 - Plans offered: 8, of them hidden by the questionnaire: 0. Dropped plan offers: 0.
 - Titles not ready in time: 18.
 
@@ -108,7 +108,7 @@ Awaiting my marks on the sample.
 
 ## Every unsupported or wrong SAGE reply
 
-Each with its question and the evidence. The cause is my judgement, read at Stop 3: the wrong passage, missed evidence, a wrong tool argument, the check dropping a good quote, or the model ignoring evidence.
+Each with its question and the evidence. The cause is my judgement, read at Stop 3. SAGE's own causes are the wrong passage, missed evidence, a wrong tool argument, the check dropping a good quote, the model ignoring evidence, and the record-only check: check_eligibility judges her record as it stands, and the reply relays its verdict, as the advisor's rule 3 asks. Where the reply was right, the judge erred: it lacked SAGE's evidence, as it never sees the tools' results or her plan's reasons, it misread the claim, or it was stricter than the expected fact.
 
 ### sage-P02-3: unsupported
 
@@ -119,7 +119,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: unsupported, claim check. The reply gives the expected approval fact, supported by the citation, but also claims plan notes say the year is below the 146-credit minimum and an advisor can give permission. The engine facts say only 'Open: V01 Core Courses Only', so this is unsupported and could mislead the student.
 - Citations: "Curriculum in each year shall be subject to the approval of the Dean and the Head of the Department administering the Degree Programme for which candidates are registered." (p. 13)
 - Tools: none
-- Cause: to be classed
+- Cause: the judge lacked SAGE's evidence. The 146-credit note is in her plan's reasons, word for word, which the judge never sees
 
 ### sage-P06-1: wrong_safe
 
@@ -130,7 +130,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim not_eligible on CSC2002S, engine not_eligible. The reply gives the 45% threshold and says 47% meets it, but then says the student is not eligible because of a missing mark. The engine facts say nothing of the kind, so this is an unsupported claim, though it does not push the student into a wrong decision, and it leaves out that CSC2001F itself would still be failed.
 - Citations: "Course entry requirements: CSC2001F (At least 45% for CSC2001F)" (p. 170)
 - Tools: get_course {"code": "CSC2002S"}; check_eligibility {"code": "CSC2002S"}
-- Cause: to be classed
+- Cause: the judge lacked SAGE's evidence. The reply says 47% meets the 45% rule. Its not-eligible line is check_eligibility's verdict on her record now, which the judge never sees, and she said herself she'd fail CSC2001F
 
 ### sage-P06-2: unsupported
 
@@ -141,7 +141,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: unsupported, claim not_eligible on CSC2002S, engine not_eligible. The reply gives the 45% threshold correctly, but then claims an 'eligibility check' says the student is not eligible. The engine facts give no such verdict, so this is unsupported and could mislead the student into thinking 47% would not get them in.
 - Citations: "Course entry requirements: CSC2001F (At least 45% for CSC2001F)" (p. 170)
 - Tools: check_eligibility {"code": "CSC2002S"}
-- Cause: to be classed
+- Cause: the judge lacked SAGE's evidence. The reply says 47% meets the 45% rule. Its not-eligible line is check_eligibility's verdict on her record now, which the judge never sees
 
 ### sage-P06-3: unsupported
 
@@ -152,7 +152,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: unsupported, claim not_eligible on CSC2002S, engine not_eligible. The expected fact is that 47% meets the 45% entry requirement for CSC2002S, but the reply says the student is not eligible, which could lead her to a wrong decision about her courses.
 - Citations: none
 - Tools: get_course {"code": "CSC2002S"}; check_eligibility {"code": "CSC2002S"}
-- Cause: to be classed
+- Cause: the record-only check. The reply relays check_eligibility's verdict on her record now, as rule 3 asks, and never answers the 47% she asked about
 
 ### sage-P08-2: unsupported
 
@@ -163,7 +163,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: unsupported, claim not_eligible on EEE4022S, engine not_eligible. The prerequisite list is correct and the citation supports it, but the reply asserts an eligibility check result ('not eligible yet') that the engine's facts don't contain, which could mislead the student into a wrong decision about the course.
 - Citations: "Course entry requirements: EEE4114F or EEE4126F or EEE4117F or EEE4118F or EEE4121F or EEE4120F or EEE4119F" (p. 138)
 - Tools: get_course {"code": "EEE4022S"}; check_eligibility {"code": "EEE4022S"}
-- Cause: to be classed
+- Cause: the judge lacked SAGE's evidence. The not-eligible line is check_eligibility's verdict on her record now, which the judge never sees, and the reply adds that her plan holds listed courses
 
 ### sage-P10-2: unsupported
 
@@ -174,7 +174,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: unsupported, claim not_eligible on EEE4118F, engine not_eligible. The reply gives the expected fact (some first-semester electives share timetable slots), but it also states that EEE4126F and EEE4121F are eligible and EEE4118F is not because EEE3094S is missing. The engine facts and passages contain nothing about the student's record, so these claims are unsupported and could mislead her.
 - Citations: "Select courses amounting to at least 48 credits from the following:" (p. 49); "EEE4126F Energy Systems & Grids II .......................................................... 16 8" (p. 49); "EEE4118F Process Control & Instrumentation .............................................. 16 8" (p. 49); "EEE4121F Mobile and Wireless Networks .................................................... 16 8" (p. 49); "EEE4114F Digital Signal Processing ............................................................. 16 8" (p. 49); "EEE4117F Energy Conversion II ................................................................... 16 8" (p. 49); "HUB4049F Introduction to Medical Imaging & Image Processing ................. 16 8" (p. 49); "Note: Some elective core courses in the first semester are in the same timetable slots and cannot be taken concurrently." (p. 49)
 - Tools: check_eligibility {"code": "EEE4118F"}; check_eligibility {"code": "EEE4121F"}; check_eligibility {"code": "EEE4126F"}
-- Cause: to be classed
+- Cause: the judge lacked SAGE's evidence. The three verdicts are check_eligibility's, which the judge never sees. It also marked the six course rows quoted from p. 49 as not supporting their claim, though each states the course and its credits
 
 ### sage-P27-1: unsupported
 
@@ -185,7 +185,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: unsupported, claim not_eligible on EEE3093S, engine not_eligible. The reply gives the trap answer: it refuses solely because EEE2046F isn't yet passed, ignoring the first-semester repeat. It never offers the V01 Communications & Control plan that has EEE3093S without CSC2002S, so it could mislead the student.
 - Citations: none
 - Tools: find_plan {"avoid": ["CSC2002S"], "have": ["EEE3093S"]}; check_eligibility {"code": "EEE3093S"}
-- Cause: to be classed
+- Cause: the record-only check. check_eligibility judged her record now, and the reply relayed it, as rule 3 asks, against her plan's reason that it holds EEE2046F in time and find_plan's match
 
 ### sage-P27-2: unsupported
 
@@ -196,7 +196,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: unsupported, claim not_eligible on EEE3093S, engine not_eligible. The reply names the right plan (V01 Communications & Control) but then falls into the trap, declaring her not eligible for EEE3093S because EEE2046F isn't yet passed. It ignores the earlier-semester repeat and never states the assumption that she passes EEE2046F, so it could steer her away from a valid swap.
 - Citations: none
 - Tools: find_plan {"avoid": ["CSC2002S"], "have": ["EEE3093S"]}; check_eligibility {"code": "EEE3093S"}
-- Cause: to be classed
+- Cause: the record-only check. check_eligibility judged her record now, and the reply relayed it, as rule 3 asks, against her plan's reason that it holds EEE2046F in time, though it named the matching plan
 
 ### sage-P27-3: unsupported
 
@@ -207,7 +207,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: unsupported, claim not_eligible on EEE3093S, engine not_eligible. The reply falls into the trap by saying she is not eligible for EEE3093S because EEE2046F is not yet passed, ignoring the first-semester repeat. It does name the V01 plan without CSC2002S, but contradicts itself and omits the passing-the-repeat assumption, so it could mislead her.
 - Citations: none
 - Tools: check_eligibility {"code": "EEE3093S"}; find_plan {"avoid": ["CSC2002S"], "have": ["EEE3093S"]}
-- Cause: to be classed
+- Cause: the record-only check. check_eligibility judged her record now, and the reply relayed it, as rule 3 asks, against her plan's reason that it holds EEE2046F in time, though it named the matching plan
 
 ### sage-P28-1: unsupported (engine)
 
@@ -218,7 +218,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: correct_answer, claim not_eligible on EEE3092F, engine eligible. The reply says no plan holds both because EEE2046F clashes with EEE3092F and the owed course takes precedence, matching the engine's facts; the advisor mention is consistent with them.
 - Citations: none
 - Tools: find_plan {"avoid": [], "have": ["EEE2046F", "EEE3092F"]}
-- Cause: to be classed
+- Cause: the judge misread the claim. The reply says EEE3092F clashes with the EEE2046F she owes and makes no eligibility claim, but the judge recorded not_eligible on EEE3092F, so code's rule 1 overturned its own correct_answer
 
 ### sage-P28-2: unsupported (engine)
 
@@ -229,7 +229,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: correct_answer, claim not_eligible on EEE3092F, engine eligible. The reply says no plan holds both, because EEE3092F clashes with the owed EEE2046F, which matches the engine's facts. It avoids the trap and only suggests seeing the advisor, as the engine does.
 - Citations: none
 - Tools: find_plan {"avoid": [], "have": ["EEE2046F", "EEE3092F"]}
-- Cause: to be classed
+- Cause: the judge misread the claim. The reply says EEE3092F clashes with the EEE2046F she owes and makes no eligibility claim, but the judge recorded not_eligible on EEE3092F, so code's rule 1 overturned its own correct_answer
 
 ### sage-P28-3: unsupported (engine)
 
@@ -240,7 +240,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: correct_answer, claim not_eligible on EEE3092F, engine eligible. Reply says no plan has both, because EEE3092F clashes with the owed EEE2046F and the owed course takes priority, matching the engine's facts; the advisor referral is consistent with them, and it avoids the trap.
 - Citations: none
 - Tools: find_plan {"avoid": [], "have": ["EEE2046F", "EEE3092F"]}
-- Cause: to be classed
+- Cause: the judge misread the claim. The reply says EEE3092F clashes with the EEE2046F she owes and makes no eligibility claim, but the judge recorded not_eligible on EEE3092F, so code's rule 1 overturned its own correct_answer
 
 ### sage-P31-1: wrong_safe
 
@@ -251,7 +251,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim none. The reply names the correct free days (Tue, Wed, Fri) but omits the caveat that the unfilled complementary slot means these are only currently empty, not guaranteed free once she picks that course. This is incomplete, but it is not clearly harmful.
 - Citations: none
 - Tools: none
-- Cause: to be classed
+- Cause: missed evidence. The days are right, but her plan's reasons say she must still add a complementary course, and the reply doesn't say so
 
 ### sage-P31-2: wrong_safe
 
@@ -262,7 +262,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim none. The reply names the correct free days (Tue, Wed, Fri) but omits the caveat that the unfilled complementary slot means these are only currently empty, not guaranteed free once she picks that course. This is incomplete, but it is not clearly harmful.
 - Citations: none
 - Tools: none
-- Cause: to be classed
+- Cause: missed evidence. The days are right, but her plan's reasons say she must still add a complementary course, and the reply doesn't say so
 
 ### sage-P31-3: wrong_safe
 
@@ -273,7 +273,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim none. The reply names the correct free days (Tue, Wed, Fri) but omits the caveat that the unfilled complementary slot means these are only currently empty, not guaranteed free once she picks that course. That omission could mislead her into assuming those days stay free, so it is incomplete.
 - Citations: none
 - Tools: none
-- Cause: to be classed
+- Cause: missed evidence. The days are right, but her plan's reasons say she must still add a complementary course, and the reply doesn't say so
 
 ### sage-P32-1: wrong_safe
 
@@ -284,7 +284,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim none. The reply names the correct free days (Tue, Wed, Fri) but states them as completely free without noting the unfilled complementary slot, so they are currently empty and not guaranteed free. This omits a key caveat, though it is unlikely to cause a harmful course decision.
 - Citations: none
 - Tools: none
-- Cause: to be classed
+- Cause: missed evidence. The days are right, but her plan's reasons say she must still add a complementary course, and the reply calls them completely free
 
 ### sage-P32-2: wrong_safe
 
@@ -295,7 +295,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim none. The reply names the right free days (Tue, Wed, Fri) but omits the caveat that the complementary slot is unfilled, so these are currently empty days and not guaranteed free after she picks that course. It is incomplete but unlikely to cause harm, so wrong_safe.
 - Citations: none
 - Tools: none
-- Cause: to be classed
+- Cause: missed evidence. The days are right, but her plan's reasons say she must still add a complementary course, and the reply calls them completely free
 
 ### sage-P32-3: wrong_safe
 
@@ -306,7 +306,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim none. The reply names the correct free days (Tue, Wed, Fri) but omits the caveat that the unfilled complementary slot means these are only currently empty and not guaranteed free, so it is incomplete without any course-eligibility risk.
 - Citations: none
 - Tools: none
-- Cause: to be classed
+- Cause: missed evidence. The days are right, but her plan's reasons say she must still add a complementary course, and the reply calls them completely free
 
 ### sage-P33-1: wrong_safe
 
@@ -317,7 +317,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim none. The reply gives the correct Friday meetings and times, but it says she is free outside them without noting that the unfilled complementary slot could add Friday commitments. That omits the caveat the expected fact requires, though the omission is unlikely to cause a serious wrong decision.
 - Citations: none
 - Tools: none
-- Cause: to be classed
+- Cause: missed evidence. The times are right, but her plan's reasons say she must still add a complementary course, and the reply says she is free outside those times
 
 ### sage-P33-2: wrong_safe
 
@@ -328,7 +328,7 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim none. The reply gives the correct Friday meetings and times from her plan, but omits the caveat that the unfilled complementary slot means the remaining hours may not stay free. It does not say Fridays are free, so it is incomplete but unlikely to mislead badly.
 - Citations: none
 - Tools: none
-- Cause: to be classed
+- Cause: the judge was stricter than the expected fact. The reply gives Friday's two sessions and their times and promises no free hours, which is what the expected fact asks
 
 ### sage-P33-3: wrong_safe
 
@@ -339,4 +339,4 @@ Each with its question and the evidence. The cause is my judgement, read at Stop
 - Judge: wrong_safe, claim none. Gives the correct Friday meetings and times but says the rest of the day is free, without noting the unfilled complementary slot could add Friday hours; this could mislead her about a shift, so it falls short of the expected fact.
 - Citations: none
 - Tools: none
-- Cause: to be classed
+- Cause: missed evidence. The times are right, but her plan's reasons say she must still add a complementary course, and the reply says the rest of the day is free
