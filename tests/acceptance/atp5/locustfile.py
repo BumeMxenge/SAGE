@@ -73,6 +73,16 @@ STAGES = [
     ("ramp_down_35", 60, 35, 0.59),
     ("hold_35b", 600, 35, 35.0),
 ]
+# A shortened shape for the hosting comparison, chosen after the stage result to see whether
+# more capacity stops the post-spike collapse: 35 users for 5 min, a spike to 70 for 5, then
+# back to 35 for 5. Selected with SAGE_LOAD_SHAPE=compare.
+COMPARE_STAGES = [
+    ("hold_35a", 300, 35, 5.0),
+    ("hold_70", 300, 70, 2.0),
+    ("hold_35b", 300, 35, 5.0),
+]
+SHAPE = os.environ.get("SAGE_LOAD_SHAPE")
+ACTIVE_STAGES = COMPARE_STAGES if SHAPE == "compare" else STAGES
 
 # The output file, so the rescaled run writes beside the stage run rather than over it
 REQUESTS_CSV = (
@@ -81,6 +91,9 @@ REQUESTS_CSV = (
     / os.environ.get("SAGE_LOAD_OUT", "requests.csv")
 )
 STAGES_CSV = Path(__file__).resolve().parent / "results" / "stages.csv"
+STAGES_RESCALED_CSV = (
+    Path(__file__).resolve().parent / "results" / "stages_rescaled.csv"
+)
 TOKEN_MAX_AGE = (
     3000  # refresh a token older than 50 minutes, before its one-hour expiry
 )
@@ -160,9 +173,9 @@ def on_test_stop(**kw: object) -> None:
     )
     # The stage windows in absolute time, so the report can slice requests.csv by stage. Written
     # only for a shaped run, where the stages mean something.
-    if _started_at and os.environ.get("SAGE_LOAD_SHAPE") == "1":
+    if _started_at and SHAPE in ("1", "compare"):
         rows, elapsed = [], 0
-        for name, seconds, users, _rate in STAGES:
+        for name, seconds, users, _rate in ACTIVE_STAGES:
             rows.append(
                 {
                     "stage": name,
@@ -172,7 +185,8 @@ def on_test_stop(**kw: object) -> None:
                 }
             )
             elapsed += seconds
-        write_csv(STAGES_CSV, ["stage", "target_users", "start", "end"], rows)
+        stages_out = STAGES_CSV if SHAPE == "1" else STAGES_RESCALED_CSV
+        write_csv(stages_out, ["stage", "target_users", "start", "end"], rows)
 
 
 class Student(HttpUser):
@@ -309,13 +323,13 @@ class Student(HttpUser):
             )
 
 
-if os.environ.get("SAGE_LOAD_SHAPE") == "1":
+if SHAPE in ("1", "compare"):
 
     class Stages(LoadTestShape):
         def tick(self) -> tuple[int, float] | None:
             run_time = self.get_run_time()
             elapsed = 0
-            for _name, seconds, users, rate in STAGES:
+            for _name, seconds, users, rate in ACTIVE_STAGES:
                 if run_time < elapsed + seconds:
                     return users, rate
                 elapsed += seconds
