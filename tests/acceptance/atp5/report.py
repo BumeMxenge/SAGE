@@ -34,6 +34,29 @@ def percentile(values: list[float], pct: int) -> float:
     return ordered[rank - 1]
 
 
+def status_class(row: dict[str, str]) -> str:
+    # By status code: a timed-out request has no response and is logged with status 0
+    code = int(row.get("status") or 0)
+    if code == 0:
+        return "timeout"
+    if 200 <= code < 300:
+        return "2xx"
+    if code == 409:
+        return (
+            "not_ready"  # PLANS_NOT_READY / QUESTIONNAIRE_PENDING, a graceful conflict
+        )
+    if 400 <= code < 500:
+        return "4xx"
+    return "5xx"
+
+
+def fail_rate_of(rows: list[dict[str, str]]) -> float:
+    # Every non-2xx, counted as a failed operation
+    if not rows:
+        return 0.0
+    return sum(1 for row in rows if status_class(row) != "2xx") / len(rows)
+
+
 class Stats:
     def __init__(self, rows: list[dict[str, str]]) -> None:
         self.count = len(rows)
@@ -162,22 +185,91 @@ def round_trip_lines(probes: list[dict[str, str]]) -> list[str]:
     ]
 
 
+def _hold_p95(req_file: Path, stages_file: Path, name: str, stage: str) -> float:
+    # p95 of one operation within one stage, for a like-for-like steady-state read
+    if not req_file.exists() or not stages_file.exists():
+        return 0.0
+    window = next((s for s in read_csv(stages_file) if s["stage"] == stage), None)
+    if window is None:
+        return 0.0
+    rows = in_stage(
+        [r for r in read_csv(req_file) if r["name"] == name],
+        float(window["start"]),
+        float(window["end"]),
+    )
+    return percentile([float(r["latency_ms"]) for r in rows], 95)
+
+
+def round_trip_limited_lines() -> list[str]:
+    # open and check p95 in the steady 35-hold on each box. If four times the CPU barely moves
+    # them, the plan reads are bound by the round trip, not the CPU.
+    if not (RESULTS / "requests_rescaled.csv").exists():
+        return []
+    lines = []
+    for name in ("open", "check"):
+        small = _hold_p95(
+            RESULTS / "requests.csv", RESULTS / "stages.csv", name, "hold_35b"
+        )
+        big = _hold_p95(
+            RESULTS / "requests_rescaled.csv",
+            RESULTS / "stages_rescaled.csv",
+            name,
+            "hold_35b",
+        )
+        lines.append(
+            f"- {name} p95 in the steady 35-hold: {small:.0f} ms on 0.25 vCPU, "
+            f"{big:.0f} ms on 1 vCPU with three replicas."
+        )
+    lines.append(
+        "- Four times the CPU barely moves open or check p95, so the plan reads are not bound by "
+        "CPU. Against a 546 ms network floor and about 192 ms per EU read, they are bound by round "
+        "trips."
+    )
+    return lines
+
+
 def comparison_lines() -> list[str]:
     rescaled = RESULTS / "requests_rescaled.csv"
     if not rescaled.exists():
         return []
-    rows = read_csv(rescaled)
+    stage = read_csv(RESULTS / "requests.csv")
+    comp = read_csv(rescaled)
+    names = operations(stage)
     lines = [
         "",
-        "## The hosting comparison",
+        "## The hosting comparison, per operation",
         "",
         (
-            "At 35 users on 1 vCPU / 2 GiB with one to three replicas (no scale to zero), "
-            "against the same operations on 0.25 vCPU / 0.5 GiB with scale to zero above."
+            "The stage run (0.25 vCPU / 0.5 GiB, scale to zero, one replica) against the comparison "
+            "(1 vCPU / 2 GiB, one to three replicas), p50 and p95 in milliseconds and fail the "
+            "share of non-2xx. The comparison's shape is shortened and starts all 35 users at once "
+            "rather than ramping over two minutes, so its first hold is not a like-for-like steady "
+            "state and carries the freshly scaled replicas' start-up errors."
         ),
         "",
-        *table(rows),
+        "| Operation | Stage p50 | Stage p95 | Stage fail | Comp p50 | Comp p95 | Comp fail |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
     ]
+    for name in names:
+        s = by_name(stage, name)
+        c = by_name(comp, name)
+        sl = [float(r["latency_ms"]) for r in s]
+        cl = [float(r["latency_ms"]) for r in c]
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    name,
+                    f"{percentile(sl, 50):.0f}" if s else "-",
+                    f"{percentile(sl, 95):.0f}" if s else "-",
+                    f"{fail_rate_of(s) * 100:.1f}%" if s else "-",
+                    f"{percentile(cl, 50):.0f}" if c else "-",
+                    f"{percentile(cl, 95):.0f}" if c else "-",
+                    f"{fail_rate_of(c) * 100:.1f}%" if c else "-",
+                ]
+            )
+            + " |"
+        )
     return lines
 
 
@@ -233,6 +325,7 @@ def main() -> None:
         "",
         *cold_start_lines(probes),
         *round_trip_lines(probes),
+        *round_trip_limited_lines(),
         *comparison_lines(),
         *azure_lines(),
         "",

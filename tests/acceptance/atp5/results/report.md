@@ -52,24 +52,27 @@ Across every stage, 12818 operations, 10.95% failed (over NF-4's 1% limit).
 
 - Cold start (first request after > 6 minutes idle): before: 6608.7 ms, after: 8663.3 ms.
 - Warm /health median 544 ms against /v1/me median 758 ms: about 214 ms is the round trip to the EU database.
+- open p95 in the steady 35-hold: 1275 ms on 0.25 vCPU, 1218 ms on 1 vCPU with three replicas.
+- check p95 in the steady 35-hold: 1546 ms on 0.25 vCPU, 1591 ms on 1 vCPU with three replicas.
+- Four times the CPU barely moves open or check p95, so the plan reads are not bound by CPU. Against a 546 ms network floor and about 192 ms per EU read, they are bound by round trips.
 
-## The hosting comparison
+## The hosting comparison, per operation
 
-At 35 users on 1 vCPU / 2 GiB with one to three replicas (no scale to zero), against the same operations on 0.25 vCPU / 0.5 GiB with scale to zero above.
+The stage run (0.25 vCPU / 0.5 GiB, scale to zero, one replica) against the comparison (1 vCPU / 2 GiB, one to three replicas), p50 and p95 in milliseconds and fail the share of non-2xx. The comparison's shape is shortened and starts all 35 users at once rather than ramping over two minutes, so its first hold is not a like-for-like steady state and carries the freshly scaled replicas' start-up errors.
 
-| Operation | Target | Count | p50 ms | p95 ms | p99 ms | Errors | Verdict |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| open | 1 s | 768 | 1018 | 1282 | 2090 | 0.65% | FAIL (p95 1282 ms) |
-| narrow | 1 s | 20 | 2286 | 2685 | 2742 | 15.00% | FAIL (p95 2685 ms) |
-| check | 1 s | 1488 | 1330 | 1650 | 5351 | 7.12% | FAIL (p95 1650 ms) |
-| first plan set | 10 s | 11 | 4354 | 5353 | 5353 | 36.36% | FAIL (p95 5353 ms) |
-| reply | 10 s | 51 | 6857 | 11367 | 19676 | 3.92% | FAIL (p95 11367 ms) |
-| history | - | 1564 | 989 | 1256 | 1534 | 5.88% | - |
-| me | - | 70 | 940 | 2594 | 2628 | 0.00% | - |
-| pair | - | 250 | 1019 | 1250 | 3672 | 0.80% | - |
-| plan set | - | 2374 | 1025 | 1364 | 5010 | 7.46% | - |
-| questionnaire | - | 70 | 1185 | 1925 | 3806 | 8.57% | - |
-| start chat | - | 62 | 1612 | 1969 | 2090 | 19.35% | - |
+| Operation | Stage p50 | Stage p95 | Stage fail | Comp p50 | Comp p95 | Comp fail |
+| --- | --- | --- | --- | --- | --- | --- |
+| open | 1052 | 1921 | 1.4% | 1018 | 1282 | 0.7% |
+| narrow | 3630 | 16212 | 13.3% | 2286 | 2685 | 15.0% |
+| check | 1348 | 2348 | 16.7% | 1330 | 1650 | 7.1% |
+| first plan set | 9119 | 30008 | 44.3% | 4354 | 5353 | 36.4% |
+| reply | 7179 | 18332 | 8.4% | 6857 | 11367 | 3.9% |
+| history | 1015 | 1549 | 13.3% | 989 | 1256 | 5.9% |
+| me | 1723 | 12403 | 2.9% | 940 | 2594 | 0.0% |
+| pair | 1074 | 1826 | 1.4% | 1019 | 1250 | 0.8% |
+| plan set | 1045 | 2306 | 14.4% | 1025 | 1364 | 7.5% |
+| questionnaire | 2897 | 14965 | 35.7% | 1185 | 1925 | 8.6% |
+| start chat | 2650 | 17049 | 23.5% | 1612 | 1969 | 19.4% |
 
 ## Azure over the window
 
