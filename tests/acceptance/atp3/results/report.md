@@ -108,6 +108,35 @@ Prompts whose expected behaviour moved before the run, and predicted verdicts th
 - Against the judge's own: 25 of 40, 62.5% (47.0% to 75.8%) agree, Cohen's kappa 0.526.
 - Citations: 14 of 17, 82.4% (59.0% to 93.8%) of my calls agree with the judge's.
 
+### My outcome against the judge's
+
+Rows are my outcome, and columns the judge's own. Code changed the judge's outcome for 0 of the 40 replies drawn, so the final outcome reads the same.
+
+| Mine, by the judge's | correct_answer | correct_referral | over_referral | wrong_safe | unsupported | Total |
+| --- | --- | --- | --- | --- | --- | --- |
+| correct_answer | 8 | 0 | 0 | 1 | 0 | 9 |
+| correct_referral | 0 | 11 | 0 | 0 | 0 | 11 |
+| over_referral | 1 | 0 | 2 | 4 | 2 | 9 |
+| wrong_safe | 0 | 0 | 0 | 0 | 0 | 0 |
+| unsupported | 1 | 2 | 2 | 2 | 4 | 11 |
+| Total | 10 | 13 | 4 | 7 | 6 | 40 |
+
+### Agreement by reading
+
+My outcome against the judge's own under each reading, for both arms and for each alone.
+
+| Reading | Arm | Agree | Cohen's kappa |
+| --- | --- | --- | --- |
+| Five outcomes | Both | 25 of 40, 62.5% (47.0% to 75.8%) | 0.526 |
+| Five outcomes | SAGE | 18 of 23, 78.3% (58.1% to 90.3%) | 0.690 |
+| Five outcomes | Control | 7 of 17, 41.2% (21.6% to 64.0%) | 0.231 |
+| Correct (correct_answer or correct_referral) against not | Both | 35 of 40, 87.5% (73.9% to 94.5%) | 0.750 |
+| Correct (correct_answer or correct_referral) against not | SAGE | 20 of 23, 87.0% (67.9% to 95.5%) | 0.679 |
+| Correct (correct_answer or correct_referral) against not | Control | 15 of 17, 88.2% (65.7% to 96.7%) | 0.721 |
+| Unsupported against not | Both | 31 of 40, 77.5% (62.5% to 87.7%) | 0.343 |
+| Unsupported against not | SAGE | 19 of 23, 82.6% (62.9% to 93.0%) | 0.511 |
+| Unsupported against not | Control | 12 of 17, 70.6% (46.9% to 86.7%) | 0.105 |
+
 ## Every unsupported or wrong SAGE reply
 
 Each with its question and the evidence. The cause is my judgement, read at Stop 3. SAGE's own causes are the wrong passage, missed evidence, a wrong tool argument, the check dropping a good quote, the model ignoring evidence, and the record-only check: check_eligibility judges her record as it stands, and the reply relays its verdict, as the advisor's rule 3 asks. Where the reply was right, the judge erred: it lacked SAGE's evidence, as it never sees the tools' results or her plan's reasons, it misread the claim, or it was stricter than the expected fact.

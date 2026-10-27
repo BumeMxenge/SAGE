@@ -5,7 +5,7 @@ import csv
 import json
 import statistics
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 
 from measures import cross_agreement, kappa, pair_agrees, pass_k
 from resolve import ANSWERABLE, RESULTS, Row, read_prompts
@@ -500,7 +500,75 @@ def agreement(run: Run) -> list[str]:
     lines.append(
         f"- Citations: {rate(sum(a == b for a, b in calls), len(calls))} of my calls agree with the judge's."
     )
-    return lines
+    return lines + matrix(marked, by_turn)
+
+
+# A reply in the sample reached her, so it's never unavailable
+MARKED = tuple(outcome for outcome in OUTCOMES if outcome != "unavailable")
+# The five outcomes, then two yes-or-no readings of them
+READINGS: dict[str, Callable[[str], object]] = {
+    "Five outcomes": lambda outcome: outcome,
+    "Correct (correct_answer or correct_referral) against not": lambda outcome: (
+        outcome in ("correct_answer", "correct_referral")
+    ),
+    "Unsupported against not": lambda outcome: outcome == "unsupported",
+}
+
+
+def matrix(marked: list[Row], by_turn: dict[str, Row]) -> list[str]:
+    # My outcome against the judge's own, as a table, then the agreement under each reading, for
+    # both arms together and for each alone
+    pairs = [
+        (m["arm"], m["my_outcome"], by_turn[m["turn"]]["judge_outcome"]) for m in marked
+    ]
+    changed = sum(
+        by_turn[m["turn"]]["outcome"] != by_turn[m["turn"]]["judge_outcome"]
+        for m in marked
+    )
+    counts = Counter((mine, judges) for _, mine, judges in pairs)
+    rows = [
+        (
+            mine,
+            *(counts[mine, judges] for judges in MARKED),
+            sum(counts[mine, j] for j in MARKED),
+        )
+        for mine in MARKED
+    ]
+    totals = [sum(counts[m, judges] for m in MARKED) for judges in MARKED]
+    readings = []
+    for reading, of in READINGS.items():
+        for arm, label in ((None, "Both"), *ARMS.items()):
+            chosen = [
+                (of(mine), of(judges)) for a, mine, judges in pairs if arm in (None, a)
+            ]
+            found = kappa(chosen)
+            readings.append(
+                (
+                    reading,
+                    label,
+                    rate(sum(one == other for one, other in chosen), len(chosen)),
+                    f"{found:.3f}" if found is not None else "undefined",
+                )
+            )
+    return [
+        "",
+        "### My outcome against the judge's",
+        "",
+        (
+            "Rows are my outcome, and columns the judge's own. Code changed the judge's outcome for "
+            f"{changed} of the {len(pairs)} replies drawn"
+            + (", so the final outcome reads the same." if not changed else ".")
+        ),
+        *table(
+            ("Mine, by the judge's", *MARKED, "Total"),
+            [*rows, ("Total", *totals, len(pairs))],
+        ),
+        "",
+        "### Agreement by reading",
+        "",
+        "My outcome against the judge's own under each reading, for both arms and for each alone.",
+        *table(("Reading", "Arm", "Agree", "Cohen's kappa"), readings),
+    ]
 
 
 def wrong(run: Run) -> list[str]:
