@@ -5,7 +5,11 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 
 ## Open: must close before the build freezes
 
-None. On 26 Oct, before acceptance testing, each open row was fixed or moved to Lasting.
+On 26 Oct, before acceptance testing, each open row was fixed or moved to Lasting. These are the faults the acceptance tests have found since.
+
+| Found | What happened | Cause | What was done | Limitation or future work |
+| --- | --- | --- | --- | --- |
+| 27 Oct | After a reload while a reply is on its way, her chat shows neither her question nor its reply until she reloads again: 6 of ATP-4's 10 S4 runs, each reloaded with 0.8 s or more of the reply's time left. The other 4, with 0.5 s or less left, read the chat once it was stored | The browser drops the request at the reload, but the server finishes the turn and stores the exchange. The reloaded page reads the chat before then, and keeps that read until she sends in the chat or reloads (`staleTime: Infinity`) | None in SAGE. The exchange is stored once, and the next reload shows it | Fix on its own branch: after a reload, read the open chat again while a turn may still be on its way |
 
 ## Found and fixed during development
 
