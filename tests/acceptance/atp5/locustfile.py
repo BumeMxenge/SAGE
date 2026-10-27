@@ -191,6 +191,8 @@ class Student(HttpUser):
         self.plans: list[str] = []
         self._single_chat: str | None = None
         self._pair_chat: str | None = None
+        # Refresh a token that aged since sign-in, so setup never 401s on a dead token
+        self._refresh_if_stale()
         self._setup()
         self._asker = gevent.spawn(self._ask_loop)
 
