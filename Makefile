@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1 atp2
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -31,12 +31,16 @@ dev-all:
 # The folders ATP-1's harness imports from, none of them a package: its own, and E2's, whose score.py
 # compares rule trees and gives the zero-failure bound. Paths are from backend/.
 ATP1_PATH = PYTHONPATH=../tests/acceptance/atp1:../experiments/ingestion/requirement-parsing
+# ATP-2's harness adds its own folder, which holds the checker, and takes ATP-1's interval and bound
+ATP2_PATH = $(ATP1_PATH):../tests/acceptance/atp2
 
-# The unit tests and ATP-1's scoring tests, then each file's lines they never run. --cov sits here
-# rather than in pytest's own settings, so mutmut's runs and a plain uv run pytest stay fast.
+# The unit tests, ATP-1's scoring tests and ATP-2's checker tests, then each file's lines they never
+# run. --cov sits here rather than in pytest's own settings, so mutmut's runs and a plain uv run
+# pytest stay fast.
 test:
-	@cd backend && $(ATP1_PATH) uv run pytest -m "not integration" \
-		tests ../tests/acceptance/atp1/test_scoring.py --cov
+	@cd backend && $(ATP2_PATH) uv run pytest -m "not integration" \
+		tests ../tests/acceptance/atp1/test_scoring.py ../tests/acceptance/atp2/test_checker.py \
+		--cov
 
 # ruff's lint and format checks on the backend and the acceptance tests' scripts, then the
 # dependency rule's contracts in backend/pyproject.toml
@@ -129,6 +133,15 @@ atp1:
 	@cd backend && $(ATP1_PATH):../experiments/ingestion:. \
 		uv run python ../tests/acceptance/atp1/run.py && \
 		$(ATP1_PATH) uv run python ../tests/acceptance/atp1/report.py
+
+# ATP-2: the engine against labels written from print and against the checker, then the report, in
+# tests/acceptance/atp2/results/. The checker's own tests run first, as its gate, so no record runs
+# on a checker that fails them. Everything is in memory, so it needs no database, and it calls no
+# model. Run it on a quiet laptop, as it times the engine.
+atp2:
+	@cd backend && $(ATP2_PATH) uv run pytest -q ../tests/acceptance/atp2/test_checker.py && \
+		$(ATP2_PATH) uv run python ../tests/acceptance/atp2/run.py && \
+		$(ATP2_PATH) uv run python ../tests/acceptance/atp2/report.py
 
 # The seed file of a student other than Mbali, as FILE=data/synthetic/ziyela.json, for the targets
 # below. It is made absolute, as they run from backend/.

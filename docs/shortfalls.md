@@ -5,7 +5,12 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 
 ## Open: must close before the build freezes
 
-None. On 26 Oct, before acceptance testing, each open row was fixed or moved to Lasting.
+On 26 Oct, before acceptance testing, each open row was fixed or moved to Lasting. ATP-2's first result (97fcbe8) found these two.
+
+| Found | What happened | Cause | What was done | Limitation or future work |
+| --- | --- | --- | --- | --- |
+| 26 Oct | ATP-2: `check()` gives an eligible decision no reason, so 13 of the 29 focal decisions whose labels name deciding codes name none, every one of them eligible (F-2) | SEMANTICS.md gives check and not_eligible a reason and eligible none, and `Eligibility`'s reason is optional (ENGINE_INTERFACE.md) | None: ATP-2 never edits what it tests | Give an eligible decision a reason naming what met its rule, then rerun ATP-2 as a retest beside its first result |
+| 26 Oct | ATP-2: 17 of the 32 focal decisions cite no page, in `check()` or a plan reason, and 3 more cite only FB3.4's p. 13 where the label gives the course's entry. F-2's "citing the handbook" holds for 10 of the 15 that cite one | `Eligibility` holds a status and a reason, never a passage, so a decision's page can come only from a plan reason about the course | None: ATP-2 never edits what it tests | Give each decision its passage, as plan reasons have, then rerun ATP-2 as a retest |
 
 ## Found and fixed during development
 
@@ -350,6 +355,10 @@ Defects caught before acceptance testing, for Section 5.2.
 | 26 Oct | A requirement drafting run that the model stops partway loses that run's new drafts | `translate()` writes `drafts.json` once, after its loop, where the electives job writes each draft as it comes | None | Future work: write each draft as it comes. A rerun asks only for what's missing, so only the lost calls' cost is spent again |
 | 26 Oct | Six controls are styled by hand beside the shared Button and IconButton: the account button, Open Sidebar, Send, the toast's action and close buttons, and the search field's clear button | Each has a look the shared buttons have no variant for | None, for time before submission | Future work: give Button and IconButton the variants these need, and build them from those |
 | 26 Oct | Each full `make check-ui` on the integration branch had a few checks that failed under load and passed run alone: an onboarding walk past its 30 s budget, a page that took over 5 s to show its h1, two navigations that waited past 30 s for the frontend's load event, and the sidebar's skeleton still there 15 s after her plans failed to load | They wait on timings that a loaded machine stretches, as the 25 Oct row says | None | Limitation: rerun a failed UI check alone before treating it as a fault |
+| 26 Oct | A reason citing a course's entry gives the page the entry starts on, so CSC2001F's cites p. 169, where its requirement prints at the top of p. 170 (ATP-2) | A stored passage holds one page, where its entry starts | None | Limitation: a passage could also hold the page of its requirement line |
+| 26 Oct | Under FB5 as SEMANTICS.md reads it, a student who fails one previous-year core course and has passed nothing of her own year is in the previous year again, and her plans hold the repeat alone: 163 of ATP-2's 171 such records. The other 8 fail ASL1200S or CON2026S, whose 576-credit places don't count towards her year | FB5 (p. 14) sets her year by when she's expected to graduate, which the specification reads as the latest year with at least two core courses passed | ATP-2 reports it, and measures the cost of a failure on arrears variants that pass two of her own year's courses | Limitation: confirm with the faculty how a student who owes one course is registered for the next year |
+| 26 Oct | ATP-2's checker doesn't check forced sections, recorded alternatives, ranking, the 50-plan cap, plan names, reasons' wording or 2023 | It checks the specification's combinatorics: plan sets, statuses and slots | The labels check set-level reasons by kind and codes, and each focal decision's codes and page | Limitation of ATP-2 |
+| 26 Oct | ATP-2's times were taken while Docker's virtual machine used one of the laptop's eight cores | Local Supabase, which every worktree shares, was running | Each record ran alone, five times. Generate's largest time was 0.96 s, against NF-4's 10 s | None |
 
 **ATP-5 test window checklist**, for the 12 Oct row. Before the load test:
 
