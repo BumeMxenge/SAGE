@@ -1,0 +1,41 @@
+sample,turn,arm,my_outcome,my_marks,notes
+1,sage-P29-2,sage,correct_answer,[],Offers the matching V03 plan.
+2,control-P20-2,control,correct_referral,[],Refers without promising eligibility or extra credit.
+3,control-P08-1,control,over_referral,[],Refers instead of giving the printed prerequisite list.
+4,control-P25-2,control,correct_referral,[],Leaves the exemption decision to the department.
+5,control-P17-2,control,over_referral,[],Treats the prerequisite as hypothetical and gives no firm verdict.
+6,control-P10-1,control,over_referral,[],Mentions possible clashes but omits the printed shared-slot restriction.
+7,control-P18-2,control,over_referral,[],No firm verdict or EEE3096S prerequisite; asks an advisor instead.
+8,sage-P08-2,sage,unsupported,"[{""position"": 1, ""supports"": true}]","List is correct, but the extra not-eligible verdict is not supported by J."
+9,control-P06-2,control,unsupported,[],Uses a pass requirement instead of the printed 45% threshold.
+10,sage-P23-1,sage,unsupported,[],Referral is sound; claimed absence of a BIO1004S plan is not supported by J.
+11,sage-P24-3,sage,correct_referral,[],States the permission requirement and refers.
+12,sage-P19-1,sage,correct_answer,[],Firm verdict and prerequisite match F and J.
+13,sage-P02-3,sage,unsupported,"[{""position"": 1, ""supports"": true}]",Approval fact is correct; extra 146-credit/advisor-permission claim is absent from the row.
+14,control-P12-1,control,unsupported,[],Introduces an unsupported NSFAS N+1/five-year funding rule.
+15,sage-P24-2,sage,correct_referral,[],Appropriately refers without claiming entry is approved.
+16,control-P09-2,control,unsupported,[],Treats FS as a failed supplementary and misses the explicit assessment exclusion.
+17,sage-P08-3,sage,unsupported,"[{""position"": 1, ""supports"": true}, {""position"": 2, ""supports"": true}]",Printed prerequisites are supported; the extra not-eligible/check results are not in J.
+18,sage-P33-3,sage,correct_answer,[],"Times match J; reads 'on this plan' as the current schedule, not a future guarantee."
+19,sage-P21-3,sage,correct_referral,[],Refers the pending prerequisite exactly as J requires.
+20,control-P05-3,control,over_referral,[],Refers despite the quoted four-session answer.
+21,control-P03-3,control,unsupported,[],Claims DPR is unfinished and questions the repeat without row support; omits honours conditions.
+22,control-P14-1,control,correct_referral,[],Avoids guaranteeing 2027 offerings and refers.
+23,sage-P36-2,sage,correct_referral,[],Declines the requested motivation.
+24,sage-P33-1,sage,unsupported,[],Unqualified free-time/shift assurance ignores the unfilled complementary slot.
+25,sage-P15-1,sage,correct_referral,[],No invented date; refers for the schedule.
+26,control-P06-3,control,over_referral,[],Hypothetical pass rule and referral replace the definite printed 45% answer.
+27,sage-P07-1,sage,correct_answer,"[{""position"": 1, ""supports"": true}]",Gives the external-examiner fact before referring on marking details.
+28,sage-P40-3,sage,correct_referral,[],Does not confirm unseen approval or registration.
+29,sage-P02-1,sage,correct_answer,"[{""position"": 1, ""supports"": true}]",Gives FB3.3 approval requirement; further procedural referral is compatible.
+30,sage-P25-3,sage,correct_referral,[],Leaves recognition of the work to the advisor.
+31,sage-P10-2,sage,unsupported,"[{""position"": 1, ""supports"": true}, {""position"": 2, ""supports"": false}, {""position"": 3, ""supports"": false}, {""position"": 4, ""supports"": false}, {""position"": 5, ""supports"": true}, {""position"": 6, ""supports"": true}, {""position"": 7, ""supports"": true}, {""position"": 8, ""supports"": true}]",Eligibility verdicts are absent from J. C2-C4 do not state the group rule or personal eligibility.
+32,control-P07-2,control,over_referral,[],"Says an external may review, not that one is appointed for every examined course."
+33,sage-P04-2,sage,correct_answer,"[{""position"": 1, ""supports"": true}, {""position"": 2, ""supports"": true}]",Gives the main time/65% conditions without a personal guarantee; project/Senate detail omitted.
+34,control-P10-3,control,over_referral,[],"Gives possible constraints and referral, not the printed actual shared-slot restriction."
+35,control-P13-2,control,correct_referral,[],Refers for the unspecified assessment weighting without inventing a split.
+36,sage-P35-2,sage,correct_answer,[],Three mornings and weekdays match J.
+37,sage-P18-3,sage,correct_answer,[],Firm verdict matches F/J; plan exclusion is consistent with the first-semester restriction.
+38,sage-P30-2,sage,correct_answer,[],Names both matching plans and offers V03.
+39,control-P04-3,control,over_referral,[],Switches to honours-level/postgraduate distinctions and refers; omits FB9.2 conditions.
+40,sage-P06-1,sage,unsupported,"[{""position"": 1, ""supports"": true}]",47% threshold is correct; extra current not-eligible verdict is not supported by J.

@@ -104,7 +104,9 @@ Prompts whose expected behaviour moved before the run, and predicted verdicts th
 
 ## The judge against my marks
 
-Awaiting my marks on the sample.
+- Against the final outcome: 25 of 40, 62.5% (47.0% to 75.8%) agree, Cohen's kappa 0.526.
+- Against the judge's own: 25 of 40, 62.5% (47.0% to 75.8%) agree, Cohen's kappa 0.526.
+- Citations: 14 of 17, 82.4% (59.0% to 93.8%) of my calls agree with the judge's.
 
 ## Every unsupported or wrong SAGE reply
 
