@@ -1,0 +1,29 @@
+# ATP-5 and ATP-6's environment: the backend's sage package by path, plus what only the load and
+# access harnesses need, so the backend never installs Locust. It's an environment, not a package,
+# as experiments/ are. ATP-6's scripts in ../atp6 share it.
+[project]
+name = "sage-acceptance-load"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "sage-backend",
+    "locust>=2.40", # drives the simulated students and holds the LoadTestShape
+    "supabase>=2.0", # the admin API for the test accounts, and A's direct REST attempts
+    "httpx>=0.28", # the probes and the access sweep call the API directly
+    "fpdf2>=2.8.9", # prints the one made-up transcript the access sweep uploads
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+sage-backend = { path = "../../../backend", editable = true }
+
+[tool.ruff.lint]
+extend-select = ["I", "B", "UP"] # import order, likely bugs, outdated syntax, as in the backend

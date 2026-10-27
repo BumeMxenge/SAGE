@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1 atp2 atp3-resolve atp3 atp3-report atp4
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1 atp2 atp3-resolve atp3 atp3-report atp4 atp5-report atp6-report
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -171,6 +171,16 @@ atp3-report:
 # fake advisor and this worktree's frontend. It calls no model.
 atp4:
 	@sh tests/acceptance/atp4/run.sh
+
+# ATP-5 and ATP-6's reports, each made only from the CSVs the window wrote in their results/
+# folders, so a rerun never needs the hosted project. They run in the acceptance load environment
+# (tests/acceptance/atp5), which holds Locust and the sage package by path. ATP-6's scripts live in
+# ../atp6 but share that environment, so PYTHONPATH points back at atp5.
+atp5-report:
+	@cd tests/acceptance/atp5 && uv run python report.py
+
+atp6-report:
+	@cd tests/acceptance/atp5 && PYTHONPATH="$$PWD" uv run python ../atp6/report.py
 
 # The seed file of a student other than Mbali, as FILE=data/synthetic/ziyela.json, for the targets
 # below. It is made absolute, as they run from backend/.
