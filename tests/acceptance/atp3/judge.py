@@ -296,6 +296,9 @@ def main() -> None:
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
         futures = [pool.submit(mark, turn) for turn in turns]
         for future in as_completed(futures):
+            # A crash stops the queue at once, so it spends nothing more
+            if future.exception() is not None:
+                pool.shutdown(cancel_futures=True)
             rows.append(future.result())
             total = spent + sum(float(row.get("judge_cost") or 0) for row in rows)
             if total > BUDGET:

@@ -429,6 +429,9 @@ def main() -> None:
             for order, (arm, row, attempt) in enumerate(queue, start=1)
         ]
         for future in as_completed(futures):
+            # A crash stops the queue at once, so it spends nothing more
+            if future.exception() is not None:
+                pool.shutdown(cancel_futures=True)
             turns.append(future.result())
             spent = log.spent()
             if spent > BUDGET:

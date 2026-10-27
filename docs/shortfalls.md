@@ -5,7 +5,11 @@ What SAGE can't do yet, the defects caught before acceptance testing, and the li
 
 ## Open: must close before the build freezes
 
-None. On 26 Oct, before acceptance testing, each open row was fixed or moved to Lasting.
+On 26 Oct, before acceptance testing, each open row was fixed or moved to Lasting. These are the faults the acceptance tests have found since.
+
+| Found | What happened | Cause | What was done | Limitation or future work |
+| --- | --- | --- | --- | --- |
+| 27 Oct | A turn of ATP-3's first run crashed as it read its reply from the OpenAI SDK, with `PydanticUserError: BaseModel cannot be instantiated directly`. SAGE's backend can fail the same way on a fresh replica, with a 500 in place of her reply | The SDK builds each of its reply types the first time a reply of that type arrives, and pydantic's rebuild isn't thread-safe: a thread that reads a reply while `Response` is being built finds pydantic's base placeholder in its place. The advisor asks for a new chat's title and its reply in two threads at once (`advisor/replies.py`), and the backend's image leaves the SDK building its types on first use | None in SAGE. ATP-3's harness has the types built at import (the 27 Oct row under Lasting) | Fix on its own branch: `DEFER_PYDANTIC_BUILD=false` in the backend's image, so every reply type is built at start-up. The race wasn't reproduced offline, so the cause rests on the traceback and pydantic's code |
 
 ## Found and fixed during development
 
@@ -355,6 +359,7 @@ Defects caught before acceptance testing, for Section 5.2.
 | 26 Oct | ATP-3 runs four turns at a time, so its turn times include that load | Asking its turns one at a time would take about four times as long | None | Limitation: the times are reported, not judged against NF-4, which its own ATP tests |
 | 26 Oct | ATP-3's human sample takes at least two replies from each arm and judge's outcome, so the rare outcomes are marked too | A sample of 40 in proportion could miss an outcome the judge seldom gives | None | Limitation: its kappa says how far the judge and I agree across the outcomes, not over all replies weighted as they fall |
 | 26 Oct | SAGE refers questions about courses outside its curricula rather than answering them. ATP-3's P20 asks about EEE3095S, Embedded Systems II for Science Students, which the 2026 handbook prints on p. 136 | No EBE curriculum lists EEE3095S, so SAGE's 2026 rulebook holds no entry for it, and the engine has no verdict on it | My decision at Stop 2, before the run: P20 expects a referral, where its row predicted a firm no, and `resolved.csv` logs the change | None while SAGE serves the EEE curricula only, as with the courses that serve other programmes (the 14 Oct row) |
+| 27 Oct | ATP-3's first attempt, from 01:01 to 01:06, was lost. One turn crashed on the SDK's race (the Open row), and the error surfaced only once the pool had run the rest of the queue: 395 calls, all 195 turns, costing about USD 0.10 to 0.45. No reply was saved or read, and the log kept only the advisor's check messages | The harness read replies four turns at a time while the SDK built its types on first use, as the backend does, and waited for its whole queue before raising | My decision: `make atp3` has both SDKs build their reply types at import (`DEFER_PYDANTIC_BUILD=false`), and `ask.py` and `judge.py` cancel their queue the moment a turn fails. The run then began again from the start | Limitation: ATP-3 can't meet the race, so it doesn't test the Open row's fault. The cost is an estimate from the 13.8 MB of request bodies at Luna's prices: the low end at the advisor validation's cost per turn, the high end with no input cached |
 
 **ATP-5 test window checklist**, for the 12 Oct row. Before the load test:
 

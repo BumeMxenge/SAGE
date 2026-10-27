@@ -135,16 +135,18 @@ atp1:
 
 # ATP-3: the advisor against held-back prompts and students, beside a control arm, in three steps, all
 # in tests/acceptance/atp3/results/. atp3-resolve fixes every expectation from the engine and the plan
-# data, and calls no model. atp3 asks both arms, then judges every reply, which costs about USD 3.25
+# data, and calls no model. atp3 asks both arms, then judges every reply, which costs about USD 2.30
 # and stops past USD 5; it asks nothing again once turns.csv is complete, and the judge reads its
-# cache. atp3-report draws the human sample, or reads my marks back, then writes the report, and
-# calls no model.
+# cache. Both SDKs build each reply type when the first reply of that type arrives, which isn't
+# thread-safe, so atp3 has them built at import. atp3-report draws the human sample, or reads my
+# marks back, then writes the report, and calls no model.
 atp3-resolve:
 	@cd backend && $(ATP3_PATH) uv run python ../tests/acceptance/atp3/resolve.py
 
 atp3:
-	@cd backend && $(ATP3_PATH) uv run python ../tests/acceptance/atp3/ask.py && \
-		$(ATP3_PATH) uv run python ../tests/acceptance/atp3/judge.py
+	@cd backend && DEFER_PYDANTIC_BUILD=false $(ATP3_PATH) \
+		uv run python ../tests/acceptance/atp3/ask.py && \
+		DEFER_PYDANTIC_BUILD=false $(ATP3_PATH) uv run python ../tests/acceptance/atp3/judge.py
 
 atp3-report:
 	@cd backend && $(ATP3_PATH) uv run python ../tests/acceptance/atp3/sample.py && \
