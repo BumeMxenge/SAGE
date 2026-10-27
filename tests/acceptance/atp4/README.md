@@ -62,6 +62,7 @@ The planted runs come after the scenarios, so her second plan already has chats 
 | --- | --- |
 | `observations.json`, `planted.json` | What each run saw: every screen's address, the rail's line and the conversation, and the API's chats and plan set, before and after |
 | `runs.csv` | One row per run: scenario, run, delay, switch time, race provoked, each check's result and the planted-fault flag |
-| `report.md` | One row per scenario: runs, races provoked, inconsistent runs and pass^10, with the planted fault's rows beneath |
+| `causes.csv` | My cause for each inconsistent run, read at Stop 3 from what the run saw |
+| `report.md` | One row per scenario: runs, races provoked, inconsistent runs and pass^10, with the planted fault's rows beneath, then every inconsistent run with its cause |
 
 pass^10, Equation 2.2, is the chance that ten runs all stay consistent, estimated as C(c, 10) / C(10, 10) from a scenario's ten runs, so it is 1 only when all ten are consistent.

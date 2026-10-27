@@ -47,6 +47,29 @@ def table(rows: list[dict[str, str]]) -> list[str]:
     return lines
 
 
+def causes(rows: list[dict[str, str]]) -> list[str]:
+    path = RESULTS / "causes.csv"
+    found = {}
+    if path.exists():
+        with path.open(encoding="utf-8", newline="") as file:
+            found = {
+                (c["scenario"], c["run"], c["planted"]): c for c in csv.DictReader(file)
+            }
+    lines = [
+        "| Scenario | Run | Planted fault | Cause | What the run saw |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for row in rows:
+        if row["consistent"] == "yes":
+            continue
+        cause = found.get((row["scenario"], row["run"], row["planted"]), {})
+        lines.append(
+            f"| {row['scenario']} | {row['run']} | {row['planted']} | "
+            f"{cause.get('cause', 'to be classed')} | {cause.get('note', '')} |"
+        )
+    return lines
+
+
 def main() -> None:
     with (RESULTS / "runs.csv").open(encoding="utf-8", newline="") as file:
         rows = list(csv.DictReader(file))
@@ -91,6 +114,12 @@ def main() -> None:
             if caught
             else "The test didn't catch it: every run stayed consistent."
         ),
+        "",
+        "## Every inconsistent run, with its cause",
+        "",
+        "The cause is my judgement, read at Stop 3 from what the run saw, as `causes.csv` holds it.",
+        "",
+        *causes(rows),
     ]
     (RESULTS / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("results/report.md written")
