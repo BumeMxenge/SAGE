@@ -38,3 +38,7 @@ local/
 # ATP-5/6 load-test local state: the hosted session tokens and the test-account manifest, both
 # per-run and never committed (the token cache holds live session tokens)
 tests/acceptance/atp5/.cache/
+
+# the exported container logs (raw server output, large and not for a public repo)
+tests/acceptance/atp5/results/container_logs.tsv
+tests/acceptance/atp5/results/void-1/container_logs.tsv
