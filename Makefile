@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1 atp2
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1 atp2 atp3-resolve atp3 atp3-report
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -33,14 +33,16 @@ dev-all:
 ATP1_PATH = PYTHONPATH=../tests/acceptance/atp1:../experiments/ingestion/requirement-parsing
 # ATP-2's harness adds its own folder, which holds the checker, and takes ATP-1's interval and bound
 ATP2_PATH = $(ATP1_PATH):../tests/acceptance/atp2
+# ATP-3's harness adds its own folder, and scripts/ for ask_advisor.py's Recorded and show_plans.py's
+# made-up account. It takes ATP-1's interval code, so it needs ATP-1's folders too.
+ATP3_PATH = $(ATP1_PATH):../tests/acceptance/atp3:scripts
 
-# The unit tests, ATP-1's scoring tests and ATP-2's checker tests, then each file's lines they never
-# run. --cov sits here rather than in pytest's own settings, so mutmut's runs and a plain uv run
-# pytest stay fast.
+# The unit tests and the ATP harnesses' own tests, then each file's lines they never run. --cov sits
+# here rather than in pytest's own settings, so mutmut's runs and a plain uv run pytest stay fast.
 test:
-	@cd backend && $(ATP2_PATH) uv run pytest -m "not integration" \
+	@cd backend && $(ATP3_PATH):../tests/acceptance/atp2 uv run pytest -m "not integration" \
 		tests ../tests/acceptance/atp1/test_scoring.py ../tests/acceptance/atp2/test_checker.py \
-		--cov
+		../tests/acceptance/atp3 --cov
 
 # ruff's lint and format checks on the backend and the acceptance tests' scripts, then the
 # dependency rule's contracts in backend/pyproject.toml
@@ -142,6 +144,25 @@ atp2:
 	@cd backend && $(ATP2_PATH) uv run pytest -q ../tests/acceptance/atp2/test_checker.py && \
 		$(ATP2_PATH) uv run python ../tests/acceptance/atp2/run.py && \
 		$(ATP2_PATH) uv run python ../tests/acceptance/atp2/report.py
+
+# ATP-3: the advisor against held-back prompts and students, beside a control arm, in three steps, all
+# in tests/acceptance/atp3/results/. atp3-resolve fixes every expectation from the engine and the plan
+# data, and calls no model. atp3 asks both arms, then judges every reply, which costs about USD 2.30
+# and stops past USD 5; it asks nothing again once turns.csv is complete, and the judge reads its
+# cache. Both SDKs build each reply type when the first reply of that type arrives, which isn't
+# thread-safe, so atp3 has them built at import. atp3-report draws the human sample, or reads my
+# marks back, then writes the report, and calls no model.
+atp3-resolve:
+	@cd backend && $(ATP3_PATH) uv run python ../tests/acceptance/atp3/resolve.py
+
+atp3:
+	@cd backend && DEFER_PYDANTIC_BUILD=false $(ATP3_PATH) \
+		uv run python ../tests/acceptance/atp3/ask.py && \
+		DEFER_PYDANTIC_BUILD=false $(ATP3_PATH) uv run python ../tests/acceptance/atp3/judge.py
+
+atp3-report:
+	@cd backend && $(ATP3_PATH) uv run python ../tests/acceptance/atp3/sample.py && \
+		$(ATP3_PATH) uv run python ../tests/acceptance/atp3/report.py
 
 # The seed file of a student other than Mbali, as FILE=data/synthetic/ziyela.json, for the targets
 # below. It is made absolute, as they run from backend/.
