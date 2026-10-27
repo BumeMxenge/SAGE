@@ -1,6 +1,6 @@
 # Shortcuts for common tasks, run from the repo root. CI runs the check targets too, so `make check`
 # passing on your laptop means CI's backend, frontend and contract jobs will pass.
-.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1 atp2 atp3-resolve atp3 atp3-report
+.PHONY: install dev dev-web dev-all test lint format check check-backend check-frontend check-contract api-types check-db check-migrations test-integration check-ui seed sign-in sign-in-new transcript load mutation planted-faults atp1 atp2 atp3-resolve atp3 atp3-report atp4
 
 # The Supabase CLI, pinned. CI sets SUPABASE=supabase, the copy its setup step installs.
 SUPABASE ?= npx supabase@2.120.0
@@ -40,9 +40,10 @@ ATP3_PATH = $(ATP1_PATH):../tests/acceptance/atp3:scripts
 # The unit tests and the ATP harnesses' own tests, then each file's lines they never run. --cov sits
 # here rather than in pytest's own settings, so mutmut's runs and a plain uv run pytest stay fast.
 test:
-	@cd backend && $(ATP3_PATH):../tests/acceptance/atp2 uv run pytest -m "not integration" \
-		tests ../tests/acceptance/atp1/test_scoring.py ../tests/acceptance/atp2/test_checker.py \
-		../tests/acceptance/atp3 --cov
+	@cd backend && $(ATP3_PATH):../tests/acceptance/atp2:../tests/acceptance/atp4 uv run pytest \
+		-m "not integration" tests ../tests/acceptance/atp1/test_scoring.py \
+		../tests/acceptance/atp2/test_checker.py ../tests/acceptance/atp3 \
+		../tests/acceptance/atp4/test_check.py --cov
 
 # ruff's lint and format checks on the backend and the acceptance tests' scripts, then the
 # dependency rule's contracts in backend/pyproject.toml
@@ -163,6 +164,13 @@ atp3:
 atp3-report:
 	@cd backend && $(ATP3_PATH) uv run python ../tests/acceptance/atp3/sample.py && \
 		$(ATP3_PATH) uv run python ../tests/acceptance/atp3/report.py
+
+# ATP-4: whether the plan on screen, the chat and the advisor's context stay in step after switches,
+# reloads and late replies, then the same with a planted fault, in tests/acceptance/atp4/results/.
+# It needs Docker and local Supabase, and ports 8001 and 3001 free, as it starts its own API with a
+# fake advisor and this worktree's frontend. It calls no model.
+atp4:
+	@sh tests/acceptance/atp4/run.sh
 
 # The seed file of a student other than Mbali, as FILE=data/synthetic/ziyela.json, for the targets
 # below. It is made absolute, as they run from backend/.
